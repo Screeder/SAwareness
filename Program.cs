@@ -34,7 +34,7 @@ namespace SAwareness
         public static bool IsOnScreen(Vector3 vector)
         {
             float[] screen = Drawing.WorldToScreen(vector);
-            if (screen[0] > Drawing.Width || screen[1] > Drawing.Height)
+            if (screen[0] < 0 || screen[0] > Drawing.Width || screen[1] < 0 || screen[1] > Drawing.Height)
                 return false;
             return true;
         }
@@ -1651,7 +1651,7 @@ namespace SAwareness
             //JungleCamps.Add(new JungleCamp("heal", GameObjectTeam.Neutral, 3, 190, 40, 3, new Vector3(5929, 5190, 60), new Vector3(5929, 5190, 60), new[] { GetJungleMobByName("HA_AP_HealthRelic", 3) }));
             //JungleCamps.Add(new JungleCamp("heal", GameObjectTeam.Neutral, 4, 190, 40, 3, new Vector3(4751, 3901, 60), new Vector3(4751, 3901, 60), new[] { GetJungleMobByName("HA_AP_HealthRelic", 3) }));
 
-            foreach (Obj_AI_Base objAiBase in ObjectManager.Get<Obj_AI_Base>())
+            foreach (var objAiBase in ObjectManager.Get<Obj_AI_Base>())
             {
                 Obj_AI_Base_OnCreate(objAiBase, new EventArgs());
             }
@@ -1662,16 +1662,12 @@ namespace SAwareness
                 _inhibitors.Inhibitors.Add(new Inhibitor(inhib));
             }
 
-            foreach (var health in ObjectManager.Get<Obj_AI_Minion>())
+            foreach (var objectType in ObjectManager.Get<Obj_AI_Minion>())
             {
-                if(health.Name.Contains("Health"))
-                    Healths.Add(new Health(health));
-            }
-
-            foreach (var altar in ObjectManager.Get<Obj_AI_Minion>())
-            {
-                if (altar.Name.Contains("Buffplat"))
-                    Altars.Add(new Altar(altar));
+                if (objectType.Name.Contains("Health"))
+                    Healths.Add(new Health(objectType));
+                if (objectType.Name.Contains("Buffplat"))
+                    Altars.Add(new Altar(objectType));
             }
 
             foreach (JungleCamp jungleCamp in JungleCamps) //GAME.TIME BUGGED
@@ -3436,7 +3432,7 @@ namespace SAwareness
         {
             private static String host = "https://github.com/Screeder/SAwareness/raw/master";
 
-            public static Texture LoadTexture(String pathAndfile, ref Texture texture)
+            public static Texture LoadTexture(String pathAndfile, ref Texture texture, bool bForce = false)
             {
                 //if (!File.Exists(pathAndfile))
                 //{
@@ -3444,7 +3440,7 @@ namespace SAwareness
                 //    filePath = filePath.Remove(0, filePath.LastIndexOf("\\Sprites\\", System.StringComparison.Ordinal));
                 //    Download.DownloadFile(host + filePath, pathAndfile);
                 //}
-                if (File.Exists(pathAndfile) && texture == null)
+                if (File.Exists(pathAndfile) && (bForce || texture == null))
                 {
                     texture = Texture.FromFile(Drawing.Direct3DDevice, pathAndfile);
                     if (texture == null)
@@ -3670,7 +3666,7 @@ namespace SAwareness
                                 if (champ.SGui.Item[inventorySlot.Slot].Texture == null || champ.SGui.ItemId[inventorySlot.Slot] != inventorySlot.Id)
                                 {
                                     champ.SGui.ItemId[inventorySlot.Slot] = inventorySlot.Id;
-                                    SpriteHelper.LoadTexture(loc + "ITEMS\\" + inventorySlot.Id + ".dds", ref champ.SGui.Item[inventorySlot.Slot].Texture);
+                                    SpriteHelper.LoadTexture(loc + "ITEMS\\" + inventorySlot.Id + ".dds", ref champ.SGui.Item[inventorySlot.Slot].Texture, true);
                                     //champ.SGui.Item[i].Texture = Texture.FromFile(Drawing.Direct3DDevice,
                                     //    loc + "ITEMS\\" + inventorySlot.Id + ".dds");
                                 }
@@ -3685,6 +3681,7 @@ namespace SAwareness
                     champ.SGui.ItemId[id] = 0;
                     if (champ.SGui.Item[id] == null)
                         champ.SGui.Item[id] = new ChampInfos.Gui.SpriteInfos();
+                    champ.SGui.Item[id].Texture = null;
                     if (/*id == i*/champ.SGui.Item[id].Texture == null && champ.SGui.Item[id].Texture != _overlayEmptyItem)
                     {
                         champ.SGui.Item[id].Texture = _overlayEmptyItem;
@@ -3927,7 +3924,7 @@ namespace SAwareness
             foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>())
             {
                 float arrivalTime = 0.0f;
-                if (enemy.IsValid && enemy.IsVisible && !enemy.IsDead && enemy.IsMe)
+                if (enemy.IsValid && enemy.IsVisible && !enemy.IsDead && enemy.IsEnemy)
                 {
                     var waypoints = enemy.GetWaypoints();
                     for (int i = 0; i < waypoints.Count - 1; i++)
