@@ -20,7 +20,6 @@ using Rectangle = SharpDX.Rectangle;
 
 namespace SAwareness
 {
-    //HealthMenuPoint is crashing
     /*Send Ping
      * 
      * GamePacket gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(100, 100));
@@ -1494,7 +1493,7 @@ namespace SAwareness
                 }
             }
 
-            //var test = ObjectManager.Get<Obj_Shop>().ToList();
+            //var test = ObjectManager.Get<Obj_AI_Minion>().ToList();
             //foreach (var objectType in test)
             //{
             //    float[] w = Drawing.WorldToScreen(objectType.Position);
@@ -3129,136 +3128,18 @@ namespace SAwareness
 
     class Recall
     {
-        private readonly List<RecallInternal> _recalls = new List<RecallInternal>();
+        
+        List<RecallInfo> _recalls = new List<RecallInfo>();
 
-        class RecallInternal
+        public class RecallInfo
         {
-            public readonly Obj_AI_Hero Obj;
-            private string _type;
-            public int Time;
-            public string Previoustype;
-            public System.Drawing.Color Color;
+            public int NetworkId;
+            public Packet.S2C.Recall.Struct Recall;
+            public Packet.S2C.Recall.Struct Recall2;
 
-            private int _lasttypechange;
-            private readonly int _casttimeRecall = 8000;
-            private const int CasttimeTeleport = 3500;
-
-            public RecallInternal(Obj_AI_Hero obj, string type, int time)
+            public RecallInfo(int networkId)
             {
-                Obj = obj;
-                SetType(type, time);
-
-                if (IsDominion())
-                    _casttimeRecall = 4500;
-
-                foreach (Mastery mastery in obj.Masteries)
-                    if (mastery.Page == MasteryPage.Utility)
-                        if (mastery.Id == 65 && mastery.Points == 1)
-                            _casttimeRecall -= 1000 - Convert.ToInt32(IsDominion()) * 500; //phasewalker for dominion only 0.5s decrease
-            }
-            public int GetCastTime(string recalltype = null)
-            {
-                if (recalltype == null)
-                    recalltype = _type;
-
-                switch (recalltype)
-                {
-                    case "Recalling":
-                        return _casttimeRecall;
-                    case "Teleporting":
-                        return CasttimeTeleport;
-                }
-
-                return 0;
-            }
-
-            private int GetCountdown()
-            {
-                int casttime = GetCastTime();
-
-                if (casttime != 0)
-                    return (Time + casttime) - Environment.TickCount;
-
-                return 0;
-            }
-
-            override public string ToString()
-            {
-                string drawtext = Obj.BaseSkinName + ": " + _type;
-
-                float countdown = GetCountdown() / 1000f;
-
-                if (countdown.CompareTo(0) != 0)
-                    drawtext += " (" + countdown.ToString("0.00") + "s)";
-
-                return drawtext;
-            }
-
-            public void SetType(string type, int time)
-            {
-                Color = System.Drawing.Color.Gray;
-
-                if (type == "Recalling")
-                {
-                    Color = System.Drawing.Color.Aqua;
-                    Time = time;
-                    Previoustype = _type;
-                }
-                else if (type == "Teleporting")
-                {
-                    Color = System.Drawing.Color.HotPink;
-                    Time = time;
-                    Previoustype = _type;
-                }
-                else if (type == "Ported")
-                    Color = System.Drawing.Color.Orange;
-                else if (type == "Canceled")
-                    Color = System.Drawing.Color.Red;
-
-                _type = type;
-                _lasttypechange = Environment.TickCount;
-            }
-
-            public bool ShouldDraw()
-            {
-                if (Environment.TickCount - _lasttypechange > 2500 && _type != "Recalling" && _type != "Teleporting")
-                    return false;
-
-                if (_type == "n/a")
-                    return false;
-
-                if (!Obj.IsValid || Obj.IsDead)
-                    return false;
-
-                return true;
-            }
-
-            /*
-                        public bool IsActive()
-                        {
-                            if (_type == "Recalling" || _type == "Teleporting")
-                                return true;
-
-                            return false;
-                        }
-            */
-
-            private bool IsDominion()
-            {
-                var teamOrderSpawn = new Vector3();
-
-                foreach (GameObject spawn in ObjectManager.Get<GameObject>()) //get spawn pos
-                {
-                    if (spawn.Type == GameObjectType.obj_SpawnPoint)
-                    {
-                        if (spawn.Team == GameObjectTeam.Order)
-                            teamOrderSpawn = spawn.Position;
-                    }
-                }
-
-                if (Vector2.Distance(Geometry.To2D(teamOrderSpawn), Geometry.To2D(new Vector3(523.8126f, 4161.423f, -257.1935f))) < 1f)
-                    return true;
-                return false;
+                NetworkId = networkId;
             }
         }
 
@@ -3268,49 +3149,20 @@ namespace SAwareness
             {
                 if (enemy.IsEnemy)
                 {
-                    _recalls.Add(new RecallInternal(enemy, "n/a", Environment.TickCount));
+                    _recalls.Add(new RecallInfo(enemy.NetworkId));
                 }
             }
-            Drawing.OnDraw += Drawing_OnDraw;
             Game.OnGameProcessPacket += Game_OnGameProcessPacket;
         }
 
         ~Recall()
         {
-            Drawing.OnDraw -= Drawing_OnDraw;
             Game.OnGameProcessPacket -= Game_OnGameProcessPacket;
         }
 
         public bool IsActive()
         {
             return Menu.RecallDetector.GetActive();
-        }
-
-        void Drawing_OnDraw(EventArgs args)
-        {
-            if (!IsActive())
-                return;
-            try
-            {
-                for (var i = 0; i < _recalls.Count; i++)
-                {
-                    RecallInternal recall = _recalls[i];
-                    if (recall == null) continue;
-
-                    if (!recall.ShouldDraw()) continue;
-
-                    if (recall.Obj.IsVisible)
-                        continue;
-
-                    Drawing.DrawText(Drawing.Width * 0.73f, Drawing.Height * 0.88f + (i * 15f), recall.Color, recall.ToString());
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("RecallDraw" + ex.ToString());
-                throw;
-            }
-            
         }
 
         void Game_OnGameProcessPacket(GamePacketEventArgs args) //TODO: Check for Packet id
@@ -3320,36 +3172,15 @@ namespace SAwareness
             try
             {
                 var reader = new BinaryReader(new MemoryStream(args.PacketData));
-
                 byte PacketId = reader.ReadByte(); //PacketId
-                if (PacketId != 216) //OLD 215
+                if (PacketId != Packet.S2C.Recall.Header) //OLD 215
                     return;
-                /*using (StreamWriter stream = new StreamWriter("C:\\recall.log", true))
-                    {
-                        stream.WriteLine("Packet@" + Environment.TickCount + ": " + BitConverter.ToString(args.PacketData));
-                    }*/
-
-
-                reader.ReadBytes(4);
-                int networkId = BitConverter.ToInt32(reader.ReadBytes(4), 0);
-                reader.ReadBytes(66);
-
-                string recallType = "n/a";
-
-                if (BitConverter.ToString(reader.ReadBytes(6)) != "00-00-00-00-00-00")
-                {
-                    recallType = BitConverter.ToString(reader.ReadBytes(3)) != "00-00-00" ? "Teleporting" : "Recalling";
-                }
-
-                reader.Close();
-
-                var obj = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(networkId);
-
-                if (obj == null) return;
-
-                if (!obj.IsValid || (obj.Team == ObjectManager.Player.Team)) return;
-
-                HandleRecall(obj, recallType);
+                Packet.S2C.Recall.Struct recall = Packet.S2C.Recall.Decoded(args.PacketData);
+                //using (StreamWriter stream = new StreamWriter("C:\\recall.log", true))
+                //{
+                //    stream.WriteLine("Packet@" + Environment.TickCount + ": " + BitConverter.ToString(args.PacketData));
+                //}
+                HandleRecall(recall);
             }
             catch (Exception ex)
             {
@@ -3359,30 +3190,82 @@ namespace SAwareness
             
         }
 
-        void HandleRecall(Obj_AI_Hero obj, string recallType)
+        void HandleRecall(Packet.S2C.Recall.Struct recallEx)
         {
             int time = Environment.TickCount - Game.Ping;
 
-            foreach (RecallInternal recall in _recalls)
+            foreach (RecallInfo recall in _recalls)
             {
                 if (recall == null) continue;
-
-                if (recall.Obj.NetworkId == obj.NetworkId) //already existing
+                
+                if (recallEx.Type == Packet.S2C.Recall.ObjectType.Player)
                 {
-                    if (recallType == "Teleporting" || recallType == "Recalling")
+                    var obj = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(recall.NetworkId);
+                    var objEx = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(recallEx.UnitNetworkId);
+                    if (obj.NetworkId == objEx.NetworkId) //already existing
                     {
-                        recall.SetType(recallType, time);
-                    }
-                    else if (time > recall.Time + recall.GetCastTime(recall.Previoustype) - 150)
-                    {
-                        recall.SetType("Ported", time);
-                        Game.PrintChat(obj.BaseSkinName + " ported with {0} hp", (int)obj.Health);
-                    }
-                    else
-                    {
-                        recall.SetType("Canceled", time);
+                        recall.Recall = recallEx;
+                        recall.Recall2 = new Packet.S2C.Recall.Struct();
+                        StringList t = Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorMode").GetValue<StringList>();
+                        if(t.SelectedIndex == 0 || t.SelectedIndex == 2)
+                        {
+                            if (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportStart || recallEx.Status == Packet.S2C.Recall.RecallStatus.RecallStarted)
+                            {
+                                if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorLocalChat").GetValue<bool>())
+                                {
+                                    Game.PrintChat(obj.BaseSkinName + " porting with {0} hp", (int) obj.Health);
+                                }
+                                else
+                                {
+                                    Game.Say(obj.BaseSkinName + " porting with {0} hp", (int)obj.Health);
+                                }
+                            }
+                            else if (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd || recallEx.Status == Packet.S2C.Recall.RecallStatus.RecallFinished)
+                            {
+                                if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorLocalChat").GetValue<bool>())
+                                {
+                                    Game.PrintChat(obj.BaseSkinName + " porting with {0} hp", (int)obj.Health);
+                                }                                
+                                else
+                                {
+                                    Game.Say(obj.BaseSkinName + " porting with {0} hp", (int)obj.Health);
+                                }
+                            }
+                            else
+                            {
+                                if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorLocalChat").GetValue<bool>())
+                                {
+                                    Game.PrintChat(obj.BaseSkinName + " canceled with {0} hp", (int)obj.Health);
+                                }                              
+                                else
+                                {
+                                    Game.Say(obj.BaseSkinName + " canceled with {0} hp", (int)obj.Health);
+                                }
+                            }
+                        }                       
+                        return;
                     }
                 }
+                else if (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportStart || recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd)
+                {
+                    if (recall.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportStart)
+                        recall.Recall2 = recallEx;
+
+                    var obj = ObjectManager.GetUnitByNetworkId<GameObject>(recallEx.UnitNetworkId);
+                    var screen = obj.Position;
+                    for (int i = 0; i < Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorPingTimes").GetValue<Slider>().Value; i++)
+                    {
+                        GamePacket gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(screen.X, screen.Y, 0, Packet.PingType.Danger));
+                        if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorLocalPing").GetValue<bool>())
+                        {
+                            //TODO: Add local ping
+                        }
+                        else
+                        {
+                            gPacketT.Send();
+                        }
+                    }
+                }                                
             }
         }
     }
@@ -4040,6 +3923,10 @@ namespace SAwareness
                 Menu.VisionDetector.Menu = Menu.Detector.Menu.AddSubMenu(new LeagueSharp.Common.Menu("VisionDetector", "SAwarenessVisionDetector"));
                 Menu.VisionDetector.MenuItems.Add(Menu.VisionDetector.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessVisionDetectorActive", "Active").SetValue(true)));
                 Menu.RecallDetector.Menu = Menu.Detector.Menu.AddSubMenu(new LeagueSharp.Common.Menu("RecallDetector", "SAwarenessRecallDetector"));
+                Menu.RecallDetector.MenuItems.Add(Menu.RecallDetector.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessRecallDetectorPingTimes", "Ping Times").SetValue(new Slider(0, 5, 0))));
+                Menu.RecallDetector.MenuItems.Add(Menu.RecallDetector.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessRecallDetectorLocalPing", "Local Ping | Not implemented").SetValue(false)));
+                Menu.RecallDetector.MenuItems.Add(Menu.RecallDetector.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessRecallDetectorLocalChat", "Local Chat").SetValue(false)));
+                Menu.RecallDetector.MenuItems.Add(Menu.RecallDetector.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessRecallDetectorMode", "Mode").SetValue(new StringList(new string[] { "Chat", "CDTracker", "Both" }))));
                 Menu.RecallDetector.MenuItems.Add(Menu.RecallDetector.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessRecallDetectorActive", "Active").SetValue(true)));
                 Menu.Detector.MenuItems.Add(Menu.Detector.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessDetectorActive", "Active").SetValue(true)));
 
