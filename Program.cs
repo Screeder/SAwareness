@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -27,6 +28,46 @@ namespace SAwareness
 
 
     //jungle Timer Low FPS
+
+    static class Log
+    {
+        public static String File = "C:\\SAwareness.log";
+        public static String Prefix = "Packet";
+
+        public static void LogString(String text, String file = null, String prefix = null)
+        {
+            switch (text)
+            {
+                case "missile":
+                case "DrawFX":
+                case "Mfx_pcm_mis.troy":
+                case "Mfx_bcm_tar.troy":
+                case "Mfx_bcm_mis.troy":
+                case "Mfx_pcm_tar.troy":
+                    return;
+            }
+            LogWrite(text, file, prefix);
+        }
+
+        public static void LogPacket(byte[] data, String file = null, String prefix = null)
+        {
+            LogWrite(BitConverter.ToString(data), file, prefix);
+        }
+
+        private static void LogWrite(String text, String file = null, String prefix = null)
+        {
+            if (text == null)
+                return;
+            if (file == null)
+                file = File;
+            if (prefix == null)
+                prefix = Prefix;
+            using (StreamWriter stream = new StreamWriter(file, true))
+            {
+                stream.WriteLine(prefix + "@" + Environment.TickCount + ": " + text);
+            }
+        }
+    }
 
     static class Common
     {
@@ -68,7 +109,7 @@ namespace SAwareness
             font.DrawText(null, text, posX + rec.X, posY, color);
         }
 
-        public static void DrawSprite(Sprite sprite, Texture texture, Size size, Color color, Rectangle spriteResize)
+        public static void DrawSprite(Sprite sprite, Texture texture, Size size, Color color, Rectangle? spriteResize)
         {
             if (sprite != null && texture != null)
             {
@@ -80,7 +121,7 @@ namespace SAwareness
         {
             if (sprite != null && texture != null)
             {
-                sprite.Draw(texture, color, null, new Vector3(size.Width, size.Height, 0));
+                DrawSprite(sprite, texture, size, color, null);
             }
         }
     }
@@ -209,10 +250,11 @@ namespace SAwareness
         public static MenuItemSettings InhibitorHealth = new MenuItemSettings(); //Works
         public static MenuItemSettings DestinationTracker = new MenuItemSettings(typeof(SAwareness.DestinationTracker));  //Work & Needs testing
         public static MenuItemSettings Detector = new MenuItemSettings();
-        public static MenuItemSettings VisionDetector = new MenuItemSettings(typeof(SAwareness.HiddenObject)); //Partly work needs more testing
+        public static MenuItemSettings VisionDetector = new MenuItemSettings(typeof(SAwareness.HiddenObject)); //Works - OnProcessSpell bugged
         public static MenuItemSettings RecallDetector = new MenuItemSettings(typeof(SAwareness.Recall)); //Works
         public static MenuItemSettings Range = new MenuItemSettings(typeof(SAwareness.Ranges)); //Many ranges are bugged. Waiting for SpellLib
         public static MenuItemSettings TowerRange = new MenuItemSettings();
+        public static MenuItemSettings ExperienceRange = new MenuItemSettings();
         public static MenuItemSettings AttackRange = new MenuItemSettings();
         public static MenuItemSettings SpellQRange = new MenuItemSettings();
         public static MenuItemSettings SpellWRange = new MenuItemSettings();
@@ -226,6 +268,142 @@ namespace SAwareness
         public static MenuItemSettings Ward = new MenuItemSettings(typeof(SAwareness.WardIt)); //Works
         public static MenuItemSettings SkinChanger = new MenuItemSettings(typeof(SAwareness.SkinChanger)); //Need to send local packet
         public static MenuItemSettings AutoSmite = new MenuItemSettings(typeof(SAwareness.AutoSmite)); //Works
+        public static MenuItemSettings AutoPot = new MenuItemSettings(typeof(SAwareness.AutoPot));
+    }
+
+    class AutoPot
+    {
+        float lastTimeActive = 0;
+        private List<Pot> pots = new List<Pot>();
+
+        public class Pot
+        {
+            public int Id;
+            public String Buff;
+            public float LastTime;
+            public PotType Type;
+
+            public Pot()
+            {
+                
+            }
+
+            public Pot(int id, String buff, PotType type)
+            {
+                Id = id;
+                Buff = buff;
+                Type = type;
+            }
+
+            public enum PotType
+            {
+                None,
+                Health,
+                Mana,
+                Both
+            }
+        }
+
+        public AutoPot()
+        {
+            pots.Add(new Pot(2037, "PotionOfGiantStrengt", Pot.PotType.Health)); //elixirOfFortitude
+            pots.Add(new Pot(2039, "PotionOfBrilliance", Pot.PotType.Mana)); //elixirOfBrilliance            
+            pots.Add(new Pot(2041, "ItemCrystalFlask", Pot.PotType.Both)); //crystalFlask
+            pots.Add(new Pot(2009, "ItemMiniRegenPotion", Pot.PotType.Both)); //biscuit
+            pots.Add(new Pot(2003, "RegenerationPotion", Pot.PotType.Health)); //healthPotion
+            pots.Add(new Pot(2004, "FlaskOfCrystalWater", Pot.PotType.Mana)); //manaPotion
+            Game.OnGameUpdate += Game_OnGameUpdate;
+        }
+
+        ~AutoPot()
+        {
+            Game.OnGameUpdate -= Game_OnGameUpdate;
+        }
+
+        public bool IsActive()
+        {
+            return Menu.AutoPot.GetActive();
+        }
+
+        void Game_OnGameUpdate(EventArgs args)
+        {
+            if(!IsActive() || ObjectManager.Player.IsDead)
+                return;
+            Pot myPot = null;
+            if (
+                Menu.AutoPot.GetMenuSettings("SAwarenessAutoPotHealthPot")
+                    .GetMenuItem("SAwarenessAutoPotHealthPotActive")
+                    .GetValue<bool>())
+            {
+                foreach (var pot in pots)
+                {
+                    if (pot.Type == Pot.PotType.Health || pot.Type == Pot.PotType.Both)
+                    {
+                        if (ObjectManager.Player.Health/ObjectManager.Player.MaxHealth*100 <=
+                            Menu.AutoPot.GetMenuSettings("SAwarenessAutoPotHealthPot")
+                                .GetMenuItem("SAwarenessAutoPotHealthPotPercent")
+                                .GetValue<Slider>().Value)
+                        {
+                            if (!Items.HasItem(pot.Id))
+                                continue;
+                            if (!Items.CanUseItem(pot.Id))
+                                continue;
+                            myPot = pot;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (myPot != null)
+                UsePot(myPot);
+            if (
+                Menu.AutoPot.GetMenuSettings("SAwarenessAutoPotManaPot")
+                    .GetMenuItem("SAwarenessAutoPotManaPotActive")
+                    .GetValue<bool>())
+            {
+                foreach (var pot in pots)
+                {
+                    if (pot.Type == Pot.PotType.Mana || pot.Type == Pot.PotType.Both)
+                    {
+                        if (ObjectManager.Player.Mana/ObjectManager.Player.MaxMana*100 <=
+                            Menu.AutoPot.GetMenuSettings("SAwarenessAutoPotManaPot")
+                                .GetMenuItem("SAwarenessAutoPotManaPotPercent")
+                                .GetValue<Slider>().Value)
+                        {
+                            if (!Items.HasItem(pot.Id))
+                                continue;
+                            if (!Items.CanUseItem(pot.Id))
+                                continue;
+                            myPot = pot;
+                            break;
+                        }
+                    }
+                }
+            }
+            if(myPot != null)
+                UsePot(myPot);
+        }
+
+        void UsePot(Pot pot)
+        {
+            foreach (var buff in ObjectManager.Player.Buffs)
+            {
+                Console.WriteLine(buff.Name);
+                if (buff.Name.Contains(pot.Buff))
+                {
+                    
+                    return;
+                }
+            }
+            if (pot.LastTime + 5 > Game.Time)
+                return;
+            if (!Items.HasItem(pot.Id))
+                return;
+            if (!Items.CanUseItem(pot.Id))
+                return;
+            Items.UseItem(pot.Id);
+            pot.LastTime = Game.Time;
+        }
     }
 
     class Health
@@ -382,10 +560,10 @@ namespace SAwareness
             {
                 if (hero.IsEnemy)
                 {
-                    if (hero.BaseSkinName.Contains("Shaco") ||
-                        hero.BaseSkinName.Contains("LeBlanc") ||
-                        hero.BaseSkinName.Contains("MonkeyKing") ||
-                        hero.BaseSkinName.Contains("Yorick"))
+                    if (hero.ChampionName.Contains("Shaco") ||
+                        hero.ChampionName.Contains("LeBlanc") ||
+                        hero.ChampionName.Contains("MonkeyKing") ||
+                        hero.ChampionName.Contains("Yorick"))
                     {
                         Drawing.DrawCircle(hero.ServerPosition, 100, System.Drawing.Color.Red);
                         Drawing.DrawCircle(hero.ServerPosition, 110, System.Drawing.Color.Red);
@@ -415,9 +593,9 @@ namespace SAwareness
         {
             foreach (var minion in ObjectManager.Get<Obj_AI_Minion>())
             {
+                int smiteDamage = GetSmiteDamage();
                 if (Vector3.Distance(ObjectManager.Player.ServerPosition, minion.ServerPosition) < 1500)
-                {
-                    int smiteDamage = GetSmiteDamage();
+                {                    
                     foreach (var monster in monsters)
                     {
                         if (minion.SkinName == monster && minion.IsVisible)
@@ -476,7 +654,7 @@ namespace SAwareness
                                 (level < 5 ? 20 * (level - 1) :
                                 (level < 10 ? 60 + 30 * (level - 4) :
                                 (level < 15 ? 210 + 40 * (level - 9) :
-                                              410 + 50 * (level - 4))));
+                                              410 + 50 * (level - 14))));
             return smiteDamage;
         }
 
@@ -657,12 +835,27 @@ namespace SAwareness
         {
             if (!IsActive())
                 return;
+            DrawExperienceRanges();
             DrawAttackRanges();
             DrawTurretRanges();
             DrawQ();
             DrawW();
             DrawE();
             DrawR();
+        }
+
+        public void DrawExperienceRanges()
+        {
+            if (!Menu.ExperienceRange.GetActive())
+                return;
+            Drawing.DrawCircle(ObjectManager.Player.Position, 1400, System.Drawing.Color.LawnGreen);
+            foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+            {
+                if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
+                {
+                    Drawing.DrawCircle(enemy.Position, enemy.AttackRange, System.Drawing.Color.IndianRed);
+                }
+            }
         }
 
         public void DrawAttackRanges()
@@ -878,13 +1071,13 @@ namespace SAwareness
 
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnGameUpdate += Game_OnGameUpdate;
-            Game.OnWndProc += Game_OnWndProc; //TODO: Activate OnWndProc Again
+            Game.OnWndProc += Game_OnWndProc;
             Game.OnGameSendPacket += Game_OnGameSendPacket;
         }
 
         ~WardIt()
         {
-            Game.OnWndProc -= Game_OnWndProc; //TODO: Activate OnWndProc Again
+            Game.OnWndProc -= Game_OnWndProc;
             Game.OnGameUpdate -= Game_OnGameUpdate;
             Game.OnGameSendPacket -= Game_OnGameSendPacket;
             Drawing.OnDraw -= Drawing_OnDraw;
@@ -975,9 +1168,6 @@ namespace SAwareness
             byte PacketId = reader.ReadByte(); //PacketId
             if (PacketId == 0x9A) //OLD 0x9A
             {
-                //Console.WriteLine(gPacket.Dump());
-                //var arg1 = reader.ReadByte();
-                //var arg2 = reader.ReadByte();
                 var mNetworkId = BitConverter.ToInt32(reader.ReadBytes(4), 0);
                 var spellId = reader.ReadByte();
                 var fromX = BitConverter.ToSingle(reader.ReadBytes(4), 0);
@@ -993,7 +1183,7 @@ namespace SAwareness
                     {
                         if (!wardSpot.SafeWard &&
                             Vector3.Distance(wardSpot.Pos,
-                                new Vector3((float)fromX, (float)fromY, ObjectManager.Player.ServerPosition.Z)) <= 550 &&
+                                new Vector3((float)fromX, (float)fromY, ObjectManager.Player.ServerPosition.Z)) <= 350 &&
                             !wardAlreadyCorrected)
                         {
                             args.Process = false;
@@ -1002,8 +1192,6 @@ namespace SAwareness
                             byte[] s_castPacket = new byte[28];
                             var writer = new BinaryWriter(new MemoryStream(s_castPacket));
                             writer.Write((byte)0x9A);
-                            //writer.Write(arg1);
-                            //writer.Write(arg2);
                             writer.Write(mNetworkId);
                             writer.Write(spellId);
                             writer.Write((float)wardSpot.Pos.X);
@@ -1024,7 +1212,6 @@ namespace SAwareness
                             args.Process = false;
                             ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo,
                                 new Vector3(wardSpot.MovePos.X, wardSpot.MovePos.Y, wardSpot.MovePos.Z));
-                            //myHero:MoveTo(wardSpot.movePosition.x, wardSpot.movePosition.z)//TODO: Move Player
                             latestWardSpot = wardSpot;
                             return;
                         }
@@ -1111,7 +1298,6 @@ namespace SAwareness
                             if ((int)inventoryItem.Id == wardItem.Id &&
                                 ObjectManager.Player.Spellbook.CanUseSpell(latestSpellSlot) == SpellState.Ready)
                             {
-                                //latestSpellSlot = SpellSlot.Unknown;
                                 drawSpots = true;
                             }
                         }
@@ -1121,33 +1307,6 @@ namespace SAwareness
             else if (args.Msg == WM_LBUTTONUP && drawSpots)
             {
                 drawSpots = false;
-            }
-            else if (args.Msg == WM_LBUTTONDOWN && drawSpots) //TODO: Check for Packet
-            {
-                //drawSpots = false;
-                //foreach (var wardSpot in WardSpots)
-                //{
-                //    if (!wardSpot.SafeWard)
-                //    {
-                //        if (Vector3.Distance(wardSpot.Pos, new Vector3(LeagueSharp.Common.Utility.GetCursorPos(), wardSpot.MagneticPos.Z)) <= 250 && !wardAlreadyCorrected) //TODO: Add MousePos
-                //        {
-                //            ObjectManager.Player.Spellbook.CastSpell(latestSpellSlot, latestWardSpot.Pos);
-                //            return;
-                //        }
-                //    }
-                //    else
-                //    {
-                //        if (Vector3.Distance(wardSpot.MagneticPos, new Vector3(LeagueSharp.Common.Utility.GetCursorPos(), wardSpot.MagneticPos.Z)) <= 100 && !wardAlreadyCorrected) //TODO: Add MousePos
-                //        {
-                //            ObjectManager.Player.Spellbook.CastSpell(latestSpellSlot, latestWardSpot.ClickPos);
-                //            ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo,
-                //                new Vector3(wardSpot.MovePos.X, wardSpot.MovePos.Y, wardSpot.MovePos.Z));
-                //            //myHero:MoveTo(wardSpot.movePosition.x, wardSpot.movePosition.z)//TODO: Add Move
-                //            latestWardSpot = wardSpot;
-                //            return;
-                //        }
-                //    }
-                //}
             }
             else if (args.Msg == WM_RBUTTONDOWN && drawSpots)
             {
@@ -1428,7 +1587,7 @@ namespace SAwareness
             {
                 foreach (var jungleCamp in JungleCamps)
                 {
-                    if (jungleCamp.NextRespawnTime == 0 || jungleCamp.MapId != GMapId)
+                    if (jungleCamp.NextRespawnTime <= 0 || jungleCamp.MapId != GMapId)
                         continue;
                     float[] sPos = Drawing.WorldToMinimap(jungleCamp.MinimapPosition);
                     Drawing.DrawText(sPos[0], sPos[1], System.Drawing.Color.White, AlignTime(jungleCamp.NextRespawnTime - (int)Game.Time));
@@ -1441,7 +1600,7 @@ namespace SAwareness
                 {
                     if (altar.Locked)
                     {
-                        if (altar.NextRespawnTime == 0 || altar.MapId != GMapId)
+                        if (altar.NextRespawnTime <= 0 || altar.MapId != GMapId)
                             continue;
                         float[] sPos = Drawing.WorldToMinimap(altar.Obj.ServerPosition);
                         Drawing.DrawText(sPos[0], sPos[1], System.Drawing.Color.White, AlignTime(altar.NextRespawnTime - (int)Game.Time));
@@ -1455,7 +1614,7 @@ namespace SAwareness
                 {
                     if (relic.Locked)
                     {
-                        if (relic.NextRespawnTime == 0 || relic.MapId != GMapId)
+                        if (relic.NextRespawnTime <= 0 || relic.MapId != GMapId)
                             continue;
                         float[] sPos = Drawing.WorldToMinimap(relic.MinimapPosition);
                         Drawing.DrawText(sPos[0], sPos[1], System.Drawing.Color.White, AlignTime(relic.NextRespawnTime - (int)Game.Time));
@@ -1471,7 +1630,7 @@ namespace SAwareness
                 {
                     if (inhibitor.Locked)
                     {
-                        if (inhibitor.NextRespawnTime == 0)
+                        if (inhibitor.NextRespawnTime <= 0)
                             continue;
                         float[] sPos = Drawing.WorldToMinimap(inhibitor.Obj.Position);
                         Drawing.DrawText(sPos[0], sPos[1], System.Drawing.Color.White, AlignTime(inhibitor.NextRespawnTime - (int)Game.Time));
@@ -1485,7 +1644,7 @@ namespace SAwareness
                 {
                     if (health.Locked)
                     {
-                        if (health.NextRespawnTime == 0 || health.MapId != GMapId)
+                        if (health.NextRespawnTime <= 0 || health.MapId != GMapId)
                             continue;
                         float[] sPos = Drawing.WorldToMinimap(health.Position);
                         Drawing.DrawText(sPos[0], sPos[1], System.Drawing.Color.White, AlignTime(health.NextRespawnTime - (int)Game.Time));
@@ -1650,7 +1809,7 @@ namespace SAwareness
             //JungleCamps.Add(new JungleCamp("heal", GameObjectTeam.Neutral, 3, 190, 40, 3, new Vector3(5929, 5190, 60), new Vector3(5929, 5190, 60), new[] { GetJungleMobByName("HA_AP_HealthRelic", 3) }));
             //JungleCamps.Add(new JungleCamp("heal", GameObjectTeam.Neutral, 4, 190, 40, 3, new Vector3(4751, 3901, 60), new Vector3(4751, 3901, 60), new[] { GetJungleMobByName("HA_AP_HealthRelic", 3) }));
 
-            foreach (var objAiBase in ObjectManager.Get<Obj_AI_Base>())
+            foreach (var objAiBase in ObjectManager.Get<GameObject>())
             {
                 Obj_AI_Base_OnCreate(objAiBase, new EventArgs());
             }
@@ -2113,7 +2272,7 @@ namespace SAwareness
                     GamePacket gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos[0], pos[1], 0, Packet.PingType.Danger));
                     gPacketT.Send();
                     //TODO: Check for Teleport etc.
-                    Game.Say("Gank: {0}", hero.BaseSkinName);
+                    Game.Say("Gank: {0}", hero.ChampionName);
                     enemy.Value.Called = true;
                 }
             }
@@ -2202,7 +2361,7 @@ namespace SAwareness
 
                     //abilities.Clear(); //TODO: Check if it delets the flash abilities
 
-                    switch (hero.BaseSkinName)
+                    switch (hero.ChampionName)
                     {
                         case "Ezreal":
                             abilities.Add(new Ability("EzrealArcaneShift", 475, 0, hero));
@@ -2307,7 +2466,7 @@ namespace SAwareness
                             Drawing.DrawCircle(ability.EndPos, ability.Range, System.Drawing.Color.Red);
                             Drawing.DrawLine(startPos[0], startPos[1], endPos[0], endPos[1], 1.0f, System.Drawing.Color.Red);
                         }
-                        Drawing.DrawText(endPos[0], endPos[1], System.Drawing.Color.Bisque, enemy.Key.BaseSkinName + " " + ability.SpellName);
+                        Drawing.DrawText(endPos[0], endPos[1], System.Drawing.Color.Bisque, enemy.Key.ChampionName + " " + ability.SpellName);
                     }
                 }
             }
@@ -2319,7 +2478,7 @@ namespace SAwareness
                 return;
             foreach (KeyValuePair<Obj_AI_Hero, List<Ability>> enemy in Enemies)
             {
-                if (enemy.Key.SkinName == "Shaco")
+                if (enemy.Key.ChampionName == "Shaco")
                 {
                     if (sender.Name == "JackintheboxPoof2.troy" && !enemy.Value[0].Casted)
                     {
@@ -2561,11 +2720,11 @@ namespace SAwareness
                 }
                 if (Menu.SsCaller.GetMenuItem("SAwarenessSSCallerLocalChat").GetValue<bool>())
                 {
-                    Game.PrintChat("ss {0}", hero.BaseSkinName);
+                    Game.PrintChat("ss {0}", hero.ChampionName);
                 }
                 else
                 {
-                    Game.Say("ss {0}", hero.BaseSkinName);
+                    Game.Say("ss {0}", hero.ChampionName);
                 }
                 enemy.Value.LastTimeCalled = (int)Game.Time;
                 enemy.Value.Called = true;
@@ -2719,7 +2878,7 @@ namespace SAwareness
                 String champion = "";
                 if (line != null && line.Length > line.IndexOf("="))
                     champion = line.Remove(line.IndexOf("="));
-                if (!champion.Contains(ObjectManager.Player.BaseSkinName))
+                if (!champion.Contains(ObjectManager.Player.ChampionName))
                     continue;
                 if (line != null)
                 {
@@ -2829,9 +2988,10 @@ namespace SAwareness
             public String SpellName;
             public float Duration;
             public int Id;
+            public int Id2;
             public System.Drawing.Color Color;
 
-            public Object(ObjectType type, String name, String objectName, String spellName, float duration, int id, System.Drawing.Color color)
+            public Object(ObjectType type, String name, String objectName, String spellName, float duration, int id, int id2, System.Drawing.Color color)
             {
                 Type = type;
                 Name = name;
@@ -2839,6 +2999,7 @@ namespace SAwareness
                 SpellName = spellName;
                 Duration = duration;
                 Id = id;
+                Id2 = id2;
                 Color = color;
             }
         }
@@ -2877,19 +3038,20 @@ namespace SAwareness
 
         public HiddenObject()
         {
-            Objects.Add(new Object(ObjectType.Vision, "Vision Ward", "VisionWard", "VisionWard", float.MaxValue, 8, System.Drawing.Color.BlueViolet));
-            Objects.Add(new Object(ObjectType.Sight, "Stealth Ward", "SightWard", "SightWard", 180.0f, 161, System.Drawing.Color.Green));
-            Objects.Add(new Object(ObjectType.Sight, "Warding Totem (Trinket)", "SightWard", "TrinketTotemLvl1", 60.0f, 56, System.Drawing.Color.Green));
-            Objects.Add(new Object(ObjectType.Sight, "Warding Totem (Trinket)", "SightWard", "trinkettotemlvl2", 120.0f, 56, System.Drawing.Color.Green));
-            Objects.Add(new Object(ObjectType.Sight, "Greater Stealth Totem (Trinket)", "SightWard", "TrinketTotemLvl3", 180.0f, 56, System.Drawing.Color.Green));
-            Objects.Add(new Object(ObjectType.Sight, "Greater Vision Totem (Trinket)", "SightWard", "TrinketTotemLvl3B", 9999.9f, 137, System.Drawing.Color.BlueViolet));
-            Objects.Add(new Object(ObjectType.Sight, "Wriggle's Lantern", "SightWard", "wrigglelantern", 180.0f, 73, System.Drawing.Color.Green));
-            Objects.Add(new Object(ObjectType.Sight, "Ghost Ward", "SightWard", "ItemGhostWard", 180.0f, 229, System.Drawing.Color.Green));
+            Objects.Add(new Object(ObjectType.Vision, "Vision Ward", "VisionWard", "VisionWard", float.MaxValue, 8, 6424612, System.Drawing.Color.BlueViolet));
+            Objects.Add(new Object(ObjectType.Sight, "Stealth Ward", "SightWard", "SightWard", 180.0f, 161, 234594676, System.Drawing.Color.Green));
+            Objects.Add(new Object(ObjectType.Sight, "Warding Totem (Trinket)", "SightWard", "TrinketTotemLvl1", 60.0f, 56, 263796881, System.Drawing.Color.Green));
+            Objects.Add(new Object(ObjectType.Sight, "Warding Totem (Trinket)", "SightWard", "trinkettotemlvl2", 120.0f, 56, 263796882, System.Drawing.Color.Green));
+            Objects.Add(new Object(ObjectType.Sight, "Greater Stealth Totem (Trinket)", "SightWard", "TrinketTotemLvl3", 180.0f, 56, 263796882, System.Drawing.Color.Green));
+            Objects.Add(new Object(ObjectType.Sight, "Greater Vision Totem (Trinket)", "SightWard", "TrinketTotemLvl3B", 9999.9f, 137, 194218338, System.Drawing.Color.BlueViolet));
+            Objects.Add(new Object(ObjectType.Sight, "Wriggle's Lantern", "SightWard", "wrigglelantern", 180.0f, 73, 177752558, System.Drawing.Color.Green));
+            Objects.Add(new Object(ObjectType.Sight, "Quill Coat", "SightWard", "", 180.0f, 73, 135609454, System.Drawing.Color.Green));
+            Objects.Add(new Object(ObjectType.Sight, "Ghost Ward", "SightWard", "ItemGhostWard", 180.0f, 229, 101180708, System.Drawing.Color.Green));
 
-            Objects.Add(new Object(ObjectType.Trap, "Yordle Snap Trap", "Cupcake Trap", "CaitlynYordleTrap", 240.0f, 62, System.Drawing.Color.Red));
-            Objects.Add(new Object(ObjectType.Trap, "Jack In The Box", "Jack In The Box", "JackInTheBox", 60.0f, 2, System.Drawing.Color.Red));
-            Objects.Add(new Object(ObjectType.Trap, "Bushwhack", "Noxious Trap", "Bushwhack", 240.0f, 9, System.Drawing.Color.Red));
-            Objects.Add(new Object(ObjectType.Trap, "Noxious Trap", "Noxious Trap", "BantamTrap", 600.0f, 48, System.Drawing.Color.Red));
+            Objects.Add(new Object(ObjectType.Trap, "Yordle Snap Trap", "Cupcake Trap", "CaitlynYordleTrap", 240.0f, 62, 176176816, System.Drawing.Color.Red));
+            Objects.Add(new Object(ObjectType.Trap, "Jack In The Box", "Jack In The Box", "JackInTheBox", 60.0f, 2, 44637032, System.Drawing.Color.Red));
+            Objects.Add(new Object(ObjectType.Trap, "Bushwhack", "Noxious Trap", "Bushwhack", 240.0f, 9, 167611995, System.Drawing.Color.Red));
+            Objects.Add(new Object(ObjectType.Trap, "Noxious Trap", "Noxious Trap", "BantamTrap", 600.0f, 48, 176304336, System.Drawing.Color.Red));
 
             Game.OnGameProcessPacket += Game_OnGameProcessPacket;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
@@ -2918,7 +3080,7 @@ namespace SAwareness
                 return;
             try
             {
-                if (sender.Type == GameObjectType.obj_AI_Marker && ObjectManager.Player.Team != sender.Team)
+                if (sender.Type == GameObjectType.obj_AI_Marker && ObjectManager.Player.Team == sender.Team)
                 {
                     foreach (Object obj in Objects)
                     {
@@ -2953,32 +3115,56 @@ namespace SAwareness
                     }
                     float[] objMPos = Drawing.WorldToMinimap(obj.Position);
                     float[] objPos = Drawing.WorldToScreen(obj.Position);
+                    List<Vector3> posList = new List<Vector3>();
                     switch (obj.ObjectBase.Type)
                     {
                         case ObjectType.Sight:
                             Drawing.DrawCircle(obj.Position, WardRange, obj.ObjectBase.Color);
+                            posList = GetVision(obj.Position, WardRange);
+                            for (int j = 0; j < posList.Count; j++)
+                            {
+                                float[] visionPos1 = Drawing.WorldToScreen(posList[i]);
+                                float[] visionPos2 = Drawing.WorldToScreen(posList[i]);
+                                Drawing.DrawLine(visionPos1[0], visionPos1[1], visionPos2[0], visionPos2[1], 1.0f, obj.ObjectBase.Color);
+                            }
                             Drawing.DrawText(objMPos[0], objMPos[1], obj.ObjectBase.Color, "S");
                             break;
 
                         case ObjectType.Trap:
                             Drawing.DrawCircle(obj.Position, TrapRange, obj.ObjectBase.Color);
+                            posList = GetVision(obj.Position, TrapRange);
+                            for (int j = 0; j < posList.Count; j++)
+                            {
+                                float[] visionPos1 = Drawing.WorldToScreen(posList[i]);
+                                float[] visionPos2 = Drawing.WorldToScreen(posList[i]);
+                                Drawing.DrawLine(visionPos1[0], visionPos1[1], visionPos2[0], visionPos2[1], 1.0f, obj.ObjectBase.Color);
+                            }
                             Drawing.DrawText(objMPos[0], objMPos[1], obj.ObjectBase.Color, "T");
                             break;
 
                         case ObjectType.Vision:
                             Drawing.DrawCircle(obj.Position, WardRange, obj.ObjectBase.Color);
+                            posList = GetVision(obj.Position, WardRange);
+                            for (int j = 0; j < posList.Count; j++)
+                            {
+                                float[] visionPos1 = Drawing.WorldToScreen(posList[i]);
+                                float[] visionPos2 = Drawing.WorldToScreen(posList[i]);
+                                Drawing.DrawLine(visionPos1[0], visionPos1[1], visionPos2[0], visionPos2[1], 1.0f, obj.ObjectBase.Color);
+                            }
                             Drawing.DrawText(objMPos[0], objMPos[1], obj.ObjectBase.Color, "V");
                             break;
                     }
                     Drawing.DrawCircle(obj.Position, 50, obj.ObjectBase.Color);
                     float endTime = obj.EndTime - Game.Time;
-                    if (!float.IsInfinity(endTime) && !float.IsNaN(endTime))
+                    if (!float.IsInfinity(endTime) && !float.IsNaN(endTime) && endTime.CompareTo(float.MaxValue) != 0)
                     {
                         var m = (float)Math.Floor(endTime / 60);
                         var s = (float)Math.Ceiling(endTime % 60);
                         String ms = (s < 10 ? m + ":0" + s : m + ":" + s);
                         Drawing.DrawText(objPos[0], objPos[1], obj.ObjectBase.Color, ms);
                     }
+
+                    
                 }
             }
             catch (Exception ex)
@@ -2989,71 +3175,99 @@ namespace SAwareness
             
         }
 
-        //        function getVision(viewPos, range)
-        //    local points = {}
-        //    local quality = 2*math.pi/25
-        //    for theta=0, 2*math.pi+quality, quality do
-        //        local point = D3DXVECTOR3(viewPos.x+range*math.cos(theta), viewPos.y, viewPos.z-range*math.sin(theta))
-        //        for k=1, range, 25 do
-        //            local pos = D3DXVECTOR3(viewPos.x+k*math.cos(theta), viewPos.y, viewPos.z-k*math.sin(theta))
-        //            if IsWall(pos) then
-        //                point = pos
-        //                break
-        //            end
-        //        end
-        //        points[#points+1] = point
-        //    end
-        //    return points
-        //end
+        List<Vector3> GetVision(Vector3 viewPos, float range) //TODO: ADD IT
+        {
+            List<Vector3> list = new List<Vector3>();
+            //double qual = 2*Math.PI/25;
+            //for (double i = 0; i < 2*Math.PI + qual;)
+            //{
+            //    Vector3 pos = new Vector3(viewPos.X + range * (float)Math.Cos(i), viewPos.Y - range * (float)Math.Sin(i), viewPos.Z);
+            //    for (int j = 1; j < range; j = j + 25)
+            //    {
+            //        Vector3 nPos = new Vector3(viewPos.X + j * (float)Math.Cos(i), viewPos.Y - j * (float)Math.Sin(i), viewPos.Z);
+            //        if (NavMesh.GetCollisionFlags(nPos).HasFlag(CollisionFlags.Wall))
+            //        {
+            //            pos = nPos;
+            //            break;
+            //        }
+            //    }
+            //    list.Add(pos);
+            //    i = i + 0.1;
+            //}
+            return list;
+        }
 
         Object HiddenObjectById(int id)
         {
-            return Objects.FirstOrDefault(vision => id == vision.Id);
+            return Objects.FirstOrDefault(vision => id == vision.Id2);
         }
 
         bool ObjectExist(Vector3 pos)
         {
-            return HidObjects.Any(obj => pos.X > obj.Position.X - 32 && pos.X < obj.Position.X + 32 && pos.Y > obj.Position.Y - 32 && pos.Y < obj.Position.Y + 32);
+            return HidObjects.Any(obj => pos.Distance(obj.Position) < 30);
         }
 
-        void Game_OnGameProcessPacket(GamePacketEventArgs args) //TODO: Packet Id check
+        void Game_OnGameProcessPacket(GamePacketEventArgs args)
         {
             if (!IsActive())
                 return;
             try
-            {
+            {               
                 var reader = new BinaryReader(new MemoryStream(args.PacketData));
                 byte PacketId = reader.ReadByte(); //PacketId
                 if (PacketId == 181) //OLD 180
                 {
-                    /*using (StreamWriter stream = new StreamWriter("C:\\recall.log", true))
-                    {
-                        stream.WriteLine("Packet@" + Environment.TickCount + ": " + BitConverter.ToString(args.PacketData));
-                    }*/
-
                     int networkId = BitConverter.ToInt32(reader.ReadBytes(4), 0);
                     var creator = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(networkId);
-                    if (creator != null && creator.Team != ObjectManager.Player.Team)
+                    if (creator != null && creator.Team == ObjectManager.Player.Team)
                     {
-                        reader.ReadBytes(8);
-                        var id = reader.ReadByte();
-                        reader.ReadBytes(23);
+                        reader.ReadBytes(7);
+                        var id = reader.ReadInt32();
+                        reader.ReadBytes(21);
                         networkId = BitConverter.ToInt32(reader.ReadBytes(4), 0);
                         reader.ReadBytes(12);
-                        float x = BitConverter.ToInt32(reader.ReadBytes(4), 0);
-                        float y = BitConverter.ToInt32(reader.ReadBytes(4), 0);
-                        float z = BitConverter.ToInt32(reader.ReadBytes(4), 0);
+                        float x = BitConverter.ToSingle(reader.ReadBytes(4), 0);
+                        float y = BitConverter.ToSingle(reader.ReadBytes(4), 0);
+                        float z = BitConverter.ToSingle(reader.ReadBytes(4), 0);
                         var pos = new Vector3(x, y, z);
-                        if (BitConverter.ToInt32(reader.ReadBytes(4), 0) == 63)
+                        Object obj = HiddenObjectById(id);
+                        if (obj != null && !ObjectExist(pos))
                         {
-                            Object obj = HiddenObjectById(id);
-                            if (obj != null && !ObjectExist(pos))
+                            if(obj.Type == ObjectType.Trap)
+                                pos = new Vector3(x, z, y);
+                            networkId = networkId + 2;
+                            Utility.DelayAction.Add(1, () =>
                             {
-                                //VLL NetworkID falsch
-                                HidObjects.Add(new ObjectData(obj, pos, Game.Time + obj.Duration, creator.Name, null, networkId));
-                            }
+                                for (int i = 0; i < HidObjects.Count; i++)
+                                {
+                                    var objectData = HidObjects[i];
+                                    if (objectData != null && objectData.NetworkId == networkId)
+                                    {
+                                        var objNew = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(networkId);
+                                        if(objNew != null && objNew.IsValid)
+                                            objectData.Position = objNew.Position;
+                                    }
+                                }
+                            });
+                            HidObjects.Add(new ObjectData(obj, pos, Game.Time + obj.Duration, creator.Name, null, networkId));
                         }
                     }
+                }
+                else if (PacketId == 178)
+                {
+                    int networkId = BitConverter.ToInt32(reader.ReadBytes(4), 0);
+                    var gObject = ObjectManager.GetUnitByNetworkId<GameObject>(networkId);
+                    if (gObject != null)
+                    {
+                        for (int i = 0; i < HidObjects.Count; i++)
+                        {
+                            var objectData = HidObjects[i];
+                            if (objectData != null && objectData.NetworkId == networkId)
+                            {
+                                objectData.Position = gObject.Position;
+                            }
+                        }
+                    }    
                 }
                 else if (PacketId == 50) //OLD 49
                 {
@@ -3061,6 +3275,7 @@ namespace SAwareness
                     for (int i = 0; i < HidObjects.Count; i++)
                     {
                         var objectData = HidObjects[i];
+                        var gObject = ObjectManager.GetUnitByNetworkId<GameObject>(networkId);
                         if (objectData != null && objectData.NetworkId == networkId)
                         {
                             HidObjects.RemoveAt(i);
@@ -3085,10 +3300,11 @@ namespace SAwareness
                 for (int i = 0; i < HidObjects.Count; i++)
                 {
                     ObjectData obj = HidObjects[i];
-                    if (sender.Name == obj.ObjectBase.Name && sender.Position.X < obj.Position.X + 100 && sender.Position.X > obj.Position.X - 100 && sender.Position.Y < obj.Position.Y + 100 && sender.Position.Y > obj.Position.Y - 100)
-                    {
-                        HidObjects.RemoveAt(i);
-                    }
+                    if (sender.Name == obj.ObjectBase.ObjectName || sender.Name.Contains("Ward") && sender.Name.Contains("Death"))
+                        if(sender.Position.Distance(obj.Position) < 30 )
+                        {
+                            HidObjects.RemoveAt(i);
+                        }
                 }
             }
             catch (Exception ex)
@@ -3105,7 +3321,7 @@ namespace SAwareness
                 return;
             try
             {
-                if (sender.Type == GameObjectType.obj_AI_Hero && ObjectManager.Player.Team != sender.Team)
+                if (sender.Type == GameObjectType.obj_AI_Minion && ObjectManager.Player.Team != sender.Team)
                 {
                     foreach (Object obj in Objects)
                     {
@@ -3129,13 +3345,14 @@ namespace SAwareness
     class Recall
     {
         
-        List<RecallInfo> _recalls = new List<RecallInfo>();
+        public List<RecallInfo> _recalls = new List<RecallInfo>();
 
         public class RecallInfo
         {
             public int NetworkId;
             public Packet.S2C.Recall.Struct Recall;
             public Packet.S2C.Recall.Struct Recall2;
+            public int StartTime;
 
             public RecallInfo(int networkId)
             {
@@ -3147,7 +3364,7 @@ namespace SAwareness
         {
             foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>())
             {
-                if (enemy.IsEnemy)
+                if (enemy.IsEnemy) //ÄNDERN IN ISENEMY
                 {
                     _recalls.Add(new RecallInfo(enemy.NetworkId));
                 }
@@ -3202,6 +3419,8 @@ namespace SAwareness
                 {
                     var obj = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(recall.NetworkId);
                     var objEx = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(recallEx.UnitNetworkId);
+                    if(obj == null)
+                        continue;
                     if (obj.NetworkId == objEx.NetworkId) //already existing
                     {
                         recall.Recall = recallEx;
@@ -3211,35 +3430,38 @@ namespace SAwareness
                         {
                             if (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportStart || recallEx.Status == Packet.S2C.Recall.RecallStatus.RecallStarted)
                             {
+                                recall.StartTime = (int)Game.Time;
                                 if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorLocalChat").GetValue<bool>())
                                 {
-                                    Game.PrintChat(obj.BaseSkinName + " porting with {0} hp", (int) obj.Health);
+                                    Game.PrintChat(obj.ChampionName + " porting with {0} hp", (int)obj.Health);
                                 }
                                 else
                                 {
-                                    Game.Say(obj.BaseSkinName + " porting with {0} hp", (int)obj.Health);
+                                    Game.Say(obj.ChampionName + " porting with {0} hp", (int)obj.Health);
                                 }
                             }
                             else if (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd || recallEx.Status == Packet.S2C.Recall.RecallStatus.RecallFinished)
                             {
+                                //recall.StartTime = 0;
                                 if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorLocalChat").GetValue<bool>())
                                 {
-                                    Game.PrintChat(obj.BaseSkinName + " porting with {0} hp", (int)obj.Health);
+                                    Game.PrintChat(obj.ChampionName + " ported with {0} hp", (int)obj.Health);
                                 }                                
                                 else
                                 {
-                                    Game.Say(obj.BaseSkinName + " porting with {0} hp", (int)obj.Health);
+                                    Game.Say(obj.ChampionName + " ported with {0} hp", (int)obj.Health);
                                 }
                             }
                             else
                             {
+                                //recall.StartTime = 0;
                                 if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorLocalChat").GetValue<bool>())
                                 {
-                                    Game.PrintChat(obj.BaseSkinName + " canceled with {0} hp", (int)obj.Health);
+                                    Game.PrintChat(obj.ChampionName + " canceled with {0} hp", (int)obj.Health);
                                 }                              
                                 else
                                 {
-                                    Game.Say(obj.BaseSkinName + " canceled with {0} hp", (int)obj.Health);
+                                    Game.Say(obj.ChampionName + " canceled with {0} hp", (int)obj.Health);
                                 }
                             }
                         }                       
@@ -3298,6 +3520,7 @@ namespace SAwareness
                 public SpriteInfos BackBar = new SpriteInfos();
                 public SpriteInfos HealthBar = new SpriteInfos();
                 public SpriteInfos ManaBar = new SpriteInfos();
+                public SpriteInfos RecallBar = new SpriteInfos();
                 public SpriteInfos[] Item = new SpriteInfos[7];
                 public ItemId[] ItemId = new ItemId[7];
                 public int DeathTime;
@@ -3370,12 +3593,14 @@ namespace SAwareness
         Font SpellF;
         Font ChampF;
         Font SumF;
+        Font RecF;
         Vector2 _screen = new Vector2(-Drawing.Width, -Drawing.Height);
         readonly Dictionary<Obj_AI_Hero, ChampInfos> Enemies = new Dictionary<Obj_AI_Hero, ChampInfos>();
         private Texture _overlaySummoner;
         private Texture _overlaySummonerSpell;
         private Texture _overlaySpellItem;
         private Texture _overlayEmptyItem;
+        private Texture _overlayRecall;
         private Texture _healthBar;
         private Texture _manaBar;
         private Texture _backBar;
@@ -3384,6 +3609,7 @@ namespace SAwareness
         Size _spellSize = new Size(16, 16);
         Size _healthManaBarSize = new Size(96, 10);
         Size _backBarSize = new Size(96, 20);
+        Size _recSize = new Size(64, 10);
 
         public bool IsActive()
         {
@@ -3407,6 +3633,7 @@ namespace SAwareness
             try
             {
                 S = new Sprite(Drawing.Direct3DDevice);
+                RecF = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Times New Roman", 12));
                 SpellF = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Times New Roman", 8));
                 ChampF = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Times New Roman", 30));
                 SumF = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Times New Roman", 16));
@@ -3430,13 +3657,15 @@ namespace SAwareness
             SpriteHelper.LoadTexture(loc + "EXT\\HealthBar.dds", ref _healthBar);
             SpriteHelper.LoadTexture(loc + "EXT\\ManaBar.dds", ref _manaBar);
             SpriteHelper.LoadTexture(loc + "EXT\\ItemSlotEmpty.dds", ref _overlayEmptyItem);
+            SpriteHelper.LoadTexture(loc + "EXT\\RecallBar.dds", ref _overlayRecall);
+            
 
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
             {
-                if (hero.IsEnemy)
+                if (hero.IsEnemy) //ÄNDERN IN ISENEMY
                 {
                     var champ = new ChampInfos();
-                    SpriteHelper.LoadTexture(loc + "CHAMP\\" + hero.SkinName + ".dds", ref champ.SGui.Champ.Texture);
+                    SpriteHelper.LoadTexture(loc + "CHAMP\\" + hero.ChampionName + ".dds", ref champ.SGui.Champ.Texture);
                     var s1 = hero.Spellbook.Spells;
                     //if (File.Exists(loc + "PASSIVE\\" + s1[0].Name + ".dds") && champ.passiveTexture == null)
                     //{
@@ -3512,6 +3741,9 @@ namespace SAwareness
                 enemy.Value.SGui.SMana = ((int)enemy.Key.Mana) + "/" + ((int)enemy.Key.MaxMana);
                 enemy.Value.SGui.HealthBar.CoordsSideBar = new Vector2((int)-_screen.X - _healthManaBarSize.Width / 2 - (int)enemy.Value.SGui.Pos.X, (int)-_screen.Y / 2 + (120 + _champSize.Height - 2) - _champSize.Height * count - count * (_backBarSize.Height) - count * (_spellSize.Height));
                 enemy.Value.SGui.ManaBar.CoordsSideBar = new Vector2(enemy.Value.SGui.HealthBar.CoordsSideBar.X, (int)-_screen.Y / 2 + (120 + _champSize.Height + _healthManaBarSize.Height - 4) - _champSize.Height * count - count * (_backBarSize.Height) - count * (_spellSize.Height));
+
+                enemy.Value.SGui.RecallBar.SizeSideBar = new Size((int)enemy.Value.SGui.Champ.SizeSideBar.Width, (int)enemy.Value.SGui.BackBar.SizeSideBar.Height + _champSize.Height / 4 - 5);
+                enemy.Value.SGui.RecallBar.CoordsSideBar = new Vector2((int)enemy.Value.SGui.Champ.CoordsSideBar.X, (int)enemy.Value.SGui.Champ.CoordsSideBar.Y - 5);
 
                 count++;
             }
@@ -3656,14 +3888,40 @@ namespace SAwareness
 
         float CalcHpBar(Obj_AI_Hero hero)
         {
-            float percent = (int)(100 / hero.MaxHealth * hero.Health);
+            float percent = (100 / hero.MaxHealth * hero.Health);
             return percent / 100;
         }
 
         float CalcManaBar(Obj_AI_Hero hero)
         {
-            float percent = (int)(100 / hero.MaxMana * hero.Mana);
-            return percent / 100;
+            float percent = (100 / hero.MaxMana * hero.Mana);
+            return (percent <= 0 || Single.IsNaN(percent) ? 0 : percent / 100);
+        }
+
+        float CalcRecallBar(Recall.RecallInfo recall)
+        {
+            float maxTime = (recall.Recall.Duration/1000);
+            float percent = (100 / maxTime * (Game.Time - recall.StartTime));
+            return (percent <= 100 ? percent / 100 : 1);
+        }
+
+        Recall.RecallInfo GetRecall(int networkId)
+        {
+            StringList t = Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorMode").GetValue<StringList>();
+            if (t.SelectedIndex == 1 || t.SelectedIndex == 2)
+            {
+                Recall recall = (Recall)Menu.RecallDetector.Item;
+                if (recall == null)
+                    return null;
+                foreach (var info in recall._recalls)
+                {
+                    if (info.NetworkId == networkId)
+                    {
+                        return info;
+                    }
+                }
+            }
+            return null;
         }
 
         void Drawing_OnPresent(EventArgs args)
@@ -3694,11 +3952,7 @@ namespace SAwareness
 
                     DirectXDrawer.DrawSprite(S, _backBar, enemy.Value.SGui.BackBar.SizeSideBar, Color.White, new Rectangle(0, 0, _backBarSize.Width, _backBarSize.Height - 4));
                     DirectXDrawer.DrawSprite(S, _healthBar, enemy.Value.SGui.HealthBar.SizeSideBar, Color.White, new Rectangle(0, 0, (int)(_healthManaBarSize.Width * percentHealth), _healthManaBarSize.Height - 2));
-                    DirectXDrawer.DrawSprite(S, _manaBar, enemy.Value.SGui.ManaBar.SizeSideBar, Color.White,
-                        percentMana <= 0
-                            ? new Rectangle(0, 0, _healthManaBarSize.Width, _healthManaBarSize.Height - 2)
-                            : new Rectangle(0, 0, (int)(_healthManaBarSize.Width * percentMana),
-                                _healthManaBarSize.Height - 2));
+                    DirectXDrawer.DrawSprite(S, _manaBar, enemy.Value.SGui.ManaBar.SizeSideBar, Color.White, new Rectangle(0, 0, (int)(_healthManaBarSize.Width * percentMana), _healthManaBarSize.Height - 2));
 
                     if (Menu.CdPanel.GetMenuItem("SAwarenessItemPanelActive").GetValue<bool>())
                     {
@@ -3735,6 +3989,30 @@ namespace SAwareness
                     if (enemy.Value.SGui.SpellSum2.Cd > 0.0f)
                     {
                         DirectXDrawer.DrawSprite(S, _overlaySummonerSpell, enemy.Value.SGui.SpellSum2.SizeSideBar, new ColorBGRA(Color3.White, 0.55f));
+                    }
+                    if (Menu.RecallDetector.GetActive())
+                    {
+                        Recall.RecallInfo info = GetRecall(enemy.Key.NetworkId);
+                        var percentRecall = CalcRecallBar(info);
+                        if (info != null && info.StartTime != 0)
+                        {
+                            float time = Game.Time + info.Recall.Duration / 1000 - info.StartTime;
+                            if (time > 0.0f && (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportStart || info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallStarted))
+                            {
+                                Rectangle rec = new Rectangle(enemy.Value.SGui.RecallBar.SizeSideBar.Width, enemy.Value.SGui.RecallBar.SizeSideBar.Height, (int)(_recSize.Width * percentRecall), _recSize.Height);
+                                DirectXDrawer.DrawSprite(S, _overlayRecall, enemy.Value.SGui.RecallBar.SizeSideBar, new ColorBGRA(Color3.White, 0.80f), rec);
+                            }
+                            else if (time < 30.0f && (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd || info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallFinished))
+                            {
+                                Rectangle rec = new Rectangle(enemy.Value.SGui.RecallBar.SizeSideBar.Width, enemy.Value.SGui.RecallBar.SizeSideBar.Height, _recSize.Width, _recSize.Height);
+                                DirectXDrawer.DrawSprite(S, _overlayRecall, enemy.Value.SGui.RecallBar.SizeSideBar, new ColorBGRA(Color3.White, 0.80f), rec);
+                            }
+                            else if (time < 30.0f && (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportAbort || info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallAborted))
+                            {
+                                Rectangle rec = new Rectangle(enemy.Value.SGui.RecallBar.SizeSideBar.Width, enemy.Value.SGui.RecallBar.SizeSideBar.Height, _recSize.Width, _recSize.Height);
+                                DirectXDrawer.DrawSprite(S, _overlayRecall, enemy.Value.SGui.RecallBar.SizeSideBar, new ColorBGRA(Color3.White, 0.80f), rec);
+                            }
+                        }
                     }
                 }
                 S.End();
@@ -3773,6 +4051,29 @@ namespace SAwareness
                     if (enemy.Value.SGui.SpellSum2.Cd > 0.0f)
                     {
                         DirectXDrawer.DrawText(SumF, enemy.Value.SGui.SpellSum2.Cd.ToString(), (int)enemy.Value.SGui.SpellSum2.CoordsSideBar.X, (int)enemy.Value.SGui.SpellSum2.CoordsSideBar.Y, Color.Orange);
+                    }
+                    if (Menu.RecallDetector.GetActive())
+                    {
+                        Recall.RecallInfo info = GetRecall(enemy.Key.NetworkId);
+                        if (info != null && info.StartTime != 0)
+                        {
+                            float time = Game.Time + info.Recall.Duration / 1000 - info.StartTime;
+                            if (time > 0.0f && (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportStart || info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallStarted))
+                            {
+                                DirectXDrawer.DrawText(RecF, "Porting", (int)enemy.Value.SGui.Champ.CoordsSideBar.X, (int)enemy.Value.SGui.Champ.CoordsSideBar.Y +
+                                    (int)_champSize.Height / 2 + 5, Color.Chartreuse);
+                            }
+                            else if (time < 30.0f && (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd || info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallFinished))
+                            {
+                                DirectXDrawer.DrawText(RecF, "Ported", (int)enemy.Value.SGui.Champ.CoordsSideBar.X, (int)enemy.Value.SGui.Champ.CoordsSideBar.Y +
+                                    (int)_champSize.Height / 2 + 5, Color.Chartreuse);
+                            }
+                            else if (time < 30.0f && (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportAbort || info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallAborted))
+                            {
+                                DirectXDrawer.DrawText(RecF, "Canceled", (int)enemy.Value.SGui.Champ.CoordsSideBar.X, (int)enemy.Value.SGui.Champ.CoordsSideBar.Y +
+                                    (int)_champSize.Height / 2 + 5, Color.Chartreuse);
+                            }
+                        }
                     }
                 }
             }
@@ -3886,10 +4187,12 @@ namespace SAwareness
                 Menu.Timers.MenuItems.Add(Menu.Timers.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessTimersActive", "Active").SetValue(false)));
 
                 Menu.Range.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Ranges", "SAwarenessRanges"));
-                Menu.TowerRange.Menu = Menu.Range.Menu.AddSubMenu(new LeagueSharp.Common.Menu("TowerRange", "SAwarenessTowerRange"));
-                Menu.TowerRange.MenuItems.Add(Menu.TowerRange.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessTowerRangeActive", "Active").SetValue(false)));
+                Menu.ExperienceRange.Menu = Menu.Range.Menu.AddSubMenu(new LeagueSharp.Common.Menu("ExperienceRange", "SAwarenessExperienceRange"));
+                Menu.ExperienceRange.MenuItems.Add(Menu.ExperienceRange.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessExperienceRangeActive", "Active").SetValue(false)));
                 Menu.AttackRange.Menu = Menu.Range.Menu.AddSubMenu(new LeagueSharp.Common.Menu("AttackRange", "SAwarenessAttackRange"));
                 Menu.AttackRange.MenuItems.Add(Menu.AttackRange.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAttackRangeActive", "Active").SetValue(false)));
+                Menu.TowerRange.Menu = Menu.Range.Menu.AddSubMenu(new LeagueSharp.Common.Menu("TowerRange", "SAwarenessTowerRange"));
+                Menu.TowerRange.MenuItems.Add(Menu.TowerRange.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessTowerRangeActive", "Active").SetValue(false)));        
                 Menu.SpellQRange.Menu = Menu.Range.Menu.AddSubMenu(new LeagueSharp.Common.Menu("SpellQRange", "SAwarenessSpellQRange"));
                 Menu.SpellQRange.MenuItems.Add(Menu.SpellQRange.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSpellQRangeActive", "Active").SetValue(false)));
                 Menu.SpellWRange.Menu = Menu.Range.Menu.AddSubMenu(new LeagueSharp.Common.Menu("SpellWRange", "SAwarenessSpellWRange"));
@@ -3953,7 +4256,7 @@ namespace SAwareness
                 tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoLevlerPrioritySliderW", "W").SetValue(new Slider(0, 3, 0))));
                 tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoLevlerPrioritySliderE", "E").SetValue(new Slider(0, 3, 0))));
                 tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoLevlerPrioritySliderR", "R").SetValue(new Slider(0, 3, 0))));
-                tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoLevlerPriorityActive", "Active").SetValue(false)));
+                tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoLevlerPriorityActive", "Active").SetValue(false).DontSave()));
                 tempSettings = Menu.AutoLevler.AddMenuItemSettings("Sequence",
                     "SAwarenessAutoLevlerSequence");
                 tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoLevlerSequenceLoadChampion", "Load Champion").SetValue(false)));
@@ -3967,9 +4270,18 @@ namespace SAwareness
                 Menu.SkinChanger.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("SkinChanger", "SAwarenessSkinChanger"));
                 Menu.SkinChanger.MenuItems.Add(Menu.SkinChanger.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSkinChangerSlider", "Skin").SetValue(new Slider(0, 2, 0))));
                 Menu.SkinChanger.MenuItems.Add(Menu.SkinChanger.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSkinChangerActive", "Active").SetValue(false)));
+                Menu.AutoPot.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("AutoPot", "SAwarenessAutoPot"));
+                tempSettings = Menu.AutoPot.AddMenuItemSettings("HealthPot",
+                    "SAwarenessAutoPotHealthPot");
+                tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotHealthPotPercent", "Health Percent").SetValue(new Slider(20, 99, 0))));
+                tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotHealthPotActive", "Active").SetValue(false)));
+                tempSettings = Menu.AutoPot.AddMenuItemSettings("ManaPot",
+                    "SAwarenessAutoPotManaPot");
+                tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotManaPotPercent", "Mana Percent").SetValue(new Slider(20, 99, 0))));
+                tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotManaPotActive", "Active").SetValue(false)));
+                Menu.AutoPot.MenuItems.Add(Menu.AutoPot.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotActive", "Active").SetValue(true)));
 
-
-                menu.AddItem(new LeagueSharp.Common.MenuItem("By Mariopart", "By Mariopart V0.1 Bugged Shit!"));
+                menu.AddItem(new LeagueSharp.Common.MenuItem("By Mariopart", "By Mariopart V0.2 Bugged Shit!"));
                 menu.AddToMainMenu();
             }
             catch (Exception)
