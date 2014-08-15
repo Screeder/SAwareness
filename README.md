@@ -1,6 +1,8 @@
 SAwareness
 ==========
 
+If something does not work contact me please.
+
 Includes the following functions:
 
 - Timers
