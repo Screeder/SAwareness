@@ -36,6 +36,10 @@
       <HintPath>H:\Programme\LeagueSharp\Assemblies\System\LeagueSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="LeagueSharp.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>H:\Programme\LeagueSharp\Assemblies\System\LeagueSharp.Common.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX">
       <HintPath>H:\Programme\LeagueSharp\Assemblies\System\SharpDX.dll</HintPath>
       <Private>False</Private>
@@ -54,17 +58,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoLevler.cs" />
+    <Compile Include="AutoPot.cs" />
+    <Compile Include="AutoSmite.cs" />
+    <Compile Include="Detector.cs" />
+    <Compile Include="Ganks.cs" />
+    <Compile Include="Health.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Ranges.cs" />
+    <Compile Include="SkinChanger.cs" />
+    <Compile Include="Timers.cs" />
+    <Compile Include="Trackers.cs" />
+    <Compile Include="Utils.cs" />
+    <Compile Include="WardIt.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\GitHub\LeagueSharp\LeagueSharp.Common\LeagueSharp.Common\LeagueSharp.Common.csproj">
-      <Project>{21d7e4ef-319e-4ad4-a59c-45af22072dca}</Project>
-      <Name>LeagueSharp.Common</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
