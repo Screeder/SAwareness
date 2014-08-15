@@ -155,6 +155,7 @@ namespace SAwareness
         {
             try
             {
+                SUpdater.UpdateCheck();
                 CreateMenu();
             }
             catch (Exception e)
