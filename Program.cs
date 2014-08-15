@@ -26,9 +26,6 @@ namespace SAwareness
      * GamePacket gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(100, 100));
             gPacketT.Send();*/
 
-
-    //jungle Timer Low FPS
-
     static class Log
     {
         public static String File = "C:\\SAwareness.log";
@@ -82,12 +79,13 @@ namespace SAwareness
 
     static class Download
     {
-        public static String Host = "127.0.0.1/";
+        public static String Host = "https://github.com/Screeder/SAwareness/raw/master/";
+        public static String Path = "Sprites/SAwareness/CHAMP/";
 
         public static void DownloadFile(String hostfile, String localfile)
         {
             var webClient = new WebClient();
-            webClient.DownloadFile(Host + hostfile, localfile);
+            webClient.DownloadFile(Host + Path + hostfile, localfile);
         }
     }
 
@@ -422,10 +420,10 @@ namespace SAwareness
                 Console.WriteLine("Health: Cannot create Font");
                 return;
             }
-            Drawing.OnEndScene += Drawing_OnPresent;
+            Drawing.OnEndScene += Drawing_OnEndScene;
         }
 
-        void Drawing_OnPresent(EventArgs args)
+        void Drawing_OnEndScene(EventArgs args)
         {
             DrawTurrentHealth();
             DrawInhibitorHealth();
@@ -433,7 +431,7 @@ namespace SAwareness
 
         ~Health()
         {
-            Drawing.OnEndScene -= Drawing_OnPresent;
+            Drawing.OnEndScene -= Drawing_OnEndScene;
         }
 
         public bool IsActive()
@@ -1383,7 +1381,7 @@ namespace SAwareness
         }
     }
 
-    public class JungleTimer //TODO: Finish JungleTimer and so on with minimap.lua; Add Dominion health; Add Health for inibitor etc
+    public class JungleTimer
     {
         private static Utility.Map.MapType GMapId = Utility.Map.GetMap();
         private static Inhibitor _inhibitors = null;
@@ -1394,6 +1392,8 @@ namespace SAwareness
         private static readonly List<JungleCamp> JungleCamps = new List<JungleCamp>();
         private static readonly List<Obj_AI_Minion> JungleMobList = new List<Obj_AI_Minion>();
 
+        Font font;
+
         public class Health
         {
             public Obj_AI_Minion Obj;
@@ -1403,6 +1403,7 @@ namespace SAwareness
             public int NextRespawnTime;
             public bool Locked;
             public Utility.Map.MapType MapId;
+            public bool Called;
 
             public Health(Obj_AI_Minion obj)
             {
@@ -1416,6 +1417,7 @@ namespace SAwareness
                 NextRespawnTime = 0;
                 Locked = false;
                 MapId = Utility.Map.MapType.HowlingAbyss;
+                Called = false;
             }
         }
 
@@ -1427,6 +1429,7 @@ namespace SAwareness
             public int NextRespawnTime;
             public bool Locked;
             public List<Inhibitor> Inhibitors;
+            public bool Called;
 
             public Inhibitor()
             {
@@ -1440,6 +1443,7 @@ namespace SAwareness
                 RespawnTime = 240;
                 NextRespawnTime = 0;
                 Locked = false;
+                Called = false;
             }
         }
 
@@ -1456,6 +1460,7 @@ namespace SAwareness
             public Vector3 MapPosition;
             public Vector3 MinimapPosition;
             public Utility.Map.MapType MapId;
+            public bool Called;
 
             public Relic(string name, String objectName, GameObjectTeam team, Obj_AI_Minion obj, int spawnTime, int respawnTime, Vector3 mapPosition, Vector3 minimapPosition)
             {
@@ -1470,6 +1475,7 @@ namespace SAwareness
                 MinimapPosition = minimapPosition;
                 MapId = Utility.Map.MapType.CrystalScar;
                 NextRespawnTime = 0;
+                Called = false;
             }
         }
 
@@ -1488,15 +1494,18 @@ namespace SAwareness
             public String[] LockNames;
             public String[] UnlockNames;
             public Utility.Map.MapType MapId;
+            public bool Called;
 
-            public Altar(Obj_AI_Minion obj)
+            public Altar(String name, Obj_AI_Minion obj)
             {
+                Name = name;
                 Obj = obj;
                 SpawnTime = 185;
-                RespawnTime = 85;
+                RespawnTime = 90;
                 Locked = false;
                 NextRespawnTime = 0;
                 MapId = Utility.Map.MapType.TwistedTreeline;
+                Called = false;
             }
         }
 
@@ -1534,6 +1543,7 @@ namespace SAwareness
                 MinimapPosition = minimapPosition;
                 Creeps = creeps;
                 NextRespawnTime = 0;
+                Called = false;
             }
 
             public String Name;
@@ -1546,19 +1556,34 @@ namespace SAwareness
             public Vector3 MapPosition;
             public Vector3 MinimapPosition;
             public JungleMob[] Creeps;
+            public bool Called;
         }
 
         public JungleTimer()
-        {
-            InitJungleMobs();
-        }
+        {            
+            try
+            {
+                font = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Times New Roman", 8));
+            }
+            catch (Exception)
+            {
+                Menu.Health.ForceDisable = true;
+                Console.WriteLine("Timer: Cannot create Font");
+                return;
+            }
+            GameObject.OnCreate += Obj_AI_Base_OnCreate;
+            Game.OnGameUpdate += Game_OnGameUpdate;
+            Game.OnGameProcessPacket += Game_OnGameProcessPacket;
+            Drawing.OnEndScene += Drawing_OnEndScene;
+            InitJungleMobs();            
+        }        
 
         ~JungleTimer()
         {
             GameObject.OnCreate -= Obj_AI_Base_OnCreate;
             Game.OnGameUpdate -= Game_OnGameUpdate;
             Game.OnGameProcessPacket -= Game_OnGameProcessPacket;
-            Drawing.OnDraw -= Drawing_OnDraw;
+            Drawing.OnEndScene -= Drawing_OnEndScene;
         }
 
         public bool IsActive()
@@ -1578,7 +1603,32 @@ namespace SAwareness
             return "";
         }
 
-        private void Drawing_OnDraw(EventArgs args)
+        bool PingAndCall(String text, Vector3 pos)
+        {
+            for (int i = 0; i < Menu.Timers.GetMenuItem("SAwarenessTimersPingTimes").GetValue<Slider>().Value; i++)
+            {
+                GamePacket gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos.X, pos.Y));
+                if (Menu.Timers.GetMenuItem("SAwarenessTimersLocalPing").GetValue<bool>())
+                {
+                    //TODO: Add local ping
+                }
+                else
+                {
+                    gPacketT.Send();
+                }
+            }
+            if (Menu.Timers.GetMenuItem("SAwarenessTimersLocalChat").GetValue<bool>())
+            {
+                Game.PrintChat(text);
+            }
+            else
+            {
+                Game.Say(text);
+            }
+            return true;
+        }
+
+        void Drawing_OnEndScene(EventArgs args)
         {
             if (!IsActive())
                 return;
@@ -1590,7 +1640,13 @@ namespace SAwareness
                     if (jungleCamp.NextRespawnTime <= 0 || jungleCamp.MapId != GMapId)
                         continue;
                     float[] sPos = Drawing.WorldToMinimap(jungleCamp.MinimapPosition);
-                    Drawing.DrawText(sPos[0], sPos[1], System.Drawing.Color.White, AlignTime(jungleCamp.NextRespawnTime - (int)Game.Time));
+                    DirectXDrawer.DrawText(font, (jungleCamp.NextRespawnTime - (int)Game.Time).ToString(), (int)sPos[0], (int)sPos[1], Color.White);
+                    int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
+                    if (!jungleCamp.Called && jungleCamp.NextRespawnTime - (int)Game.Time <= time && jungleCamp.NextRespawnTime - (int)Game.Time >= time - 1)
+                    {
+                        jungleCamp.Called = true;
+                        PingAndCall(jungleCamp.Name + " respawns in " + time + " seconds!", jungleCamp.MinimapPosition);                        
+                    }
                 }
             }
 
@@ -1603,7 +1659,13 @@ namespace SAwareness
                         if (altar.NextRespawnTime <= 0 || altar.MapId != GMapId)
                             continue;
                         float[] sPos = Drawing.WorldToMinimap(altar.Obj.ServerPosition);
-                        Drawing.DrawText(sPos[0], sPos[1], System.Drawing.Color.White, AlignTime(altar.NextRespawnTime - (int)Game.Time));
+                        DirectXDrawer.DrawText(font, (altar.NextRespawnTime - (int)Game.Time).ToString(), (int)sPos[0], (int)sPos[1], Color.White);
+                        int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
+                        if (!altar.Called && altar.NextRespawnTime - (int)Game.Time <= time && altar.NextRespawnTime - (int)Game.Time >= time - 1)
+                        {
+                            altar.Called = true;
+                            PingAndCall(altar.Name + " unlocks in " + time + " seconds!", altar.Obj.ServerPosition);                            
+                        }
                     }
                 }
             }
@@ -1617,7 +1679,13 @@ namespace SAwareness
                         if (relic.NextRespawnTime <= 0 || relic.MapId != GMapId)
                             continue;
                         float[] sPos = Drawing.WorldToMinimap(relic.MinimapPosition);
-                        Drawing.DrawText(sPos[0], sPos[1], System.Drawing.Color.White, AlignTime(relic.NextRespawnTime - (int)Game.Time));
+                        DirectXDrawer.DrawText(font, (relic.NextRespawnTime - (int)Game.Time).ToString(), (int)sPos[0], (int)sPos[1], Color.White);
+                        int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
+                        if (!relic.Called && relic.NextRespawnTime - (int)Game.Time <= time && relic.NextRespawnTime - (int)Game.Time >= time - 1)
+                        {
+                            relic.Called = true;
+                            PingAndCall(relic.Name + " respawns in " + time + " seconds!", relic.MinimapPosition);                            
+                        }
                     }
                 }
             }
@@ -1633,7 +1701,13 @@ namespace SAwareness
                         if (inhibitor.NextRespawnTime <= 0)
                             continue;
                         float[] sPos = Drawing.WorldToMinimap(inhibitor.Obj.Position);
-                        Drawing.DrawText(sPos[0], sPos[1], System.Drawing.Color.White, AlignTime(inhibitor.NextRespawnTime - (int)Game.Time));
+                        DirectXDrawer.DrawText(font, (inhibitor.NextRespawnTime - (int)Game.Time).ToString(), (int)sPos[0], (int)sPos[1], Color.White);
+                        int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
+                        if (!inhibitor.Called && inhibitor.NextRespawnTime - (int)Game.Time <= time && inhibitor.NextRespawnTime - (int)Game.Time >= time - 1)
+                        {
+                            inhibitor.Called = true;
+                            PingAndCall("Inhibitor respawns in " + time + " seconds!", inhibitor.Obj.Position);                            
+                        }
                     }
                 }
             }
@@ -1647,7 +1721,13 @@ namespace SAwareness
                         if (health.NextRespawnTime <= 0 || health.MapId != GMapId)
                             continue;
                         float[] sPos = Drawing.WorldToMinimap(health.Position);
-                        Drawing.DrawText(sPos[0], sPos[1], System.Drawing.Color.White, AlignTime(health.NextRespawnTime - (int)Game.Time));
+                        DirectXDrawer.DrawText(font, (health.NextRespawnTime - (int)Game.Time).ToString(), (int)sPos[0], (int)sPos[1], Color.White);
+                        int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
+                        if (!health.Called && health.NextRespawnTime - (int)Game.Time <= time && health.NextRespawnTime - (int)Game.Time >= time - 1)
+                        {
+                            health.Called = true;
+                            PingAndCall("Heal respawns in " + time + " seconds!", health.Position);                            
+                        }
                     }
                 }
             }
@@ -1740,11 +1820,6 @@ namespace SAwareness
 
         public void InitJungleMobs()
         {
-            GameObject.OnCreate += Obj_AI_Base_OnCreate;
-            Game.OnGameUpdate += Game_OnGameUpdate;
-            Game.OnGameProcessPacket += Game_OnGameProcessPacket;
-            Drawing.OnDraw += Drawing_OnDraw;
-
             //All
             //_inhibitors = new Inhibitor("Inhibitor", new[] { "Order_Inhibit_Gem.troy", "Chaos_Inhibit_Gem.troy" }, new[] { "Order_Inhibit_Crystal_Shatter.troy", "Chaos_Inhibit_Crystal_Shatter.troy" });
 
@@ -1802,7 +1877,7 @@ namespace SAwareness
             JungleCamps.Add(new JungleCamp("golems", GameObjectTeam.Chaos, 5, 100, 50, Utility.Map.MapType.TwistedTreeline, new Vector3(10341, 8084, 60), new Vector3(10341, 8084, 60), new[] { GetJungleMobByName("TT_NGolem", Utility.Map.MapType.TwistedTreeline), GetJungleMobByName("TT_NGolem", Utility.Map.MapType.TwistedTreeline) }));
             JungleCamps.Add(new JungleCamp("wolves", GameObjectTeam.Chaos, 6, 100, 50, Utility.Map.MapType.TwistedTreeline, new Vector3(9239, 6022, 60), new Vector3(9239, 6022, 60), new[] { GetJungleMobByName("TT_NWolf", Utility.Map.MapType.TwistedTreeline), GetJungleMobByName("TT_NWolf", Utility.Map.MapType.TwistedTreeline), GetJungleMobByName("TT_NWolf", Utility.Map.MapType.TwistedTreeline) }));
             JungleCamps.Add(new JungleCamp("heal", GameObjectTeam.Neutral, 7, 115, 90, Utility.Map.MapType.TwistedTreeline, new Vector3(7711, 6722, 60), new Vector3(7711, 6722, 60), new[] { GetJungleMobByName("TT_Relic", Utility.Map.MapType.TwistedTreeline) }));
-            JungleCamps.Add(new JungleCamp("vilemaw", GameObjectTeam.Neutral, 8, 10 * 60, 300, Utility.Map.MapType.TwistedTreeline, new Vector3(7711, 10080, 60), new Vector3(7711, 10080, 60), new[] { GetJungleMobByName("TT_NWolf", Utility.Map.MapType.TwistedTreeline), GetJungleMobByName("TT_NWolf", Utility.Map.MapType.TwistedTreeline), GetJungleMobByName("TT_NWolf", Utility.Map.MapType.TwistedTreeline) }));
+            JungleCamps.Add(new JungleCamp("vilemaw", GameObjectTeam.Neutral, 8, 10 * 60, 300, Utility.Map.MapType.TwistedTreeline, new Vector3(7711, 10080, 60), new Vector3(7711, 10080, 60), new[] { GetJungleMobByName("TT_Spiderboss", Utility.Map.MapType.TwistedTreeline) }));
 
             //JungleCamps.Add(new JungleCamp("heal", GameObjectTeam.Neutral, 1, 190, 40, 3, new Vector3(8922, 7868, 60), new Vector3(8922, 7868, 60), new[] { GetJungleMobByName("HA_AP_HealthRelic", 3) }));
             //JungleCamps.Add(new JungleCamp("heal", GameObjectTeam.Neutral, 2, 190, 40, 3, new Vector3(7473, 6617, 60), new Vector3(7473, 6617, 60), new[] { GetJungleMobByName("HA_AP_HealthRelic", 3) }));
@@ -1825,7 +1900,13 @@ namespace SAwareness
                 if (objectType.Name.Contains("Health"))
                     Healths.Add(new Health(objectType));
                 if (objectType.Name.Contains("Buffplat"))
-                    Altars.Add(new Altar(objectType));
+                {
+                    if(objectType.Name.Contains("_L"))
+                        Altars.Add(new Altar("Left Altar", objectType));
+                    else
+                        Altars.Add(new Altar("Right Altar", objectType));
+                }
+                    
             }
 
             foreach (JungleCamp jungleCamp in JungleCamps) //GAME.TIME BUGGED
@@ -1853,13 +1934,14 @@ namespace SAwareness
                     if ((jungleCamp.NextRespawnTime - (int)Game.Time) < 0)
                     {
                         jungleCamp.NextRespawnTime = 0;
+                        jungleCamp.Called = false;
                     }
                 }
             }
 
             if (Menu.AltarTimer.GetActive())
             {
-                Altar altarDestroyed = new Altar(null);
+                Altar altarDestroyed = new Altar(null, null);
                 foreach (var altar in Altars)
                 {
                     if (altar.Obj.IsValid)
@@ -1877,6 +1959,7 @@ namespace SAwareness
                         {
                             altar.Locked = false;
                             altar.NextRespawnTime = 0;
+                            altar.Called = false;
                         }
                         else if (hasBuff && altar.Locked == false)
                         {
@@ -1907,36 +1990,16 @@ namespace SAwareness
                     {
                         Altar health1 = Altars.Find(jm => jm.Obj.NetworkId == altar.NetworkId);
                         if (health1 == null)
-                            nAltar = new Altar(altar);
+                            if (altar.Name.Contains("_L"))
+                                nAltar = new Altar("Left Altar", altar);
+                            else
+                                nAltar = new Altar("Right Altar", altar);
                     }
 
                     if (nAltar != null)
                         Altars.Add(nAltar);
                 }
             }
-
-            //if (Menu.AltarTimer.GetActive())
-            //{
-            //    foreach (var altar in Altars)
-            //    {
-            //        if (altar.Locked)
-            //        {
-            //            if ((int)Game.Time < altar.SpawnTime)
-            //            {
-            //                altar.NextRespawnTime = altar.SpawnTime - (int)Game.Time;
-            //            }
-            //            else
-            //            {
-            //                if (altar.Obj == null)
-            //                    continue;
-            //                float tmpTime = ((((Obj_AI_Minion)(altar.Obj)).Mana > 39600)
-            //                    ? (((Obj_AI_Minion)(altar.Obj)).Mana - 39900) / 20100
-            //                    : (39600 - ((Obj_AI_Minion)(altar.Obj)).Mana) / 20100); //TODO: Check which type for mana
-            //                altar.NextRespawnTime = (int)Game.Time + ((int)tmpTime * altar.RespawnTime);
-            //            }
-            //        }
-            //    }
-            //}
 
             if (Menu.RelictTimer.GetActive())
             {
@@ -1953,6 +2016,11 @@ namespace SAwareness
                             relic.NextRespawnTime = relic.RespawnTime + (int)Game.Time;
                         }
                         relic.Locked = true;
+                    }
+                    if ((relic.NextRespawnTime - (int)Game.Time) < 0)
+                    {
+                        relic.NextRespawnTime = 0;
+                        relic.Called = false;
                     }
                 }
             }
@@ -1983,16 +2051,14 @@ namespace SAwareness
                         {
                             health.Locked = false;
                             health.NextRespawnTime = 0;
+                            health.Called = false;
                         }
                         else if (health.Obj.Health < 1 && health.Locked == false)
                         {
                             health.Locked = true;
                             health.NextRespawnTime = health.RespawnTime + (int)Game.Time;
                         }
-                        else
-                        {
-                            
-                        }
+                        else{}
                     else
                     {
                         if (health.NextRespawnTime < (int) Game.Time)
@@ -2030,6 +2096,7 @@ namespace SAwareness
                     {
                         inhibitor.Locked = false;
                         inhibitor.NextRespawnTime = 0;
+                        inhibitor.Called = false;
                     }
                     else if(inhibitor.Obj.Health < 1 && inhibitor.Locked == false)
                     {
@@ -3080,7 +3147,7 @@ namespace SAwareness
                 return;
             try
             {
-                if (sender.Type == GameObjectType.obj_AI_Marker && ObjectManager.Player.Team == sender.Team)
+                if (sender.Type == GameObjectType.obj_AI_Marker && ObjectManager.Player.Team != sender.Team)
                 {
                     foreach (Object obj in Objects)
                     {
@@ -3219,7 +3286,7 @@ namespace SAwareness
                 {
                     int networkId = BitConverter.ToInt32(reader.ReadBytes(4), 0);
                     var creator = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(networkId);
-                    if (creator != null && creator.Team == ObjectManager.Player.Team)
+                    if (creator != null && creator.Team != ObjectManager.Player.Team)
                     {
                         reader.ReadBytes(7);
                         var id = reader.ReadInt32();
@@ -3364,7 +3431,7 @@ namespace SAwareness
         {
             foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>())
             {
-                if (enemy.IsEnemy) //ÄNDERN IN ISENEMY
+                if (enemy.IsEnemy)
                 {
                     _recalls.Add(new RecallInfo(enemy.NetworkId));
                 }
@@ -3393,10 +3460,6 @@ namespace SAwareness
                 if (PacketId != Packet.S2C.Recall.Header) //OLD 215
                     return;
                 Packet.S2C.Recall.Struct recall = Packet.S2C.Recall.Decoded(args.PacketData);
-                //using (StreamWriter stream = new StreamWriter("C:\\recall.log", true))
-                //{
-                //    stream.WriteLine("Packet@" + Environment.TickCount + ": " + BitConverter.ToString(args.PacketData));
-                //}
                 HandleRecall(recall);
             }
             catch (Exception ex)
@@ -3662,7 +3725,7 @@ namespace SAwareness
 
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
             {
-                if (hero.IsEnemy) //ÄNDERN IN ISENEMY
+                if (hero.IsEnemy)
                 {
                     var champ = new ChampInfos();
                     SpriteHelper.LoadTexture(loc + "CHAMP\\" + hero.ChampionName + ".dds", ref champ.SGui.Champ.Texture);
@@ -4172,6 +4235,10 @@ namespace SAwareness
                 LeagueSharp.Common.Menu menu = new LeagueSharp.Common.Menu("SAwareness", "SAwareness", true);
 
                 Menu.Timers.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Timers", "SAwarenessTimers"));
+                Menu.Timers.MenuItems.Add(Menu.Timers.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessTimersPingTimes", "Ping Times").SetValue(new Slider(0, 5, 0))));
+                Menu.Timers.MenuItems.Add(Menu.Timers.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessTimersRemindTime", "Remind Time").SetValue(new Slider(0, 50, 0))));
+                Menu.Timers.MenuItems.Add(Menu.Timers.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessTimersLocalPing", "Local Ping | Not implemented").SetValue(false)));
+                Menu.Timers.MenuItems.Add(Menu.Timers.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessTimersLocalChat", "Local Chat").SetValue(false)));
                 Menu.JungleTimer.Menu = Menu.Timers.Menu.AddSubMenu(new LeagueSharp.Common.Menu("JungleTimer", "SAwarenessJungleTimer"));
                 Menu.JungleTimer.MenuItems.Add(Menu.JungleTimer.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessJungleTimersActive", "Active").SetValue(false)));
                 Menu.RelictTimer.Menu = Menu.Timers.Menu.AddSubMenu(new LeagueSharp.Common.Menu("RelictTimer", "SAwarenessRelictTimer"));
@@ -4233,7 +4300,7 @@ namespace SAwareness
                 Menu.RecallDetector.MenuItems.Add(Menu.RecallDetector.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessRecallDetectorActive", "Active").SetValue(true)));
                 Menu.Detector.MenuItems.Add(Menu.Detector.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessDetectorActive", "Active").SetValue(true)));
 
-                Menu.Ganks.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Ganks", "SAwarenessGanks"));
+                Menu.Ganks.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Ganks | Not implemented", "SAwarenessGanks"));
                 Menu.GankTracker.Menu = Menu.Ganks.Menu.AddSubMenu(new LeagueSharp.Common.Menu("GankTracker", "SAwarenessGankTracker"));
                 Menu.GankTracker.MenuItems.Add(Menu.GankTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessGankTrackerActive", "Active").SetValue(false)));
                 Menu.GankDetector.Menu = Menu.Ganks.Menu.AddSubMenu(new LeagueSharp.Common.Menu("GankDetector", "SAwarenessGankDetector"));
