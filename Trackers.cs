@@ -915,19 +915,17 @@ namespace SAwareness
 
         public class SpriteHelper
         {
-            private static String host = "https://github.com/Screeder/SAwareness/raw/master";
-
-            public static Texture LoadTexture(String pathAndfile, ref Texture texture, bool bForce = false)
+            public static Texture LoadTexture(String onlineFile, String localPathFile, ref Texture texture, bool bForce = false)
             {
-                //if (!File.Exists(pathAndfile))
-                //{
-                //    String filePath = pathAndfile;
-                //    filePath = filePath.Remove(0, filePath.LastIndexOf("\\Sprites\\", System.StringComparison.Ordinal));
-                //    Download.DownloadFile(host + filePath, pathAndfile);
-                //}
-                if (File.Exists(pathAndfile) && (bForce || texture == null))
+                if (!File.Exists(localPathFile))
                 {
-                    texture = Texture.FromFile(Drawing.Direct3DDevice, pathAndfile);
+                    //String filePath = localPathFile;
+                    //filePath = filePath.Remove(0, filePath.LastIndexOf("\\Sprites\\", System.StringComparison.Ordinal));
+                    //Download.DownloadFile(onlineFile, localPathFile);
+                }
+                if (File.Exists(localPathFile) && (bForce || texture == null))
+                {
+                    texture = Texture.FromFile(Drawing.Direct3DDevice, localPathFile);
                     if (texture == null)
                     {
                         return null;
@@ -995,18 +993,6 @@ namespace SAwareness
             return Menu.CdPanel.GetActive();
         }
 
-        /*
-                private static bool IsLoLActive()
-                {
-                    IntPtr hWnd = GetForegroundWindow();
-                    int length = GetWindowTextLength(hWnd);
-                    var sb = new StringBuilder(length + 1);
-                    GetWindowText(hWnd, sb, sb.Capacity);
-                    Console.WriteLine("\nActive window title is '{0}'", sb.ToString());
-                    return sb.ToString().Contains("League of Legends");
-                }
-        */
-
         private bool Init(bool force)
         {
             try
@@ -1028,15 +1014,15 @@ namespace SAwareness
             loc = loc.Remove(loc.LastIndexOf("\\", StringComparison.Ordinal));
             loc = loc + "\\Sprites\\SAwareness\\";
 
-            SpriteHelper.LoadTexture(loc + "SUMMONERS\\SummonerTint.dds", ref _overlaySummoner);
-            SpriteHelper.LoadTexture(loc + "SUMMONERS\\SummonerSpellTint.dds", ref _overlaySummonerSpell);
-            SpriteHelper.LoadTexture(loc + "SUMMONERS\\SpellTint.dds", ref _overlaySpellItem);
+            SpriteHelper.LoadTexture("",loc + "SUMMONERS\\SummonerTint.dds", ref _overlaySummoner);
+            SpriteHelper.LoadTexture("", loc + "SUMMONERS\\SummonerSpellTint.dds", ref _overlaySummonerSpell);
+            SpriteHelper.LoadTexture("", loc + "SUMMONERS\\SpellTint.dds", ref _overlaySpellItem);
 
-            SpriteHelper.LoadTexture(loc + "EXT\\BarBackground.dds", ref _backBar);
-            SpriteHelper.LoadTexture(loc + "EXT\\HealthBar.dds", ref _healthBar);
-            SpriteHelper.LoadTexture(loc + "EXT\\ManaBar.dds", ref _manaBar);
-            SpriteHelper.LoadTexture(loc + "EXT\\ItemSlotEmpty.dds", ref _overlayEmptyItem);
-            SpriteHelper.LoadTexture(loc + "EXT\\RecallBar.dds", ref _overlayRecall);
+            SpriteHelper.LoadTexture("", loc + "EXT\\BarBackground.dds", ref _backBar);
+            SpriteHelper.LoadTexture("", loc + "EXT\\HealthBar.dds", ref _healthBar);
+            SpriteHelper.LoadTexture("", loc + "EXT\\ManaBar.dds", ref _manaBar);
+            SpriteHelper.LoadTexture("", loc + "EXT\\ItemSlotEmpty.dds", ref _overlayEmptyItem);
+            SpriteHelper.LoadTexture("", loc + "EXT\\RecallBar.dds", ref _overlayRecall);
 
 
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
@@ -1044,7 +1030,7 @@ namespace SAwareness
                 if (hero.IsEnemy)
                 {
                     var champ = new ChampInfos();
-                    SpriteHelper.LoadTexture(loc + "CHAMP\\" + hero.ChampionName + ".dds", ref champ.SGui.Champ.Texture);
+                    SpriteHelper.LoadTexture("", loc + "CHAMP\\" + hero.ChampionName + ".dds", ref champ.SGui.Champ.Texture);
                     var s1 = hero.Spellbook.Spells;
                     //if (File.Exists(loc + "PASSIVE\\" + s1[0].Name + ".dds") && champ.passiveTexture == null)
                     //{
@@ -1058,14 +1044,14 @@ namespace SAwareness
                     //{
                     //    champ.passiveTexture = overlaySpellItem;
                     //}
-                    SpriteHelper.LoadTexture(loc + "SPELLS\\" + s1[0].Name + ".dds", ref champ.SGui.SpellQ.Texture);
-                    SpriteHelper.LoadTexture(loc + "SPELLS\\" + s1[1].Name + ".dds", ref champ.SGui.SpellW.Texture);
-                    SpriteHelper.LoadTexture(loc + "SPELLS\\" + s1[2].Name + ".dds", ref champ.SGui.SpellE.Texture);
-                    SpriteHelper.LoadTexture(loc + "SPELLS\\" + s1[3].Name + ".dds", ref champ.SGui.SpellR.Texture);
+                    SpriteHelper.LoadTexture("", loc + "SPELLS\\" + s1[0].Name + ".dds", ref champ.SGui.SpellQ.Texture);
+                    SpriteHelper.LoadTexture("", loc + "SPELLS\\" + s1[1].Name + ".dds", ref champ.SGui.SpellW.Texture);
+                    SpriteHelper.LoadTexture("", loc + "SPELLS\\" + s1[2].Name + ".dds", ref champ.SGui.SpellE.Texture);
+                    SpriteHelper.LoadTexture("", loc + "SPELLS\\" + s1[3].Name + ".dds", ref champ.SGui.SpellR.Texture);
 
                     var s2 = hero.SummonerSpellbook.Spells;
-                    SpriteHelper.LoadTexture(loc + "SUMMONERS\\" + s2[0].Name + ".dds", ref champ.SGui.SpellSum1.Texture);
-                    SpriteHelper.LoadTexture(loc + "SUMMONERS\\" + s2[1].Name + ".dds", ref champ.SGui.SpellSum2.Texture);
+                    SpriteHelper.LoadTexture("", loc + "SUMMONERS\\" + s2[0].Name + ".dds", ref champ.SGui.SpellSum1.Texture);
+                    SpriteHelper.LoadTexture("", loc + "SUMMONERS\\" + s2[1].Name + ".dds", ref champ.SGui.SpellSum2.Texture);
 
                     //champ.deathTime = 100;
                     //champ.sum1Cd = 50;
@@ -1160,7 +1146,7 @@ namespace SAwareness
                             if (champ.SGui.Item[inventorySlot.Slot].Texture == null || champ.SGui.ItemId[inventorySlot.Slot] != inventorySlot.Id)
                             {
                                 champ.SGui.ItemId[inventorySlot.Slot] = inventorySlot.Id;
-                                SpriteHelper.LoadTexture(loc + "ITEMS\\" + inventorySlot.Id + ".dds", ref champ.SGui.Item[inventorySlot.Slot].Texture, true);
+                                SpriteHelper.LoadTexture("", loc + "ITEMS\\" + inventorySlot.Id + ".dds", ref champ.SGui.Item[inventorySlot.Slot].Texture, true);
                                 //champ.SGui.Item[i].Texture = Texture.FromFile(Drawing.Direct3DDevice,
                                 //    loc + "ITEMS\\" + inventorySlot.Id + ".dds");
                             }
@@ -1372,26 +1358,29 @@ namespace SAwareness
                     if (Menu.RecallDetector.GetActive())
                     {
                         Recall.RecallInfo info = GetRecall(enemy.Key.NetworkId);
-                        var percentRecall = CalcRecallBar(info);
-                        if (info != null && info.StartTime != 0)
+                        if (info != null && info.Recall.Duration != null)
                         {
-                            float time = Game.Time + info.Recall.Duration / 1000 - info.StartTime;
-                            if (time > 0.0f && (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportStart || info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallStarted))
+                            var percentRecall = CalcRecallBar(info);
+                            if (info != null && info.StartTime != 0)
                             {
-                                Rectangle rec = new Rectangle(enemy.Value.SGui.RecallBar.SizeSideBar.Width, enemy.Value.SGui.RecallBar.SizeSideBar.Height, (int)(_recSize.Width * percentRecall), _recSize.Height);
-                                DirectXDrawer.DrawSprite(S, _overlayRecall, enemy.Value.SGui.RecallBar.SizeSideBar, new ColorBGRA(Color3.White, 0.80f), rec);
+                                float time = Game.Time + info.Recall.Duration / 1000 - info.StartTime;
+                                if (time > 0.0f && (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportStart || info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallStarted))
+                                {
+                                    Rectangle rec = new Rectangle(enemy.Value.SGui.RecallBar.SizeSideBar.Width, enemy.Value.SGui.RecallBar.SizeSideBar.Height, (int)(_recSize.Width * percentRecall), _recSize.Height);
+                                    DirectXDrawer.DrawSprite(S, _overlayRecall, enemy.Value.SGui.RecallBar.SizeSideBar, new ColorBGRA(Color3.White, 0.80f), rec);
+                                }
+                                else if (time < 30.0f && (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd || info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallFinished))
+                                {
+                                    Rectangle rec = new Rectangle(enemy.Value.SGui.RecallBar.SizeSideBar.Width, enemy.Value.SGui.RecallBar.SizeSideBar.Height, _recSize.Width, _recSize.Height);
+                                    DirectXDrawer.DrawSprite(S, _overlayRecall, enemy.Value.SGui.RecallBar.SizeSideBar, new ColorBGRA(Color3.White, 0.80f), rec);
+                                }
+                                else if (time < 30.0f && (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportAbort || info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallAborted))
+                                {
+                                    Rectangle rec = new Rectangle(enemy.Value.SGui.RecallBar.SizeSideBar.Width, enemy.Value.SGui.RecallBar.SizeSideBar.Height, _recSize.Width, _recSize.Height);
+                                    DirectXDrawer.DrawSprite(S, _overlayRecall, enemy.Value.SGui.RecallBar.SizeSideBar, new ColorBGRA(Color3.White, 0.80f), rec);
+                                }
                             }
-                            else if (time < 30.0f && (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd || info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallFinished))
-                            {
-                                Rectangle rec = new Rectangle(enemy.Value.SGui.RecallBar.SizeSideBar.Width, enemy.Value.SGui.RecallBar.SizeSideBar.Height, _recSize.Width, _recSize.Height);
-                                DirectXDrawer.DrawSprite(S, _overlayRecall, enemy.Value.SGui.RecallBar.SizeSideBar, new ColorBGRA(Color3.White, 0.80f), rec);
-                            }
-                            else if (time < 30.0f && (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportAbort || info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallAborted))
-                            {
-                                Rectangle rec = new Rectangle(enemy.Value.SGui.RecallBar.SizeSideBar.Width, enemy.Value.SGui.RecallBar.SizeSideBar.Height, _recSize.Width, _recSize.Height);
-                                DirectXDrawer.DrawSprite(S, _overlayRecall, enemy.Value.SGui.RecallBar.SizeSideBar, new ColorBGRA(Color3.White, 0.80f), rec);
-                            }
-                        }
+                        }                        
                     }
                 }
                 S.End();

@@ -68,8 +68,8 @@ namespace SAwareness
 
     static class Download
     {
-        public static String Host = "https://github.com/Screeder/SAwareness/raw/master/";
-        public static String Path = "Sprites/SAwareness/CHAMP/";
+        public static String Host = "https://github.com/Screeder/SAwareness/raw/master/Sprites/SAwareness/";
+        public static String Path = "CHAMP/";
 
         public static void DownloadFile(String hostfile, String localfile)
         {
