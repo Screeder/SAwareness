@@ -3,6 +3,8 @@ SAwareness
 
 If something does not work or you have suggestions contact me please.
 
+Please download the Sprites folder and place it in your Assemblies folder.
+
 Includes the following functions:
 
 - Timers
