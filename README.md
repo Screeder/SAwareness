@@ -1,7 +1,7 @@
 SAwareness
 ==========
 
-If something does not work contact me please.
+If something does not work or you have sugggestions contact me please.
 
 Includes the following functions:
 
