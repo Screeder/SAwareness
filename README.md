@@ -1,9 +1,10 @@
 SAwareness
 ==========
 
-If something does not work or you have suggestions contact me please.
+If something does not work or you have suggestions contact me please here or in Skype. 
+Username: tHer0x
 
-Please download the Sprites folder and place it in your Assemblies folder.
+Please download the Sprites folder and place it in your Assemblies folder otherwise it will download the required Sprites.
 
 Includes the following functions:
 
