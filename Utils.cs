@@ -64,6 +64,13 @@ namespace SAwareness
                 return false;
             return true;
         }
+
+        public static Size ScaleSize(this Size size, float scale, Vector2 mainPos)
+        {
+            size.Height = (int)(((size.Height - mainPos.Y / 2 - 120) * scale) + mainPos.Y / 2 + 120);
+            size.Width = (int)(((size.Width - mainPos.X) * scale) + mainPos.X);
+            return size;
+        }
     }
 
     static class Download
@@ -80,6 +87,11 @@ namespace SAwareness
 
     static class DirectXDrawer
     {
+        public static void DrawText(Font font, String text, Size size, Color color)
+        {
+            DrawText(font, text, size.Width, size.Height, color);
+        }
+
         public static void DrawText(Font font, String text, int posX, int posY, Color color)
         {
             if (font == null || font.IsDisposed)
@@ -94,6 +106,43 @@ namespace SAwareness
             font.DrawText(null, text, posX - 1 + rec.X, posY - 1, Color.Black);
             font.DrawText(null, text, posX + rec.X, posY - 1, Color.Black);
             font.DrawText(null, text, posX + rec.X, posY, color);
+        }
+
+        public static void DrawSprite(Sprite sprite, Texture texture, Size size, float[] scale = null, float rotation = 0.0f)
+        {
+            DrawSprite(sprite, texture, size, Color.White, scale, rotation);
+        }
+
+        public static void DrawSprite(Sprite sprite, Texture texture, Size size, Color color, float[] scale = null, float rotation = 0.0f)
+        {
+            if (sprite != null && !sprite.IsDisposed && texture != null && !texture.IsDisposed)
+            {
+                Matrix matrix = sprite.Transform;
+                var nMatrix = (scale != null ? Matrix.Scaling(scale[0], scale[1], 0) : Matrix.Scaling(1)) * Matrix.RotationZ(rotation) * Matrix.Translation(size.Width, size.Height, 0);
+                sprite.Transform = nMatrix;
+                sprite.Draw(texture, color);
+                sprite.Transform = matrix;
+            }
+        }
+
+        public static void DrawTransformSprite(Sprite sprite, Texture texture, Color color, Size size, float[] scale, float rotation, Rectangle? spriteResize)
+        {
+            if (sprite != null && texture != null)
+            {
+                Matrix matrix = sprite.Transform;
+                var nMatrix = Matrix.Scaling(scale[0], scale[1], 0) * Matrix.RotationZ(rotation) * Matrix.Translation(size.Width, size.Height, 0);
+                sprite.Transform = nMatrix;
+                sprite.Draw(texture, color);
+                sprite.Transform = matrix;
+            }
+        }
+
+        public static void DrawTransformedSprite(Sprite sprite, Texture texture, Rectangle spriteResize, Color color)
+        {
+            if (sprite != null && texture != null)
+            {
+                sprite.Draw(texture, color);
+            }
         }
 
         public static void DrawSprite(Sprite sprite, Texture texture, Size size, Color color, Rectangle? spriteResize)

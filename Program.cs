@@ -79,6 +79,20 @@ namespace SAwareness
                 return false;
             }
 
+            public void SetActive(bool active)
+            {
+                if (Menu == null)
+                    return;
+                foreach (var item in Menu.Items)
+                {
+                    if (item.DisplayName == "Active")
+                    {
+                        item.SetValue(active);
+                        return;
+                    }
+                }
+            }
+
             public MenuItem GetMenuItem(String menuName)
             {
                 if (Menu == null)
@@ -220,6 +234,7 @@ namespace SAwareness
                 Menu.CloneTracker.MenuItems.Add(Menu.CloneTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessCloneTrackerActive", "Active").SetValue(true)));
                 Menu.CdPanel.Menu = Menu.Tracker.Menu.AddSubMenu(new LeagueSharp.Common.Menu("CDTracker", "SAwarenessCDTracker"));
                 Menu.CdPanel.MenuItems.Add(Menu.CdPanel.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessItemPanelActive", "ItemPanel").SetValue(true)));
+                Menu.CdPanel.MenuItems.Add(Menu.CdPanel.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessCDTrackerScale", "Scale").SetValue(new Slider(100, 100, 0))));
                 Menu.CdPanel.MenuItems.Add(Menu.CdPanel.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessCDTrackerActive", "Active").SetValue(true)));
                 Menu.SsCaller.Menu = Menu.Tracker.Menu.AddSubMenu(new LeagueSharp.Common.Menu("SSCaller", "SAwarenessSSCaller"));
                 Menu.SsCaller.MenuItems.Add(Menu.SsCaller.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSSCallerPingTimes", "Ping Times").SetValue(new Slider(0, 5, 0))));
