@@ -915,17 +915,32 @@ namespace SAwareness
 
         public class SpriteHelper
         {
-            public static Texture LoadTexture(String onlineFile, String localPathFile, ref Texture texture, bool bForce = false)
+            public static Texture LoadTexture(String onlineFile, String subOnlinePath, String localPathFile, ref Texture texture, bool bForce = false)
             {
                 if (!File.Exists(localPathFile))
                 {
-                    //String filePath = localPathFile;
-                    //filePath = filePath.Remove(0, filePath.LastIndexOf("\\Sprites\\", System.StringComparison.Ordinal));
-                    //Download.DownloadFile(onlineFile, localPathFile);
+                    String filePath = localPathFile;
+                    filePath = filePath.Remove(0, filePath.LastIndexOf("\\Sprites\\", System.StringComparison.Ordinal));
+                    try
+                    {
+                        Download.Path = subOnlinePath;
+                        Download.DownloadFile(onlineFile, localPathFile);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("SAwareness: " + ex.ToString());
+                    }                    
                 }
                 if (File.Exists(localPathFile) && (bForce || texture == null))
                 {
-                    texture = Texture.FromFile(Drawing.Direct3DDevice, localPathFile);
+                    try
+                    {
+                        texture = Texture.FromFile(Drawing.Direct3DDevice, localPathFile);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("SAwarness: Couldn't load texture: " + localPathFile + "\n Ex: " + ex.ToString());
+                    }
                     if (texture == null)
                     {
                         return null;
@@ -1016,23 +1031,23 @@ namespace SAwareness
             loc = loc.Remove(loc.LastIndexOf("\\", StringComparison.Ordinal));
             loc = loc + "\\Sprites\\SAwareness\\";
 
-            SpriteHelper.LoadTexture("",loc + "SUMMONERS\\SummonerTint.dds", ref _overlaySummoner);
-            SpriteHelper.LoadTexture("", loc + "SUMMONERS\\SummonerSpellTint.dds", ref _overlaySummonerSpell);
-            SpriteHelper.LoadTexture("", loc + "SUMMONERS\\SpellTint.dds", ref _overlaySpellItem);
+            SpriteHelper.LoadTexture("SummonerTint.dds", "SUMMONERS/", loc + "SUMMONERS\\SummonerTint.dds", ref _overlaySummoner);
+            SpriteHelper.LoadTexture("SummonerSpellTint.dds", "SUMMONERS/", loc + "SUMMONERS\\SummonerSpellTint.dds", ref _overlaySummonerSpell);
+            SpriteHelper.LoadTexture("SpellTint.dds", "SUMMONERS/", loc + "SUMMONERS\\SpellTint.dds", ref _overlaySpellItem);
 
-            SpriteHelper.LoadTexture("", loc + "EXT\\BarBackground.dds", ref _backBar);
-            SpriteHelper.LoadTexture("", loc + "EXT\\HealthBar.dds", ref _healthBar);
-            SpriteHelper.LoadTexture("", loc + "EXT\\ManaBar.dds", ref _manaBar);
-            SpriteHelper.LoadTexture("", loc + "EXT\\ItemSlotEmpty.dds", ref _overlayEmptyItem);
-            SpriteHelper.LoadTexture("", loc + "EXT\\RecallBar.dds", ref _overlayRecall);
+            SpriteHelper.LoadTexture("BarBackground.dds", "EXT/", loc + "EXT\\BarBackground.dds", ref _backBar);
+            SpriteHelper.LoadTexture("HealthBar.dds", "EXT/", loc + "EXT\\HealthBar.dds", ref _healthBar);
+            SpriteHelper.LoadTexture("ManaBar.dds", "EXT/", loc + "EXT\\ManaBar.dds", ref _manaBar);
+            SpriteHelper.LoadTexture("ItemSlotEmpty.dds", "EXT/", loc + "EXT\\ItemSlotEmpty.dds", ref _overlayEmptyItem);
+            SpriteHelper.LoadTexture("RecallBar.dds", "EXT/", loc + "EXT\\RecallBar.dds", ref _overlayRecall);
 
 
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
             {
-                if (hero.IsEnemy)
+                if (hero.IsMe)
                 {
                     var champ = new ChampInfos();
-                    SpriteHelper.LoadTexture("", loc + "CHAMP\\" + hero.ChampionName + ".dds", ref champ.SGui.Champ.Texture);
+                    SpriteHelper.LoadTexture(hero.ChampionName + ".dds", "CHAMP/", loc + "CHAMP\\" + hero.ChampionName + ".dds", ref champ.SGui.Champ.Texture);
                     var s1 = hero.Spellbook.Spells;
                     //if (File.Exists(loc + "PASSIVE\\" + s1[0].Name + ".dds") && champ.passiveTexture == null)
                     //{
@@ -1046,14 +1061,14 @@ namespace SAwareness
                     //{
                     //    champ.passiveTexture = overlaySpellItem;
                     //}
-                    SpriteHelper.LoadTexture("", loc + "SPELLS\\" + s1[0].Name + ".dds", ref champ.SGui.SpellQ.Texture);
-                    SpriteHelper.LoadTexture("", loc + "SPELLS\\" + s1[1].Name + ".dds", ref champ.SGui.SpellW.Texture);
-                    SpriteHelper.LoadTexture("", loc + "SPELLS\\" + s1[2].Name + ".dds", ref champ.SGui.SpellE.Texture);
-                    SpriteHelper.LoadTexture("", loc + "SPELLS\\" + s1[3].Name + ".dds", ref champ.SGui.SpellR.Texture);
+                    SpriteHelper.LoadTexture(s1[0].Name + ".dds", "SPELLS/", loc + "SPELLS\\" + s1[0].Name + ".dds", ref champ.SGui.SpellQ.Texture);
+                    SpriteHelper.LoadTexture(s1[1].Name + ".dds", "SPELLS/", loc + "SPELLS\\" + s1[1].Name + ".dds", ref champ.SGui.SpellW.Texture);
+                    SpriteHelper.LoadTexture(s1[2].Name + ".dds", "SPELLS/", loc + "SPELLS\\" + s1[2].Name + ".dds", ref champ.SGui.SpellE.Texture);
+                    SpriteHelper.LoadTexture(s1[3].Name + ".dds", "SPELLS/", loc + "SPELLS\\" + s1[3].Name + ".dds", ref champ.SGui.SpellR.Texture);
 
                     var s2 = hero.SummonerSpellbook.Spells;
-                    SpriteHelper.LoadTexture("", loc + "SUMMONERS\\" + s2[0].Name + ".dds", ref champ.SGui.SpellSum1.Texture);
-                    SpriteHelper.LoadTexture("", loc + "SUMMONERS\\" + s2[1].Name + ".dds", ref champ.SGui.SpellSum2.Texture);
+                    SpriteHelper.LoadTexture(s2[0].Name + ".dds", "SUMMONERS/", loc + "SUMMONERS\\" + s2[0].Name + ".dds", ref champ.SGui.SpellSum1.Texture);
+                    SpriteHelper.LoadTexture(s2[1].Name + ".dds", "SUMMONERS/", loc + "SUMMONERS\\" + s2[1].Name + ".dds", ref champ.SGui.SpellSum2.Texture);
 
                     //champ.deathTime = 100;
                     //champ.sum1Cd = 50;
@@ -1134,8 +1149,6 @@ namespace SAwareness
                 var unusedId = new List<int> { 0, 1, 2, 3, 4, 5, 6 };
                 foreach (var inventorySlot in i1)
                 {
-                    if (File.Exists(loc + "ITEMS\\" + inventorySlot.Id + ".dds"))
-                    {
                         slot.Add(inventorySlot.Slot);
                         if (inventorySlot.Slot >= 0 && inventorySlot.Slot <= 6)
                         {
@@ -1144,11 +1157,11 @@ namespace SAwareness
                                 champ.SGui.Item[inventorySlot.Slot] = new ChampInfos.Gui.SpriteInfos();
                             if (champ.SGui.Item[inventorySlot.Slot].Texture == null || champ.SGui.ItemId[inventorySlot.Slot] != inventorySlot.Id)
                             {
-                                champ.SGui.ItemId[inventorySlot.Slot] = inventorySlot.Id;
-                                SpriteHelper.LoadTexture("", loc + "ITEMS\\" + inventorySlot.Id + ".dds", ref champ.SGui.Item[inventorySlot.Slot].Texture, true);
+                                
+                                if(SpriteHelper.LoadTexture(inventorySlot.Id + ".dds", "ITEMS/", loc + "ITEMS\\" + inventorySlot.Id + ".dds", ref champ.SGui.Item[inventorySlot.Slot].Texture, true) != null)
+                                    champ.SGui.ItemId[inventorySlot.Slot] = inventorySlot.Id;
                             }
                         }
-                    }
                 }
 
                 for (int i = 0; i < unusedId.Count; i++)
