@@ -1044,7 +1044,7 @@ namespace SAwareness
 
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
             {
-                if (hero.IsMe)
+                if (hero.IsEnemy)
                 {
                     var champ = new ChampInfos();
                     SpriteHelper.LoadTexture(hero.ChampionName + ".dds", "CHAMP/", loc + "CHAMP\\" + hero.ChampionName + ".dds", ref champ.SGui.Champ.Texture);
