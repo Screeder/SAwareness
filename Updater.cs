@@ -11,7 +11,7 @@ namespace SAwareness
     public static class SUpdater
     {
         private const int localmajorversion = 0;
-        private const int localversion = 6;
+        private const int localversion = 7;
 
         public static void UpdateCheck()
         {

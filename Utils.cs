@@ -67,7 +67,7 @@ namespace SAwareness
 
         public static Size ScaleSize(this Size size, float scale, Vector2 mainPos)
         {
-            size.Height = (int)(((size.Height - mainPos.Y / 2 - 120) * scale) + mainPos.Y / 2 + 120);
+            size.Height = (int)(((size.Height - mainPos.Y / 2) * scale) + mainPos.Y / 2);
             size.Width = (int)(((size.Width - mainPos.X) * scale) + mainPos.X);
             return size;
         }
@@ -96,6 +96,7 @@ namespace SAwareness
         {
             if (font == null || font.IsDisposed)
             {
+                throw new SharpDXException("");
                 return;
             }
             var rec = font.MeasureText(null, text, FontDrawFlags.Center);

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using LeagueSharp;
 using LeagueSharp.Common;
+using SharpDX;
+using SharpDX.Direct3D9;
 using MenuItem = LeagueSharp.Common.MenuItem;
 
 namespace SAwareness
@@ -169,8 +171,8 @@ namespace SAwareness
         {
             try
             {
-                SUpdater.UpdateCheck();
                 CreateMenu();
+                SUpdater.UpdateCheck();                
             }
             catch (Exception e)
             {
@@ -235,6 +237,8 @@ namespace SAwareness
                 Menu.CdPanel.Menu = Menu.Tracker.Menu.AddSubMenu(new LeagueSharp.Common.Menu("CDTracker", "SAwarenessCDTracker"));
                 Menu.CdPanel.MenuItems.Add(Menu.CdPanel.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessItemPanelActive", "ItemPanel").SetValue(true)));
                 Menu.CdPanel.MenuItems.Add(Menu.CdPanel.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessCDTrackerScale", "Scale").SetValue(new Slider(100, 100, 0))));
+                Menu.CdPanel.MenuItems.Add(Menu.CdPanel.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessCDTrackerXPos", "X Position").SetValue(new Slider(-1, 10000, 0))));
+                Menu.CdPanel.MenuItems.Add(Menu.CdPanel.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessCDTrackerYPos", "Y Position").SetValue(new Slider(-1, 10000, 0))));
                 Menu.CdPanel.MenuItems.Add(Menu.CdPanel.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessCDTrackerActive", "Active").SetValue(true)));
                 Menu.SsCaller.Menu = Menu.Tracker.Menu.AddSubMenu(new LeagueSharp.Common.Menu("SSCaller", "SAwarenessSSCaller"));
                 Menu.SsCaller.MenuItems.Add(Menu.SsCaller.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSSCallerPingTimes", "Ping Times").SetValue(new Slider(0, 5, 0))));
@@ -304,10 +308,10 @@ namespace SAwareness
                 tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotManaPotActive", "Active").SetValue(false)));
                 Menu.AutoPot.MenuItems.Add(Menu.AutoPot.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotActive", "Active").SetValue(true)));
 
-                menu.AddItem(new LeagueSharp.Common.MenuItem("By Screeder", "By Screeder V0.5"));
+                menu.AddItem(new LeagueSharp.Common.MenuItem("By Screeder", "By Screeder V0.7"));
                 menu.AddToMainMenu();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 
                 throw;
@@ -318,6 +322,7 @@ namespace SAwareness
         {
             try
             {
+                Game.PrintChat("SAwareness loaded!");                
                 Game.OnGameUpdate += GameOnOnGameUpdate;
             }
             catch (Exception e)
@@ -327,7 +332,7 @@ namespace SAwareness
         }
 
         private static void GameOnOnGameUpdate(EventArgs args)
-        {
+        {            
             Type classType = typeof(Menu);
             BindingFlags flags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
             FieldInfo[] fields = classType.GetFields(flags);
@@ -337,8 +342,8 @@ namespace SAwareness
                 if (item.GetActive() == false && item.Item != null)
                 {
                     item.Item = null;
-                } 
-                else if (item.GetActive() && item.Item == null && !item.ForceDisable && item.Type != null) 
+                }
+                else if (item.GetActive() && item.Item == null && !item.ForceDisable && item.Type != null)
                 {
                     try
                     {
@@ -348,7 +353,7 @@ namespace SAwareness
                     {
                         Console.WriteLine(e);
                         throw;
-                    }                   
+                    }
                 }
             }
         }
