@@ -65,9 +65,9 @@ namespace SAwareness
             return true;
         }
 
-        public static Size ScaleSize(this Size size, float scale, Vector2 mainPos)
+        public static Size ScaleSize(this Size size, float scale, Vector2 mainPos = default(Vector2))
         {
-            size.Height = (int)(((size.Height - mainPos.Y / 2) * scale) + mainPos.Y / 2);
+            size.Height = (int)(((size.Height - mainPos.Y) * scale) + mainPos.Y);
             size.Width = (int)(((size.Width - mainPos.X) * scale) + mainPos.X);
             return size;
         }
@@ -83,6 +83,44 @@ namespace SAwareness
             var webClient = new WebClient();
             webClient.DownloadFile(Host + Path + hostfile, localfile);
         }
+    }
+
+    static class SpriteHelper
+    {
+        public static Texture LoadTexture(String onlineFile, String subOnlinePath, String localPathFile, ref Texture texture, bool bForce = false)
+        {
+            if (!File.Exists(localPathFile))
+            {
+                String filePath = localPathFile;
+                filePath = filePath.Remove(0, filePath.LastIndexOf("\\Sprites\\", System.StringComparison.Ordinal));
+                try
+                {
+                    Download.Path = subOnlinePath;
+                    Download.DownloadFile(onlineFile, localPathFile);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("SAwareness: Path: " + onlineFile + " \nException: " + ex.ToString());
+                }
+            }
+            if (File.Exists(localPathFile) && (bForce || texture == null))
+            {
+                try
+                {
+                    texture = Texture.FromFile(Drawing.Direct3DDevice, localPathFile);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("SAwarness: Couldn't load texture: " + localPathFile + "\n Ex: " + ex.ToString());
+                }
+                if (texture == null)
+                {
+                    return null;
+                }
+            }
+            return texture;
+        }
+
     }
 
     static class DirectXDrawer

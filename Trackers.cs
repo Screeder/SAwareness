@@ -871,7 +871,7 @@ namespace SAwareness
         }
     }
 
-    class CdTracker
+    public class UITracker
     {
         class ChampInfos
         {
@@ -913,45 +913,7 @@ namespace SAwareness
             public Gui SGui = new Gui();
         }
 
-        public class SpriteHelper
-        {
-            public static Texture LoadTexture(String onlineFile, String subOnlinePath, String localPathFile, ref Texture texture, bool bForce = false)
-            {
-                if (!File.Exists(localPathFile))
-                {
-                    String filePath = localPathFile;
-                    filePath = filePath.Remove(0, filePath.LastIndexOf("\\Sprites\\", System.StringComparison.Ordinal));
-                    try
-                    {
-                        Download.Path = subOnlinePath;
-                        Download.DownloadFile(onlineFile, localPathFile);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("SAwareness: Path: " + onlineFile + " \nException: " + ex.ToString());
-                    }                    
-                }
-                if (File.Exists(localPathFile) && (bForce || texture == null))
-                {
-                    try
-                    {
-                        texture = Texture.FromFile(Drawing.Direct3DDevice, localPathFile);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("SAwarness: Couldn't load texture: " + localPathFile + "\n Ex: " + ex.ToString());
-                    }
-                    if (texture == null)
-                    {
-                        return null;
-                    }
-                }
-                return texture;
-            }
-
-        }
-
-        public CdTracker()
+        public UITracker()
         {
             if (!IsActive())
                 return;
@@ -965,8 +927,8 @@ namespace SAwareness
                 if (tries > 9)
                 {
                     Console.WriteLine("Couldn't load Interface. It got disabled.");
-                    Menu.CdPanel.ForceDisable = true;
-                    Menu.CdPanel.Item = null;
+                    Menu.UiTracker.ForceDisable = true;
+                    Menu.UiTracker.Item = null;
                     return;
                 }
                 Thread.Sleep(10);
@@ -988,7 +950,7 @@ namespace SAwareness
             drawActive = false;
         }
 
-        ~CdTracker()
+        ~UITracker()
         {
             Game.OnGameUpdate -= Game_OnGameUpdate;
             Drawing.OnEndScene -= Drawing_OnEndScene;
@@ -1000,7 +962,7 @@ namespace SAwareness
         Font ChampF;
         Font SumF;
         Font RecF;
-        Vector2 _screen = new Vector2(Drawing.Width, Drawing.Height);
+        Vector2 _screen = new Vector2(Drawing.Width, Drawing.Height / 2);
         readonly Dictionary<Obj_AI_Hero, ChampInfos> Enemies = new Dictionary<Obj_AI_Hero, ChampInfos>();
         private Texture _overlaySummoner;
         private Texture _overlaySummonerSpell;
@@ -1023,7 +985,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.CdPanel.GetActive();
+            return Menu.UiTracker.GetActive();
         }
 
         private bool Init(bool force)
@@ -1042,13 +1004,13 @@ namespace SAwareness
                 return false;
                 //throw;
             }
-            if (Menu.CdPanel.GetMenuItem("SAwarenessCDTrackerXPos").GetValue<Slider>().Value == -1)
+            if (Menu.UiTracker.GetMenuItem("SAwarenessUITrackerXPos").GetValue<Slider>().Value == -1)
             {
-                Menu.CdPanel.GetMenuItem("SAwarenessCDTrackerXPos").SetValue(new Slider((int)_screen.X, Drawing.Width, 0));
+                Menu.UiTracker.GetMenuItem("SAwarenessUITrackerXPos").SetValue(new Slider((int)_screen.X, Drawing.Width, 0));
             }
-            if (Menu.CdPanel.GetMenuItem("SAwarenessCDTrackerYPos").GetValue<Slider>().Value == -1)
+            if (Menu.UiTracker.GetMenuItem("SAwarenessUITrackerYPos").GetValue<Slider>().Value == -1)
             {
-                Menu.CdPanel.GetMenuItem("SAwarenessCDTrackerYPos").SetValue(new Slider((int)_screen.Y / 2, Drawing.Height, 0));
+                Menu.UiTracker.GetMenuItem("SAwarenessUITrackerYPos").SetValue(new Slider((int)_screen.Y, Drawing.Height, 0));
             }
 
             var loc = Assembly.GetExecutingAssembly().Location;
@@ -1094,9 +1056,6 @@ namespace SAwareness
                     SpriteHelper.LoadTexture(s2[0].Name + ".dds", "SUMMONERS/", loc + "SUMMONERS\\" + s2[0].Name + ".dds", ref champ.SGui.SpellSum1.Texture);
                     SpriteHelper.LoadTexture(s2[1].Name + ".dds", "SUMMONERS/", loc + "SUMMONERS\\" + s2[1].Name + ".dds", ref champ.SGui.SpellSum2.Texture);
 
-                    //champ.deathTime = 100;
-                    //champ.sum1Cd = 50;
-                    //champ.sum2Cd = 100;
                     Enemies.Add(hero, champ);
                 }
             }
@@ -1107,12 +1066,12 @@ namespace SAwareness
         }
 
         private void CalculateSizes() /*TODO: Look for http://sharpdx.org/documentation/api/p-sharpdx-direct3d9-sprite-transform 
-                                       to resize sprites*/
+                                        to resize sprites*/
         {
             var count = 0;
-            int xOffset = Menu.CdPanel.GetMenuItem("SAwarenessCDTrackerXPos").GetValue<Slider>().Value;
+            int xOffset = Menu.UiTracker.GetMenuItem("SAwarenessUITrackerXPos").GetValue<Slider>().Value;
             oldX = xOffset;
-            int yOffset = Menu.CdPanel.GetMenuItem("SAwarenessCDTrackerYPos").GetValue<Slider>().Value;
+            int yOffset = Menu.UiTracker.GetMenuItem("SAwarenessUITrackerYPos").GetValue<Slider>().Value;
             oldY = yOffset;
             int yOffsetAdd = 20;
             foreach (var enemy in Enemies)
@@ -1162,7 +1121,7 @@ namespace SAwareness
 
         private void UpdateItems()
         {
-            if (!Menu.CdPanel.GetMenuItem("SAwarenessItemPanelActive").GetValue<bool>())
+            if (!Menu.UiTracker.GetMenuItem("SAwarenessItemPanelActive").GetValue<bool>())
                 return;
             var loc = Assembly.GetExecutingAssembly().Location;
             loc = loc.Remove(loc.LastIndexOf("\\", StringComparison.Ordinal));
@@ -1281,7 +1240,7 @@ namespace SAwareness
             }
             catch (Exception ex)
             {
-                Console.WriteLine("CDTrackerUpdate: " + ex.ToString());
+                Console.WriteLine("UITrackerUpdate: " + ex.ToString());
                 throw;
             }
 
@@ -1374,13 +1333,13 @@ namespace SAwareness
             try
             {
                 float percentScale =
-                    (float) Menu.CdPanel.GetMenuItem("SAwarenessCDTrackerScale").GetValue<Slider>().Value/100;
+                    (float)Menu.UiTracker.GetMenuItem("SAwarenessUITrackerScale").GetValue<Slider>().Value / 100;
                 if (percentScale != scalePc)
                 {
                     scalePc = percentScale;
                     AssingFonts(percentScale);
                 }
-                if(Menu.CdPanel.GetMenuItem("SAwarenessCDTrackerXPos").GetValue<Slider>().Value != oldX || Menu.CdPanel.GetMenuItem("SAwarenessCDTrackerYPos").GetValue<Slider>().Value != oldY)
+                if (Menu.UiTracker.GetMenuItem("SAwarenessUITrackerXPos").GetValue<Slider>().Value != oldX || Menu.UiTracker.GetMenuItem("SAwarenessUITrackerYPos").GetValue<Slider>().Value != oldY)
                     CalculateSizes();
 
                 if (S.IsDisposed)
@@ -1427,7 +1386,7 @@ namespace SAwareness
                         enemy.Value.SGui.ManaBar.SizeSideBar.ScaleSize(percentScale, _screen),
                         new[] {1.0f*percentMana*percentScale*0.75f, 1.0f*percentScale});
 
-                    if (Menu.CdPanel.GetMenuItem("SAwarenessItemPanelActive").GetValue<bool>())
+                    if (Menu.UiTracker.GetMenuItem("SAwarenessItemPanelActive").GetValue<bool>())
                     {
                         foreach (var spriteInfo in enemy.Value.SGui.Item)
                         {
@@ -1490,7 +1449,7 @@ namespace SAwareness
                                 float time = Game.Time + info.Recall.Duration/1000 - info.StartTime;
                                 if (time > 0.0f &&
                                     (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportStart ||
-                                     info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallStarted))
+                                        info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallStarted))
                                 {
                                     DirectXDrawer.DrawSprite(S, _overlayRecall,
                                         enemy.Value.SGui.RecallBar.SizeSideBar.ScaleSize(percentScale, _screen),
@@ -1498,8 +1457,8 @@ namespace SAwareness
                                         new[] {1.0f*percentRecall*percentScale, 1.0f*percentScale});
                                 }
                                 else if (time < 30.0f &&
-                                         (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd ||
-                                          info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallFinished))
+                                            (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd ||
+                                            info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallFinished))
                                 {
                                     DirectXDrawer.DrawSprite(S, _overlayRecall,
                                         enemy.Value.SGui.RecallBar.SizeSideBar.ScaleSize(percentScale, _screen),
@@ -1507,8 +1466,8 @@ namespace SAwareness
                                         new[] {1.0f*percentScale, 1.0f*percentScale});
                                 }
                                 else if (time < 30.0f &&
-                                         (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportAbort ||
-                                          info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallAborted))
+                                            (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportAbort ||
+                                            info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallAborted))
                                 {
                                     DirectXDrawer.DrawSprite(S, _overlayRecall,
                                         enemy.Value.SGui.RecallBar.SizeSideBar.ScaleSize(percentScale, _screen),
@@ -1575,23 +1534,23 @@ namespace SAwareness
                             float time = Game.Time + info.Recall.Duration/1000 - info.StartTime;
                             if (time > 0.0f &&
                                 (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportStart ||
-                                 info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallStarted))
+                                    info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallStarted))
                             {
                                 DirectXDrawer.DrawText(RecF, "Porting",
                                     enemy.Value.SGui.RecallBar.CoordsSideBar.ScaleSize(percentScale, _screen),
                                     Color.Chartreuse);
                             }
                             else if (time < 30.0f &&
-                                     (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd ||
-                                      info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallFinished))
+                                        (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd ||
+                                        info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallFinished))
                             {
                                 DirectXDrawer.DrawText(RecF, "Ported",
                                     enemy.Value.SGui.RecallBar.CoordsSideBar.ScaleSize(percentScale, _screen),
                                     Color.Chartreuse);
                             }
                             else if (time < 30.0f &&
-                                     (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportAbort ||
-                                      info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallAborted))
+                                        (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportAbort ||
+                                        info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallAborted))
                             {
                                 DirectXDrawer.DrawText(RecF, "Canceled",
                                     enemy.Value.SGui.RecallBar.CoordsSideBar.ScaleSize(percentScale, _screen),
@@ -1606,8 +1565,115 @@ namespace SAwareness
                 Console.WriteLine(ex.ToString());
                 if (ex.GetType() == typeof (SharpDXException))
                 {
-                    Menu.CdPanel.SetActive(false);
-                    Game.PrintChat("CDPanel: An error occured. Please activate CDPanel in your menu again.");
+                    Menu.UiTracker.SetActive(false);
+                    Game.PrintChat("UITracker: An error occured. Please activate CDPanel in your menu again.");
+                }
+            }
+        }
+    }
+
+    public class UIMTracker
+    {
+        private bool drawActive = true;
+        Sprite S;
+        readonly Dictionary<Obj_AI_Hero, Texture> Enemies = new Dictionary<Obj_AI_Hero, Texture>();
+
+        public UIMTracker()
+        {
+            if (!IsActive())
+                return;
+            var loaded = false;
+            var tries = 0;
+            while (!loaded)
+            {
+                loaded = Init(tries >= 5);
+
+                tries++;
+                if (tries > 9)
+                {
+                    Console.WriteLine("Couldn't load Interface. It got disabled.");
+                    Menu.UimTracker.ForceDisable = true;
+                    Menu.UimTracker.Item = null;
+                    return;
+                }
+                Thread.Sleep(10);
+            }
+
+            Drawing.OnEndScene += Drawing_OnEndScene;
+        }
+
+        ~UIMTracker()
+        {
+            Drawing.OnEndScene -= Drawing_OnEndScene;
+        }
+
+        public bool IsActive()
+        {
+            return Menu.UimTracker.GetActive();
+        }
+
+        private bool Init(bool force)
+        {
+            try
+            {
+                S = new Sprite(Drawing.Direct3DDevice);
+            }
+            catch (Exception)
+            {
+
+                return false;
+                //throw;
+            }
+
+            var loc = Assembly.GetExecutingAssembly().Location;
+            loc = loc.Remove(loc.LastIndexOf("\\", StringComparison.Ordinal));
+            loc = loc + "\\Sprites\\SAwareness\\";
+
+            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+            {
+                if (hero.IsEnemy)
+                {
+                    Texture champ = null;
+                    SpriteHelper.LoadTexture(hero.ChampionName + ".dds", "CHAMP/", loc + "CHAMP\\" + hero.ChampionName + ".dds", ref champ);
+                    Enemies.Add(hero, champ);
+                }
+            }
+
+            return true;
+        }
+
+        void Drawing_OnEndScene(EventArgs args)
+        {
+            if (!IsActive() || !drawActive)
+                return;
+            try
+            {
+                float percentScale = (float)Menu.UimTracker.GetMenuItem("SAwarenessUIMTrackerScale").GetValue<Slider>().Value / 100;
+
+                if (S.IsDisposed)
+                {
+                    return;
+                }
+                S.Begin();
+                foreach (var enemy in Enemies)
+                {
+                    if(enemy.Key.IsVisible)
+                        continue;
+                    float[] serverPos = Drawing.WorldToMinimap(enemy.Key.ServerPosition);
+                    Size mPos = new Size((int) (serverPos[0] - 32 * 0.3f), (int) (serverPos[1] - 32 * 0.3f));
+                    DirectXDrawer.DrawSprite(S, enemy.Value,
+                        mPos.ScaleSize(percentScale, new Vector2(mPos.Width, mPos.Height)),
+                        new[] {0.3f*percentScale, 0.3f*percentScale});
+                }
+                S.End();      
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                if (ex.GetType() == typeof(SharpDXException))
+                {
+                    Menu.UimTracker.SetActive(false);
+                    Game.PrintChat("UIM: An error occured. Please activate UI Minimap in your menu again.");
                 }
             }
         }

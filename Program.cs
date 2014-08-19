@@ -129,7 +129,8 @@ namespace SAwareness
 
         public static MenuItemSettings ItemPanel = new MenuItemSettings();
         public static MenuItemSettings AutoLevler = new MenuItemSettings(typeof(SAwareness.AutoLevler)); //Only priority works
-        public static MenuItemSettings CdPanel = new MenuItemSettings(typeof(SAwareness.CdTracker)); //Works but need many improvements
+        public static MenuItemSettings UiTracker = new MenuItemSettings(typeof(SAwareness.UITracker)); //Works but need many improvements
+        public static MenuItemSettings UimTracker = new MenuItemSettings(typeof(SAwareness.UIMTracker)); //Works but need many improvements
         public static MenuItemSettings SsCaller = new MenuItemSettings(typeof(SAwareness.SsCaller)); //Missing local ping
         public static MenuItemSettings Tracker = new MenuItemSettings();
         public static MenuItemSettings WaypointTracker = new MenuItemSettings(typeof(SAwareness.WaypointTracker)); //Works
@@ -234,12 +235,15 @@ namespace SAwareness
                 Menu.DestinationTracker.MenuItems.Add(Menu.DestinationTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessDestinationTrackerActive", "Active").SetValue(true)));
                 Menu.CloneTracker.Menu = Menu.Tracker.Menu.AddSubMenu(new LeagueSharp.Common.Menu("CloneTracker", "SAwarenessCloneTracker"));
                 Menu.CloneTracker.MenuItems.Add(Menu.CloneTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessCloneTrackerActive", "Active").SetValue(true)));
-                Menu.CdPanel.Menu = Menu.Tracker.Menu.AddSubMenu(new LeagueSharp.Common.Menu("CDTracker", "SAwarenessCDTracker"));
-                Menu.CdPanel.MenuItems.Add(Menu.CdPanel.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessItemPanelActive", "ItemPanel").SetValue(true)));
-                Menu.CdPanel.MenuItems.Add(Menu.CdPanel.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessCDTrackerScale", "Scale").SetValue(new Slider(100, 100, 0))));
-                Menu.CdPanel.MenuItems.Add(Menu.CdPanel.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessCDTrackerXPos", "X Position").SetValue(new Slider(-1, 10000, 0))));
-                Menu.CdPanel.MenuItems.Add(Menu.CdPanel.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessCDTrackerYPos", "Y Position").SetValue(new Slider(-1, 10000, 0))));
-                Menu.CdPanel.MenuItems.Add(Menu.CdPanel.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessCDTrackerActive", "Active").SetValue(true)));
+                Menu.UiTracker.Menu = Menu.Tracker.Menu.AddSubMenu(new LeagueSharp.Common.Menu("UITracker", "SAwarenessUITracker"));
+                Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessItemPanelActive", "ItemPanel").SetValue(true)));
+                Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerScale", "Scale").SetValue(new Slider(100, 100, 0))));
+                Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerXPos", "X Position").SetValue(new Slider(-1, 10000, 0))));
+                Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerYPos", "Y Position").SetValue(new Slider(-1, 10000, 0))));
+                Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerActive", "Active").SetValue(true)));
+                Menu.UimTracker.Menu = Menu.Tracker.Menu.AddSubMenu(new LeagueSharp.Common.Menu("UIMTracker", "SAwarenessUIMTracker"));
+                Menu.UimTracker.MenuItems.Add(Menu.UimTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUIMTrackerScale", "Scale").SetValue(new Slider(100, 100, 0))));
+                Menu.UimTracker.MenuItems.Add(Menu.UimTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUIMTrackerActive", "Active").SetValue(true)));
                 Menu.SsCaller.Menu = Menu.Tracker.Menu.AddSubMenu(new LeagueSharp.Common.Menu("SSCaller", "SAwarenessSSCaller"));
                 Menu.SsCaller.MenuItems.Add(Menu.SsCaller.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSSCallerPingTimes", "Ping Times").SetValue(new Slider(0, 5, 0))));
                 Menu.SsCaller.MenuItems.Add(Menu.SsCaller.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSSCallerPingType", "Ping Type").SetValue(new StringList(new string[] { "Normal", "Danger", "EnemyMissing", "OnMyWay", "Fallback", "AssistMe" }))));
@@ -301,11 +305,11 @@ namespace SAwareness
                 tempSettings = Menu.AutoPot.AddMenuItemSettings("HealthPot",
                     "SAwarenessAutoPotHealthPot");
                 tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotHealthPotPercent", "Health Percent").SetValue(new Slider(20, 99, 0))));
-                tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotHealthPotActive", "Active").SetValue(false)));
+                tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotHealthPotActive", "Active").SetValue(true)));
                 tempSettings = Menu.AutoPot.AddMenuItemSettings("ManaPot",
                     "SAwarenessAutoPotManaPot");
                 tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotManaPotPercent", "Mana Percent").SetValue(new Slider(20, 99, 0))));
-                tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotManaPotActive", "Active").SetValue(false)));
+                tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotManaPotActive", "Active").SetValue(true)));
                 Menu.AutoPot.MenuItems.Add(Menu.AutoPot.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotActive", "Active").SetValue(true)));
 
                 menu.AddItem(new LeagueSharp.Common.MenuItem("By Screeder", "By Screeder V0.7"));
