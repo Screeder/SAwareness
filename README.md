@@ -30,6 +30,7 @@ Includes the following functions:
   - Destination
   - Clone
   - UI (Side UI Champion CD's, Recall state etc.)
+  - UIM (Last Champ Position)
   - SS
 - Detector
   - Vision (Wards, Traps)
