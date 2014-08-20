@@ -6,8 +6,6 @@ Username: tHer0x
 
 Please download the Sprites folder and place it in your Assemblies folder otherwise it will download the required Sprites.
 
-Use it only in windows or borderless mode. Fullscreen is crashing...
-
 Includes the following functions:
 
 - Timers

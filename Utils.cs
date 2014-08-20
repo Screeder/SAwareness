@@ -59,7 +59,7 @@ namespace SAwareness
     {
         public static bool IsOnScreen(Vector3 vector)
         {
-            float[] screen = Drawing.WorldToScreen(vector);
+            Vector2 screen = Drawing.WorldToScreen(vector);
             if (screen[0] < 0 || screen[0] > Drawing.Width || screen[1] < 0 || screen[1] > Drawing.Height)
                 return false;
             return true;

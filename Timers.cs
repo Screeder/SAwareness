@@ -81,7 +81,7 @@ namespace SAwareness
             {
                 if (ability.Casted)
                 {
-                    float[] mPos = Drawing.WorldToScreen(ability.Owner.ServerPosition);
+                    Vector2 mPos = Drawing.WorldToScreen(ability.Owner.ServerPosition);
                     var endTime = ability.TimeCasted - (int)Game.Time + ability.Delay;
                     var m = (float)Math.Floor(endTime / 60);
                     var s = (float)Math.Ceiling(endTime % 60);
@@ -126,6 +126,7 @@ namespace SAwareness
         private static readonly List<JungleCamp> JungleCamps = new List<JungleCamp>();
         private static readonly List<Obj_AI_Minion> JungleMobList = new List<Obj_AI_Minion>();
 
+        private bool drawActive = true;
         Font font;
 
         public class Health
@@ -308,6 +309,8 @@ namespace SAwareness
             GameObject.OnCreate += Obj_AI_Base_OnCreate;
             Game.OnGameUpdate += Game_OnGameUpdate;
             Game.OnGameProcessPacket += Game_OnGameProcessPacket;
+            Drawing.OnPreReset += Drawing_OnPreReset;
+            Drawing.OnPostReset += Drawing_OnPostReset;
             Drawing.OnEndScene += Drawing_OnEndScene;
             InitJungleMobs();
         }
@@ -317,6 +320,8 @@ namespace SAwareness
             GameObject.OnCreate -= Obj_AI_Base_OnCreate;
             Game.OnGameUpdate -= Game_OnGameUpdate;
             Game.OnGameProcessPacket -= Game_OnGameProcessPacket;
+            Drawing.OnPreReset -= Drawing_OnPreReset;
+            Drawing.OnPostReset -= Drawing_OnPostReset;
             Drawing.OnEndScene -= Drawing_OnEndScene;
         }
 
@@ -362,9 +367,23 @@ namespace SAwareness
             return true;
         }
 
+        void Drawing_OnPostReset(EventArgs args)
+        {
+            if (Drawing.Direct3DDevice == null || Drawing.Direct3DDevice.IsDisposed)
+                return;
+            font.OnResetDevice();
+            drawActive = true;
+        }
+
+        void Drawing_OnPreReset(EventArgs args)
+        {
+            font.OnLostDevice();
+            drawActive = false;
+        }
+
         void Drawing_OnEndScene(EventArgs args)
         {
-            if (!IsActive())
+            if (!IsActive() || !drawActive)
                 return;
 
             if (Menu.JungleTimer.GetActive())
@@ -373,7 +392,7 @@ namespace SAwareness
                 {
                     if (jungleCamp.NextRespawnTime <= 0 || jungleCamp.MapId != GMapId)
                         continue;
-                    float[] sPos = Drawing.WorldToMinimap(jungleCamp.MinimapPosition);
+                    Vector2 sPos = Drawing.WorldToMinimap(jungleCamp.MinimapPosition);
                     DirectXDrawer.DrawText(font, (jungleCamp.NextRespawnTime - (int)Game.Time).ToString(), (int)sPos[0], (int)sPos[1], Color.White);
                     int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
                     if (!jungleCamp.Called && jungleCamp.NextRespawnTime - (int)Game.Time <= time && jungleCamp.NextRespawnTime - (int)Game.Time >= time - 1)
@@ -392,7 +411,7 @@ namespace SAwareness
                     {
                         if (altar.NextRespawnTime <= 0 || altar.MapId != GMapId)
                             continue;
-                        float[] sPos = Drawing.WorldToMinimap(altar.Obj.ServerPosition);
+                        Vector2 sPos = Drawing.WorldToMinimap(altar.Obj.ServerPosition);
                         DirectXDrawer.DrawText(font, (altar.NextRespawnTime - (int)Game.Time).ToString(), (int)sPos[0], (int)sPos[1], Color.White);
                         int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
                         if (!altar.Called && altar.NextRespawnTime - (int)Game.Time <= time && altar.NextRespawnTime - (int)Game.Time >= time - 1)
@@ -412,7 +431,7 @@ namespace SAwareness
                     {
                         if (relic.NextRespawnTime <= 0 || relic.MapId != GMapId)
                             continue;
-                        float[] sPos = Drawing.WorldToMinimap(relic.MinimapPosition);
+                        Vector2 sPos = Drawing.WorldToMinimap(relic.MinimapPosition);
                         DirectXDrawer.DrawText(font, (relic.NextRespawnTime - (int)Game.Time).ToString(), (int)sPos[0], (int)sPos[1], Color.White);
                         int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
                         if (!relic.Called && relic.NextRespawnTime - (int)Game.Time <= time && relic.NextRespawnTime - (int)Game.Time >= time - 1)
@@ -434,7 +453,7 @@ namespace SAwareness
                     {
                         if (inhibitor.NextRespawnTime <= 0)
                             continue;
-                        float[] sPos = Drawing.WorldToMinimap(inhibitor.Obj.Position);
+                        Vector2 sPos = Drawing.WorldToMinimap(inhibitor.Obj.Position);
                         DirectXDrawer.DrawText(font, (inhibitor.NextRespawnTime - (int)Game.Time).ToString(), (int)sPos[0], (int)sPos[1], Color.White);
                         int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
                         if (!inhibitor.Called && inhibitor.NextRespawnTime - (int)Game.Time <= time && inhibitor.NextRespawnTime - (int)Game.Time >= time - 1)
@@ -454,7 +473,7 @@ namespace SAwareness
                     {
                         if (health.NextRespawnTime <= 0 || health.MapId != GMapId)
                             continue;
-                        float[] sPos = Drawing.WorldToMinimap(health.Position);
+                        Vector2 sPos = Drawing.WorldToMinimap(health.Position);
                         DirectXDrawer.DrawText(font, (health.NextRespawnTime - (int)Game.Time).ToString(), (int)sPos[0], (int)sPos[1], Color.White);
                         int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
                         if (!health.Called && health.NextRespawnTime - (int)Game.Time <= time && health.NextRespawnTime - (int)Game.Time >= time - 1)

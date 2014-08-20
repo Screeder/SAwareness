@@ -13,6 +13,7 @@ namespace SAwareness
     class Health
     {
         Font font;
+        private bool drawActive = true;
 
         public Health()
         {
@@ -26,7 +27,23 @@ namespace SAwareness
                 Console.WriteLine("Health: Cannot create Font");
                 return;
             }
+            Drawing.OnPreReset += Drawing_OnPreReset;
+            Drawing.OnPostReset += Drawing_OnPostReset;
             Drawing.OnEndScene += Drawing_OnEndScene;
+        }
+
+        void Drawing_OnPostReset(EventArgs args)
+        {
+            if (Drawing.Direct3DDevice == null || Drawing.Direct3DDevice.IsDisposed)
+                return;
+            font.OnResetDevice();
+            drawActive = true;
+        }
+
+        void Drawing_OnPreReset(EventArgs args)
+        {
+            font.OnLostDevice();
+            drawActive = false;
         }
 
         void Drawing_OnEndScene(EventArgs args)
@@ -37,6 +54,8 @@ namespace SAwareness
 
         ~Health()
         {
+            Drawing.OnPreReset -= Drawing_OnPreReset;
+            Drawing.OnPostReset -= Drawing_OnPostReset;
             Drawing.OnEndScene -= Drawing_OnEndScene;
         }
 
@@ -47,7 +66,7 @@ namespace SAwareness
 
         private void DrawInhibitorHealth()
         {
-            if (!IsActive())
+            if (!IsActive() || !drawActive)
                 return;
             if (!Menu.InhibitorHealth.GetActive())
                 return;
@@ -58,7 +77,7 @@ namespace SAwareness
             {
                 if (!inhibitor.IsDead && inhibitor.IsValid && inhibitor.Health > 0)
                 {
-                    float[] pos = Drawing.WorldToMinimap(inhibitor.Position);
+                    Vector2 pos = Drawing.WorldToMinimap(inhibitor.Position);
                     int health = 0;
                     StringList mode =
                         Menu.Health.GetMenuItem("SAwarenessHealthMode")
@@ -83,7 +102,7 @@ namespace SAwareness
             {
                 if (!inhibitor.IsDead && inhibitor.IsValid)
                 {
-                    float[] pos = Drawing.WorldToMinimap(inhibitor.Position);
+                    Vector2 pos = Drawing.WorldToMinimap(inhibitor.Position);
                     int health = 0;
                     StringList mode =
                         Menu.Health.GetMenuItem("SAwarenessHealthMode")
@@ -115,7 +134,7 @@ namespace SAwareness
             {
                 if (!turret.IsDead && turret.IsValid && turret.Health != 9999)
                 {
-                    float[] pos = Drawing.WorldToMinimap(turret.Position);
+                    Vector2 pos = Drawing.WorldToMinimap(turret.Position);
                     int health = 0;
                     StringList mode =
                         Menu.Health.GetMenuItem("SAwarenessHealthMode")

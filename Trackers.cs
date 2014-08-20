@@ -190,8 +190,8 @@ namespace SAwareness
                         HidObjects.RemoveAt(i);
                         break;
                     }
-                    float[] objMPos = Drawing.WorldToMinimap(obj.Position);
-                    float[] objPos = Drawing.WorldToScreen(obj.Position);
+                    Vector2 objMPos = Drawing.WorldToMinimap(obj.Position);
+                    Vector2 objPos = Drawing.WorldToScreen(obj.Position);
                     List<Vector3> posList = new List<Vector3>();
                     switch (obj.ObjectBase.Type)
                     {
@@ -200,8 +200,8 @@ namespace SAwareness
                             posList = GetVision(obj.Position, WardRange);
                             for (int j = 0; j < posList.Count; j++)
                             {
-                                float[] visionPos1 = Drawing.WorldToScreen(posList[i]);
-                                float[] visionPos2 = Drawing.WorldToScreen(posList[i]);
+                                Vector2 visionPos1 = Drawing.WorldToScreen(posList[i]);
+                                Vector2 visionPos2 = Drawing.WorldToScreen(posList[i]);
                                 Drawing.DrawLine(visionPos1[0], visionPos1[1], visionPos2[0], visionPos2[1], 1.0f, obj.ObjectBase.Color);
                             }
                             Drawing.DrawText(objMPos[0], objMPos[1], obj.ObjectBase.Color, "S");
@@ -212,8 +212,8 @@ namespace SAwareness
                             posList = GetVision(obj.Position, TrapRange);
                             for (int j = 0; j < posList.Count; j++)
                             {
-                                float[] visionPos1 = Drawing.WorldToScreen(posList[i]);
-                                float[] visionPos2 = Drawing.WorldToScreen(posList[i]);
+                                Vector2 visionPos1 = Drawing.WorldToScreen(posList[i]);
+                                Vector2 visionPos2 = Drawing.WorldToScreen(posList[i]);
                                 Drawing.DrawLine(visionPos1[0], visionPos1[1], visionPos2[0], visionPos2[1], 1.0f, obj.ObjectBase.Color);
                             }
                             Drawing.DrawText(objMPos[0], objMPos[1], obj.ObjectBase.Color, "T");
@@ -224,8 +224,8 @@ namespace SAwareness
                             posList = GetVision(obj.Position, WardRange);
                             for (int j = 0; j < posList.Count; j++)
                             {
-                                float[] visionPos1 = Drawing.WorldToScreen(posList[i]);
-                                float[] visionPos2 = Drawing.WorldToScreen(posList[i]);
+                                Vector2 visionPos1 = Drawing.WorldToScreen(posList[i]);
+                                Vector2 visionPos2 = Drawing.WorldToScreen(posList[i]);
                                 Drawing.DrawLine(visionPos1[0], visionPos1[1], visionPos2[0], visionPos2[1], 1.0f, obj.ObjectBase.Color);
                             }
                             Drawing.DrawText(objMPos[0], objMPos[1], obj.ObjectBase.Color, "V");
@@ -570,8 +570,8 @@ namespace SAwareness
                 {
                     if (ability.Casted)
                     {
-                        float[] startPos = Drawing.WorldToScreen(ability.StartPos);
-                        float[] endPos = Drawing.WorldToScreen(ability.EndPos);
+                        Vector2 startPos = Drawing.WorldToScreen(ability.StartPos);
+                        Vector2 endPos = Drawing.WorldToScreen(ability.EndPos);
 
                         if (ability.OutOfBush)
                         {
@@ -936,23 +936,37 @@ namespace SAwareness
             Game.OnGameUpdate += Game_OnGameUpdate;
             
             Drawing.OnPreReset += Drawing_OnPreReset;
-            Drawing.OnSetRenderTarget += Drawing_OnSetRenderTarget;
+            Drawing.OnPostReset += Drawing_OnPostReset;
             Drawing.OnEndScene += Drawing_OnEndScene;
         }
 
-        void Drawing_OnSetRenderTarget(EventArgs args)
+        void Drawing_OnPostReset(EventArgs args)
         {
-            drawActive = false;
+            if (Drawing.Direct3DDevice == null || Drawing.Direct3DDevice.IsDisposed)
+                return;
+            S.OnResetDevice();
+            ChampF.OnResetDevice();
+            SpellF.OnResetDevice();
+            SumF.OnResetDevice();
+            RecF.OnResetDevice();
+            drawActive = true;
         }
 
         void Drawing_OnPreReset(EventArgs args)
         {
+            S.OnLostDevice();
+            ChampF.OnLostDevice();
+            SpellF.OnLostDevice();
+            SumF.OnLostDevice();
+            RecF.OnLostDevice();
             drawActive = false;
         }
 
         ~UITracker()
         {
             Game.OnGameUpdate -= Game_OnGameUpdate;
+            Drawing.OnPreReset -= Drawing_OnPreReset;
+            Drawing.OnPostReset -= Drawing_OnPostReset;
             Drawing.OnEndScene -= Drawing_OnEndScene;
         }
 
@@ -1342,7 +1356,7 @@ namespace SAwareness
                 if (Menu.UiTracker.GetMenuItem("SAwarenessUITrackerXPos").GetValue<Slider>().Value != oldX || Menu.UiTracker.GetMenuItem("SAwarenessUITrackerYPos").GetValue<Slider>().Value != oldY)
                     CalculateSizes();
 
-                if (S.IsDisposed)
+                if (S == null || S.IsDisposed)
                 {
                     return;
                 }
@@ -1355,36 +1369,36 @@ namespace SAwareness
                     //DrawSprite(S, enemy.Value.PassiveTexture, nPassiveSize, Color.White);
                     DirectXDrawer.DrawSprite(S, enemy.Value.SGui.SpellQ.Texture,
                         enemy.Value.SGui.SpellQ.SizeSideBar.ScaleSize(percentScale, _screen),
-                        new[] {1.0f*percentScale, 1.0f*percentScale});
+                        new[] { 1.0f * percentScale, 1.0f * percentScale });
                     DirectXDrawer.DrawSprite(S, enemy.Value.SGui.SpellW.Texture,
                         enemy.Value.SGui.SpellW.SizeSideBar.ScaleSize(percentScale, _screen),
-                        new[] {1.0f*percentScale, 1.0f*percentScale});
+                        new[] { 1.0f * percentScale, 1.0f * percentScale });
                     DirectXDrawer.DrawSprite(S, enemy.Value.SGui.SpellE.Texture,
                         enemy.Value.SGui.SpellE.SizeSideBar.ScaleSize(percentScale, _screen),
-                        new[] {1.0f*percentScale, 1.0f*percentScale});
+                        new[] { 1.0f * percentScale, 1.0f * percentScale });
                     DirectXDrawer.DrawSprite(S, enemy.Value.SGui.SpellR.Texture,
                         enemy.Value.SGui.SpellR.SizeSideBar.ScaleSize(percentScale, _screen),
-                        new[] {1.0f*percentScale, 1.0f*percentScale});
+                        new[] { 1.0f * percentScale, 1.0f * percentScale });
 
                     DirectXDrawer.DrawSprite(S, enemy.Value.SGui.Champ.Texture,
                         enemy.Value.SGui.Champ.SizeSideBar.ScaleSize(percentScale, _screen),
-                        new[] {1.0f*percentScale, 1.0f*percentScale});
+                        new[] { 1.0f * percentScale, 1.0f * percentScale });
                     DirectXDrawer.DrawSprite(S, enemy.Value.SGui.SpellSum1.Texture,
                         enemy.Value.SGui.SpellSum1.SizeSideBar.ScaleSize(percentScale, _screen),
-                        new[] {1.0f*percentScale, 1.0f*percentScale});
+                        new[] { 1.0f * percentScale, 1.0f * percentScale });
                     DirectXDrawer.DrawSprite(S, enemy.Value.SGui.SpellSum2.Texture,
                         enemy.Value.SGui.SpellSum2.SizeSideBar.ScaleSize(percentScale, _screen),
-                        new[] {1.0f*percentScale, 1.0f*percentScale});
+                        new[] { 1.0f * percentScale, 1.0f * percentScale });
 
                     DirectXDrawer.DrawSprite(S, _backBar,
                         enemy.Value.SGui.BackBar.SizeSideBar.ScaleSize(percentScale, _screen),
-                        new[] {1.0f*percentScale*0.75f, 1.0f*percentScale});
+                        new[] { 1.0f * percentScale * 0.75f, 1.0f * percentScale });
                     DirectXDrawer.DrawSprite(S, _healthBar,
                         enemy.Value.SGui.HealthBar.SizeSideBar.ScaleSize(percentScale, _screen),
-                        new[] {1.0f*percentHealth*percentScale*0.75f, 1.0f*percentScale});
+                        new[] { 1.0f * percentHealth * percentScale * 0.75f, 1.0f * percentScale });
                     DirectXDrawer.DrawSprite(S, _manaBar,
                         enemy.Value.SGui.ManaBar.SizeSideBar.ScaleSize(percentScale, _screen),
-                        new[] {1.0f*percentMana*percentScale*0.75f, 1.0f*percentScale});
+                        new[] { 1.0f * percentMana * percentScale * 0.75f, 1.0f * percentScale });
 
                     if (Menu.UiTracker.GetMenuItem("SAwarenessItemPanelActive").GetValue<bool>())
                     {
@@ -1392,7 +1406,7 @@ namespace SAwareness
                         {
                             DirectXDrawer.DrawSprite(S, spriteInfo.Texture,
                                 spriteInfo.SizeSideBar.ScaleSize(percentScale, _screen),
-                                new[] {1.0f*percentScale, 1.0f*percentScale});
+                                new[] { 1.0f * percentScale, 1.0f * percentScale });
                         }
                     }
 
@@ -1400,43 +1414,43 @@ namespace SAwareness
                     {
                         DirectXDrawer.DrawSprite(S, _overlaySpellItem,
                             enemy.Value.SGui.SpellQ.SizeSideBar.ScaleSize(percentScale, _screen),
-                            new ColorBGRA(Color3.White, 0.55f), new[] {1.0f*percentScale, 1.0f*percentScale});
+                            new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
                     }
                     if (enemy.Value.SGui.SpellW.Cd > 0.0f || enemy.Key.Spellbook.GetSpell(SpellSlot.W).Level < 1)
                     {
                         DirectXDrawer.DrawSprite(S, _overlaySpellItem,
                             enemy.Value.SGui.SpellW.SizeSideBar.ScaleSize(percentScale, _screen),
-                            new ColorBGRA(Color3.White, 0.55f), new[] {1.0f*percentScale, 1.0f*percentScale});
+                            new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
                     }
                     if (enemy.Value.SGui.SpellE.Cd > 0.0f || enemy.Key.Spellbook.GetSpell(SpellSlot.E).Level < 1)
                     {
                         DirectXDrawer.DrawSprite(S, _overlaySpellItem,
                             enemy.Value.SGui.SpellE.SizeSideBar.ScaleSize(percentScale, _screen),
-                            new ColorBGRA(Color3.White, 0.55f), new[] {1.0f*percentScale, 1.0f*percentScale});
+                            new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
                     }
                     if (enemy.Value.SGui.SpellR.Cd > 0.0f || enemy.Key.Spellbook.GetSpell(SpellSlot.R).Level < 1)
                     {
                         DirectXDrawer.DrawSprite(S, _overlaySpellItem,
                             enemy.Value.SGui.SpellR.SizeSideBar.ScaleSize(percentScale, _screen),
-                            new ColorBGRA(Color3.White, 0.55f), new[] {1.0f*percentScale, 1.0f*percentScale});
+                            new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
                     }
                     if (enemy.Value.SGui.DeathTime > 0.0f)
                     {
                         DirectXDrawer.DrawSprite(S, _overlaySummoner,
                             enemy.Value.SGui.Champ.SizeSideBar.ScaleSize(percentScale, _screen),
-                            new ColorBGRA(Color3.White, 0.55f), new[] {1.0f*percentScale, 1.0f*percentScale});
+                            new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
                     }
                     if (enemy.Value.SGui.SpellSum1.Cd > 0.0f)
                     {
                         DirectXDrawer.DrawSprite(S, _overlaySummonerSpell,
                             enemy.Value.SGui.SpellSum1.SizeSideBar.ScaleSize(percentScale, _screen),
-                            new ColorBGRA(Color3.White, 0.55f), new[] {1.0f*percentScale, 1.0f*percentScale});
+                            new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
                     }
                     if (enemy.Value.SGui.SpellSum2.Cd > 0.0f)
                     {
                         DirectXDrawer.DrawSprite(S, _overlaySummonerSpell,
                             enemy.Value.SGui.SpellSum2.SizeSideBar.ScaleSize(percentScale, _screen),
-                            new ColorBGRA(Color3.White, 0.55f), new[] {1.0f*percentScale, 1.0f*percentScale});
+                            new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
                     }
                     if (Menu.RecallDetector.GetActive())
                     {
@@ -1446,7 +1460,7 @@ namespace SAwareness
                             var percentRecall = CalcRecallBar(info);
                             if (info != null && info.StartTime != 0)
                             {
-                                float time = Game.Time + info.Recall.Duration/1000 - info.StartTime;
+                                float time = Game.Time + info.Recall.Duration / 1000 - info.StartTime;
                                 if (time > 0.0f &&
                                     (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportStart ||
                                         info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallStarted))
@@ -1454,7 +1468,7 @@ namespace SAwareness
                                     DirectXDrawer.DrawSprite(S, _overlayRecall,
                                         enemy.Value.SGui.RecallBar.SizeSideBar.ScaleSize(percentScale, _screen),
                                         new ColorBGRA(Color3.White, 0.80f),
-                                        new[] {1.0f*percentRecall*percentScale, 1.0f*percentScale});
+                                        new[] { 1.0f * percentRecall * percentScale, 1.0f * percentScale });
                                 }
                                 else if (time < 30.0f &&
                                             (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd ||
@@ -1463,7 +1477,7 @@ namespace SAwareness
                                     DirectXDrawer.DrawSprite(S, _overlayRecall,
                                         enemy.Value.SGui.RecallBar.SizeSideBar.ScaleSize(percentScale, _screen),
                                         new ColorBGRA(Color3.White, 0.80f),
-                                        new[] {1.0f*percentScale, 1.0f*percentScale});
+                                        new[] { 1.0f * percentScale, 1.0f * percentScale });
                                 }
                                 else if (time < 30.0f &&
                                             (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportAbort ||
@@ -1472,7 +1486,7 @@ namespace SAwareness
                                     DirectXDrawer.DrawSprite(S, _overlayRecall,
                                         enemy.Value.SGui.RecallBar.SizeSideBar.ScaleSize(percentScale, _screen),
                                         new ColorBGRA(Color3.White, 0.80f),
-                                        new[] {1.0f*percentScale, 1.0f*percentScale});
+                                        new[] { 1.0f * percentScale, 1.0f * percentScale });
                                 }
                             }
                         }
@@ -1531,7 +1545,7 @@ namespace SAwareness
                         Recall.RecallInfo info = GetRecall(enemy.Key.NetworkId);
                         if (info != null && info.StartTime != 0)
                         {
-                            float time = Game.Time + info.Recall.Duration/1000 - info.StartTime;
+                            float time = Game.Time + info.Recall.Duration / 1000 - info.StartTime;
                             if (time > 0.0f &&
                                 (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportStart ||
                                     info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallStarted))
@@ -1599,11 +1613,27 @@ namespace SAwareness
                 Thread.Sleep(10);
             }
 
+            Drawing.OnPreReset += Drawing_OnPreReset;
+            Drawing.OnPostReset += Drawing_OnPostReset;
             Drawing.OnEndScene += Drawing_OnEndScene;
+        }
+
+        void Drawing_OnPostReset(EventArgs args)
+        {
+            S.OnResetDevice();
+            drawActive = true;
+        }
+
+        void Drawing_OnPreReset(EventArgs args)
+        {
+            S.OnLostDevice();
+            drawActive = false;
         }
 
         ~UIMTracker()
         {
+            Drawing.OnPreReset -= Drawing_OnPreReset;
+            Drawing.OnPostReset -= Drawing_OnPostReset;
             Drawing.OnEndScene -= Drawing_OnEndScene;
         }
 
@@ -1659,7 +1689,7 @@ namespace SAwareness
                 {
                     if(enemy.Key.IsVisible)
                         continue;
-                    float[] serverPos = Drawing.WorldToMinimap(enemy.Key.ServerPosition);
+                    Vector2 serverPos = Drawing.WorldToMinimap(enemy.Key.ServerPosition);
                     Size mPos = new Size((int) (serverPos[0] - 32 * 0.3f), (int) (serverPos[1] - 32 * 0.3f));
                     DirectXDrawer.DrawSprite(S, enemy.Value,
                         mPos.ScaleSize(percentScale, new Vector2(mPos.Width, mPos.Height)),
@@ -1708,8 +1738,8 @@ namespace SAwareness
                     var waypoints = enemy.GetWaypoints();
                     for (int i = 0; i < waypoints.Count - 1; i++)
                     {
-                        float[] oWp;
-                        float[] nWp;
+                        Vector2 oWp;
+                        Vector2 nWp;
                         float time = 0;
                         oWp = Drawing.WorldToScreen(waypoints[i].To3D());
                         nWp = Drawing.WorldToScreen(waypoints[i + 1].To3D());

@@ -36,7 +36,7 @@ namespace SAwareness
                     {
                         if (minion.SkinName == monster && minion.IsVisible)
                         {
-                            float[] pos = Drawing.WorldToScreen(minion.ServerPosition);
+                            Vector2 pos = Drawing.WorldToScreen(minion.ServerPosition);
                             Drawing.DrawText(pos[0], pos[1], System.Drawing.Color.SkyBlue, minion.Health != 0 ? (((int)minion.Health - smiteDamage)).ToString() : "");
                         }
                     }

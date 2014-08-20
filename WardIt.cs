@@ -423,8 +423,8 @@ namespace SAwareness
 
         void DrawArrow(Vector3 start, Vector3 end, System.Drawing.Color color) //TODO. Check if its correct calculated
         {
-            float[] mPos1 = Drawing.WorldToScreen(start);
-            float[] mPos2 = Drawing.WorldToScreen(end);
+            Vector2 mPos1 = Drawing.WorldToScreen(start);
+            Vector2 mPos2 = Drawing.WorldToScreen(end);
             Drawing.DrawLine(mPos1[0], mPos1[1], mPos2[0], mPos2[1], 1.0f, color);
             //Vector2 mmPos2 = new Vector2(mPos2[0], mPos2[1]);
             //Vector2 end1 = Geometry.Rotated(mmPos2, Geometry.DegreeToRadian(45));

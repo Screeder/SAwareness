@@ -78,7 +78,7 @@ namespace SAwareness
             {
                 if (hero.IsValid && hero.IsVisible && Vector3.Distance(ObjectManager.Player.ServerPosition, hero.ServerPosition) < 1000/**Variable*/)
                 {
-                    float[] pos = Drawing.WorldToScreen(hero.ServerPosition);
+                    Vector2 pos = Drawing.WorldToScreen(hero.ServerPosition);
                     GamePacket gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos[0], pos[1], 0, Packet.PingType.Danger));
                     gPacketT.Send();
                     //TODO: Check for Teleport etc.
