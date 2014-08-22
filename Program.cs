@@ -164,6 +164,7 @@ namespace SAwareness
         public static MenuItemSettings SkinChanger = new MenuItemSettings(typeof(SAwareness.SkinChanger)); //Need to send local packet
         public static MenuItemSettings AutoSmite = new MenuItemSettings(typeof(SAwareness.AutoSmite)); //Works
         public static MenuItemSettings AutoPot = new MenuItemSettings(typeof(SAwareness.AutoPot));
+        public static MenuItemSettings AutoShield = new MenuItemSettings(typeof(SAwareness.AutoShield));
     }
 
     class Program
@@ -240,6 +241,7 @@ namespace SAwareness
                 Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerScale", "Scale").SetValue(new Slider(100, 100, 0))));
                 Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerXPos", "X Position").SetValue(new Slider(-1, 10000, 0))));
                 Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerYPos", "Y Position").SetValue(new Slider(-1, 10000, 0))));
+                Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerMode", "Mode").SetValue(new StringList(new string[] { "Side", "Unit", "Both" }))));
                 Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerActive", "Active").SetValue(true)));
                 Menu.UimTracker.Menu = Menu.Tracker.Menu.AddSubMenu(new LeagueSharp.Common.Menu("UIMTracker", "SAwarenessUIMTracker"));
                 Menu.UimTracker.MenuItems.Add(Menu.UimTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUIMTrackerScale", "Scale").SetValue(new Slider(100, 100, 0))));
@@ -264,7 +266,7 @@ namespace SAwareness
                 Menu.RecallDetector.MenuItems.Add(Menu.RecallDetector.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessRecallDetectorActive", "Active").SetValue(true)));
                 Menu.Detector.MenuItems.Add(Menu.Detector.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessDetectorActive", "Active").SetValue(true)));
 
-                Menu.Ganks.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Ganks | Not implemented", "SAwarenessGanks"));
+                Menu.Ganks.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Ganks", "SAwarenessGanks"));
                 Menu.GankTracker.Menu = Menu.Ganks.Menu.AddSubMenu(new LeagueSharp.Common.Menu("GankTracker", "SAwarenessGankTracker"));
                 Menu.GankTracker.MenuItems.Add(Menu.GankTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessGankTrackerActive", "Active").SetValue(false)));
                 Menu.GankDetector.Menu = Menu.Ganks.Menu.AddSubMenu(new LeagueSharp.Common.Menu("GankDetector", "SAwarenessGankDetector"));
@@ -311,6 +313,8 @@ namespace SAwareness
                 tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotManaPotPercent", "Mana Percent").SetValue(new Slider(20, 99, 0))));
                 tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotManaPotActive", "Active").SetValue(true)));
                 Menu.AutoPot.MenuItems.Add(Menu.AutoPot.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotActive", "Active").SetValue(true)));
+                Menu.AutoShield.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("AutoShield | Not implemented", "SAwarenessAutoShield"));
+                Menu.AutoShield.MenuItems.Add(Menu.Ward.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoShieldActive", "Active").SetValue(true)));
 
                 menu.AddItem(new LeagueSharp.Common.MenuItem("By Screeder", "By Screeder V0.7"));
                 menu.AddToMainMenu();

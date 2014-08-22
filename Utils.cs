@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using LeagueSharp;
+using LeagueSharp.Common;
 using SharpDX;
 using SharpDX.Direct3D9;
 using Color = SharpDX.Color;
@@ -70,6 +71,11 @@ namespace SAwareness
             size.Height = (int)(((size.Height - mainPos.Y) * scale) + mainPos.Y);
             size.Width = (int)(((size.Width - mainPos.X) * scale) + mainPos.X);
             return size;
+        }
+
+        public static bool IsInside(Vector2 mousePos, Size windowPos, int width, int height)
+        {
+            return Utils.IsUnderRectangle(mousePos, windowPos.Width, windowPos.Height, width, height);
         }
     }
 

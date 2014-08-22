@@ -4,16 +4,13 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 using SharpDX.Direct3D9;
 using Color = SharpDX.Color;
 using Font = SharpDX.Direct3D9.Font;
-using Rectangle = SharpDX.Rectangle;
 
 namespace SAwareness
 {
@@ -938,8 +935,55 @@ namespace SAwareness
             Drawing.OnPreReset += Drawing_OnPreReset;
             Drawing.OnPostReset += Drawing_OnPostReset;
             Drawing.OnEndScene += Drawing_OnEndScene;
+            Game.OnWndProc += Game_OnWndProc;
             AppDomain.CurrentDomain.DomainUnload += delegate { Drawing_OnPreReset(new EventArgs()); };
             AppDomain.CurrentDomain.ProcessExit += delegate { Drawing_OnPreReset(new EventArgs()); };
+        }
+
+        void Game_OnWndProc(WndEventArgs args)
+        {
+            if (!IsActive())
+                return;
+            HandleInput((WindowsMessages)args.Msg, Utils.GetCursorPos(), args.WParam);
+        }
+
+        void HandleInput(WindowsMessages message, Vector2 cursorPos, uint key)
+        {
+            if (message != WindowsMessages.WM_LBUTTONDOWN && message != WindowsMessages.WM_MOUSEMOVE && message != WindowsMessages.WM_LBUTTONUP || (!moveActive && message == WindowsMessages.WM_MOUSEMOVE))
+            {
+                return;
+            }
+            if (message == WindowsMessages.WM_LBUTTONDOWN)
+            {
+                lastCursorPos = cursorPos;
+            }
+            if (message == WindowsMessages.WM_LBUTTONUP)
+            {
+                lastCursorPos = new Vector2();
+                moveActive = false;
+                return;
+            }
+            KeyValuePair<Obj_AI_Hero, ChampInfos> firstHero = new KeyValuePair<Obj_AI_Hero, ChampInfos>();
+            foreach (KeyValuePair<Obj_AI_Hero, ChampInfos> enemy in Enemies.Reverse())
+            {
+                firstHero = enemy;
+                break;
+            }
+            if (!Common.IsInside(cursorPos, firstHero.Value.SGui.SpellPassive.SizeSideBar, hudSize.Width, hudSize.Height ))
+            {
+                return;
+            }
+            moveActive = true;
+            if (message == WindowsMessages.WM_MOUSEMOVE)
+            {
+                Slider curSliderX = Menu.UiTracker.GetMenuItem("SAwarenessUITrackerXPos").GetValue<Slider>();
+                Slider curSliderY = Menu.UiTracker.GetMenuItem("SAwarenessUITrackerYPos").GetValue<Slider>();
+                Menu.UiTracker.GetMenuItem("SAwarenessUITrackerXPos")
+                    .SetValue(new Slider((int)(curSliderX.Value + cursorPos.X - lastCursorPos.X), curSliderX.MinValue, curSliderX.MaxValue));
+                Menu.UiTracker.GetMenuItem("SAwarenessUITrackerYPos")
+                    .SetValue(new Slider((int)(curSliderY.Value + cursorPos.Y - lastCursorPos.Y), curSliderY.MinValue, curSliderY.MaxValue));
+                lastCursorPos = cursorPos;
+            }
         }
 
         void Drawing_OnPostReset(EventArgs args)
@@ -998,6 +1042,9 @@ namespace SAwareness
         private float scalePc = 1.0f;
         private int oldX = 0;
         private int oldY = 0;
+        private Size hudSize = new Size();
+        private bool moveActive = false;
+        private Vector2 lastCursorPos = new Vector2();
 
         public bool IsActive()
         {
@@ -1081,57 +1128,71 @@ namespace SAwareness
             return true;
         }
 
-        private void CalculateSizes() /*TODO: Look for http://sharpdx.org/documentation/api/p-sharpdx-direct3d9-sprite-transform 
-                                        to resize sprites*/
+        private void CalculateSizes()
         {
+            StringList t = Menu.SsCaller.GetMenuItem("SAwarenessSSCallerPingType").GetValue<StringList>();
             var count = 0;
             int xOffset = Menu.UiTracker.GetMenuItem("SAwarenessUITrackerXPos").GetValue<Slider>().Value;
             oldX = xOffset;
             int yOffset = Menu.UiTracker.GetMenuItem("SAwarenessUITrackerYPos").GetValue<Slider>().Value;
             oldY = yOffset;
             int yOffsetAdd = 20;
+            hudSize = new Size();
             foreach (var enemy in Enemies)
             {
-                enemy.Value.SGui.SpellPassive.SizeSideBar = new Size((int)xOffset - _champSize.Width - _sumSize.Width - _spellSize.Width, (int)yOffset - _spellSize.Height * count - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
-                enemy.Value.SGui.SpellQ.SizeSideBar = new Size(enemy.Value.SGui.SpellPassive.SizeSideBar.Width, (int)yOffset - _spellSize.Height * (count * 4 - 1) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
-                enemy.Value.SGui.SpellW.SizeSideBar = new Size(enemy.Value.SGui.SpellPassive.SizeSideBar.Width, (int)yOffset - _spellSize.Height * (count * 4 - 2) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
-                enemy.Value.SGui.SpellE.SizeSideBar = new Size(enemy.Value.SGui.SpellPassive.SizeSideBar.Width, (int)yOffset - _spellSize.Height * (count * 4 - 3) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
-                enemy.Value.SGui.SpellR.SizeSideBar = new Size(enemy.Value.SGui.SpellPassive.SizeSideBar.Width, (int)yOffset - _spellSize.Height * (count * 4 - 4) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
-
-                enemy.Value.SGui.Champ.SizeSideBar = new Size((int)xOffset - _champSize.Width - _sumSize.Width, (int)yOffset - _champSize.Height * count - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
-                enemy.Value.SGui.SpellSum1.SizeSideBar = new Size((int)xOffset - _sumSize.Width, (int)yOffset - _sumSize.Height * (count * 2) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
-                enemy.Value.SGui.SpellSum2.SizeSideBar = new Size(enemy.Value.SGui.SpellSum1.SizeSideBar.Width, (int)yOffset - _sumSize.Height * (count * 2 - 1) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
-
-                enemy.Value.SGui.Item[0] = new ChampInfos.Gui.SpriteInfos();
-                enemy.Value.SGui.Item[0].SizeSideBar = new Size(enemy.Value.SGui.SpellR.SizeSideBar.Width, enemy.Value.SGui.SpellR.SizeSideBar.Height + _spellSize.Height);
-                for (int i = 1; i < enemy.Value.SGui.Item.Length; i++)
+                if (t.SelectedIndex == 0 || t.SelectedIndex == 2)
                 {
-                    enemy.Value.SGui.Item[i] = new ChampInfos.Gui.SpriteInfos();
-                    enemy.Value.SGui.Item[i].SizeSideBar = new Size(enemy.Value.SGui.Item[0].SizeSideBar.Width + _spellSize.Width * i, enemy.Value.SGui.Item[0].SizeSideBar.Height);
+                    enemy.Value.SGui.SpellPassive.SizeSideBar = new Size((int)xOffset - _champSize.Width - _sumSize.Width - _spellSize.Width, (int)yOffset - _spellSize.Height * (count * 4 - 0) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
+                    enemy.Value.SGui.SpellQ.SizeSideBar = new Size(enemy.Value.SGui.SpellPassive.SizeSideBar.Width, (int)yOffset - _spellSize.Height * (count * 4 - 1) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
+                    enemy.Value.SGui.SpellW.SizeSideBar = new Size(enemy.Value.SGui.SpellPassive.SizeSideBar.Width, (int)yOffset - _spellSize.Height * (count * 4 - 2) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
+                    enemy.Value.SGui.SpellE.SizeSideBar = new Size(enemy.Value.SGui.SpellPassive.SizeSideBar.Width, (int)yOffset - _spellSize.Height * (count * 4 - 3) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
+                    enemy.Value.SGui.SpellR.SizeSideBar = new Size(enemy.Value.SGui.SpellPassive.SizeSideBar.Width, (int)yOffset - _spellSize.Height * (count * 4 - 4) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
+
+                    enemy.Value.SGui.Champ.SizeSideBar = new Size((int)xOffset - _champSize.Width - _sumSize.Width, (int)yOffset - _champSize.Height * count - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
+                    enemy.Value.SGui.SpellSum1.SizeSideBar = new Size((int)xOffset - _sumSize.Width, (int)yOffset - _sumSize.Height * (count * 2) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
+                    enemy.Value.SGui.SpellSum2.SizeSideBar = new Size(enemy.Value.SGui.SpellSum1.SizeSideBar.Width, (int)yOffset - _sumSize.Height * (count * 2 - 1) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
+
+                    if (enemy.Value.SGui.Item[0] == null)
+                        enemy.Value.SGui.Item[0] = new ChampInfos.Gui.SpriteInfos();
+                    enemy.Value.SGui.Item[0].SizeSideBar = new Size(enemy.Value.SGui.SpellR.SizeSideBar.Width, enemy.Value.SGui.SpellR.SizeSideBar.Height + _spellSize.Height);
+                    for (int i = 1; i < enemy.Value.SGui.Item.Length; i++)
+                    {
+                        if (enemy.Value.SGui.Item[i] == null)
+                            enemy.Value.SGui.Item[i] = new ChampInfos.Gui.SpriteInfos();
+                        enemy.Value.SGui.Item[i].SizeSideBar = new Size(enemy.Value.SGui.Item[0].SizeSideBar.Width + _spellSize.Width * i, enemy.Value.SGui.Item[0].SizeSideBar.Height);
+                    }
+
+                    enemy.Value.SGui.SpellSum1.CoordsSideBar = new Size((int)xOffset - _sumSize.Width / 2, (int)yOffset - _sumSize.Height * count * 2 + 5 - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
+                    enemy.Value.SGui.SpellSum2.CoordsSideBar = new Size((int)enemy.Value.SGui.SpellSum1.CoordsSideBar.Width, (int)yOffset - _sumSize.Height * (count * 2 - 1) + 5 - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
+                    enemy.Value.SGui.Champ.CoordsSideBar = new Size((int)xOffset - _champSize.Width / 2 - _sumSize.Width, (int)yOffset - _champSize.Height * count + 10 - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
+                    enemy.Value.SGui.SpellPassive.CoordsSideBar = new Size((int)xOffset - _champSize.Width - _sumSize.Width - _spellSize.Width / 2, (int)yOffset - _spellSize.Height * (count * 4) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
+                    enemy.Value.SGui.SpellQ.CoordsSideBar = new Size((int)enemy.Value.SGui.SpellPassive.CoordsSideBar.Width, (int)yOffset - _spellSize.Height * (count * 4 - 1) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
+                    enemy.Value.SGui.SpellW.CoordsSideBar = new Size((int)enemy.Value.SGui.SpellPassive.CoordsSideBar.Width, (int)yOffset - _spellSize.Height * (count * 4 - 2) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
+                    enemy.Value.SGui.SpellE.CoordsSideBar = new Size((int)enemy.Value.SGui.SpellPassive.CoordsSideBar.Width, (int)yOffset - _spellSize.Height * (count * 4 - 3) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
+                    enemy.Value.SGui.SpellR.CoordsSideBar = new Size((int)enemy.Value.SGui.SpellPassive.CoordsSideBar.Width, (int)yOffset - _spellSize.Height * (count * 4 - 4) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
+
+                    enemy.Value.SGui.BackBar.SizeSideBar = new Size(enemy.Value.SGui.Champ.SizeSideBar.Width, enemy.Value.SGui.SpellSum2.SizeSideBar.Height + _sumSize.Height);
+                    enemy.Value.SGui.HealthBar.SizeSideBar = new Size(enemy.Value.SGui.BackBar.SizeSideBar.Width, enemy.Value.SGui.BackBar.SizeSideBar.Height);
+                    enemy.Value.SGui.ManaBar.SizeSideBar = new Size(enemy.Value.SGui.BackBar.SizeSideBar.Width, enemy.Value.SGui.BackBar.SizeSideBar.Height + _healthManaBarSize.Height + 3);
+                    enemy.Value.SGui.SHealth = ((int)enemy.Key.Health) + "/" + ((int)enemy.Key.MaxHealth);
+                    enemy.Value.SGui.SMana = ((int)enemy.Key.Mana) + "/" + ((int)enemy.Key.MaxMana);
+                    enemy.Value.SGui.HealthBar.CoordsSideBar = new Size((int)xOffset - _healthManaBarSize.Width / 2, (int)yOffset + (_champSize.Height - 3) - _champSize.Height * count - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
+                    enemy.Value.SGui.ManaBar.CoordsSideBar = new Size(enemy.Value.SGui.HealthBar.CoordsSideBar.Width, (int)yOffset + (_champSize.Height + _healthManaBarSize.Height + 1) - _champSize.Height * count - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
+
+                    enemy.Value.SGui.RecallBar.SizeSideBar = new Size((int)enemy.Value.SGui.Champ.SizeSideBar.Width, (int)enemy.Value.SGui.BackBar.SizeSideBar.Height - _champSize.Height / 4);
+                    enemy.Value.SGui.RecallBar.CoordsSideBar = new Size((int)enemy.Value.SGui.Champ.CoordsSideBar.Width, (int)enemy.Value.SGui.Champ.CoordsSideBar.Height + _champSize.Height / 2 + 3);
+
+                    yOffsetAdd += 20;
+                    Size nSize = enemy.Value.SGui.Item[enemy.Value.SGui.Item.Length - 1].SizeSideBar - enemy.Value.SGui.SpellPassive.SizeSideBar;
+                    hudSize += nSize;
+                    hudSize.Width += _spellSize.Width;
+                    hudSize.Height += 20;
+                    count++;
+                } else if (t.SelectedIndex == 1 || t.SelectedIndex == 2)
+                {
+                    Vector2 hpPos = Drawing.WorldToScreen(enemy.Key.ServerPosition);//enemy.Key.HpPosBar; //TODO: Add HpPosBar
+                    
                 }
-
-                enemy.Value.SGui.SpellSum1.CoordsSideBar = new Size((int)xOffset - _sumSize.Width / 2, (int)yOffset - _sumSize.Height * count * 2 + 5 - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
-                enemy.Value.SGui.SpellSum2.CoordsSideBar = new Size((int)enemy.Value.SGui.SpellSum1.CoordsSideBar.Width, (int)yOffset - _sumSize.Height * (count * 2 - 1) + 5 - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
-                enemy.Value.SGui.Champ.CoordsSideBar = new Size((int)xOffset - _champSize.Width / 2 - _sumSize.Width, (int)yOffset - _champSize.Height * count + 10 - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
-                enemy.Value.SGui.SpellPassive.CoordsSideBar = new Size((int)xOffset - _champSize.Width - _sumSize.Width - _spellSize.Width / 2, (int)yOffset - _spellSize.Height * (count * 4) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
-                enemy.Value.SGui.SpellQ.CoordsSideBar = new Size((int)enemy.Value.SGui.SpellPassive.CoordsSideBar.Width, (int)yOffset - _spellSize.Height * (count * 4 - 1) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
-                enemy.Value.SGui.SpellW.CoordsSideBar = new Size((int)enemy.Value.SGui.SpellPassive.CoordsSideBar.Width, (int)yOffset - _spellSize.Height * (count * 4 - 2) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
-                enemy.Value.SGui.SpellE.CoordsSideBar = new Size((int)enemy.Value.SGui.SpellPassive.CoordsSideBar.Width, (int)yOffset - _spellSize.Height * (count * 4 - 3) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
-                enemy.Value.SGui.SpellR.CoordsSideBar = new Size((int)enemy.Value.SGui.SpellPassive.CoordsSideBar.Width, (int)yOffset - _spellSize.Height * (count * 4 - 4) - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
-
-                enemy.Value.SGui.BackBar.SizeSideBar = new Size(enemy.Value.SGui.Champ.SizeSideBar.Width, enemy.Value.SGui.SpellSum2.SizeSideBar.Height + _sumSize.Height);
-                enemy.Value.SGui.HealthBar.SizeSideBar = new Size(enemy.Value.SGui.BackBar.SizeSideBar.Width, enemy.Value.SGui.BackBar.SizeSideBar.Height);
-                enemy.Value.SGui.ManaBar.SizeSideBar = new Size(enemy.Value.SGui.BackBar.SizeSideBar.Width, enemy.Value.SGui.BackBar.SizeSideBar.Height + _healthManaBarSize.Height + 3);
-                enemy.Value.SGui.SHealth = ((int)enemy.Key.Health) + "/" + ((int)enemy.Key.MaxHealth);
-                enemy.Value.SGui.SMana = ((int)enemy.Key.Mana) + "/" + ((int)enemy.Key.MaxMana);
-                enemy.Value.SGui.HealthBar.CoordsSideBar = new Size((int)xOffset - _healthManaBarSize.Width / 2, (int)yOffset + (_champSize.Height - 3) - _champSize.Height * count - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
-                enemy.Value.SGui.ManaBar.CoordsSideBar = new Size(enemy.Value.SGui.HealthBar.CoordsSideBar.Width, (int)yOffset + (_champSize.Height + _healthManaBarSize.Height + 1) - _champSize.Height * count - count * (_backBarSize.Height) - count * (_spellSize.Height) - yOffsetAdd);
-
-                enemy.Value.SGui.RecallBar.SizeSideBar = new Size((int)enemy.Value.SGui.Champ.SizeSideBar.Width, (int)enemy.Value.SGui.BackBar.SizeSideBar.Height - _champSize.Height / 4);
-                enemy.Value.SGui.RecallBar.CoordsSideBar = new Size((int)enemy.Value.SGui.Champ.CoordsSideBar.Width, (int)enemy.Value.SGui.Champ.CoordsSideBar.Height + _champSize.Height / 2 + 3);
-
-                yOffsetAdd += 20;
-                count++;
             }
         }
 
