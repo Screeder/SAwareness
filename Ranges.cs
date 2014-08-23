@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LeagueSharp;
+using LeagueSharp.Common;
 
 namespace SAwareness
 {
@@ -41,12 +42,12 @@ namespace SAwareness
         {
             if (!Menu.ExperienceRange.GetActive())
                 return;
-            Drawing.DrawCircle(ObjectManager.Player.Position, 1400, System.Drawing.Color.LawnGreen);
+            Utility.DrawCircle(ObjectManager.Player.Position, 1400, System.Drawing.Color.LawnGreen);
             foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
                 {
-                    Drawing.DrawCircle(enemy.Position, enemy.AttackRange, System.Drawing.Color.IndianRed);
+                    Utility.DrawCircle(enemy.Position, enemy.AttackRange, System.Drawing.Color.IndianRed);
                 }
             }
         }
@@ -55,12 +56,12 @@ namespace SAwareness
         {
             if (!Menu.AttackRange.GetActive())
                 return;
-            Drawing.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.AttackRange, System.Drawing.Color.LawnGreen);
+            Utility.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.AttackRange, System.Drawing.Color.LawnGreen);
             foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
                 {
-                    Drawing.DrawCircle(enemy.Position, enemy.AttackRange, System.Drawing.Color.IndianRed);
+                    Utility.DrawCircle(enemy.Position, enemy.AttackRange, System.Drawing.Color.IndianRed);
                 }
             }
         }
@@ -73,7 +74,7 @@ namespace SAwareness
             {
                 if (Turret.IsVisible && !Turret.IsDead && Turret.IsValid && Common.IsOnScreen(Turret.ServerPosition))
                 {
-                    Drawing.DrawCircle(Turret.Position, 950f, Turret.IsEnemy ? System.Drawing.Color.DarkRed : System.Drawing.Color.LawnGreen);
+                    Utility.DrawCircle(Turret.Position, 950f, Turret.IsEnemy ? System.Drawing.Color.DarkRed : System.Drawing.Color.LawnGreen);
                 }
             }
         }
@@ -82,12 +83,12 @@ namespace SAwareness
         {
             if (!Menu.SpellQRange.GetActive())
                 return;
-            Drawing.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).SData.CastRange[0], System.Drawing.Color.LawnGreen);
+            Utility.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).SData.CastRange[0], System.Drawing.Color.LawnGreen);
             foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
                 {
-                    Drawing.DrawCircle(enemy.Position, enemy.Spellbook.GetSpell(SpellSlot.Q).SData.CastRange[0], System.Drawing.Color.IndianRed);
+                    Utility.DrawCircle(enemy.Position, enemy.Spellbook.GetSpell(SpellSlot.Q).SData.CastRange[0], System.Drawing.Color.IndianRed);
                 }
             }
         }
@@ -96,12 +97,12 @@ namespace SAwareness
         {
             if (!Menu.SpellWRange.GetActive())
                 return;
-            Drawing.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).SData.CastRange[0], System.Drawing.Color.LawnGreen);
+            Utility.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).SData.CastRange[0], System.Drawing.Color.LawnGreen);
             foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
                 {
-                    Drawing.DrawCircle(enemy.Position, enemy.Spellbook.GetSpell(SpellSlot.W).SData.CastRange[0], System.Drawing.Color.IndianRed);
+                    Utility.DrawCircle(enemy.Position, enemy.Spellbook.GetSpell(SpellSlot.W).SData.CastRange[0], System.Drawing.Color.IndianRed);
                 }
             }
         }
@@ -110,12 +111,12 @@ namespace SAwareness
         {
             if (!Menu.SpellERange.GetActive())
                 return;
-            Drawing.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).SData.CastRange[0], System.Drawing.Color.LawnGreen);
+            Utility.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).SData.CastRange[0], System.Drawing.Color.LawnGreen);
             foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
                 {
-                    Drawing.DrawCircle(enemy.Position, enemy.Spellbook.GetSpell(SpellSlot.E).SData.CastRange[0], System.Drawing.Color.IndianRed);
+                    Utility.DrawCircle(enemy.Position, enemy.Spellbook.GetSpell(SpellSlot.E).SData.CastRange[0], System.Drawing.Color.IndianRed);
                 }
             }
         }
@@ -124,12 +125,12 @@ namespace SAwareness
         {
             if (!Menu.SpellRRange.GetActive())
                 return;
-            Drawing.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).SData.CastRange[0], System.Drawing.Color.LawnGreen);
+            Utility.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).SData.CastRange[0], System.Drawing.Color.LawnGreen);
             foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
                 {
-                    Drawing.DrawCircle(enemy.Position, enemy.Spellbook.GetSpell(SpellSlot.R).SData.CastRange[0], System.Drawing.Color.IndianRed);
+                    Utility.DrawCircle(enemy.Position, enemy.Spellbook.GetSpell(SpellSlot.R).SData.CastRange[0], System.Drawing.Color.IndianRed);
                 }
             }
         }

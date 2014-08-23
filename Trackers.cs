@@ -44,8 +44,8 @@ namespace SAwareness
                         hero.ChampionName.Contains("MonkeyKing") ||
                         hero.ChampionName.Contains("Yorick"))
                     {
-                        Drawing.DrawCircle(hero.ServerPosition, 100, System.Drawing.Color.Red);
-                        Drawing.DrawCircle(hero.ServerPosition, 110, System.Drawing.Color.Red);
+                        Utility.DrawCircle(hero.ServerPosition, 100, System.Drawing.Color.Red);
+                        Utility.DrawCircle(hero.ServerPosition, 110, System.Drawing.Color.Red);
                     }
                 }
             }
@@ -193,7 +193,7 @@ namespace SAwareness
                     switch (obj.ObjectBase.Type)
                     {
                         case ObjectType.Sight:
-                            Drawing.DrawCircle(obj.Position, WardRange, obj.ObjectBase.Color);
+                            Utility.DrawCircle(obj.Position, WardRange, obj.ObjectBase.Color);
                             posList = GetVision(obj.Position, WardRange);
                             for (int j = 0; j < posList.Count; j++)
                             {
@@ -205,7 +205,7 @@ namespace SAwareness
                             break;
 
                         case ObjectType.Trap:
-                            Drawing.DrawCircle(obj.Position, TrapRange, obj.ObjectBase.Color);
+                            Utility.DrawCircle(obj.Position, TrapRange, obj.ObjectBase.Color);
                             posList = GetVision(obj.Position, TrapRange);
                             for (int j = 0; j < posList.Count; j++)
                             {
@@ -217,7 +217,7 @@ namespace SAwareness
                             break;
 
                         case ObjectType.Vision:
-                            Drawing.DrawCircle(obj.Position, WardRange, obj.ObjectBase.Color);
+                            Utility.DrawCircle(obj.Position, WardRange, obj.ObjectBase.Color);
                             posList = GetVision(obj.Position, WardRange);
                             for (int j = 0; j < posList.Count; j++)
                             {
@@ -228,7 +228,7 @@ namespace SAwareness
                             Drawing.DrawText(objMPos[0], objMPos[1], obj.ObjectBase.Color, "V");
                             break;
                     }
-                    Drawing.DrawCircle(obj.Position, 50, obj.ObjectBase.Color);
+                    Utility.DrawCircle(obj.Position, 50, obj.ObjectBase.Color);
                     float endTime = obj.EndTime - Game.Time;
                     if (!float.IsInfinity(endTime) && !float.IsNaN(endTime) && endTime.CompareTo(float.MaxValue) != 0)
                     {
@@ -572,11 +572,11 @@ namespace SAwareness
 
                         if (ability.OutOfBush)
                         {
-                            Drawing.DrawCircle(ability.EndPos, ability.Range, System.Drawing.Color.Red);
+                            Utility.DrawCircle(ability.EndPos, ability.Range, System.Drawing.Color.Red);
                         }
                         else
                         {
-                            Drawing.DrawCircle(ability.EndPos, ability.Range, System.Drawing.Color.Red);
+                            Utility.DrawCircle(ability.EndPos, ability.Range, System.Drawing.Color.Red);
                             Drawing.DrawLine(startPos[0], startPos[1], endPos[0], endPos[1], 1.0f, System.Drawing.Color.Red);
                         }
                         Drawing.DrawText(endPos[0], endPos[1], System.Drawing.Color.Bisque, enemy.Key.ChampionName + " " + ability.SpellName);
@@ -949,7 +949,14 @@ namespace SAwareness
 
         void HandleInput(WindowsMessages message, Vector2 cursorPos, uint key)
         {
-            if (message != WindowsMessages.WM_LBUTTONDOWN && message != WindowsMessages.WM_MOUSEMOVE && message != WindowsMessages.WM_LBUTTONUP || (!moveActive && message == WindowsMessages.WM_MOUSEMOVE))
+            HandleUIMove(message, cursorPos, key);
+            HandleChampClick(message, cursorPos, key);
+        }
+
+        void HandleUIMove(WindowsMessages message, Vector2 cursorPos, uint key)
+        {
+            if (message != WindowsMessages.WM_LBUTTONDOWN && message != WindowsMessages.WM_MOUSEMOVE && message != WindowsMessages.WM_LBUTTONUP || (!moveActive && message == WindowsMessages.WM_MOUSEMOVE)
+                )
             {
                 return;
             }
@@ -969,7 +976,7 @@ namespace SAwareness
                 firstHero = enemy;
                 break;
             }
-            if (!Common.IsInside(cursorPos, firstHero.Value.SGui.SpellPassive.SizeSideBar, hudSize.Width, hudSize.Height ))
+            if (!Common.IsInside(cursorPos, firstHero.Value.SGui.SpellPassive.SizeSideBar, hudSize.Width, hudSize.Height))
             {
                 return;
             }
@@ -984,6 +991,33 @@ namespace SAwareness
                     .SetValue(new Slider((int)(curSliderY.Value + cursorPos.Y - lastCursorPos.Y), curSliderY.MinValue, curSliderY.MaxValue));
                 lastCursorPos = cursorPos;
             }
+        }
+
+        void HandleChampClick(WindowsMessages message, Vector2 cursorPos, uint key)
+        {
+            if ((message != WindowsMessages.WM_KEYDOWN && key == 16) && message != WindowsMessages.WM_LBUTTONDOWN && (message != WindowsMessages.WM_KEYUP && key == 16) || (!shiftActive && message == WindowsMessages.WM_LBUTTONDOWN))
+            {
+                return;
+            }
+            if (message == WindowsMessages.WM_KEYDOWN && key == 16)
+            {
+                shiftActive = true;
+            }
+            if (message == WindowsMessages.WM_KEYUP && key == 16)
+            {
+                shiftActive = false;
+            }
+            if (message == WindowsMessages.WM_LBUTTONDOWN)
+            {
+                foreach (KeyValuePair<Obj_AI_Hero, ChampInfos> enemy in Enemies.Reverse())
+                {
+                    if (Common.IsInside(cursorPos, enemy.Value.SGui.Champ.SizeSideBar, _champSize.Width, _champSize.Height))
+                    {
+                        //TODO: Add Camera move
+                    }
+                }
+            }
+            
         }
 
         void Drawing_OnPostReset(EventArgs args)
@@ -1044,6 +1078,7 @@ namespace SAwareness
         private int oldY = 0;
         private Size hudSize = new Size();
         private bool moveActive = false;
+        private bool shiftActive = false;
         private Vector2 lastCursorPos = new Vector2();
 
         public bool IsActive()

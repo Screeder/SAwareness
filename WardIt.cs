@@ -409,12 +409,12 @@ namespace SAwareness
             foreach (var ward in WardSpots)
             {
                 if (Common.IsOnScreen(ward.Pos))
-                    Drawing.DrawCircle(ward.Pos, 50, System.Drawing.Color.GreenYellow);
+                    Utility.DrawCircle(ward.Pos, 50, System.Drawing.Color.GreenYellow);
                 if (ward.SafeWard)
                 {
                     if (Common.IsOnScreen(ward.MagneticPos))
                     {
-                        Drawing.DrawCircle(ward.MagneticPos, 30, System.Drawing.Color.Red);
+                        Utility.DrawCircle(ward.MagneticPos, 30, System.Drawing.Color.Red);
                         DrawArrow(ward.MagneticPos, ward.Pos, System.Drawing.Color.RoyalBlue);
                     }
                 }
