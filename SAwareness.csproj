@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="AutoLevler.cs" />
     <Compile Include="AutoPot.cs" />
+    <Compile Include="AutoShield.cs" />
     <Compile Include="AutoSmite.cs" />
     <Compile Include="Detector.cs" />
     <Compile Include="Ganks.cs" />
