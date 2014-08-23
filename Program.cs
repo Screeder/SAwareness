@@ -267,11 +267,16 @@ namespace SAwareness
                 Menu.Detector.MenuItems.Add(Menu.Detector.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessDetectorActive", "Active").SetValue(true)));
 
                 Menu.Ganks.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Ganks", "SAwarenessGanks"));
-                Menu.GankTracker.Menu = Menu.Ganks.Menu.AddSubMenu(new LeagueSharp.Common.Menu("GankTracker", "SAwarenessGankTracker"));
-                Menu.GankTracker.MenuItems.Add(Menu.GankTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessGankTrackerActive", "Active").SetValue(false)));
+                Menu.GankTracker.Menu = Menu.Ganks.Menu.AddSubMenu(new LeagueSharp.Common.Menu("GankTracker | Broken", "SAwarenessGankTracker"));
+                Menu.GankTracker.MenuItems.Add(Menu.GankTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessGankTrackerPingTimes", "Ping Times").SetValue(new Slider(0, 5, 0))));
+                Menu.GankTracker.MenuItems.Add(Menu.GankTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessGankTrackerPingType", "Ping Type").SetValue(new StringList(new string[] { "Normal", "Danger", "EnemyMissing", "OnMyWay", "Fallback", "AssistMe" }))));
+                Menu.GankTracker.MenuItems.Add(Menu.GankTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessGankTrackerLocalPing", "Local Ping | Not implemented").SetValue(true)));
+                Menu.GankTracker.MenuItems.Add(Menu.GankTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessGankTrackerLocalChat", "Local Chat").SetValue(true)));
+                Menu.GankTracker.MenuItems.Add(Menu.GankTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessGankTrackerTrackRange", "Track Range").SetValue(new Slider(1, 10000, 1))));
+                Menu.GankTracker.MenuItems.Add(Menu.GankTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessGankTrackerActive", "Active").SetValue(true)));
                 Menu.GankDetector.Menu = Menu.Ganks.Menu.AddSubMenu(new LeagueSharp.Common.Menu("GankDetector", "SAwarenessGankDetector"));
-                Menu.GankDetector.MenuItems.Add(Menu.GankDetector.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessGankDetectorActive", "Active").SetValue(false)));
-                Menu.Ganks.MenuItems.Add(Menu.Ganks.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessGanksActive", "Active").SetValue(false)));
+                Menu.GankDetector.MenuItems.Add(Menu.GankDetector.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessGankDetectorActive", "Active").SetValue(true)));
+                Menu.Ganks.MenuItems.Add(Menu.Ganks.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessGanksActive", "Active").SetValue(true)));
 
                 Menu.Health.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Object Health", "SAwarenessObjectHealth"));
                 Menu.TowerHealth.Menu = Menu.Health.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Tower Health", "SAwarenessTowerHealth"));
@@ -314,7 +319,7 @@ namespace SAwareness
                 tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotManaPotActive", "Active").SetValue(true)));
                 Menu.AutoPot.MenuItems.Add(Menu.AutoPot.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotActive", "Active").SetValue(true)));
                 Menu.AutoShield.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("AutoShield | Not implemented", "SAwarenessAutoShield"));
-                Menu.AutoShield.MenuItems.Add(Menu.Ward.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoShieldActive", "Active").SetValue(true)));
+                Menu.AutoShield.MenuItems.Add(Menu.AutoShield.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoShieldActive", "Active").SetValue(true)));
 
                 menu.AddItem(new LeagueSharp.Common.MenuItem("By Screeder", "By Screeder V0.7"));
                 menu.AddToMainMenu();

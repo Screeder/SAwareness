@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 using SharpDX.Direct3D9;
+using SharpDX.Toolkit.Graphics;
 using Color = SharpDX.Color;
 using Font = SharpDX.Direct3D9.Font;
+using PrimitiveType = SharpDX.Direct3D9.PrimitiveType;
 using Rectangle = SharpDX.Rectangle;
+using Texture = SharpDX.Direct3D9.Texture;
 
 namespace SAwareness
 {
@@ -49,7 +48,7 @@ namespace SAwareness
                 file = File;
             if (prefix == null)
                 prefix = Prefix;
-            using (StreamWriter stream = new StreamWriter(file, true))
+            using (var stream = new StreamWriter(file, true))
             {
                 stream.WriteLine(prefix + "@" + Environment.TickCount + ": " + text);
             }
@@ -68,8 +67,8 @@ namespace SAwareness
 
         public static Size ScaleSize(this Size size, float scale, Vector2 mainPos = default(Vector2))
         {
-            size.Height = (int)(((size.Height - mainPos.Y) * scale) + mainPos.Y);
-            size.Width = (int)(((size.Width - mainPos.X) * scale) + mainPos.X);
+            size.Height = (int) (((size.Height - mainPos.Y)*scale) + mainPos.Y);
+            size.Width = (int) (((size.Width - mainPos.X)*scale) + mainPos.X);
             return size;
         }
 
@@ -93,12 +92,13 @@ namespace SAwareness
 
     static class SpriteHelper
     {
-        public static Texture LoadTexture(String onlineFile, String subOnlinePath, String localPathFile, ref Texture texture, bool bForce = false)
+        public static Texture LoadTexture(String onlineFile, String subOnlinePath, String localPathFile,
+            ref Texture texture, bool bForce = false)
         {
             if (!File.Exists(localPathFile))
             {
                 String filePath = localPathFile;
-                filePath = filePath.Remove(0, filePath.LastIndexOf("\\Sprites\\", System.StringComparison.Ordinal));
+                filePath = filePath.Remove(0, filePath.LastIndexOf("\\Sprites\\", StringComparison.Ordinal));
                 try
                 {
                     Download.Path = subOnlinePath;
@@ -106,7 +106,7 @@ namespace SAwareness
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("SAwareness: Path: " + onlineFile + " \nException: " + ex.ToString());
+                    Console.WriteLine("SAwareness: Path: " + onlineFile + " \nException: " + ex);
                 }
             }
             if (File.Exists(localPathFile) && (bForce || texture == null))
@@ -117,7 +117,7 @@ namespace SAwareness
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("SAwarness: Couldn't load texture: " + localPathFile + "\n Ex: " + ex.ToString());
+                    Console.WriteLine("SAwarness: Couldn't load texture: " + localPathFile + "\n Ex: " + ex);
                 }
                 if (texture == null)
                 {
@@ -126,11 +126,45 @@ namespace SAwareness
             }
             return texture;
         }
-
     }
 
     static class DirectXDrawer
     {
+        private static void ChangeYZ(ref Vector3 vec)
+        {
+            float temp = vec.Y;
+            vec.Y = vec.Z;
+            vec.Z = temp;
+        }
+
+        public static void DrawLine(Vector3 from, Vector3 to, Color color)
+        {
+            ChangeYZ(ref from);
+            ChangeYZ(ref to);
+
+            var vertices = new VertexPositionColor[2];
+            vertices[0] = new VertexPositionColor(Vector3.Zero, color);
+            vertices[1] = new VertexPositionColor(to - from, color);
+
+
+            Drawing.Direct3DDevice.SetTransform(TransformState.World, Matrix.Translation(from));
+            Drawing.Direct3DDevice.SetTransform(TransformState.View, Drawing.View);
+            Drawing.Direct3DDevice.SetTransform(TransformState.Projection, Drawing.Projection);
+
+            Drawing.Direct3DDevice.VertexShader = null;
+            Drawing.Direct3DDevice.PixelShader = null;
+            Drawing.Direct3DDevice.SetRenderState(RenderState.AlphaBlendEnable, true);
+            Drawing.Direct3DDevice.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+            Drawing.Direct3DDevice.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
+            Drawing.Direct3DDevice.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+            Drawing.Direct3DDevice.SetRenderState(RenderState.Lighting, 0);
+            Drawing.Direct3DDevice.SetRenderState(RenderState.ZEnable, true);
+            Drawing.Direct3DDevice.SetTexture(0, null);
+            Drawing.Direct3DDevice.SetRenderState(RenderState.CullMode, Cull.None);
+
+            Drawing.Direct3DDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices.Length/2, vertices);
+        }
+
         public static void DrawText(Font font, String text, Size size, Color color)
         {
             DrawText(font, text, size.Width, size.Height, color);
@@ -143,7 +177,7 @@ namespace SAwareness
                 throw new SharpDXException("");
                 return;
             }
-            var rec = font.MeasureText(null, text, FontDrawFlags.Center);
+            Rectangle rec = font.MeasureText(null, text, FontDrawFlags.Center);
             font.DrawText(null, text, posX + 1 + rec.X, posY, Color.Black);
             font.DrawText(null, text, posX + 1 + rec.X, posY + 1, Color.Black);
             font.DrawText(null, text, posX + rec.X, posY + 1, Color.Black);
@@ -153,29 +187,34 @@ namespace SAwareness
             font.DrawText(null, text, posX + rec.X, posY, color);
         }
 
-        public static void DrawSprite(Sprite sprite, Texture texture, Size size, float[] scale = null, float rotation = 0.0f)
+        public static void DrawSprite(Sprite sprite, Texture texture, Size size, float[] scale = null,
+            float rotation = 0.0f)
         {
             DrawSprite(sprite, texture, size, Color.White, scale, rotation);
         }
 
-        public static void DrawSprite(Sprite sprite, Texture texture, Size size, Color color, float[] scale = null, float rotation = 0.0f)
+        public static void DrawSprite(Sprite sprite, Texture texture, Size size, Color color, float[] scale = null,
+            float rotation = 0.0f)
         {
             if (sprite != null && !sprite.IsDisposed && texture != null && !texture.IsDisposed)
             {
                 Matrix matrix = sprite.Transform;
-                var nMatrix = (scale != null ? Matrix.Scaling(scale[0], scale[1], 0) : Matrix.Scaling(1)) * Matrix.RotationZ(rotation) * Matrix.Translation(size.Width, size.Height, 0);
+                Matrix nMatrix = (scale != null ? Matrix.Scaling(scale[0], scale[1], 0) : Matrix.Scaling(1))*
+                                 Matrix.RotationZ(rotation)*Matrix.Translation(size.Width, size.Height, 0);
                 sprite.Transform = nMatrix;
                 sprite.Draw(texture, color);
                 sprite.Transform = matrix;
             }
         }
 
-        public static void DrawTransformSprite(Sprite sprite, Texture texture, Color color, Size size, float[] scale, float rotation, Rectangle? spriteResize)
+        public static void DrawTransformSprite(Sprite sprite, Texture texture, Color color, Size size, float[] scale,
+            float rotation, Rectangle? spriteResize)
         {
             if (sprite != null && texture != null)
             {
                 Matrix matrix = sprite.Transform;
-                var nMatrix = Matrix.Scaling(scale[0], scale[1], 0) * Matrix.RotationZ(rotation) * Matrix.Translation(size.Width, size.Height, 0);
+                Matrix nMatrix = Matrix.Scaling(scale[0], scale[1], 0)*Matrix.RotationZ(rotation)*
+                                 Matrix.Translation(size.Width, size.Height, 0);
                 sprite.Transform = nMatrix;
                 sprite.Draw(texture, color);
                 sprite.Transform = matrix;

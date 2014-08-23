@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -12,11 +9,11 @@ namespace SAwareness
 {
     class GankPotentialTracker
     {
-        readonly Dictionary<Obj_AI_Hero, double> Enemies = new Dictionary<Obj_AI_Hero, double>();
+        private readonly Dictionary<Obj_AI_Hero, double> Enemies = new Dictionary<Obj_AI_Hero, double>();
 
         public GankPotentialTracker()
         {
-            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+            foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (hero.IsEnemy)
                 {
@@ -24,13 +21,13 @@ namespace SAwareness
                 }
             }
             Game.OnGameUpdate += Game_OnGameUpdate;
-            Drawing.OnDraw += Drawing_OnDraw;
+            Drawing.OnEndScene += Drawing_OnEndScene;
         }
 
         ~GankPotentialTracker()
         {
             Game.OnGameUpdate -= Game_OnGameUpdate;
-            Drawing.OnDraw -= Drawing_OnDraw;
+            Drawing.OnEndScene -= Drawing_OnEndScene;
         }
 
         public bool IsActive()
@@ -38,23 +35,53 @@ namespace SAwareness
             return Menu.GankTracker.GetActive();
         }
 
-        void Game_OnGameUpdate(EventArgs args)
+        private void Game_OnGameUpdate(EventArgs args)
         {
-            foreach (var enemy in Enemies)
+            foreach (var enemy in Enemies.ToList())
             {
                 double dmg = 0;
-                try { dmg += DamageLib.getDmg(enemy.Key, DamageLib.SpellType.Q); } catch (InvalidSpellTypeException ex){}
-                try { dmg += DamageLib.getDmg(enemy.Key, DamageLib.SpellType.W); } catch (InvalidSpellTypeException ex){}
-                try { dmg += DamageLib.getDmg(enemy.Key, DamageLib.SpellType.E); } catch (InvalidSpellTypeException ex){}
-                try { dmg += DamageLib.getDmg(enemy.Key, DamageLib.SpellType.R); } catch (InvalidSpellTypeException ex){}
-                try { dmg += DamageLib.getDmg(enemy.Key, DamageLib.SpellType.AD); } catch (InvalidSpellTypeException ex){}
+                try
+                {
+                    dmg += DamageLib.getDmg(enemy.Key, DamageLib.SpellType.Q);
+                }
+                catch (InvalidSpellTypeException ex)
+                {
+                }
+                try
+                {
+                    dmg += DamageLib.getDmg(enemy.Key, DamageLib.SpellType.W);
+                }
+                catch (InvalidSpellTypeException ex)
+                {
+                }
+                try
+                {
+                    dmg += DamageLib.getDmg(enemy.Key, DamageLib.SpellType.E);
+                }
+                catch (InvalidSpellTypeException ex)
+                {
+                }
+                try
+                {
+                    dmg += DamageLib.getDmg(enemy.Key, DamageLib.SpellType.R);
+                }
+                catch (InvalidSpellTypeException ex)
+                {
+                }
+                try
+                {
+                    dmg += DamageLib.getDmg(enemy.Key, DamageLib.SpellType.AD);
+                }
+                catch (InvalidSpellTypeException ex)
+                {
+                }
                 Enemies[enemy.Key] = dmg;
-            } 
+            }
         }
 
-        void Drawing_OnDraw(EventArgs args)
+        private void Drawing_OnEndScene(EventArgs args)
         {
-            if(!IsActive())
+            if (!IsActive())
                 return;
             Vector2 myPos = Drawing.WorldToScreen(ObjectManager.Player.ServerPosition);
             foreach (var enemy in Enemies)
@@ -64,34 +91,32 @@ namespace SAwareness
                 Vector2 ePos = Drawing.WorldToScreen(enemy.Key.ServerPosition);
                 if (enemy.Value > enemy.Key.Health)
                 {
-                    Drawing.DrawLine(myPos.X, myPos.Y, ePos.X, ePos.Y, 2.0f, System.Drawing.Color.OrangeRed);
+                    //Drawing.DrawLine(myPos.X, myPos.Y, ePos.X, ePos.Y, 2.0f, System.Drawing.Color.OrangeRed);
+                    DirectXDrawer.DrawLine(ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition,
+                        Color.OrangeRed);
                 }
                 if (enemy.Value < enemy.Key.Health)
                 {
-                    Drawing.DrawLine(myPos.X, myPos.Y, ePos.X, ePos.Y, 2.0f, System.Drawing.Color.GreenYellow);
+                    //Drawing.DrawLine(myPos.X, myPos.Y, ePos.X, ePos.Y, 2.0f, System.Drawing.Color.GreenYellow);
+                    DirectXDrawer.DrawLine(ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition,
+                        Color.GreenYellow);
                 }
-                else if (enemy.Key.Health / enemy.Key.MaxHealth < 0.1)
+                else if (enemy.Key.Health/enemy.Key.MaxHealth < 0.1)
                 {
-                    Drawing.DrawLine(myPos.X, myPos.Y, ePos.X, ePos.Y, 2.0f, System.Drawing.Color.Red);
+                    //Drawing.DrawLine(myPos.X, myPos.Y, ePos.X, ePos.Y, 2.0f, System.Drawing.Color.Red);
+                    DirectXDrawer.DrawLine(ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition, Color.Red);
                 }
-            } 
+            }
         }
     }
 
     class GankDetector
     {
-        static readonly Dictionary<Obj_AI_Hero, Time> Enemies = new Dictionary<Obj_AI_Hero, Time>();
-
-        public class Time
-        {
-            public int VisibleTime;
-            public int InvisibleTime;
-            public bool Called;
-        }
+        private static readonly Dictionary<Obj_AI_Hero, Time> Enemies = new Dictionary<Obj_AI_Hero, Time>();
 
         public GankDetector()
         {
-            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+            foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (hero.IsEnemy)
                 {
@@ -111,34 +136,59 @@ namespace SAwareness
             return Menu.GankDetector.GetActive();
         }
 
-        void Game_OnGameUpdate(EventArgs args)
+        private void Game_OnGameUpdate(EventArgs args)
         {
             if (!IsActive())
                 return;
-            foreach (KeyValuePair<Obj_AI_Hero, Time> enemy in Enemies)
+            foreach (var enemy in Enemies)
             {
-                UpdateTime(enemy);                
+                UpdateTime(enemy);
             }
         }
 
-        void HandleGank(KeyValuePair<Obj_AI_Hero, Time> enemy)
+        private void HandleGank(KeyValuePair<Obj_AI_Hero, Time> enemy)
         {
             Obj_AI_Hero hero = enemy.Key;
             if (enemy.Value.InvisibleTime > 5)
             {
-                if (!enemy.Value.Called && hero.IsValid && hero.IsVisible && Vector3.Distance(ObjectManager.Player.ServerPosition, hero.ServerPosition) < 1000/**Variable*/)
+                if (!enemy.Value.Called && hero.IsValid && hero.IsVisible &&
+                    Vector3.Distance(ObjectManager.Player.ServerPosition, hero.ServerPosition) <
+                    Menu.GankTracker.GetMenuItem("SAwarenessGankTrackerTrackRange").GetValue<Slider>().Value)
                 {
+                    var pingType = Packet.PingType.Normal;
+                    var t = Menu.GankTracker.GetMenuItem("SAwarenessGankTrackerPingType").GetValue<StringList>();
+                    pingType = (Packet.PingType) t.SelectedIndex + 1;
                     Vector3 pos = hero.ServerPosition;
-                    GamePacket gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos[0], pos[1], 0, Packet.PingType.Danger));
-                    gPacketT.Send();
-                    //TODO: Check for Teleport etc.
-                    Game.PrintChat("Gank: {0}", hero.ChampionName);
+                    GamePacket gPacketT =
+                        Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos[0], pos[1], 0, pingType));
+                    for (int i = 0;
+                        i < Menu.GankTracker.GetMenuItem("SAwarenessGankTrackerPingTimes").GetValue<Slider>().Value;
+                        i++)
+                    {
+                        if (Menu.GankTracker.GetMenuItem("SAwarenessGankTrackerLocalPing").GetValue<bool>())
+                        {
+                            //TODO: Add local ping
+                        }
+                        else
+                        {
+                            gPacketT.Send();
+                        }
+                    }
+                    if (Menu.GankTracker.GetMenuItem("SAwarenessGankTrackerLocalChat").GetValue<bool>())
+                    {
+                        Game.PrintChat("Gank: {0}", hero.ChampionName);
+                    }
+                    else
+                    {
+                        Game.Say("Gank: {0}", hero.ChampionName);
+                    }
+                    //TODO: Check for Teleport etc.                    
                     enemy.Value.Called = true;
                 }
             }
         }
 
-        void UpdateTime(KeyValuePair<Obj_AI_Hero, Time> enemy)
+        private void UpdateTime(KeyValuePair<Obj_AI_Hero, Time> enemy)
         {
             Obj_AI_Hero hero = enemy.Key;
             if (!hero.IsValid)
@@ -147,20 +197,27 @@ namespace SAwareness
             {
                 HandleGank(enemy);
                 Enemies[hero].InvisibleTime = 0;
-                Enemies[hero].VisibleTime = (int)Game.Time;
+                Enemies[hero].VisibleTime = (int) Game.Time;
                 enemy.Value.Called = false;
             }
             else
             {
                 if (Enemies[hero].VisibleTime != 0)
                 {
-                    Enemies[hero].InvisibleTime = (int)(Game.Time - Enemies[hero].VisibleTime);
+                    Enemies[hero].InvisibleTime = (int) (Game.Time - Enemies[hero].VisibleTime);
                 }
                 else
                 {
                     Enemies[hero].InvisibleTime = 0;
                 }
             }
+        }
+
+        public class Time
+        {
+            public bool Called;
+            public int InvisibleTime;
+            public int VisibleTime;
         }
     }
 }

@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 
@@ -12,10 +8,9 @@ namespace SAwareness
 {
     class AutoLevler
     {
-        private bool _usePriority;
-
-        private int[] _priority = { 0, 0, 0, 0 };
+        private int[] _priority = {0, 0, 0, 0};
         private int[] _sequence;
+        private bool _usePriority;
 
         public AutoLevler()
         {
@@ -33,7 +28,7 @@ namespace SAwareness
             return Menu.AutoLevler.GetActive();
         }
 
-        void Game_OnGameUpdate(EventArgs args)
+        private void Game_OnGameUpdate(EventArgs args)
         {
             if (!IsActive())
                 return;
@@ -65,7 +60,7 @@ namespace SAwareness
             {
                 //TODO: Add level logic// try levelup spell, if fails level another up etc.
                 if (_usePriority && Menu.AutoLevler.GetMenuSettings("SAwarenessAutoLevlerPriority")
-                        .GetMenuItem("SAwarenessAutoLevlerPriorityActive").GetValue<bool>())
+                    .GetMenuItem("SAwarenessAutoLevlerPriorityActive").GetValue<bool>())
                 {
                     SpellSlot[] spellSlots = GetSortedPriotitySlots();
                     for (int slotId = 0; slotId <= 3; slotId++)
@@ -83,7 +78,6 @@ namespace SAwareness
                     {
                         SpellSlot spellSlot = GetSpellSlot(_sequence[player.Level - 1]);
                         player.Spellbook.LevelUpSpell(spellSlot);
-
                     }
                 }
             }
@@ -105,7 +99,7 @@ namespace SAwareness
         private void LoadLevelFile()
         {
             //TODO: Read Level File for sequence leveling.
-            var loc = Assembly.GetExecutingAssembly().Location;
+            string loc = Assembly.GetExecutingAssembly().Location;
             loc = loc.Remove(loc.LastIndexOf("\\", StringComparison.Ordinal));
             loc = loc + "\\Config\\SAwareness\\autolevel.conf";
             if (!File.Exists(loc))
@@ -175,13 +169,12 @@ namespace SAwareness
 
         private SpellSlot[] GetSortedPriotitySlots()
         {
-            var listOld = _priority;
+            int[] listOld = _priority;
             var listNew = new SpellSlot[4];
 
             listNew = ToSpellSlot(listOld, listNew);
 
             //listNew = listNew.OrderByDescending(c => c).ToList();
-
 
 
             return listNew;
@@ -230,6 +223,5 @@ namespace SAwareness
         //        listNew = SortAlgo(listOld, listNew);
         //    return listNew;
         //}
-
     }
 }

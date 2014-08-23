@@ -816,7 +816,6 @@ namespace SAwareness
                 Vector2 pos = new Vector2(hero.Position.X, hero.Position.Y);
                 Packet.PingType pingType = Packet.PingType.Normal;
                 StringList t = Menu.SsCaller.GetMenuItem("SAwarenessSSCallerPingType").GetValue<StringList>();
-                //var result = Enum.TryParse(t, out pingType);
                 pingType = (Packet.PingType)t.SelectedIndex + 1;
                 GamePacket gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(enemy.Value.LastPosition.X, enemy.Value.LastPosition.Y, 0, pingType));
                 for (int i = 0; i < Menu.SsCaller.GetMenuItem("SAwarenessSSCallerPingTimes").GetValue<Slider>().Value; i++)
@@ -931,7 +930,7 @@ namespace SAwareness
                 Thread.Sleep(10);
             }
             Game.OnGameUpdate += Game_OnGameUpdate;
-            
+
             Drawing.OnPreReset += Drawing_OnPreReset;
             Drawing.OnPostReset += Drawing_OnPostReset;
             Drawing.OnEndScene += Drawing_OnEndScene;

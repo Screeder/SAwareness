@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
+using Color = System.Drawing.Color;
 
 namespace SAwareness
 {
@@ -14,58 +12,10 @@ namespace SAwareness
     {
         private static readonly List<WardSpot> WardSpots = new List<WardSpot>();
         private static readonly List<WardItem> WardItems = new List<WardItem>();
-        private WardSpot latestWardSpot = null;
+        private bool drawSpots;
         private SpellSlot latestSpellSlot = SpellSlot.Unknown;
-        private bool drawSpots = false;
-        private bool wardAlreadyCorrected = false;
-
-        class WardSpot
-        {
-            public String Name;
-            public Vector3 Pos;
-            public Vector3 MagneticPos;
-            public Vector3 ClickPos;
-            public Vector3 MovePos;
-            public bool SafeWard;
-
-            public WardSpot(string name, Vector3 pos)
-            {
-                Name = name;
-                Pos = pos;
-                MagneticPos = new Vector3();
-                ClickPos = new Vector3();
-                MovePos = new Vector3();
-                SafeWard = false;
-            }
-
-            public WardSpot(string name, Vector3 magneticPos, Vector3 clickPos, Vector3 pos, Vector3 movePos)
-            {
-                Name = name;
-                Pos = pos;
-                MagneticPos = magneticPos;
-                ClickPos = clickPos;
-                MovePos = movePos;
-                SafeWard = true;
-            }
-        }
-
-        class WardItem
-        {
-            public int Id;
-            public String Name;
-            public String SpellName;
-            public int Range;
-            public int Duration;
-
-            public WardItem(int id, string name, string spellName, int range, int duration)
-            {
-                Id = id;
-                Name = name;
-                SpellName = spellName;
-                Range = range;
-                Duration = duration;
-            }
-        }
+        private WardSpot latestWardSpot;
+        private bool wardAlreadyCorrected;
 
         public WardIt() //TODO: Add SpellNames for WardItems
         {
@@ -115,17 +65,39 @@ namespace SAwareness
             WardSpots.Add(new WardSpot("NoName", new Vector3(8320.28f, 4292.80f, 56.47f)));
             WardSpots.Add(new WardSpot("NoName", new Vector3(9603.52f, 7872.23f, 54.71f)));
 
-            WardSpots.Add(new WardSpot("Dragon->TriBush", new Vector3(9695f, 3465f, 43.02f), new Vector3(9843.38f, 3125.16f, 43.02f), new Vector3(9946.10f, 3064.81f, 43.02f), new Vector3(9595f, 3665f, 43.02f)));
-            WardSpots.Add(new WardSpot("Nashor->TriBush", new Vector3(4346.10f, 10964.81f, 36.62f), new Vector3(4214.93f, 11202.01f, 36.62f), new Vector3(4146.10f, 11314.81f, 36.62f), new Vector3(4384.36f, 10680.41f, 36.62f)));
-            WardSpots.Add(new WardSpot("BlueTop->SoloBush", new Vector3(2349f, 10387f, 44.20f), new Vector3(2267.97f, 10783.37f, 44.20f), new Vector3(2446.10f, 10914.81f, 44.20f), new Vector3(2311f, 10185f, 44.20f)));
-            WardSpots.Add(new WardSpot("BlueMid->RoundBush", new Vector3(4946.52f, 6474.56f, 54.71f), new Vector3(4891.98f, 6639.05f, 53.62f), new Vector3(4546.10f, 6864.81f, 53.78f), new Vector3(5217f, 6263f, 54.95f)));
-            WardSpots.Add(new WardSpot("BlueMid->RiverLaneBush", new Vector3(5528.96f, 7615.20f, 45.64f), new Vector3(5688.96f, 7825.20f, 45.64f), new Vector3(5796.10f, 7914.81f, 45.64f), new Vector3(5460.13f, 7469.77f, 45.64f)));
-            WardSpots.Add(new WardSpot("BlueLizard->DragonPassBush", new Vector3(7745f, 4065f, 47.71f), new Vector3(7927.65f, 4239.77f, 47.71f), new Vector3(8146.10f, 4414.81f, 47.71f), new Vector3(7645f, 4015f, 47.71f)));
-            WardSpots.Add(new WardSpot("PurpleMid->RoundBush", new Vector3(9057f, 8245f, 45.73f), new Vector3(9230.77f, 7897.22f, 66.39f), new Vector3(9446.10f, 7814.81f, 54.66f), new Vector3(8895f, 8313f, 54.89f)));
-            WardSpots.Add(new WardSpot("PurpleMid->RiverRoundBush", new Vector3(9025.78f, 6591.64f, 46.27f), new Vector3(9200.08f, 6425.05f, 43.21f), new Vector3(9396.10f, 6264.81f, 23.72f), new Vector3(8795f, 6815f, 56.11f)));
-            WardSpots.Add(new WardSpot("PurpleMid->RiverLaneBush", new Vector3(8530.27f, 6637.38f, 46.98f), new Vector3(8539.27f, 6637.38f, 46.98f), new Vector3(8396.10f, 6464.81f, 46.98f), new Vector3(8779.17f, 6804.70f, 46.98f)));
-            WardSpots.Add(new WardSpot("PurpleBot->SoloBush", new Vector3(11889f, 4205f, 42.84f), new Vector3(11974.23f, 3807.21f, 42.84f), new Vector3(11646.10f, 3464.81f, 42.84f), new Vector3(11939f, 4255f, 42.84f)));
-            WardSpots.Add(new WardSpot("PurpleLizard->NashorPassBush", new Vector3(6299f, 10377.75f, 45.47f), new Vector3(6030.24f, 10292.37f, 54.29f), new Vector3(5846.10f, 10164.81f, 53.94f), new Vector3(6447f, 10463f, 54.63f)));
+            WardSpots.Add(new WardSpot("Dragon->TriBush", new Vector3(9695f, 3465f, 43.02f),
+                new Vector3(9843.38f, 3125.16f, 43.02f), new Vector3(9946.10f, 3064.81f, 43.02f),
+                new Vector3(9595f, 3665f, 43.02f)));
+            WardSpots.Add(new WardSpot("Nashor->TriBush", new Vector3(4346.10f, 10964.81f, 36.62f),
+                new Vector3(4214.93f, 11202.01f, 36.62f), new Vector3(4146.10f, 11314.81f, 36.62f),
+                new Vector3(4384.36f, 10680.41f, 36.62f)));
+            WardSpots.Add(new WardSpot("BlueTop->SoloBush", new Vector3(2349f, 10387f, 44.20f),
+                new Vector3(2267.97f, 10783.37f, 44.20f), new Vector3(2446.10f, 10914.81f, 44.20f),
+                new Vector3(2311f, 10185f, 44.20f)));
+            WardSpots.Add(new WardSpot("BlueMid->RoundBush", new Vector3(4946.52f, 6474.56f, 54.71f),
+                new Vector3(4891.98f, 6639.05f, 53.62f), new Vector3(4546.10f, 6864.81f, 53.78f),
+                new Vector3(5217f, 6263f, 54.95f)));
+            WardSpots.Add(new WardSpot("BlueMid->RiverLaneBush", new Vector3(5528.96f, 7615.20f, 45.64f),
+                new Vector3(5688.96f, 7825.20f, 45.64f), new Vector3(5796.10f, 7914.81f, 45.64f),
+                new Vector3(5460.13f, 7469.77f, 45.64f)));
+            WardSpots.Add(new WardSpot("BlueLizard->DragonPassBush", new Vector3(7745f, 4065f, 47.71f),
+                new Vector3(7927.65f, 4239.77f, 47.71f), new Vector3(8146.10f, 4414.81f, 47.71f),
+                new Vector3(7645f, 4015f, 47.71f)));
+            WardSpots.Add(new WardSpot("PurpleMid->RoundBush", new Vector3(9057f, 8245f, 45.73f),
+                new Vector3(9230.77f, 7897.22f, 66.39f), new Vector3(9446.10f, 7814.81f, 54.66f),
+                new Vector3(8895f, 8313f, 54.89f)));
+            WardSpots.Add(new WardSpot("PurpleMid->RiverRoundBush", new Vector3(9025.78f, 6591.64f, 46.27f),
+                new Vector3(9200.08f, 6425.05f, 43.21f), new Vector3(9396.10f, 6264.81f, 23.72f),
+                new Vector3(8795f, 6815f, 56.11f)));
+            WardSpots.Add(new WardSpot("PurpleMid->RiverLaneBush", new Vector3(8530.27f, 6637.38f, 46.98f),
+                new Vector3(8539.27f, 6637.38f, 46.98f), new Vector3(8396.10f, 6464.81f, 46.98f),
+                new Vector3(8779.17f, 6804.70f, 46.98f)));
+            WardSpots.Add(new WardSpot("PurpleBot->SoloBush", new Vector3(11889f, 4205f, 42.84f),
+                new Vector3(11974.23f, 3807.21f, 42.84f), new Vector3(11646.10f, 3464.81f, 42.84f),
+                new Vector3(11939f, 4255f, 42.84f)));
+            WardSpots.Add(new WardSpot("PurpleLizard->NashorPassBush", new Vector3(6299f, 10377.75f, 45.47f),
+                new Vector3(6030.24f, 10292.37f, 54.29f), new Vector3(5846.10f, 10164.81f, 53.94f),
+                new Vector3(6447f, 10463f, 54.63f)));
 
             WardItems.Add(new WardItem(2043, "Vision Ward", "VisionWard", 1450, 180));
             WardItems.Add(new WardItem(2044, "Stealth Ward", "SightWard", 1450, 180));
@@ -156,9 +128,236 @@ namespace SAwareness
             return Menu.Ward.GetActive();
         }
 
-        class PacketSpellId
+
+        private void Game_OnGameSendPacket(GamePacketEventArgs args) //TODO: Add Packetsupp for wards
         {
-            public SpellSlot SSpellSlot;
+            if (!IsActive())
+                return;
+
+            var gPacket = new GamePacket(args.PacketData);
+            var reader = new BinaryReader(new MemoryStream(args.PacketData));
+
+            byte PacketId = reader.ReadByte(); //PacketId
+            if (PacketId == 0x9A) //OLD 0x9A
+            {
+                int mNetworkId = BitConverter.ToInt32(reader.ReadBytes(4), 0);
+                byte spellId = reader.ReadByte();
+                float fromX = BitConverter.ToSingle(reader.ReadBytes(4), 0);
+                float fromY = BitConverter.ToSingle(reader.ReadBytes(4), 0);
+                float toX = BitConverter.ToSingle(reader.ReadBytes(4), 0);
+                float toY = BitConverter.ToSingle(reader.ReadBytes(4), 0);
+                int tNetworkId = BitConverter.ToInt32(reader.ReadBytes(4), 0);
+                PacketSpellId nSpellId = PacketSpellId.ConvertPacketCastToId(spellId);
+                if (latestSpellSlot == nSpellId.SSpellSlot && latestSpellSlot != SpellSlot.Unknown)
+                {
+                    drawSpots = false;
+                    foreach (WardSpot wardSpot in WardSpots)
+                    {
+                        if (!wardSpot.SafeWard &&
+                            Vector3.Distance(wardSpot.Pos,
+                                new Vector3(fromX, fromY, ObjectManager.Player.ServerPosition.Z)) <= 350 &&
+                            !wardAlreadyCorrected)
+                        {
+                            args.Process = false;
+                            wardAlreadyCorrected = true;
+                            //SendPacket
+                            var s_castPacket = new byte[28];
+                            var writer = new BinaryWriter(new MemoryStream(s_castPacket));
+                            writer.Write((byte) 0x9A);
+                            writer.Write(mNetworkId);
+                            writer.Write(spellId);
+                            writer.Write(wardSpot.Pos.X);
+                            writer.Write(wardSpot.Pos.Y);
+                            writer.Write(wardSpot.Pos.X);
+                            writer.Write(wardSpot.Pos.Y);
+                            writer.Write(tNetworkId);
+                            Game.SendPacket(s_castPacket, PacketChannel.C2S, PacketProtocolFlags.Reliable);
+                                //TODO: Check if its correct
+                            wardAlreadyCorrected = false;
+                            return;
+                        }
+                        if (wardSpot.SafeWard &&
+                            Vector3.Distance(wardSpot.MagneticPos,
+                                new Vector3(fromX, fromY, ObjectManager.Player.ServerPosition.Z)) <=
+                            100 &&
+                            !wardAlreadyCorrected)
+                        {
+                            args.Process = false;
+                            ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo,
+                                new Vector3(wardSpot.MovePos.X, wardSpot.MovePos.Y, wardSpot.MovePos.Z));
+                            latestWardSpot = wardSpot;
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void Game_OnWndProc(WndEventArgs args)
+        {
+            //http://msdn.microsoft.com/en-us/library/windows/desktop/ms632585(v=vs.85).aspx
+            const int WM_KEYDOWN = 0x100;
+            const int WM_LBUTTONUP = 0x202;
+            const int WM_LBUTTONDOWN = 0x201;
+            const int WM_RBUTTONUP = 0x205;
+            const int WM_RBUTTONDOWN = 0x204;
+
+            if (!IsActive())
+                return;
+            if (MenuGUI.IsChatOpen)
+                return;
+            if (args.Msg == WM_KEYDOWN)
+            {
+                InventorySlot inventoryItem = null;
+                int inventoryItemID = -1;
+                switch (args.WParam)
+                {
+                    case '1':
+                        latestSpellSlot = SpellSlot.Item1;
+                        inventoryItemID = 0;
+                        break;
+
+                    case '2':
+                        latestSpellSlot = SpellSlot.Item2;
+                        inventoryItemID = 1;
+                        break;
+
+                    case '3':
+                        latestSpellSlot = SpellSlot.Item3;
+                        inventoryItemID = 2;
+                        break;
+
+                    case '4':
+                        latestSpellSlot = SpellSlot.Trinket;
+                        inventoryItemID = 6;
+                        break;
+
+                    case '5':
+                        latestSpellSlot = SpellSlot.Item5;
+                        inventoryItemID = 3;
+                        break;
+
+                    case '6':
+                        latestSpellSlot = SpellSlot.Item6;
+                        inventoryItemID = 4;
+                        break;
+
+                    case '7':
+                        latestSpellSlot = SpellSlot.Item4;
+                        inventoryItemID = 5;
+                        break;
+
+                    default:
+                        drawSpots = false;
+                        latestSpellSlot = SpellSlot.Unknown;
+                        break;
+                }
+
+                foreach (InventorySlot inventorySlot in ObjectManager.Player.InventoryItems)
+                {
+                    if (inventorySlot.Slot == inventoryItemID)
+                    {
+                        inventoryItem = inventorySlot;
+                        break;
+                    }
+                }
+
+                if (latestSpellSlot != SpellSlot.Unknown)
+                {
+                    if (inventoryItem != null)
+                    {
+                        foreach (WardItem wardItem in WardItems)
+                        {
+                            if ((int) inventoryItem.Id == wardItem.Id &&
+                                ObjectManager.Player.Spellbook.CanUseSpell(latestSpellSlot) == SpellState.Ready)
+                            {
+                                drawSpots = true;
+                            }
+                        }
+                    }
+                }
+            }
+            else if (args.Msg == WM_LBUTTONUP && drawSpots)
+            {
+                drawSpots = false;
+            }
+            else if (args.Msg == WM_RBUTTONDOWN && drawSpots)
+            {
+                drawSpots = false;
+            }
+            else if (args.Msg == WM_RBUTTONDOWN)
+            {
+                latestWardSpot = null;
+            }
+        }
+
+        private void Game_OnGameUpdate(EventArgs args)
+        {
+            if (!IsActive())
+                return;
+            if (latestWardSpot != null)
+            {
+                if (Vector3.Distance(ObjectManager.Player.ServerPosition, latestWardSpot.ClickPos) <= 650)
+                {
+                    ObjectManager.Player.Spellbook.CastSpell(latestSpellSlot, latestWardSpot.ClickPos);
+                    latestWardSpot = null;
+                }
+            }
+        }
+
+        private void Drawing_OnDraw(EventArgs args)
+        {
+            if (!IsActive())
+                return;
+            if (!drawSpots)
+                return;
+            foreach (WardSpot ward in WardSpots)
+            {
+                if (Common.IsOnScreen(ward.Pos))
+                    Utility.DrawCircle(ward.Pos, 50, Color.GreenYellow);
+                if (ward.SafeWard)
+                {
+                    if (Common.IsOnScreen(ward.MagneticPos))
+                    {
+                        Utility.DrawCircle(ward.MagneticPos, 30, Color.Red);
+                        DrawArrow(ward.MagneticPos, ward.Pos, Color.RoyalBlue);
+                    }
+                }
+            }
+        }
+
+        private void DrawArrow(Vector3 start, Vector3 end, Color color) //TODO. Check if its correct calculated
+        {
+            Vector2 mPos1 = Drawing.WorldToScreen(start);
+            Vector2 mPos2 = Drawing.WorldToScreen(end);
+            Drawing.DrawLine(mPos1[0], mPos1[1], mPos2[0], mPos2[1], 1.0f, color);
+            //Vector2 mmPos2 = new Vector2(mPos2[0], mPos2[1]);
+            //Vector2 end1 = Geometry.Rotated(mmPos2, Geometry.DegreeToRadian(45));
+            //Vector2 end2 = Geometry.Rotated(mmPos2, Geometry.DegreeToRadian(315));
+            //end1.Normalize();
+            //end2.Normalize();
+            //end1 = Vector2.Multiply(mmPos2, end1);
+            //Drawing.DrawLine(mPos2[0], mPos2[1], mmPos2.X * end1.X, mmPos2.Y * end1.Y, 1.0f, color);
+            //Drawing.DrawLine(mPos2[0], mPos2[1], mmPos2.X * end2.X, mmPos2.Y * end2.Y, 1.0f, color);
+            //float rad1 = Geometry.DegreeToRadian(45);
+            //float cos1 = (float)Math.Cos(rad1);
+            //float sin1 = (float)Math.Sin(rad1);
+            //float rad2 = Geometry.DegreeToRadian(315);
+            //float cos2 = (float)Math.Cos(rad2);
+            //float sin2 = (float)Math.Sin(rad2);
+            //Drawing.DrawLine(mPos2[0], mPos2[1], mPos1[0] * cos1 - mPos1[1] * sin1, mPos1[0] * sin1 + mPos1[1] * cos1, 1.0f, color);
+            //Drawing.DrawLine(mPos2[0], mPos2[1], mPos2[0] * cos2 - mPos2[1] * sin2, mPos2[0] * sin2 + mPos2[1] * cos2, 1.0f, color);
+            //double r1 = Math.Sqrt(mPos1[0] * mPos1[0] + mPos1[1] + mPos1[1]);
+            //double r2 = Math.Sqrt(mPos2[0] * mPos2[0] + mPos2[1] + mPos2[1]);
+            //Vector2 mPos2P = new Vector2((float)(r2 * Math.Cos(45)), (float)(r2 * Math.Sin(45)));
+            //Vector2 mPos2N = new Vector2((float)(r2 * Math.Cos(-45)), (float)(r2 * Math.Sin(-45)));
+            //Drawing.DrawLine(mPos2[0], mPos2[1], mPos2P.X, mPos2P.Y, 1.0f, color);
+            //Drawing.DrawLine(mPos2[0], mPos2[1], mPos2N.X, mPos2N.Y, 1.0f, color);
+        }
+
+        private class PacketSpellId
+        {
+            public readonly SpellSlot SSpellSlot;
             public bool IsSummoner;
 
             public PacketSpellId(SpellSlot spellSlot, bool isSummoner)
@@ -223,231 +422,52 @@ namespace SAwareness
             }
         }
 
-
-
-        void Game_OnGameSendPacket(GamePacketEventArgs args) //TODO: Add Packetsupp for wards
+        private class WardItem
         {
-            if (!IsActive())
-                return;
+            public readonly int Id;
+            public int Duration;
+            public String Name;
+            public int Range;
+            public String SpellName;
 
-            GamePacket gPacket = new GamePacket(args.PacketData);
-            var reader = new BinaryReader(new MemoryStream(args.PacketData));
-
-            byte PacketId = reader.ReadByte(); //PacketId
-            if (PacketId == 0x9A) //OLD 0x9A
+            public WardItem(int id, string name, string spellName, int range, int duration)
             {
-                var mNetworkId = BitConverter.ToInt32(reader.ReadBytes(4), 0);
-                var spellId = reader.ReadByte();
-                var fromX = BitConverter.ToSingle(reader.ReadBytes(4), 0);
-                var fromY = BitConverter.ToSingle(reader.ReadBytes(4), 0);
-                var toX = BitConverter.ToSingle(reader.ReadBytes(4), 0);
-                var toY = BitConverter.ToSingle(reader.ReadBytes(4), 0);
-                var tNetworkId = BitConverter.ToInt32(reader.ReadBytes(4), 0);
-                PacketSpellId nSpellId = PacketSpellId.ConvertPacketCastToId(spellId);
-                if (latestSpellSlot == nSpellId.SSpellSlot && latestSpellSlot != SpellSlot.Unknown)
-                {
-                    drawSpots = false;
-                    foreach (var wardSpot in WardSpots)
-                    {
-                        if (!wardSpot.SafeWard &&
-                            Vector3.Distance(wardSpot.Pos,
-                                new Vector3((float)fromX, (float)fromY, ObjectManager.Player.ServerPosition.Z)) <= 350 &&
-                            !wardAlreadyCorrected)
-                        {
-                            args.Process = false;
-                            wardAlreadyCorrected = true;
-                            //SendPacket
-                            byte[] s_castPacket = new byte[28];
-                            var writer = new BinaryWriter(new MemoryStream(s_castPacket));
-                            writer.Write((byte)0x9A);
-                            writer.Write(mNetworkId);
-                            writer.Write(spellId);
-                            writer.Write((float)wardSpot.Pos.X);
-                            writer.Write((float)wardSpot.Pos.Y);
-                            writer.Write((float)wardSpot.Pos.X);
-                            writer.Write((float)wardSpot.Pos.Y);
-                            writer.Write(tNetworkId);
-                            Game.SendPacket(s_castPacket, PacketChannel.C2S, PacketProtocolFlags.Reliable); //TODO: Check if its correct
-                            wardAlreadyCorrected = false;
-                            return;
-                        }
-                        else if (wardSpot.SafeWard &&
-                                 Vector3.Distance(wardSpot.MagneticPos,
-                                     new Vector3((float)fromX, (float)fromY, ObjectManager.Player.ServerPosition.Z)) <=
-                                 100 &&
-                                 !wardAlreadyCorrected)
-                        {
-                            args.Process = false;
-                            ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo,
-                                new Vector3(wardSpot.MovePos.X, wardSpot.MovePos.Y, wardSpot.MovePos.Z));
-                            latestWardSpot = wardSpot;
-                            return;
-                        }
-                    }
-                }
+                Id = id;
+                Name = name;
+                SpellName = spellName;
+                Range = range;
+                Duration = duration;
             }
         }
 
-        void Game_OnWndProc(WndEventArgs args)
+        private class WardSpot
         {
-            //http://msdn.microsoft.com/en-us/library/windows/desktop/ms632585(v=vs.85).aspx
-            const int WM_KEYDOWN = 0x100;
-            const int WM_LBUTTONUP = 0x202;
-            const int WM_LBUTTONDOWN = 0x201;
-            const int WM_RBUTTONUP = 0x205;
-            const int WM_RBUTTONDOWN = 0x204;
+            public readonly Vector3 ClickPos;
+            public readonly Vector3 MagneticPos;
+            public readonly bool SafeWard;
+            public Vector3 MovePos;
+            public String Name;
+            public Vector3 Pos;
 
-            if (!IsActive())
-                return;
-            if (MenuGUI.IsChatOpen == true)
-                return;
-            if (args.Msg == WM_KEYDOWN)
+            public WardSpot(string name, Vector3 pos)
             {
-                InventorySlot inventoryItem = null;
-                int inventoryItemID = -1;
-                switch (args.WParam)
-                {
-                    case '1':
-                        latestSpellSlot = SpellSlot.Item1;
-                        inventoryItemID = 0;
-                        break;
-
-                    case '2':
-                        latestSpellSlot = SpellSlot.Item2;
-                        inventoryItemID = 1;
-                        break;
-
-                    case '3':
-                        latestSpellSlot = SpellSlot.Item3;
-                        inventoryItemID = 2;
-                        break;
-
-                    case '4':
-                        latestSpellSlot = SpellSlot.Trinket;
-                        inventoryItemID = 6;
-                        break;
-
-                    case '5':
-                        latestSpellSlot = SpellSlot.Item5;
-                        inventoryItemID = 3;
-                        break;
-
-                    case '6':
-                        latestSpellSlot = SpellSlot.Item6;
-                        inventoryItemID = 4;
-                        break;
-
-                    case '7':
-                        latestSpellSlot = SpellSlot.Item4;
-                        inventoryItemID = 5;
-                        break;
-
-                    default:
-                        drawSpots = false;
-                        latestSpellSlot = SpellSlot.Unknown;
-                        break;
-                }
-
-                foreach (var inventorySlot in ObjectManager.Player.InventoryItems)
-                {
-                    if (inventorySlot.Slot == inventoryItemID)
-                    {
-                        inventoryItem = inventorySlot;
-                        break;
-                    }
-                }
-
-                if (latestSpellSlot != SpellSlot.Unknown)
-                {
-                    if (inventoryItem != null)
-                    {
-                        foreach (var wardItem in WardItems)
-                        {
-                            if ((int)inventoryItem.Id == wardItem.Id &&
-                                ObjectManager.Player.Spellbook.CanUseSpell(latestSpellSlot) == SpellState.Ready)
-                            {
-                                drawSpots = true;
-                            }
-                        }
-                    }
-                }
+                Name = name;
+                Pos = pos;
+                MagneticPos = new Vector3();
+                ClickPos = new Vector3();
+                MovePos = new Vector3();
+                SafeWard = false;
             }
-            else if (args.Msg == WM_LBUTTONUP && drawSpots)
+
+            public WardSpot(string name, Vector3 magneticPos, Vector3 clickPos, Vector3 pos, Vector3 movePos)
             {
-                drawSpots = false;
+                Name = name;
+                Pos = pos;
+                MagneticPos = magneticPos;
+                ClickPos = clickPos;
+                MovePos = movePos;
+                SafeWard = true;
             }
-            else if (args.Msg == WM_RBUTTONDOWN && drawSpots)
-            {
-                drawSpots = false;
-            }
-            else if (args.Msg == WM_RBUTTONDOWN)
-            {
-                latestWardSpot = null;
-            }
-        }
-
-        void Game_OnGameUpdate(EventArgs args)
-        {
-            if (!IsActive())
-                return;
-            if (latestWardSpot != null)
-            {
-                if (Vector3.Distance(ObjectManager.Player.ServerPosition, latestWardSpot.ClickPos) <= 650)
-                {
-                    ObjectManager.Player.Spellbook.CastSpell(latestSpellSlot, latestWardSpot.ClickPos);
-                    latestWardSpot = null;
-                }
-            }
-        }
-
-        void Drawing_OnDraw(EventArgs args)
-        {
-            if (!IsActive())
-                return;
-            if (!drawSpots)
-                return;
-            foreach (var ward in WardSpots)
-            {
-                if (Common.IsOnScreen(ward.Pos))
-                    Utility.DrawCircle(ward.Pos, 50, System.Drawing.Color.GreenYellow);
-                if (ward.SafeWard)
-                {
-                    if (Common.IsOnScreen(ward.MagneticPos))
-                    {
-                        Utility.DrawCircle(ward.MagneticPos, 30, System.Drawing.Color.Red);
-                        DrawArrow(ward.MagneticPos, ward.Pos, System.Drawing.Color.RoyalBlue);
-                    }
-                }
-            }
-        }
-
-        void DrawArrow(Vector3 start, Vector3 end, System.Drawing.Color color) //TODO. Check if its correct calculated
-        {
-            Vector2 mPos1 = Drawing.WorldToScreen(start);
-            Vector2 mPos2 = Drawing.WorldToScreen(end);
-            Drawing.DrawLine(mPos1[0], mPos1[1], mPos2[0], mPos2[1], 1.0f, color);
-            //Vector2 mmPos2 = new Vector2(mPos2[0], mPos2[1]);
-            //Vector2 end1 = Geometry.Rotated(mmPos2, Geometry.DegreeToRadian(45));
-            //Vector2 end2 = Geometry.Rotated(mmPos2, Geometry.DegreeToRadian(315));
-            //end1.Normalize();
-            //end2.Normalize();
-            //end1 = Vector2.Multiply(mmPos2, end1);
-            //Drawing.DrawLine(mPos2[0], mPos2[1], mmPos2.X * end1.X, mmPos2.Y * end1.Y, 1.0f, color);
-            //Drawing.DrawLine(mPos2[0], mPos2[1], mmPos2.X * end2.X, mmPos2.Y * end2.Y, 1.0f, color);
-            //float rad1 = Geometry.DegreeToRadian(45);
-            //float cos1 = (float)Math.Cos(rad1);
-            //float sin1 = (float)Math.Sin(rad1);
-            //float rad2 = Geometry.DegreeToRadian(315);
-            //float cos2 = (float)Math.Cos(rad2);
-            //float sin2 = (float)Math.Sin(rad2);
-            //Drawing.DrawLine(mPos2[0], mPos2[1], mPos1[0] * cos1 - mPos1[1] * sin1, mPos1[0] * sin1 + mPos1[1] * cos1, 1.0f, color);
-            //Drawing.DrawLine(mPos2[0], mPos2[1], mPos2[0] * cos2 - mPos2[1] * sin2, mPos2[0] * sin2 + mPos2[1] * cos2, 1.0f, color);
-            //double r1 = Math.Sqrt(mPos1[0] * mPos1[0] + mPos1[1] + mPos1[1]);
-            //double r2 = Math.Sqrt(mPos2[0] * mPos2[0] + mPos2[1] + mPos2[1]);
-            //Vector2 mPos2P = new Vector2((float)(r2 * Math.Cos(45)), (float)(r2 * Math.Sin(45)));
-            //Vector2 mPos2N = new Vector2((float)(r2 * Math.Cos(-45)), (float)(r2 * Math.Sin(-45)));
-            //Drawing.DrawLine(mPos2[0], mPos2[1], mPos2P.X, mPos2P.Y, 1.0f, color);
-            //Drawing.DrawLine(mPos2[0], mPos2[1], mPos2N.X, mPos2N.Y, 1.0f, color);
         }
     }
 }
