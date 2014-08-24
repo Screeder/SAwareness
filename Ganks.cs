@@ -4,15 +4,21 @@ using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
+using SharpDX.Direct3D9;
 
 namespace SAwareness
 {
     class GankPotentialTracker
     {
         private readonly Dictionary<Obj_AI_Hero, double> Enemies = new Dictionary<Obj_AI_Hero, double>();
+        private Line line;
+        private bool drawActive = true;
 
         public GankPotentialTracker()
         {
+            line = new Line(Drawing.Direct3DDevice);
+            line.Antialias = true;
+            line.Width = 2;
             foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (hero.IsEnemy)
@@ -21,18 +27,38 @@ namespace SAwareness
                 }
             }
             Game.OnGameUpdate += Game_OnGameUpdate;
+            Drawing.OnPreReset += Drawing_OnPreReset;
+            Drawing.OnPostReset += Drawing_OnPostReset;
+            AppDomain.CurrentDomain.DomainUnload += delegate { Drawing_OnPreReset(new EventArgs()); };
+            AppDomain.CurrentDomain.ProcessExit += delegate { Drawing_OnPreReset(new EventArgs()); };
             Drawing.OnEndScene += Drawing_OnEndScene;
         }
 
         ~GankPotentialTracker()
         {
             Game.OnGameUpdate -= Game_OnGameUpdate;
+            Drawing.OnPreReset -= Drawing_OnPreReset;
+            Drawing.OnPostReset -= Drawing_OnPostReset;
             Drawing.OnEndScene -= Drawing_OnEndScene;
         }
 
         public bool IsActive()
         {
             return Menu.GankTracker.GetActive();
+        }
+
+        void Drawing_OnPostReset(EventArgs args)
+        {
+            if (Drawing.Direct3DDevice == null || Drawing.Direct3DDevice.IsDisposed)
+                return;
+            line.OnResetDevice();
+            drawActive = true;
+        }
+
+        void Drawing_OnPreReset(EventArgs args)
+        {
+            line.OnLostDevice();
+            drawActive = false;
         }
 
         private void Game_OnGameUpdate(EventArgs args)
@@ -89,23 +115,28 @@ namespace SAwareness
                 if (enemy.Key.IsDead || ObjectManager.Player.IsDead)
                     continue;
                 Vector2 ePos = Drawing.WorldToScreen(enemy.Key.ServerPosition);
+                line.Begin();
                 if (enemy.Value > enemy.Key.Health)
                 {
                     //Drawing.DrawLine(myPos.X, myPos.Y, ePos.X, ePos.Y, 2.0f, System.Drawing.Color.OrangeRed);
-                    DirectXDrawer.DrawLine(ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition,
-                        Color.OrangeRed);
+                    //DirectXDrawer.DrawLine(line, ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition,
+                    //    Color.OrangeRed);
+                    line.Draw(new[] { myPos, ePos }, Color.OrangeRed);
                 }
                 if (enemy.Value < enemy.Key.Health)
                 {
                     //Drawing.DrawLine(myPos.X, myPos.Y, ePos.X, ePos.Y, 2.0f, System.Drawing.Color.GreenYellow);
-                    DirectXDrawer.DrawLine(ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition,
-                        Color.GreenYellow);
+                    //DirectXDrawer.DrawLine(line, ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition,
+                    //    Color.GreenYellow);
+                    line.Draw(new[] { myPos, ePos }, Color.GreenYellow);
                 }
                 else if (enemy.Key.Health/enemy.Key.MaxHealth < 0.1)
                 {
                     //Drawing.DrawLine(myPos.X, myPos.Y, ePos.X, ePos.Y, 2.0f, System.Drawing.Color.Red);
-                    DirectXDrawer.DrawLine(ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition, Color.Red);
+                    //DirectXDrawer.DrawLine(line, ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition, Color.Red);
+                    line.Draw(new[] { myPos, ePos }, Color.Red);
                 }
+                line.End();
             }
         }
     }
@@ -151,7 +182,7 @@ namespace SAwareness
             Obj_AI_Hero hero = enemy.Key;
             if (enemy.Value.InvisibleTime > 5)
             {
-                if (!enemy.Value.Called && hero.IsValid && hero.IsVisible &&
+                if (!enemy.Value.Called && hero.IsValid && !hero.IsDead && hero.IsVisible &&
                     Vector3.Distance(ObjectManager.Player.ServerPosition, hero.ServerPosition) <
                     Menu.GankTracker.GetMenuItem("SAwarenessGankTrackerTrackRange").GetValue<Slider>().Value)
                 {

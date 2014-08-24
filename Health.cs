@@ -77,7 +77,7 @@ namespace SAwareness
 
             foreach (var inhibitor in _baseB)
             {
-                if (!inhibitor.IsDead && inhibitor.IsValid && inhibitor.Health > 0)
+                if (!inhibitor.IsDead && inhibitor.IsValid && inhibitor.Health > 0.1f)
                 {
                     Vector2 pos = Drawing.WorldToMinimap(inhibitor.Position);
                     int health = 0;

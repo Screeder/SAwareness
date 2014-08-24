@@ -1452,7 +1452,7 @@ namespace SAwareness
                 }
                 if (Menu.UiTracker.GetMenuItem("SAwarenessUITrackerXPos").GetValue<Slider>().Value != oldX || Menu.UiTracker.GetMenuItem("SAwarenessUITrackerYPos").GetValue<Slider>().Value != oldY)
                     CalculateSizes();
-
+                
                 if (S == null || S.IsDisposed)
                 {
                     return;
