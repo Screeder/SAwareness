@@ -23,17 +23,17 @@ namespace SAwareness
 
             public static Skin.Struct Decoded(byte[] data)
             {
-                //GamePacket gamePacket = new GamePacket(data);
-                //Skin.Struct @struct = new Skin.Struct();
-                //@struct.SourceNetworkId = gamePacket.ReadInteger();
-                //gamePacket.Position = (long)1;
-                //@struct.Slot = gamePacket.ReadByte();
-                //@struct.FromX = gamePacket.ReadFloat();
-                //@struct.FromY = gamePacket.ReadFloat();
-                //@struct.ToX = gamePacket.ReadFloat();
-                //@struct.ToY = gamePacket.ReadFloat();
-                //return @struct;
-                return new Skin.Struct(); //TODO: Encode the packet
+                GamePacket gamePacket = new GamePacket(data);
+                Skin.Struct @struct = new Skin.Struct();
+                @struct.SourceNetworkId = gamePacket.ReadInteger();
+                gamePacket.Position = (long)1;
+                @struct.Slot = gamePacket.ReadByte();
+                @struct.FromX = gamePacket.ReadFloat();
+                @struct.FromY = gamePacket.ReadFloat();
+                @struct.ToX = gamePacket.ReadFloat();
+                @struct.ToY = gamePacket.ReadFloat();
+                @struct.SkinId = gamepacket.ReadInteger();
+                return @struct;
             }
 
             public static GamePacket Encoded(Skin.Struct packetStruct)
@@ -149,7 +149,15 @@ namespace SAwareness
             byte PacketId = reader.ReadByte(); //PacketId
             if (PacketId == Skin.Header) //OLD 180
             {
-                //Console.WriteLine("help");
+                Packet.S2C.UpdateModel.Struct cast = Packet.S2C.UpdateModel.Decoded(PacketId);
+                Packet.S2C.UpdateModel.Struct cast1 = Packet.S2C.UpdateModel.Decoded(PacketId);
+                Packet.S2C.UpdateModel.Struct cast2 = Packet.S2C.UpdateModel.Decoded(PacketId);
+                Packet.S2C.UpdateModel.Struct cast3 = Packet.S2C.UpdateModel.Decoded(PacketId);
+                Packet.S2C.UpdateModel.Encode(cast);
+                Packet.S2C.UpdateModel.Encode(cast1);
+                Packet.S2C.UpdateModel.Encode(cast2);
+                Packet.S2C.UpdateModel.Encode(cast3);
+                Packet.S2C.UpdateModel.Encode(1);
             }
         }
     }
