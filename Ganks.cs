@@ -122,6 +122,8 @@ namespace SAwareness
                     //DirectXDrawer.DrawLine(line, ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition,
                     //    Color.OrangeRed);
                     line.Draw(new[] { myPos, ePos }, Color.OrangeRed);
+                    //DirectXDrawer.DrawLine(ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition,
+                    //    System.Drawing.Color.OrangeRed);
                 }
                 if (enemy.Value < enemy.Key.Health)
                 {
@@ -129,14 +131,18 @@ namespace SAwareness
                     //DirectXDrawer.DrawLine(line, ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition,
                     //    Color.GreenYellow);
                     line.Draw(new[] { myPos, ePos }, Color.GreenYellow);
+                    //DirectXDrawer.DrawLine(ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition,
+                    //    System.Drawing.Color.GreenYellow);
                 }
                 else if (enemy.Key.Health/enemy.Key.MaxHealth < 0.1)
                 {
                     //Drawing.DrawLine(myPos.X, myPos.Y, ePos.X, ePos.Y, 2.0f, System.Drawing.Color.Red);
                     //DirectXDrawer.DrawLine(line, ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition, Color.Red);
                     line.Draw(new[] { myPos, ePos }, Color.Red);
+                    //DirectXDrawer.DrawLine(ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition,
+                    //    System.Drawing.Color.Red);
                 }
-                line.End();
+               line.End();
             }
         }
     }

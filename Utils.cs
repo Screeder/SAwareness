@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Net;
@@ -60,6 +61,14 @@ namespace SAwareness
         public static bool IsOnScreen(Vector3 vector)
         {
             Vector2 screen = Drawing.WorldToScreen(vector);
+            if (screen[0] < 0 || screen[0] > Drawing.Width || screen[1] < 0 || screen[1] > Drawing.Height)
+                return false;
+            return true;
+        }
+
+        public static bool IsOnScreen(Vector2 vector)
+        {
+            Vector2 screen = vector;
             if (screen[0] < 0 || screen[0] > Drawing.Width || screen[1] < 0 || screen[1] > Drawing.Height)
                 return false;
             return true;
@@ -130,50 +139,66 @@ namespace SAwareness
 
     static class DirectXDrawer
     {
-        private static void ChangeYZ(ref Vector3 vec)
+
+        public struct PositionColored
         {
-            float temp = vec.Y;
-            vec.Y = vec.Z;
-            vec.Z = temp;
+            public static readonly VertexFormat FVF = VertexFormat.Position | VertexFormat.Diffuse;
+            public static readonly int Stride = Vector3.SizeInBytes + sizeof(int);
+
+            public Vector3 Position;
+            public int Color;
+
+            public PositionColored(Vector3 pos, int col)
+            {
+                Position = pos;
+                Color = col;
+            }
         }
 
-        //public static void DrawLine(Vector3 from, Vector3 to, Color color)
-        //{
-        //    ChangeYZ(ref from);
-        //    ChangeYZ(ref to);
-        //    to = new Vector3(from.X, from.Y + 100, from.Z);
+        private static void InternalRender(Vector3 target)
+        {
+            //Drawing.Direct3DDevice.SetTransform(TransformState.World, Matrix.Translation(target));
+            //Drawing.Direct3DDevice.SetTransform(TransformState.View, Drawing.View);
+            //Drawing.Direct3DDevice.SetTransform(TransformState.Projection, Drawing.Projection);
 
-        //    var vertices = new VertexPositionColor[2];
-        //    vertices[0] = new VertexPositionColor(Vector3.Zero, color);
-        //    vertices[1] = new VertexPositionColor(to - from, color);
+            Drawing.Direct3DDevice.VertexShader = null;
+            Drawing.Direct3DDevice.PixelShader = null;
+            Drawing.Direct3DDevice.SetRenderState(RenderState.AlphaBlendEnable, true);
+            Drawing.Direct3DDevice.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+            Drawing.Direct3DDevice.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
+            Drawing.Direct3DDevice.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+            Drawing.Direct3DDevice.SetRenderState(RenderState.Lighting, 0);
+            Drawing.Direct3DDevice.SetRenderState(RenderState.ZEnable, true);
+            Drawing.Direct3DDevice.SetRenderState(RenderState.AntialiasedLineEnable, true);
+            Drawing.Direct3DDevice.SetRenderState(RenderState.Clipping, true);
+            Drawing.Direct3DDevice.SetRenderState(RenderState.EnableAdaptiveTessellation,true);
+            Drawing.Direct3DDevice.SetRenderState(RenderState.MultisampleAntialias, true);
+            Drawing.Direct3DDevice.SetRenderState(RenderState.ShadeMode, ShadeMode.Gouraud);
+            Drawing.Direct3DDevice.SetTexture(0, null);
+            Drawing.Direct3DDevice.SetRenderState(RenderState.CullMode, Cull.None);
+        }
 
+        public static void DrawLine(Vector3 from, Vector3 to, System.Drawing.Color color)
+        {
+            var vertices = new PositionColored[2];
+            vertices[0] = new PositionColored(Vector3.Zero, color.ToArgb());
+            from = from.SwitchYZ();
+            to = to.SwitchYZ();
+            vertices[1] = new PositionColored(to - from, color.ToArgb());
 
-        //    Drawing.Direct3DDevice.SetTransform(TransformState.World, Matrix.Translation(from));
-        //    Drawing.Direct3DDevice.SetTransform(TransformState.View, Drawing.View);
-        //    Drawing.Direct3DDevice.SetTransform(TransformState.Projection, Drawing.Projection);
+            InternalRender(from);
 
-        //    Drawing.Direct3DDevice.VertexShader = null;
-        //    Drawing.Direct3DDevice.PixelShader = null;
-        //    Drawing.Direct3DDevice.SetRenderState(RenderState.AlphaBlendEnable, true);
-        //    Drawing.Direct3DDevice.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
-        //    Drawing.Direct3DDevice.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
-        //    Drawing.Direct3DDevice.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-        //    Drawing.Direct3DDevice.SetRenderState(RenderState.Lighting, 0);
-        //    Drawing.Direct3DDevice.SetRenderState(RenderState.ZEnable, true);
-        //    Drawing.Direct3DDevice.SetTexture(0, null);
-        //    Drawing.Direct3DDevice.SetRenderState(RenderState.CullMode, Cull.None);
-
-        //    Drawing.Direct3DDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices.Length/2, vertices);
-        //}
+            Drawing.Direct3DDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices.Length / 2, vertices);
+        }
 
         public static void DrawLine(Line line, Vector3 from, Vector3 to, ColorBGRA color, Size size = default(Size), float[] scale = null, float rotation = 0.0f)
         {
             if (line != null)
             {
+                from = from.SwitchYZ();
+                to = to.SwitchYZ();
                 Matrix nMatrix = (scale != null ? Matrix.Scaling(scale[0], scale[1], 0) : Matrix.Scaling(1)) *
-                                 Matrix.RotationZ(rotation) * Matrix.Translation(1.0f, 1.0f, 1.0f);
-                ChangeYZ(ref from);
-                ChangeYZ(ref to);
+                                 Matrix.RotationZ(rotation) * Matrix.Translation(from);
                 Vector3[] vec = { from, to };
                 line.DrawTransform(vec, nMatrix, color);
             }
@@ -217,7 +242,11 @@ namespace SAwareness
                 Matrix nMatrix = (scale != null ? Matrix.Scaling(scale[0], scale[1], 0) : Matrix.Scaling(1))*
                                  Matrix.RotationZ(rotation)*Matrix.Translation(size.Width, size.Height, 0);
                 sprite.Transform = nMatrix;
-                sprite.Draw(texture, color);
+                Matrix mT = Drawing.Direct3DDevice.GetTransform(TransformState.World);
+
+                InternalRender(mT.TranslationVector);
+                if (Common.IsOnScreen(new Vector2(size.Width, size.Height)))
+                    sprite.Draw(texture, color);
                 sprite.Transform = matrix;
             }
         }
