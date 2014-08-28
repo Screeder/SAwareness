@@ -137,16 +137,18 @@ namespace SAwareness
                         recall.Recall2 = recallEx;
 
                     var obj = ObjectManager.GetUnitByNetworkId<GameObject>(recallEx.UnitNetworkId);
-                    var screen = obj.Position;
+                    var pos = obj.Position;
                     for (int i = 0; i < Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorPingTimes").GetValue<Slider>().Value; i++)
                     {
-                        GamePacket gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(screen.X, screen.Y, 0, Packet.PingType.Danger));
+                        GamePacket gPacketT;
                         if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorLocalPing").GetValue<bool>())
                         {
-                            //TODO: Add local ping
+                            gPacketT = Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1]));
+                            gPacketT.Process();
                         }
                         else
                         {
+                            gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos.X, pos.Y, 0, Packet.PingType.Danger));
                             gPacketT.Send();
                         }
                     }

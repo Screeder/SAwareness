@@ -94,7 +94,14 @@ namespace SAwareness
                             health = (int)inhibitor.Health;
                             break;
                     }
-                    DirectXDrawer.DrawText(font, health.ToString(), (int)pos[0], (int)pos[1], Color.AliceBlue);
+                    if (((inhibitor.Health / inhibitor.MaxHealth) * 100) > 75)
+                        DirectXDrawer.DrawText(font, health.ToString(), (int)pos[0], (int)pos[1], Color.LightGreen);
+                    else if (((inhibitor.Health / inhibitor.MaxHealth) * 100) <= 75)
+                        DirectXDrawer.DrawText(font, health.ToString(), (int)pos[0], (int)pos[1], Color.LightYellow);
+                    else if (((inhibitor.Health / inhibitor.MaxHealth) * 100) <= 50)
+                        DirectXDrawer.DrawText(font, health.ToString(), (int)pos[0], (int)pos[1], Color.Orange);
+                    else if (((inhibitor.Health / inhibitor.MaxHealth) * 100) <= 25)
+                        DirectXDrawer.DrawText(font, health.ToString(), (int)pos[0], (int)pos[1], Color.IndianRed);
                     //Drawing.DrawText(pos[0], pos[1], System.Drawing.Color.Green, ((int)turret.Health).ToString());
                     //Drawing.DrawText(turret.HealthBarPosition.X, turret.HealthBarPosition.Y + 20, System.Drawing.Color.Green, ((int)turret.Health).ToString());
                 }
@@ -119,7 +126,14 @@ namespace SAwareness
                             health = (int)inhibitor.Health;
                             break;
                     }
-                    DirectXDrawer.DrawText(font, health.ToString(), (int)pos[0], (int)pos[1], Color.AliceBlue);
+                    if (((inhibitor.Health / inhibitor.MaxHealth) * 100) > 75)
+                        DirectXDrawer.DrawText(font, health.ToString(), (int)pos[0], (int)pos[1], Color.LightGreen);
+                    else if (((inhibitor.Health / inhibitor.MaxHealth) * 100) <= 75)
+                        DirectXDrawer.DrawText(font, health.ToString(), (int)pos[0], (int)pos[1], Color.LightYellow);
+                    else if (((inhibitor.Health / inhibitor.MaxHealth) * 100) <= 50)
+                        DirectXDrawer.DrawText(font, health.ToString(), (int)pos[0], (int)pos[1], Color.Orange);
+                    else if (((inhibitor.Health / inhibitor.MaxHealth) * 100) <= 25)
+                        DirectXDrawer.DrawText(font, health.ToString(), (int)pos[0], (int)pos[1], Color.IndianRed);
                     //Drawing.DrawText(pos[0], pos[1], System.Drawing.Color.Green, ((int)turret.Health).ToString());
                     //Drawing.DrawText(turret.HealthBarPosition.X, turret.HealthBarPosition.Y + 20, System.Drawing.Color.Green, ((int)turret.Health).ToString());
                 }
@@ -151,7 +165,14 @@ namespace SAwareness
                             health = (int)turret.Health;
                             break;
                     }
-                    DirectXDrawer.DrawText(font, health.ToString(), (int)pos[0], (int)pos[1], Color.AliceBlue);
+                    if (((turret.Health / turret.MaxHealth) * 100) > 75)
+                        DirectXDrawer.DrawText(font, health.ToString(), (int)pos[0], (int)pos[1], Color.LightGreen);
+                    else if (((turret.Health / turret.MaxHealth) * 100) <= 75)
+                        DirectXDrawer.DrawText(font, health.ToString(), (int)pos[0], (int)pos[1], Color.LightYellow);
+                    else if (((turret.Health / turret.MaxHealth) * 100) <= 50)
+                        DirectXDrawer.DrawText(font, health.ToString(), (int)pos[0], (int)pos[1], Color.Orange);
+                    else if (((turret.Health / turret.MaxHealth) * 100) <= 25)
+                        DirectXDrawer.DrawText(font, health.ToString(), (int)pos[0], (int)pos[1], Color.IndianRed);
                     //Drawing.DrawText(pos[0], pos[1], System.Drawing.Color.Green, ((int)turret.Health).ToString());
                     //Drawing.DrawText(turret.HealthBarPosition.X, turret.HealthBarPosition.Y + 20, System.Drawing.Color.Green, ((int)turret.Health).ToString());
                 }

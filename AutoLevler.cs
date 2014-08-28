@@ -104,7 +104,7 @@ namespace SAwareness
             loc = loc + "\\Config\\SAwareness\\autolevel.conf";
             if (!File.Exists(loc))
             {
-                Download.DownloadFile("127.0.0.1", loc);
+                //Download.DownloadFile("127.0.0.1", loc);
             }
             try
             {

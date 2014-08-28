@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -87,10 +88,83 @@ namespace SAwareness
         }
     }
 
-    static class Download
+    class Downloader
     {
         public static String Host = "https://github.com/Screeder/SAwareness/raw/master/Sprites/SAwareness/";
         public static String Path = "CHAMP/";
+
+        public delegate void DownloadFinished(object sender, DlEventArgs args);
+
+        public event DownloadFinished DownloadFileFinished;
+
+        private List<Files> downloadQueue = new List<Files>();
+
+        public class DlEventArgs : EventArgs
+        {
+            public Files DlFiles;
+
+            public DlEventArgs(Files files)
+            {
+                DlFiles = files;
+            }
+        }
+
+        public struct Files
+        {
+            public String OnlineFile;
+            public String OfflineFile;
+
+            public Files(String onlineFile, String offlineFile)
+            {
+                OnlineFile = onlineFile;
+                OfflineFile = offlineFile;
+            }
+        }
+
+        private struct DlTask
+        {
+            public Files Files;
+            public Task Task;
+
+            public DlTask(Files files, Task task)
+            {
+                Files = files;
+                Task = task;
+            }
+        }
+
+        public void AddDownload(String hostFile, String localFile)
+        {
+            downloadQueue.Add(new Files(hostFile, localFile));
+        }
+
+        public void StartDownload()
+        {
+            StartDownloadInternal();
+        }
+
+        private async Task StartDownloadInternal()
+        {
+            var webClient = new WebClient();
+            List<DlTask> tasks = new List<DlTask>();
+            foreach (var files in downloadQueue)
+            {
+                Task t = webClient.DownloadFileTaskAsync(new Uri(Host + Path + files.OnlineFile), files.OfflineFile);
+                tasks.Add(new DlTask(files, t));
+            }
+            foreach (var task in tasks)
+            {
+                await task.Task;
+                tasks.Remove(task);
+                OnFinished(new DlEventArgs(task.Files));
+            }
+        }
+
+        protected virtual void OnFinished(DlEventArgs args)
+        {
+            if (DownloadFileFinished != null)
+                DownloadFileFinished(this, args);
+        }
 
         public static void DownloadFile(String hostfile, String localfile)
         {
@@ -101,23 +175,46 @@ namespace SAwareness
 
     static class SpriteHelper
     {
-        public static Texture LoadTexture(String onlineFile, String subOnlinePath, String localPathFile,
+        static Downloader Downloader = new Downloader();
+
+        private static List<SpriteRef> Sprites = new List<SpriteRef>();
+
+        struct SpriteRef
+        {
+            public String OnlineFile;
+            public Texture Texture;
+
+            public SpriteRef(String onlineFile, ref Texture texture)
+            {
+                OnlineFile = onlineFile;
+                Texture = texture;
+            }
+        }
+
+        public static void LoadTexture(String onlineFile, String subOnlinePath, String localPathFile,
             ref Texture texture, bool bForce = false)
         {
             if (!File.Exists(localPathFile))
             {
-                String filePath = localPathFile;
-                filePath = filePath.Remove(0, filePath.LastIndexOf("\\Sprites\\", StringComparison.Ordinal));
                 try
                 {
-                    Download.Path = subOnlinePath;
-                    Download.DownloadFile(onlineFile, localPathFile);
+                    Downloader.Path = subOnlinePath;
+                    Sprites.Add(new SpriteRef(onlineFile, ref texture));
+                    Downloader.DownloadFileFinished += Downloader_DownloadFileFinished;
+                    Downloader.AddDownload(onlineFile, localPathFile);
+                    Downloader.StartDownload();
+                    //Downloader.DownloadFile(onlineFile, localPathFile);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("SAwareness: Path: " + onlineFile + " \nException: " + ex);
                 }
             }
+            LoadTexture(localPathFile, ref texture, bForce);
+        }
+
+        private static void LoadTexture(String localPathFile, ref Texture texture, bool bForce = false)
+        {
             if (File.Exists(localPathFile) && (bForce || texture == null))
             {
                 try
@@ -130,10 +227,28 @@ namespace SAwareness
                 }
                 if (texture == null)
                 {
-                    return null;
+                    return;
                 }
             }
-            return texture;
+        }
+
+        static void Downloader_DownloadFileFinished(object sender, Downloader.DlEventArgs args)
+        {
+            for (int i = 0; i < Sprites.Count - 1; i++)
+            {
+                var spriteRef = Sprites[i];
+                if (spriteRef.OnlineFile.Contains(args.DlFiles.OnlineFile))
+                {
+                    LoadTexture(args.DlFiles.OfflineFile, ref spriteRef.Texture);
+                }
+            }
+            foreach (var spriteRef in Sprites.ToArray())
+            {
+                if (spriteRef.OnlineFile.Contains(args.DlFiles.OnlineFile))
+                {
+                    Sprites.Remove(spriteRef);
+                }
+            }
         }
     }
 

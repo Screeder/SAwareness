@@ -196,18 +196,19 @@ namespace SAwareness
                     var t = Menu.GankTracker.GetMenuItem("SAwarenessGankTrackerPingType").GetValue<StringList>();
                     pingType = (Packet.PingType) t.SelectedIndex + 1;
                     Vector3 pos = hero.ServerPosition;
-                    GamePacket gPacketT =
-                        Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos[0], pos[1], 0, pingType));
+                    GamePacket gPacketT;
                     for (int i = 0;
                         i < Menu.GankTracker.GetMenuItem("SAwarenessGankTrackerPingTimes").GetValue<Slider>().Value;
                         i++)
                     {
                         if (Menu.GankTracker.GetMenuItem("SAwarenessGankTrackerLocalPing").GetValue<bool>())
                         {
-                            //TODO: Add local ping
+                            gPacketT = Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0, pingType));
+                            gPacketT.Process();
                         }
                         else
                         {
+                            gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos[0], pos[1], 0, pingType));
                             gPacketT.Send();
                         }
                     }

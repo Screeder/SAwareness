@@ -182,13 +182,15 @@ namespace SAwareness
         {
             for (int i = 0; i < Menu.Timers.GetMenuItem("SAwarenessTimersPingTimes").GetValue<Slider>().Value; i++)
             {
-                GamePacket gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos.X, pos.Y));
+                GamePacket gPacketT;
                 if (Menu.Timers.GetMenuItem("SAwarenessTimersLocalPing").GetValue<bool>())
                 {
-                    //TODO: Add local ping
+                    gPacketT = Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1]));
+                    gPacketT.Process();
                 }
                 else
                 {
+                    gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos.X, pos.Y));
                     gPacketT.Send();
                 }
             }
