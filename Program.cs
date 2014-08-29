@@ -164,6 +164,7 @@ namespace SAwareness
         public static MenuItemSettings SkinChanger = new MenuItemSettings(typeof(SAwareness.SkinChanger)); //Need to send local packet
         public static MenuItemSettings AutoSmite = new MenuItemSettings(typeof(SAwareness.AutoSmite)); //Works
         public static MenuItemSettings AutoPot = new MenuItemSettings(typeof(SAwareness.AutoPot));
+        public static MenuItemSettings SafeMovement = new MenuItemSettings(typeof(SAwareness.SafeMovement));
         public static MenuItemSettings AutoShield = new MenuItemSettings(typeof(SAwareness.AutoShield));
     }
 
@@ -197,7 +198,7 @@ namespace SAwareness
                 Menu.Timers.MenuItems.Add(Menu.Timers.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessTimersPingTimes", "Ping Times").SetValue(new Slider(0, 5, 0))));
                 Menu.Timers.MenuItems.Add(Menu.Timers.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessTimersRemindTime", "Remind Time").SetValue(new Slider(0, 50, 0))));
                 Menu.Timers.MenuItems.Add(Menu.Timers.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessTimersLocalPing", "Local Ping | Not implemented").SetValue(false)));
-                Menu.Timers.MenuItems.Add(Menu.Timers.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessTimersLocalChat", "Local Chat").SetValue(false)));
+                Menu.Timers.MenuItems.Add(Menu.Timers.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessTimersLocalChat", "Local Chat").SetValue(true)));
                 Menu.JungleTimer.Menu = Menu.Timers.Menu.AddSubMenu(new LeagueSharp.Common.Menu("JungleTimer", "SAwarenessJungleTimer"));
                 Menu.JungleTimer.MenuItems.Add(Menu.JungleTimer.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessJungleTimersActive", "Active").SetValue(false)));
                 Menu.RelictTimer.Menu = Menu.Timers.Menu.AddSubMenu(new LeagueSharp.Common.Menu("RelictTimer", "SAwarenessRelictTimer"));
@@ -250,7 +251,7 @@ namespace SAwareness
                 Menu.SsCaller.MenuItems.Add(Menu.SsCaller.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSSCallerPingTimes", "Ping Times").SetValue(new Slider(0, 5, 0))));
                 Menu.SsCaller.MenuItems.Add(Menu.SsCaller.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSSCallerPingType", "Ping Type").SetValue(new StringList(new string[] { "Normal", "Danger", "EnemyMissing", "OnMyWay", "Fallback", "AssistMe" }))));
                 Menu.SsCaller.MenuItems.Add(Menu.SsCaller.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSSCallerLocalPing", "Local Ping | Not implemented").SetValue(false)));
-                Menu.SsCaller.MenuItems.Add(Menu.SsCaller.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSSCallerLocalChat", "Local Chat").SetValue(false)));
+                Menu.SsCaller.MenuItems.Add(Menu.SsCaller.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSSCallerLocalChat", "Local Chat").SetValue(true)));
                 Menu.SsCaller.MenuItems.Add(Menu.SsCaller.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSSCallerDisableTime", "Disable Time").SetValue(new Slider(20, 180, 1))));
                 Menu.SsCaller.MenuItems.Add(Menu.SsCaller.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSSCallerActive", "Active").SetValue(true)));
                 Menu.Tracker.MenuItems.Add(Menu.Tracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessTrackerActive", "Active").SetValue(true)));
@@ -318,6 +319,9 @@ namespace SAwareness
                 tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotManaPotPercent", "Mana Percent").SetValue(new Slider(20, 99, 0))));
                 tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotManaPotActive", "Active").SetValue(true)));
                 Menu.AutoPot.MenuItems.Add(Menu.AutoPot.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotActive", "Active").SetValue(true)));
+                Menu.SafeMovement.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("SafeMovement", "SAwarenessSafeMovement"));
+                Menu.SafeMovement.MenuItems.Add(Menu.SafeMovement.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSafeMovementBlockIntervall", "Block Interval").SetValue(new Slider(20, 1000, 0))));
+                Menu.SafeMovement.MenuItems.Add(Menu.SafeMovement.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSafeMovementActive", "Active").SetValue(true)));
                 Menu.AutoShield.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("AutoShield | Not implemented", "SAwarenessAutoShield"));
                 Menu.AutoShield.MenuItems.Add(Menu.AutoShield.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoShieldActive", "Active").SetValue(true)));
 
@@ -335,7 +339,7 @@ namespace SAwareness
         {
             try
             {
-                Game.PrintChat("SAwareness loaded!");                
+                Game.PrintChat("SAwareness loaded!");
                 Game.OnGameUpdate += GameOnOnGameUpdate;
             }
             catch (Exception e)
