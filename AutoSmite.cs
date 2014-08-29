@@ -98,7 +98,7 @@ namespace SAwareness
         {
             foreach (var spell in ObjectManager.Player.SummonerSpellbook.Spells)
             {
-                if (spell.Name.Contains("Smite") && spell.State == SpellState.Ready)
+                if (spell.Name.ToLower().Contains("smite") && spell.State == SpellState.Ready)
                     return spell.Slot;
             }
             return SpellSlot.Unknown;
