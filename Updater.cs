@@ -46,6 +46,7 @@ namespace SAwareness
             _updatelink = updatelink;
 
             String str = _wc.DownloadString(versionlink);
+            str = str.Trim();
             _updatelink = updatelink + "v" + str + "/" + assemblyName;
             if(Convert.ToInt32(str.Remove(str.IndexOf("."))) > localmajorversion)
                 NeedUpdate = true;
