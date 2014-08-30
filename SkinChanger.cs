@@ -24,6 +24,7 @@ namespace SAwareness
                             .GetValue<StringList>();
             if (mode.SelectedIndex != LastSkinId)
             {
+                LastSkinId = mode.SelectedIndex;
                 GenAndSendModelPacket(ObjectManager.Player.ChampionName, mode.SelectedIndex);
             }
         }
