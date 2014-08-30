@@ -977,7 +977,7 @@ namespace SAwareness
                 firstHero = enemy;
                 break;
             }
-            if (!Common.IsInside(cursorPos, firstHero.Value.SGui.SpellPassive.SizeSideBar, 
+            if (firstHero.Key != null && !Common.IsInside(cursorPos, firstHero.Value.SGui.SpellPassive.SizeSideBar, 
                 hudSize.Width, hudSize.Height))
             {
                 return;

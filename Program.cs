@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 using SharpDX.Direct3D9;
+using SharpDX.Toolkit.Diagnostics;
 using MenuItem = LeagueSharp.Common.MenuItem;
 
 namespace SAwareness
@@ -302,7 +304,7 @@ namespace SAwareness
                 tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoLevlerPrioritySliderE", "E").SetValue(new Slider(0, 3, 0))));
                 tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoLevlerPrioritySliderR", "R").SetValue(new Slider(0, 3, 0))));
                 tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoLevlerPriorityActive", "Active").SetValue(false).DontSave()));
-                tempSettings = Menu.AutoLevler.AddMenuItemSettings("Sequence",
+                tempSettings = Menu.AutoLevler.AddMenuItemSettings("Sequence | not implemented",
                     "SAwarenessAutoLevlerSequence");
                 tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoLevlerSequenceLoadChampion", "Load Champion").SetValue(false).DontSave()));
                 tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoLevlerSequenceActive", "Active").SetValue(false).DontSave()));
@@ -382,7 +384,7 @@ namespace SAwareness
         }
 
         private static void GameOnOnGameUpdate(EventArgs args)
-        {            
+        {
             Type classType = typeof(Menu);
             BindingFlags flags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
             FieldInfo[] fields = classType.GetFields(flags);
