@@ -313,7 +313,7 @@ namespace SAwareness
                 Menu.Ward.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("WardPlacer", "SAwarenessWardPlacer"));
                 Menu.Ward.MenuItems.Add(Menu.Ward.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessWardPlacerActive", "Active").SetValue(true)));
                 Menu.SkinChanger.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("SkinChanger", "SAwarenessSkinChanger"));
-                Menu.SkinChanger.MenuItems.Add(Menu.SkinChanger.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSkinChangerName", "Skin").SetValue(new StringList(SkinChanger.GetSkinList(ObjectManager.Player.ChampionName)))));
+                Menu.SkinChanger.MenuItems.Add(Menu.SkinChanger.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSkinChangerSkinName", "Skin").SetValue(new StringList(SkinChanger.GetSkinList(ObjectManager.Player.ChampionName))).DontSave()));
                 Menu.SkinChanger.MenuItems.Add(Menu.SkinChanger.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSkinChangerActive", "Active").SetValue(false)));
                 Menu.AutoPot.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("AutoPot", "SAwarenessAutoPot"));
                 tempSettings = Menu.AutoPot.AddMenuItemSettings("HealthPot",

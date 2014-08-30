@@ -20,7 +20,7 @@ namespace SAwareness
             if (!IsActive())
                 return;
             StringList mode =
-                        Menu.SkinChanger.GetMenuItem("SAwarenessSkinChangerName")
+                        Menu.SkinChanger.GetMenuItem("SAwarenessSkinChangerSkinName")
                             .GetValue<StringList>();
             if (mode.SelectedIndex != LastSkinId)
             {
