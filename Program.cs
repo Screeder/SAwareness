@@ -131,7 +131,7 @@ namespace SAwareness
         public static MenuItemSettings AutoLevler = new MenuItemSettings(typeof(SAwareness.AutoLevler)); //Only priority works
         public static MenuItemSettings UiTracker = new MenuItemSettings(typeof(SAwareness.UITracker)); //Works but need many improvements
         public static MenuItemSettings UimTracker = new MenuItemSettings(typeof(SAwareness.UIMTracker)); //Works but need many improvements
-        public static MenuItemSettings SsCaller = new MenuItemSettings(typeof(SAwareness.SsCaller)); //Missing local ping
+        public static MenuItemSettings SsCaller = new MenuItemSettings(typeof(SAwareness.SsCaller)); //Works
         public static MenuItemSettings Tracker = new MenuItemSettings();
         public static MenuItemSettings WaypointTracker = new MenuItemSettings(typeof(SAwareness.WaypointTracker)); //Works
         public static MenuItemSettings CloneTracker = new MenuItemSettings(typeof(SAwareness.CloneTracker)); //Works
@@ -157,15 +157,20 @@ namespace SAwareness
         public static MenuItemSettings SpellRRange = new MenuItemSettings();
         public static MenuItemSettings ImmuneTimer = new MenuItemSettings(typeof(SAwareness.ImmuneTimer)); //Works
         public static MenuItemSettings Ganks = new MenuItemSettings();
-        public static MenuItemSettings GankTracker = new MenuItemSettings(typeof(SAwareness.GankPotentialTracker)); //Needs testing
-        public static MenuItemSettings GankDetector = new MenuItemSettings(typeof(SAwareness.GankDetector)); //Needs testing
+        public static MenuItemSettings GankTracker = new MenuItemSettings(typeof(SAwareness.GankPotentialTracker)); //Works
+        public static MenuItemSettings GankDetector = new MenuItemSettings(typeof(SAwareness.GankDetector)); //Works
         public static MenuItemSettings AltarTimer = new MenuItemSettings();
         public static MenuItemSettings Ward = new MenuItemSettings(typeof(SAwareness.WardIt)); //Works
-        public static MenuItemSettings SkinChanger = new MenuItemSettings(typeof(SAwareness.SkinChanger)); //Need to send local packet
+        public static MenuItemSettings SkinChanger = new MenuItemSettings(typeof(SAwareness.SkinChanger)); //Works
         public static MenuItemSettings AutoSmite = new MenuItemSettings(typeof(SAwareness.AutoSmite)); //Works
         public static MenuItemSettings AutoPot = new MenuItemSettings(typeof(SAwareness.AutoPot));
         public static MenuItemSettings SafeMovement = new MenuItemSettings(typeof(SAwareness.SafeMovement));
         public static MenuItemSettings AutoShield = new MenuItemSettings(typeof(SAwareness.AutoShield));
+        public static MenuItemSettings Activator = new MenuItemSettings(typeof(SAwareness.Activator));
+        public static MenuItemSettings ActivatorAutoIgnite = new MenuItemSettings();
+        public static MenuItemSettings ActivatorOffensive = new MenuItemSettings();
+        public static MenuItemSettings ActivatorOffensiveAd = new MenuItemSettings();
+        public static MenuItemSettings ActivatorOffensiveAp = new MenuItemSettings();
     }
 
     class Program
@@ -192,6 +197,7 @@ namespace SAwareness
             try
             {
                 Menu.MenuItemSettings tempSettings;
+                Menu.MenuItemSettings oldTempSettings;
                 LeagueSharp.Common.Menu menu = new LeagueSharp.Common.Menu("SAwareness", "SAwareness", true);
 
                 Menu.Timers.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Timers", "SAwarenessTimers"));
@@ -325,7 +331,33 @@ namespace SAwareness
                 Menu.AutoShield.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("AutoShield | Not implemented", "SAwarenessAutoShield"));
                 Menu.AutoShield.MenuItems.Add(Menu.AutoShield.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoShieldActive", "Active").SetValue(true)));
 
-                menu.AddItem(new LeagueSharp.Common.MenuItem("By Screeder", "By Screeder V0.7"));
+                Menu.Activator.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Activator", "SAwarenessActivator"));
+                Menu.ActivatorAutoIgnite.Menu = Menu.Activator.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Auto Ignite", "SAwarenessActivatorAutoIgnite"));
+                Menu.ActivatorAutoIgnite.MenuItems.Add(Menu.ActivatorAutoIgnite.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorAutoIgniteActive", "Active").SetValue(false)));
+                Menu.ActivatorOffensive.Menu = Menu.Activator.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Offensive", "SAwarenessActivatorOffensive"));
+                Menu.ActivatorOffensiveAd.Menu = Menu.ActivatorOffensive.Menu.AddSubMenu(new LeagueSharp.Common.Menu("AD", "SAwarenessActivatorOffensiveAd"));
+                Menu.ActivatorOffensiveAd.MenuItems.Add(Menu.ActivatorOffensiveAd.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorOffensiveBOTRK", "Blade of the Ruined King").SetValue(false)));
+                Menu.ActivatorOffensiveAd.MenuItems.Add(Menu.ActivatorOffensiveAd.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorOffensiveEntropy", "Entropy").SetValue(false)));
+                Menu.ActivatorOffensiveAd.MenuItems.Add(Menu.ActivatorOffensiveAd.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorOffensiveRavenousHydra", "Ravenous Hydra").SetValue(false)));
+                Menu.ActivatorOffensiveAd.MenuItems.Add(Menu.ActivatorOffensiveAd.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorOffensiveSwordOfTheDevine", "Sword Of The Devine").SetValue(false)));
+                Menu.ActivatorOffensiveAd.MenuItems.Add(Menu.ActivatorOffensiveAd.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorOffensiveTiamat", "Tiamat").SetValue(false)));
+                Menu.ActivatorOffensiveAd.MenuItems.Add(Menu.ActivatorOffensiveAd.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorOffensiveYoumuusGhostblade", "Youmuu's Ghostblade").SetValue(false)));
+                Menu.ActivatorOffensiveAd.MenuItems.Add(Menu.ActivatorOffensiveAd.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorOffensiveMuramana", "Muramana").SetValue(false)));
+                Menu.ActivatorOffensiveAd.MenuItems.Add(Menu.ActivatorOffensiveAd.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorOffensiveAdActive", "Active").SetValue(false)));
+
+                Menu.ActivatorOffensiveAp.Menu = Menu.ActivatorOffensive.Menu.AddSubMenu(new LeagueSharp.Common.Menu("AP", "SAwarenessActivatorOffensiveAp"));
+                Menu.ActivatorOffensiveAp.MenuItems.Add(Menu.ActivatorOffensiveAp.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorOffensiveApBilgewaterCutlass", "Bilgewater Cutlass").SetValue(false)));
+                Menu.ActivatorOffensiveAp.MenuItems.Add(Menu.ActivatorOffensiveAp.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorOffensiveApBlackfireTorch", "Blackfire Torch").SetValue(false)));
+                Menu.ActivatorOffensiveAp.MenuItems.Add(Menu.ActivatorOffensiveAp.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorOffensiveApDFG", "Deathfire Grasp").SetValue(false)));
+                Menu.ActivatorOffensiveAp.MenuItems.Add(Menu.ActivatorOffensiveAp.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorOffensiveApHextechGunblade", "Hextech Gunblade").SetValue(false)));
+                Menu.ActivatorOffensiveAp.MenuItems.Add(Menu.ActivatorOffensiveAp.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorOffensiveApTwinShadows", "Twin Shadows").SetValue(false)));
+                Menu.ActivatorOffensiveAp.MenuItems.Add(Menu.ActivatorOffensiveAp.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorOffensiveApOdynsVeil", "Odyn's Veil").SetValue(false)));
+                Menu.ActivatorOffensiveAp.MenuItems.Add(Menu.ActivatorOffensiveAp.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorOffensiveApActive", "Active").SetValue(false)));
+                Menu.ActivatorOffensive.MenuItems.Add(Menu.ActivatorOffensive.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorOffensiveKey", "Key").SetValue(new KeyBind(32, KeyBindType.Press))));
+                Menu.ActivatorOffensive.MenuItems.Add(Menu.ActivatorOffensive.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorOffensiveActive", "Active").SetValue(true)));
+                Menu.Activator.MenuItems.Add(Menu.Activator.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorActive", "Active").SetValue(true)));
+
+                menu.AddItem(new LeagueSharp.Common.MenuItem("By Screeder", "By Screeder V0.8"));
                 menu.AddToMainMenu();
             }
             catch (Exception ex)
@@ -365,7 +397,7 @@ namespace SAwareness
                 {
                     try
                     {
-                        item.Item = Activator.CreateInstance(item.Type);
+                        item.Item = System.Activator.CreateInstance(item.Type);
                     }
                     catch (Exception e)
                     {
