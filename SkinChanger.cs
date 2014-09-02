@@ -1187,27 +1187,10 @@ namespace SAwareness
                 Header = 0x97;
             }
 
-            public static Struct Decoded(byte[] data)
-            {
-                //GamePacket gamePacket = new GamePacket(data);
-                //Skin.Struct @struct = new Skin.Struct();
-                //@struct.SourceNetworkId = gamePacket.ReadInteger();
-                //gamePacket.Position = (long)1;
-                //@struct.Slot = gamePacket.ReadByte();
-                //@struct.FromX = gamePacket.ReadFloat();
-                //@struct.FromY = gamePacket.ReadFloat();
-                //@struct.ToX = gamePacket.ReadFloat();
-                //@struct.ToY = gamePacket.ReadFloat();
-                //return @struct;
-                return new Struct(); //TODO: Encode the packet
-            }
-
             public static GamePacket Encoded(Struct packetStruct)
             {
                 var gamePacket = new GamePacket(Header);
                 gamePacket.WriteInteger(packetStruct.SourceNetworkId);
-                //long curPos = gamePacket.Position;
-                //gamePacket.Position = (long)1;
                 gamePacket.WriteByte(packetStruct.SourceNetworkIdP1);
                 gamePacket.WriteByte(packetStruct.SourceNetworkIdP2);
                 gamePacket.WriteByte(packetStruct.SourceNetworkIdP3);

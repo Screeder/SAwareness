@@ -8,7 +8,7 @@ using Color = System.Drawing.Color;
 
 namespace SAwareness
 {
-    class WardIt
+    class WardCorrector
     {
         private static readonly List<WardSpot> WardSpots = new List<WardSpot>();
         private static readonly List<WardItem> WardItems = new List<WardItem>();
@@ -17,7 +17,7 @@ namespace SAwareness
         private WardSpot latestWardSpot;
         private bool wardAlreadyCorrected;
 
-        public WardIt() //TODO: Add SpellNames for WardItems
+        public WardCorrector() //TODO: Add SpellNames for WardItems
         {
             WardSpots.Add(new WardSpot("BlueGolem", new Vector3(2823.37f, 7617.03f, 55.03f)));
             WardSpots.Add(new WardSpot("BlueLizard", new Vector3(7422f, 3282f, 46.53f)));
@@ -115,7 +115,7 @@ namespace SAwareness
             Game.OnGameSendPacket += Game_OnGameSendPacket;
         }
 
-        ~WardIt()
+        ~WardCorrector()
         {
             Game.OnWndProc -= Game_OnWndProc;
             Game.OnGameUpdate -= Game_OnGameUpdate;
@@ -125,7 +125,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.Ward.GetActive();
+            return Menu.WardCorrector.GetActive();
         }
 
 

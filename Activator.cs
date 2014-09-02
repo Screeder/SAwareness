@@ -37,7 +37,7 @@ namespace SAwareness
             if (!IsActive())
                 return;
             UseOffensiveItems_OnGameUpdate();
-            UseIgnite();
+            UseSummonerSpells();
         }
 
         void UseOffensiveItems_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
@@ -148,9 +148,17 @@ namespace SAwareness
             return SpellSlot.Unknown;
         }
 
+        void UseSummonerSpells()
+        {
+            if (!Menu.ActivatorAutoSummonerSpell.GetActive())
+                return;
+
+            UseIgnite();
+        }
+
         void UseIgnite()
         {
-            if (!Menu.ActivatorAutoIgnite.GetActive())
+            if (!Menu.ActivatorAutoSummonerSpellIgnite.GetActive())
                 return;
             var sumIgnite = GetIgniteSlot();
             var target = SimpleTs.GetTarget(600, SimpleTs.DamageType.True);            
