@@ -46,9 +46,9 @@ namespace SAwareness
                 return;
             if (sender.NetworkId != ObjectManager.Player.NetworkId)
                 return;
-            if (!args.SData.Name.ToLower().Contains("attack"))
+            if (!args.SData.Name.ToLower().Contains("attack") || args.Target.Type != GameObjectType.obj_AI_Hero)
                 return;
-            
+
             if (Menu.ActivatorOffensiveAd.GetActive())
             {
                 var target = SimpleTs.GetTarget(1000, SimpleTs.DamageType.Physical);
@@ -154,7 +154,9 @@ namespace SAwareness
                 return;
 
             UseIgnite();
-        }
+            UseHealth();
+            UseBarrier();
+        }        
 
         void UseIgnite()
         {
@@ -180,6 +182,18 @@ namespace SAwareness
                     }
                 }
             }
+        }
+
+        void UseHealth()
+        {
+            if (!Menu.ActivatorAutoSummonerSpellHeal.GetActive())
+                return;
+        }
+
+        private void UseBarrier()
+        {
+            if (!Menu.ActivatorAutoSummonerSpellBarrier.GetActive())
+                return;
         }
     }
 }
