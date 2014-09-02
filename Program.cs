@@ -310,6 +310,14 @@ namespace SAwareness
                 Menu.ActivatorAutoSummonerSpell.MenuItems.Add(Menu.ActivatorAutoSummonerSpell.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorActivatorAutoSummonerSpellActive", "Active").SetValue(false)));
                 Menu.ActivatorAutoSummonerSpellIgnite.Menu = Menu.ActivatorAutoSummonerSpell.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Auto Ignite", "SAwarenessActivatorAutoSummonerSpellIgnite"));
                 Menu.ActivatorAutoSummonerSpellIgnite.MenuItems.Add(Menu.ActivatorAutoSummonerSpellIgnite.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorAutoSummonerSpellIgniteActive", "Active").SetValue(false)));
+                Menu.ActivatorAutoSummonerSpellHeal.Menu = Menu.ActivatorAutoSummonerSpell.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Auto Heal", "SAwarenessActivatorAutoSummonerSpellHeal"));
+                Menu.ActivatorAutoSummonerSpellHeal.MenuItems.Add(Menu.ActivatorAutoSummonerSpellHeal.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorAutoSummonerSpellHealPercent", "Percent").SetValue(new Slider(20, 100, 1))));
+                Menu.ActivatorAutoSummonerSpellHeal.MenuItems.Add(Menu.ActivatorAutoSummonerSpellHeal.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorAutoSummonerSpellHealAllyActive", "Ally Active").SetValue(false)));
+                Menu.ActivatorAutoSummonerSpellHeal.MenuItems.Add(Menu.ActivatorAutoSummonerSpellHeal.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorAutoSummonerSpellHealActive", "Active").SetValue(false)));
+                Menu.ActivatorAutoSummonerSpellBarrier.Menu = Menu.ActivatorAutoSummonerSpell.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Auto Barrier", "SAwarenessActivatorAutoSummonerSpellBarrier"));
+                Menu.ActivatorAutoSummonerSpellBarrier.MenuItems.Add(Menu.ActivatorAutoSummonerSpellBarrier.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorAutoSummonerSpellBarrierPercent", "Percent").SetValue(new Slider(20, 100, 1))));
+                Menu.ActivatorAutoSummonerSpellBarrier.MenuItems.Add(Menu.ActivatorAutoSummonerSpellBarrier.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorAutoSummonerSpellBarrierActive", "Active").SetValue(false)));
+
                 Menu.ActivatorOffensive.Menu = Menu.Activator.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Offensive Items", "SAwarenessActivatorOffensive"));
                 Menu.ActivatorOffensiveAd.Menu = Menu.ActivatorOffensive.Menu.AddSubMenu(new LeagueSharp.Common.Menu("AD", "SAwarenessActivatorOffensiveAd"));
                 Menu.ActivatorOffensiveAd.MenuItems.Add(Menu.ActivatorOffensiveAd.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorOffensiveBOTRK", "Blade of the Ruined King").SetValue(false)));

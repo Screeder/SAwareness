@@ -138,12 +138,64 @@ namespace SAwareness
             }           
         }
 
+        public static bool IsCCd(Obj_AI_Hero hero)
+        {
+            var cc = new List<BuffType>
+            {
+                BuffType.Taunt,
+                BuffType.Blind,
+                BuffType.Charm,
+                BuffType.Fear,
+                BuffType.Polymorph,
+                BuffType.Stun,
+                BuffType.Silence,
+                BuffType.Snare
+            };
+
+            return cc.Any(hero.HasBuffOfType);
+        }
+
         private SpellSlot GetIgniteSlot()
         {
             foreach (var spell in ObjectManager.Player.SummonerSpellbook.Spells)
             {
                 if (spell.Name.ToLower().Contains("dot") && spell.State == SpellState.Ready)
                     return spell.Slot;
+            }
+            return SpellSlot.Unknown;
+        }
+
+        private SpellSlot GetHealSlot()
+        {
+            foreach (var spell in ObjectManager.Player.SummonerSpellbook.Spells)
+            {
+                if (spell.Name.ToLower().Contains("heal") && spell.State == SpellState.Ready)
+                    return spell.Slot;
+            }
+            return SpellSlot.Unknown;
+        }
+
+        private SpellSlot GetBarrierSlot()
+        {
+            foreach (var spell in ObjectManager.Player.SummonerSpellbook.Spells)
+            {
+                if (spell.Name.ToLower().Contains("barrier") && spell.State == SpellState.Ready)
+                    return spell.Slot;
+            }
+            return SpellSlot.Unknown;
+        }
+
+        private SpellSlot GetPacketSlot(SpellSlot nSpellSlot)
+        {
+            SpellSlot spellSlot = nSpellSlot;
+            int slot = -1;
+            if (spellSlot == SpellSlot.Q)
+                slot = 64;
+            else if (spellSlot == SpellSlot.W)
+                slot = 65;
+            if (slot != -1)
+            {
+                return (SpellSlot) slot;
             }
             return SpellSlot.Unknown;
         }
@@ -169,15 +221,10 @@ namespace SAwareness
                 var igniteDmg = DamageLib.getDmg(target, DamageLib.SpellType.IGNITE);
                 if (igniteDmg > target.Health)
                 {
-                    SpellSlot spellSlot = sumIgnite;
-                    int slot = -1;
-                    if (spellSlot == SpellSlot.Q)
-                        slot = 64;
-                    else if (spellSlot == SpellSlot.W)
-                        slot = 65;
-                    if (slot != -1)
+                    SpellSlot spellSlot = GetPacketSlot(sumIgnite);
+                    if (spellSlot != SpellSlot.Unknown)
                     {
-                        GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(target.NetworkId, (SpellSlot)slot));
+                        GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(target.NetworkId, spellSlot));
                         gPacketT.Send();
                     }
                 }
@@ -188,12 +235,56 @@ namespace SAwareness
         {
             if (!Menu.ActivatorAutoSummonerSpellHeal.GetActive())
                 return;
+
+            var sumHeal = GetHealSlot();
+            if (
+                Menu.ActivatorAutoSummonerSpellHeal.GetMenuItem("SAwarenessActivatorAutoSummonerSpellHealAllyActive")
+                    .GetValue<bool>())
+            {
+                foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+                {
+                    if (!hero.IsEnemy && !hero.IsDead && hero.ServerPosition.Distance(ObjectManager.Player.ServerPosition) < 700)
+                    {
+                        if (((hero.Health / hero.MaxHealth) * 100) <
+                            Menu.ActivatorAutoSummonerSpellHeal.GetMenuItem(
+                                "SAwarenessActivatorAutoSummonerSpellHealPercent").GetValue<Slider>().Value)
+                        {
+                            SpellSlot spellSlot = GetPacketSlot(sumHeal);
+                            if (spellSlot != SpellSlot.Unknown)
+                            {
+                                GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
+                                gPacketT.Send();
+                            }
+                        }
+                    }
+                }
+            }
+            if (((ObjectManager.Player.Health / ObjectManager.Player.MaxHealth) * 100) < Menu.ActivatorAutoSummonerSpellHeal.GetMenuItem("SAwarenessActivatorAutoSummonerSpellHealPercent").GetValue<Slider>().Value)
+            {
+                SpellSlot spellSlot = GetPacketSlot(sumHeal);
+                if (spellSlot != SpellSlot.Unknown)
+                {
+                    GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
+                    gPacketT.Send();
+                }
+            }
         }
 
         private void UseBarrier()
         {
             if (!Menu.ActivatorAutoSummonerSpellBarrier.GetActive())
                 return;
+
+            var sumBarrier = GetBarrierSlot();
+            if (((ObjectManager.Player.Health / ObjectManager.Player.MaxHealth) * 100) < Menu.ActivatorAutoSummonerSpellBarrier.GetMenuItem("SAwarenessActivatorAutoSummonerSpellBarrierPercent").GetValue<Slider>().Value)
+            {
+                SpellSlot spellSlot = GetPacketSlot(sumBarrier);
+                if (spellSlot != SpellSlot.Unknown)
+                {
+                    GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
+                    gPacketT.Send();
+                }
+            }
         }
     }
 }
