@@ -173,6 +173,8 @@ namespace SAwareness
         public static MenuItemSettings Activator = new MenuItemSettings(typeof(SAwareness.Activator));
         public static MenuItemSettings ActivatorAutoSummonerSpell = new MenuItemSettings();
         public static MenuItemSettings ActivatorAutoSummonerSpellIgnite = new MenuItemSettings();
+        public static MenuItemSettings ActivatorAutoSummonerSpellHeal = new MenuItemSettings();
+        public static MenuItemSettings ActivatorAutoSummonerSpellBarrier = new MenuItemSettings();
         public static MenuItemSettings ActivatorOffensive = new MenuItemSettings();
         public static MenuItemSettings ActivatorOffensiveAd = new MenuItemSettings();
         public static MenuItemSettings ActivatorOffensiveAp = new MenuItemSettings();
