@@ -35,17 +35,16 @@ namespace SAwareness
 
         static Wards()
         {
+            WardItems.Add(new WardItem(3360, "Feral Flare", "", 1000, 180));
             WardItems.Add(new WardItem(2043, "Vision Ward", "VisionWard", 600, 180));
             WardItems.Add(new WardItem(2044, "Stealth Ward", "SightWard", 600, 180));
             WardItems.Add(new WardItem(3154, "Wriggle's Lantern", "WriggleLantern", 600, 180));
             WardItems.Add(new WardItem(2045, "Ruby Sightstone", "ItemGhostWard", 600, 180));
             WardItems.Add(new WardItem(2049, "Sightstone", "ItemGhostWard", 600, 180));
             WardItems.Add(new WardItem(2050, "Explorer's Ward", "ItemMiniWard", 600, 60));
-            WardItems.Add(new WardItem(3340, "Greater Stealth Totem", "", 600, 120));
-            WardItems.Add(new WardItem(3360, "Feral Flare", "", 1000, 180));
+            WardItems.Add(new WardItem(3340, "Greater Stealth Totem", "", 600, 120));            
             WardItems.Add(new WardItem(3361, "Greater Stealth Totem", "", 600, 180));
             WardItems.Add(new WardItem(3362, "Greater Vision Totem", "", 600, 180));
-
             WardItems.Add(new WardItem(3366, "Bonetooth Necklace", "", 600, 120));
             WardItems.Add(new WardItem(3367, "Bonetooth Necklace", "", 600, 120));
             WardItems.Add(new WardItem(3368, "Bonetooth Necklace", "", 600, 120));
@@ -54,6 +53,23 @@ namespace SAwareness
             WardItems.Add(new WardItem(3375, "Head of Kha'Zix", "", 600, 180));
             WardItems.Add(new WardItem(3205, "Quill Coat", "", 600, 180));
             WardItems.Add(new WardItem(3207, "Spirit of the Ancient Golem", "", 600, 180));
+        }
+
+        public static WardItem GetWardItem()
+        {
+            return WardItems.First(x => Items.HasItem(x.Id) && Items.CanUseItem(x.Id));
+        }
+
+        public static InventorySlot GetWardSlot()
+        {
+            foreach (var ward in WardItems)
+            {
+                if (Items.CanUseItem(ward.Id))
+                {
+                    return ObjectManager.Player.InventoryItems.FirstOrDefault(slot => slot.Id == (ItemId)ward.Id);
+                }
+            }
+            return null;
         }
     }
 
@@ -123,6 +139,10 @@ namespace SAwareness
             foreach (PlayerInfo playerInfo in _playerInfo.Where(x => x.Player.IsVisible))
                 playerInfo.LastSeen = time;
 
+            Wards.WardItem ward = Wards.GetWardItem();
+            if (ward == null)
+                return;
+
             if (Menu.BushRevealer.GetMenuItem("SAwarenessBushRevealerKey").GetValue<KeyBind>().Active)
             {
                 foreach (Obj_AI_Hero enemy in _playerInfo.Where(x =>
@@ -134,11 +154,11 @@ namespace SAwareness
                 {
                     Vector3 bestWardPos = GetWardPos(enemy.ServerPosition, 165, 2);
 
-                    if (bestWardPos != null && bestWardPos != enemy.ServerPosition && bestWardPos != Vector3.Zero)
+                    if (bestWardPos != null && bestWardPos != enemy.ServerPosition && bestWardPos != Vector3.Zero && bestWardPos.Distance(ObjectManager.Player.ServerPosition) < ward.Range)
                     {
                         if (lastTimeWarded == 0 || Environment.TickCount - lastTimeWarded > 500)
                         {
-                            InventorySlot wardSlot = LeagueSharp.Common.Items.GetWardSlot();
+                            InventorySlot wardSlot = Wards.GetWardSlot();
 
                             if (wardSlot != null && wardSlot.Id != ItemId.Unknown)
                             {
