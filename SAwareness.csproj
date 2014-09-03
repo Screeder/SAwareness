@@ -81,7 +81,7 @@
     <Compile Include="Trackers.cs" />
     <Compile Include="Updater.cs" />
     <Compile Include="Utils.cs" />
-    <Compile Include="WardCorrector.cs" />
+    <Compile Include="Wards.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -8,10 +11,203 @@ using Color = System.Drawing.Color;
 
 namespace SAwareness
 {
+    class Wards
+    {
+        public static readonly List<WardItem> WardItems = new List<WardItem>();
+
+        public class WardItem
+        {
+            public readonly int Id;
+            public int Duration;
+            public String Name;
+            public int Range;
+            public String SpellName;
+
+            public WardItem(int id, string name, string spellName, int range, int duration)
+            {
+                Id = id;
+                Name = name;
+                SpellName = spellName;
+                Range = range;
+                Duration = duration;
+            }
+        }
+
+        static Wards()
+        {
+            WardItems.Add(new WardItem(2043, "Vision Ward", "VisionWard", 600, 180));
+            WardItems.Add(new WardItem(2044, "Stealth Ward", "SightWard", 600, 180));
+            WardItems.Add(new WardItem(3154, "Wriggle's Lantern", "WriggleLantern", 600, 180));
+            WardItems.Add(new WardItem(2045, "Ruby Sightstone", "ItemGhostWard", 600, 180));
+            WardItems.Add(new WardItem(2049, "Sightstone", "ItemGhostWard", 600, 180));
+            WardItems.Add(new WardItem(2050, "Explorer's Ward", "ItemMiniWard", 600, 60));
+            WardItems.Add(new WardItem(3340, "Greater Stealth Totem", "", 600, 120));
+            WardItems.Add(new WardItem(3360, "Feral Flare", "", 1000, 180));
+            WardItems.Add(new WardItem(3361, "Greater Stealth Totem", "", 600, 180));
+            WardItems.Add(new WardItem(3362, "Greater Vision Totem", "", 600, 180));
+
+            WardItems.Add(new WardItem(3366, "Bonetooth Necklace", "", 600, 120));
+            WardItems.Add(new WardItem(3367, "Bonetooth Necklace", "", 600, 120));
+            WardItems.Add(new WardItem(3368, "Bonetooth Necklace", "", 600, 120));
+            WardItems.Add(new WardItem(3369, "Bonetooth Necklace", "", 600, 120));
+            WardItems.Add(new WardItem(3371, "Bonetooth Necklace", "", 600, 180));
+            WardItems.Add(new WardItem(3375, "Head of Kha'Zix", "", 600, 180));
+            WardItems.Add(new WardItem(3205, "Quill Coat", "", 600, 180));
+            WardItems.Add(new WardItem(3207, "Spirit of the Ancient Golem", "", 600, 180));
+        }
+    }
+
+    class BushRevealer //By Beaving & Blm95
+    {
+        private List<PlayerInfo> _playerInfo = new List<PlayerInfo>();
+        int lastTimeWarded;
+
+        class PlayerInfo
+        {
+            public Obj_AI_Hero Player;
+            public int LastSeen;
+
+            public PlayerInfo(Obj_AI_Hero player)
+            {
+                Player = player;
+            }
+        }
+
+        class WardLocation
+        {
+            public Vector3 Pos;
+            public bool Grass;
+
+            public WardLocation(Vector3 pos, bool grass)
+            {
+                Pos = pos;
+                Grass = grass;
+            }
+        }
+
+        class GrassLocation
+        {
+            public int Index;
+            public int Count;
+
+            public GrassLocation(int index, int count)
+            {
+                Index = index;
+                Count = count;
+            }
+        }
+
+        public BushRevealer()
+        {
+            _playerInfo = ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsEnemy).Select(x => new PlayerInfo(x)).ToList();
+            Game.OnGameUpdate += Game_OnGameUpdate;
+        }
+
+        ~BushRevealer()
+        {
+            Game.OnGameUpdate -= Game_OnGameUpdate;
+        }
+
+        public bool IsActive()
+        {
+            return Menu.WardCorrector.GetActive();
+        }
+
+        void Game_OnGameUpdate(EventArgs args)
+        {
+            if (!IsActive())
+                return;
+
+            int time = Environment.TickCount;
+
+            foreach (PlayerInfo playerInfo in _playerInfo.Where(x => x.Player.IsVisible))
+                playerInfo.LastSeen = time;
+
+            if (Menu.BushRevealer.GetMenuItem("SAwarenessBushRevealerKey").GetValue<KeyBind>().Active)
+            {
+                foreach (Obj_AI_Hero enemy in _playerInfo.Where(x =>
+                    x.Player.IsValid &&
+                    !x.Player.IsVisible &&
+                    !x.Player.IsDead &&
+                    x.Player.Distance(ObjectManager.Player.ServerPosition) < 1000 && //check real ward range later
+                    time - x.LastSeen < 2500).Select(x => x.Player))
+                {
+                    Vector3 bestWardPos = GetWardPos(enemy.ServerPosition, 165, 2);
+
+                    if (bestWardPos != null && bestWardPos != enemy.ServerPosition && bestWardPos != Vector3.Zero)
+                    {
+                        if (lastTimeWarded == 0 || Environment.TickCount - lastTimeWarded > 500)
+                        {
+                            InventorySlot wardSlot = LeagueSharp.Common.Items.GetWardSlot();
+
+                            if (wardSlot != null && wardSlot.Id != ItemId.Unknown)
+                            {
+                                wardSlot.UseItem(bestWardPos);
+                                lastTimeWarded = Environment.TickCount;
+                            }
+                        }
+                    }
+                }
+            }
+        }  
+
+        Vector3 GetWardPos(Vector3 lastPos, int radius = 165, int precision = 3)
+        {
+            //Vector3 averagePos = Vector3.Zero;
+
+            int count = precision;
+            //int calculated = 0;
+
+            while (count > 0)
+            {
+                int vertices = radius;
+
+                WardLocation[] wardLocations = new WardLocation[vertices];
+                double angle = 2 * Math.PI / vertices;
+
+                for (int i = 0; i < vertices; i++)
+                {
+                    double th = angle * i;
+                    Vector3 pos = new Vector3((float)(lastPos.X + radius * Math.Cos(th)), (float)(lastPos.Y + radius * Math.Sin(th)), 0); //wardPos.Z
+                    wardLocations[i] = new WardLocation(pos, NavMesh.IsWallOfGrass(pos));
+                }
+
+                List<GrassLocation> grassLocations = new List<GrassLocation>();
+
+                for (int i = 0; i < wardLocations.Length; i++)
+                {
+                    if (wardLocations[i].Grass)
+                    {
+                        if (i != 0 && wardLocations[i - 1].Grass)
+                            grassLocations.Last().Count++;
+                        else
+                            grassLocations.Add(new GrassLocation(i, 1));
+                    }
+                }
+
+                GrassLocation grassLocation = grassLocations.OrderByDescending(x => x.Count).FirstOrDefault();
+
+                if (grassLocation != null) //else: no pos found. increase/decrease radius?
+                {
+                    int midelement = (int)Math.Ceiling((float)grassLocation.Count / 2f);
+                    //averagePos += wardLocations[grassLocation.Index + midelement - 1].Pos; //uncomment if using averagePos
+                    lastPos = wardLocations[grassLocation.Index + midelement - 1].Pos; //comment if using averagePos
+                    radius = (int)Math.Floor((float)radius / 2f); //precision recommended: 2-3; comment if using averagePos
+
+                    //calculated++; //uncomment if using averagePos
+                }
+
+                count--;
+            }
+
+            return lastPos;//averagePos /= calculated; //uncomment if using averagePos
+        }
+    }
+
     class WardCorrector
     {
         private static readonly List<WardSpot> WardSpots = new List<WardSpot>();
-        private static readonly List<WardItem> WardItems = new List<WardItem>();
+        
         private bool drawSpots;
         private SpellSlot latestSpellSlot = SpellSlot.Unknown;
         private WardSpot latestWardSpot;
@@ -99,16 +295,6 @@ namespace SAwareness
                 new Vector3(6030.24f, 10292.37f, 54.29f), new Vector3(5846.10f, 10164.81f, 53.94f),
                 new Vector3(6447f, 10463f, 54.63f)));
 
-            WardItems.Add(new WardItem(2043, "Vision Ward", "VisionWard", 1450, 180));
-            WardItems.Add(new WardItem(2044, "Stealth Ward", "SightWard", 1450, 180));
-            WardItems.Add(new WardItem(3154, "Wriggle's Lantern", "WriggleLantern", 1450, 180));
-            WardItems.Add(new WardItem(2045, "Ruby Sightstone", "ItemGhostWard", 1450, 180));
-            WardItems.Add(new WardItem(2049, "Sightstone", "ItemGhostWard", 1450, 180));
-            WardItems.Add(new WardItem(2050, "Explorer's Ward", "ItemMiniWard", 1450, 60));
-            WardItems.Add(new WardItem(3340, "Greater Stealth Totem", "", 1450, 120));
-            WardItems.Add(new WardItem(3361, "Greater Stealth Totem", "", 1450, 180));
-            WardItems.Add(new WardItem(3362, "Greater Vision Totem", "", 1450, 180));
-
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnGameUpdate += Game_OnGameUpdate;
             Game.OnWndProc += Game_OnWndProc;
@@ -163,7 +349,7 @@ namespace SAwareness
                             //SendPacket
                             var s_castPacket = new byte[28];
                             var writer = new BinaryWriter(new MemoryStream(s_castPacket));
-                            writer.Write((byte) 0x9A);
+                            writer.Write((byte)0x9A);
                             writer.Write(mNetworkId);
                             writer.Write(spellId);
                             writer.Write(wardSpot.Pos.X);
@@ -172,7 +358,7 @@ namespace SAwareness
                             writer.Write(wardSpot.Pos.Y);
                             writer.Write(tNetworkId);
                             Game.SendPacket(s_castPacket, PacketChannel.C2S, PacketProtocolFlags.Reliable);
-                                //TODO: Check if its correct
+                            //TODO: Check if its correct
                             wardAlreadyCorrected = false;
                             return;
                         }
@@ -266,9 +452,9 @@ namespace SAwareness
                 {
                     if (inventoryItem != null)
                     {
-                        foreach (WardItem wardItem in WardItems)
+                        foreach (Wards.WardItem wardItem in Wards.WardItems)
                         {
-                            if ((int) inventoryItem.Id == wardItem.Id &&
+                            if ((int)inventoryItem.Id == wardItem.Id &&
                                 ObjectManager.Player.Spellbook.CanUseSpell(latestSpellSlot) == SpellState.Ready)
                             {
                                 drawSpots = true;
@@ -314,13 +500,13 @@ namespace SAwareness
             foreach (WardSpot ward in WardSpots)
             {
                 if (Common.IsOnScreen(ward.Pos))
-                    Utility.DrawCircle(ward.Pos, 50, Color.GreenYellow);
+                    Utility.DrawCircle(ward.Pos, 50, System.Drawing.Color.GreenYellow);
                 if (ward.SafeWard)
                 {
                     if (Common.IsOnScreen(ward.MagneticPos))
                     {
-                        Utility.DrawCircle(ward.MagneticPos, 30, Color.Red);
-                        DrawArrow(ward.MagneticPos, ward.Pos, Color.RoyalBlue);
+                        Utility.DrawCircle(ward.MagneticPos, 30, System.Drawing.Color.Red);
+                        DrawArrow(ward.MagneticPos, ward.Pos, System.Drawing.Color.RoyalBlue);
                     }
                 }
             }
@@ -419,24 +605,6 @@ namespace SAwareness
                         return new PacketSpellId(SpellSlot.Recall, false);
                 }
                 return new PacketSpellId(SpellSlot.Unknown, false);
-            }
-        }
-
-        private class WardItem
-        {
-            public readonly int Id;
-            public int Duration;
-            public String Name;
-            public int Range;
-            public String SpellName;
-
-            public WardItem(int id, string name, string spellName, int range, int duration)
-            {
-                Id = id;
-                Name = name;
-                SpellName = spellName;
-                Range = range;
-                Duration = duration;
             }
         }
 
