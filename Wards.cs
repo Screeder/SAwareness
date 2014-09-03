@@ -15,6 +15,12 @@ namespace SAwareness
     {
         public static readonly List<WardItem> WardItems = new List<WardItem>();
 
+        public enum WardType
+        {
+            Stealth,
+            Vision
+        }
+
         public class WardItem
         {
             public readonly int Id;
@@ -22,37 +28,39 @@ namespace SAwareness
             public String Name;
             public int Range;
             public String SpellName;
+            public WardType Type;
 
-            public WardItem(int id, string name, string spellName, int range, int duration)
+            public WardItem(int id, string name, string spellName, int range, int duration, WardType type)
             {
                 Id = id;
                 Name = name;
                 SpellName = spellName;
                 Range = range;
                 Duration = duration;
+                Type = type;
             }
         }
 
         static Wards()
         {
-            WardItems.Add(new WardItem(3360, "Feral Flare", "", 1000, 180));
-            WardItems.Add(new WardItem(2043, "Vision Ward", "VisionWard", 600, 180));
-            WardItems.Add(new WardItem(2044, "Stealth Ward", "SightWard", 600, 180));
-            WardItems.Add(new WardItem(3154, "Wriggle's Lantern", "WriggleLantern", 600, 180));
-            WardItems.Add(new WardItem(2045, "Ruby Sightstone", "ItemGhostWard", 600, 180));
-            WardItems.Add(new WardItem(2049, "Sightstone", "ItemGhostWard", 600, 180));
-            WardItems.Add(new WardItem(2050, "Explorer's Ward", "ItemMiniWard", 600, 60));
-            WardItems.Add(new WardItem(3340, "Greater Stealth Totem", "", 600, 120));            
-            WardItems.Add(new WardItem(3361, "Greater Stealth Totem", "", 600, 180));
-            WardItems.Add(new WardItem(3362, "Greater Vision Totem", "", 600, 180));
-            WardItems.Add(new WardItem(3366, "Bonetooth Necklace", "", 600, 120));
-            WardItems.Add(new WardItem(3367, "Bonetooth Necklace", "", 600, 120));
-            WardItems.Add(new WardItem(3368, "Bonetooth Necklace", "", 600, 120));
-            WardItems.Add(new WardItem(3369, "Bonetooth Necklace", "", 600, 120));
-            WardItems.Add(new WardItem(3371, "Bonetooth Necklace", "", 600, 180));
-            WardItems.Add(new WardItem(3375, "Head of Kha'Zix", "", 600, 180));
-            WardItems.Add(new WardItem(3205, "Quill Coat", "", 600, 180));
-            WardItems.Add(new WardItem(3207, "Spirit of the Ancient Golem", "", 600, 180));
+            WardItems.Add(new WardItem(3360, "Feral Flare", "", 1000, 180, WardType.Stealth));
+            WardItems.Add(new WardItem(2043, "Vision Ward", "VisionWard", 600, 180, WardType.Vision));
+            WardItems.Add(new WardItem(2044, "Stealth Ward", "SightWard", 600, 180, WardType.Stealth));
+            WardItems.Add(new WardItem(3154, "Wriggle's Lantern", "WriggleLantern", 600, 180, WardType.Stealth));
+            WardItems.Add(new WardItem(2045, "Ruby Sightstone", "ItemGhostWard", 600, 180, WardType.Stealth));
+            WardItems.Add(new WardItem(2049, "Sightstone", "ItemGhostWard", 600, 180, WardType.Stealth));
+            WardItems.Add(new WardItem(2050, "Explorer's Ward", "ItemMiniWard", 600, 60, WardType.Stealth));
+            WardItems.Add(new WardItem(3340, "Greater Stealth Totem", "", 600, 120, WardType.Stealth));
+            WardItems.Add(new WardItem(3361, "Greater Stealth Totem", "", 600, 180, WardType.Stealth));
+            WardItems.Add(new WardItem(3362, "Greater Vision Totem", "", 600, 180, WardType.Vision));
+            WardItems.Add(new WardItem(3366, "Bonetooth Necklace", "", 600, 120, WardType.Stealth));
+            WardItems.Add(new WardItem(3367, "Bonetooth Necklace", "", 600, 120, WardType.Stealth));
+            WardItems.Add(new WardItem(3368, "Bonetooth Necklace", "", 600, 120, WardType.Stealth));
+            WardItems.Add(new WardItem(3369, "Bonetooth Necklace", "", 600, 120, WardType.Stealth));
+            WardItems.Add(new WardItem(3371, "Bonetooth Necklace", "", 600, 180, WardType.Stealth));
+            WardItems.Add(new WardItem(3375, "Head of Kha'Zix", "", 600, 180, WardType.Stealth));
+            WardItems.Add(new WardItem(3205, "Quill Coat", "", 600, 180, WardType.Stealth));
+            WardItems.Add(new WardItem(3207, "Spirit of the Ancient Golem", "", 600, 180, WardType.Stealth));
         }
 
         public static WardItem GetWardItem()
@@ -70,6 +78,86 @@ namespace SAwareness
                 }
             }
             return null;
+        }
+    }
+
+    class InvisibleRevealer //TODO: Check for other Wards
+    {
+        List<String> SpellList = new List<string>();
+        private int lastTimeVayne = 0;
+        int lastTimeWarded;
+
+        public InvisibleRevealer() //Passive Evelynn, Teemo Missing
+        {
+            SpellList.Add("AkaliSmokeBomb"); //Akali W
+            SpellList.Add("RengarR"); //Rengar R
+            SpellList.Add("KhazixR"); //Kha R
+            SpellList.Add("khazixrlong"); //Kha R Evolved
+            SpellList.Add("Deceive"); //Shaco Q
+            SpellList.Add("TalonShadowAssault"); //Talon R
+            SpellList.Add("HideInShadows"); //Twitch Q
+            SpellList.Add("VayneTumble"); //Vayne Q -> Check before if args.SData.Name == "vayneinquisition" then ability.ExtraTicks = (int)Game.Time + 6 + 2 * args.Level; if (Game.Time >= ability.ExtraTicks) return;
+            SpellList.Add("MonkeyKingDecoy"); //Wukong W
+
+            Obj_AI_Base.OnProcessSpellCast += ObjAiBase_OnProcessSpellCast;
+        }
+
+        ~InvisibleRevealer()
+        {
+            Obj_AI_Base.OnProcessSpellCast -= ObjAiBase_OnProcessSpellCast;
+        }
+
+        public bool IsActive()
+        {
+            return Menu.InvisibleRevealer.GetActive();
+        }
+
+        private void ObjAiBase_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (!IsActive())
+                return;
+
+            StringList mode =
+                        Menu.InvisibleRevealer.GetMenuItem("SAwarenessInvisibleRevealerMode")
+                            .GetValue<StringList>();
+
+            if (sender.IsEnemy && sender.IsValid && !sender.IsDead)
+            {
+                if (args.SData.Name.ToLower().Contains("vayneinquisition"))
+                {
+                    lastTimeVayne = Environment.TickCount + 6000 + 2000*args.Level;
+                }
+                if (mode.SelectedIndex == 0 && Menu.InvisibleRevealer.GetMenuItem("SAwarenessInvisibleRevealerKey").GetValue<KeyBind>().Active || mode.SelectedIndex == 1)
+                {
+                    if (SpellList.Exists(x => x.ToLower().Contains(args.SData.Name.ToLower())))
+                    {
+                        if (lastTimeWarded == 0 || Environment.TickCount - lastTimeWarded > 500)
+                        {
+                            Wards.WardItem wardItem =
+                                Wards.WardItems.First(
+                                    x =>
+                                        Items.HasItem(x.Id) && Items.CanUseItem(x.Id) && x.Type == Wards.WardType.Vision);
+                            if (wardItem == null)
+                                return;
+                            if(sender.ServerPosition.Distance(ObjectManager.Player.ServerPosition) > wardItem.Range)
+                                return;
+
+                            InventorySlot invSlot =
+                                ObjectManager.Player.InventoryItems.FirstOrDefault(
+                                    slot => slot.Id == (ItemId) wardItem.Id);
+                            if (invSlot == null)
+                                return;
+
+                            if (args.SData.Name.ToLower().Contains("vaynetumble") &&
+                                Environment.TickCount >= lastTimeVayne)
+                                return;
+
+                            invSlot.UseItem(args.End);
+                            lastTimeWarded = Environment.TickCount;
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -126,7 +214,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.WardCorrector.GetActive();
+            return Menu.BushRevealer.GetActive();
         }
 
         void Game_OnGameUpdate(EventArgs args)

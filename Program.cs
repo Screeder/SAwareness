@@ -165,6 +165,7 @@ namespace SAwareness
         public static MenuItemSettings Wards = new MenuItemSettings();
         public static MenuItemSettings WardCorrector = new MenuItemSettings(typeof(SAwareness.WardCorrector)); //Works
         public static MenuItemSettings BushRevealer = new MenuItemSettings(typeof(SAwareness.BushRevealer)); //Works        
+        public static MenuItemSettings InvisibleRevealer = new MenuItemSettings(typeof(SAwareness.InvisibleRevealer)); //Not implemented   
         public static MenuItemSettings SkinChanger = new MenuItemSettings(typeof(SAwareness.SkinChanger)); //Works
         public static MenuItemSettings AutoSmite = new MenuItemSettings(typeof(SAwareness.AutoSmite)); //Works
         public static MenuItemSettings AutoPot = new MenuItemSettings(typeof(SAwareness.AutoPot));
@@ -308,6 +309,10 @@ namespace SAwareness
                 Menu.BushRevealer.MenuItems.Add(Menu.BushRevealer.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessBushRevealerKey", "Key").SetValue(new KeyBind(32, KeyBindType.Press))));
                 Menu.BushRevealer.MenuItems.Add(Menu.BushRevealer.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessBushRevealerActive", "Active").SetValue(true)));
                 Menu.BushRevealer.MenuItems.Add(Menu.BushRevealer.Menu.AddItem(new LeagueSharp.Common.MenuItem("By Beaving & Blm95", "By Beaving & Blm95")));
+                Menu.InvisibleRevealer.Menu = Menu.Wards.Menu.AddSubMenu(new LeagueSharp.Common.Menu("InvisibleRevealer", "SAwarenessInvisibleRevealer"));
+                Menu.InvisibleRevealer.MenuItems.Add(Menu.InvisibleRevealer.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessInvisibleRevealerMode", "Mode").SetValue(new StringList(new string[] { "Manual", "Automatic" }))));
+                Menu.InvisibleRevealer.MenuItems.Add(Menu.InvisibleRevealer.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessInvisibleRevealerKey", "Key").SetValue(new KeyBind(32, KeyBindType.Press))));
+                Menu.InvisibleRevealer.MenuItems.Add(Menu.InvisibleRevealer.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessInvisibleRevealerActive", "Active").SetValue(true)));
                 Menu.Wards.MenuItems.Add(Menu.Wards.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessWardsActive", "Active").SetValue(true)));                                          
 
                 Menu.Activator.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Activator", "SAwarenessActivator"));
