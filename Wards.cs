@@ -65,7 +65,7 @@ namespace SAwareness
 
         public static WardItem GetWardItem()
         {
-            return WardItems.First(x => Items.HasItem(x.Id) && Items.CanUseItem(x.Id));
+            return WardItems.FirstOrDefault(x => Items.HasItem(x.Id) && Items.CanUseItem(x.Id));
         }
 
         public static InventorySlot GetWardSlot()

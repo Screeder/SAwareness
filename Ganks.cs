@@ -190,18 +190,18 @@ namespace SAwareness
             {
                 if (!enemy.Value.Called && hero.IsValid && !hero.IsDead && hero.IsVisible &&
                     Vector3.Distance(ObjectManager.Player.ServerPosition, hero.ServerPosition) <
-                    Menu.GankTracker.GetMenuItem("SAwarenessGankTrackerTrackRange").GetValue<Slider>().Value)
+                    Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorTrackRange").GetValue<Slider>().Value)
                 {
                     var pingType = Packet.PingType.Normal;
-                    var t = Menu.GankTracker.GetMenuItem("SAwarenessGankTrackerPingType").GetValue<StringList>();
+                    var t = Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorPingType").GetValue<StringList>();
                     pingType = (Packet.PingType) t.SelectedIndex + 1;
                     Vector3 pos = hero.ServerPosition;
                     GamePacket gPacketT;
                     for (int i = 0;
-                        i < Menu.GankTracker.GetMenuItem("SAwarenessGankTrackerPingTimes").GetValue<Slider>().Value;
+                        i < Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorPingTimes").GetValue<Slider>().Value;
                         i++)
                     {
-                        if (Menu.GankTracker.GetMenuItem("SAwarenessGankTrackerLocalPing").GetValue<bool>())
+                        if (Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorLocalPing").GetValue<bool>())
                         {
                             gPacketT = Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0, pingType));
                             gPacketT.Process();
@@ -212,11 +212,12 @@ namespace SAwareness
                             gPacketT.Send();
                         }
                     }
-                    if (Menu.GankTracker.GetMenuItem("SAwarenessGankTrackerLocalChat").GetValue<bool>())
+
+                    if (Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorChatChoice").GetValue<StringList>().SelectedIndex == 1)
                     {
                         Game.PrintChat("Gank: {0}", hero.ChampionName);
                     }
-                    else
+                    else if (Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorChatChoice").GetValue<StringList>().SelectedIndex == 2)
                     {
                         Game.Say("Gank: {0}", hero.ChampionName);
                     }

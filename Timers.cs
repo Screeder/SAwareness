@@ -194,11 +194,11 @@ namespace SAwareness
                     gPacketT.Send();
                 }
             }
-            if (Menu.Timers.GetMenuItem("SAwarenessTimersLocalChat").GetValue<bool>())
+            if (Menu.Timers.GetMenuItem("SAwarenessTimersChatChoice").GetValue<StringList>().SelectedIndex == 1)
             {
                 Game.PrintChat(text);
             }
-            else
+            else if (Menu.Timers.GetMenuItem("SAwarenessTimersChatChoice").GetValue<StringList>().SelectedIndex == 2)
             {
                 Game.Say(text);
             }

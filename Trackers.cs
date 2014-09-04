@@ -832,11 +832,11 @@ namespace SAwareness
                     }
 
                 }
-                if (Menu.SsCaller.GetMenuItem("SAwarenessSSCallerLocalChat").GetValue<bool>())
+                if (Menu.SsCaller.GetMenuItem("SAwarenessSSCallerChatChoice").GetValue<StringList>().SelectedIndex == 1)
                 {
                     Game.PrintChat("ss {0}", hero.ChampionName);
                 }
-                else
+                else if (Menu.SsCaller.GetMenuItem("SAwarenessSSCallerChatChoice").GetValue<StringList>().SelectedIndex == 2)
                 {
                     Game.Say("ss {0}", hero.ChampionName);
                 }
@@ -1468,6 +1468,7 @@ namespace SAwareness
         {
             if (!IsActive() || !drawActive)
                 return;
+
             try
             {
                 float percentScale =

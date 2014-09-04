@@ -98,11 +98,11 @@ namespace SAwareness
                             {
                                 String text = (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportStart ? "porting" : "recalling");                                
                                 recall.StartTime = (int)Game.Time;
-                                if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorLocalChat").GetValue<bool>())
+                                if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorChatChoice").GetValue<StringList>().SelectedIndex == 1)
                                 {
                                     Game.PrintChat(obj.ChampionName + " {0} with {1} hp {2}({3})", text, (int)obj.Health, color, percentHealth);
                                 }
-                                else
+                                else if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorChatChoice").GetValue<StringList>().SelectedIndex == 2)
                                 {
                                     Game.Say(obj.ChampionName + " {0} with {1} hp {2}({3})", text, (int)obj.Health, color, percentHealth);
                                 }
@@ -110,22 +110,22 @@ namespace SAwareness
                             else if (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd || recallEx.Status == Packet.S2C.Recall.RecallStatus.RecallFinished)
                             {
                                 String text = (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportStart ? "ported" : "recalled");
-                                if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorLocalChat").GetValue<bool>())
+                                if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorChatChoice").GetValue<StringList>().SelectedIndex == 1)
                                 {
                                     Game.PrintChat(obj.ChampionName + " {0} with {1} hp {2}({3})", text, (int)obj.Health, color, percentHealth);
                                 }
-                                else
+                                else if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorChatChoice").GetValue<StringList>().SelectedIndex == 2)
                                 {
                                     Game.Say(obj.ChampionName + " {0} with {1} hp {2}({3})", text, (int)obj.Health, color, percentHealth);
                                 }
                             }
                             else
                             {
-                                if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorLocalChat").GetValue<bool>())
+                                if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorChatChoice").GetValue<StringList>().SelectedIndex == 1)
                                 {
                                     Game.PrintChat(obj.ChampionName + " canceled with {0} hp", (int)obj.Health);
                                 }
-                                else
+                                else if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorChatChoice").GetValue<StringList>().SelectedIndex == 2)
                                 {
                                     Game.Say(obj.ChampionName + " canceled with {0} hp", (int)obj.Health);
                                 }
