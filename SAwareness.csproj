@@ -78,6 +78,7 @@
     <Compile Include="Ranges.cs" />
     <Compile Include="SafeMovement.cs" />
     <Compile Include="SkinChanger.cs" />
+    <Compile Include="SurrenderVote.cs" />
     <Compile Include="Timers.cs" />
     <Compile Include="Trackers.cs" />
     <Compile Include="Updater.cs" />

@@ -173,6 +173,7 @@ namespace SAwareness
         public static MenuItemSettings AutoShield = new MenuItemSettings(typeof(SAwareness.AutoShield));
         public static MenuItemSettings Misc = new MenuItemSettings();
         public static MenuItemSettings MoveToMouse = new MenuItemSettings(typeof(SAwareness.MoveToMouse));
+        public static MenuItemSettings SurrenderVote = new MenuItemSettings(typeof(SAwareness.SurrenderVote));
         public static MenuItemSettings Activator = new MenuItemSettings(typeof(SAwareness.Activator));
         public static MenuItemSettings ActivatorAutoSummonerSpell = new MenuItemSettings();
         public static MenuItemSettings ActivatorAutoSummonerSpellIgnite = new MenuItemSettings();
@@ -270,6 +271,7 @@ namespace SAwareness
                 Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerXPos", "X Position").SetValue(new Slider(-1, 10000, 0))));
                 Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerYPos", "Y Position").SetValue(new Slider(-1, 10000, 0))));
                 Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerMode", "Mode").SetValue(new StringList(new string[] { "Side", "Unit", "Both" }))));
+                Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerHeadMode", "Over Head Mode").SetValue(new StringList(new string[] { "Small", "Big" }))));
                 Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerActive", "Active").SetValue(true)));
                 Menu.UimTracker.Menu = Menu.Tracker.Menu.AddSubMenu(new LeagueSharp.Common.Menu("UIMTracker", "SAwarenessUIMTracker"));
                 Menu.UimTracker.MenuItems.Add(Menu.UimTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUIMTrackerScale", "Scale").SetValue(new Slider(100, 100, 0))));
@@ -474,9 +476,12 @@ namespace SAwareness
                 tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoLevlerSequenceActive", "Active").SetValue(false).DontSave()));
                 Menu.AutoLevler.MenuItems.Add(Menu.AutoLevler.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoLevlerMode", "Mode").SetValue(new StringList(new string[] { "Sequence", "Priority" }))));
                 Menu.AutoLevler.MenuItems.Add(Menu.AutoLevler.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoLevlerActive", "Active").SetValue(true)));
-                Menu.MoveToMouse.Menu = Menu.Misc.Menu.AddSubMenu(new LeagueSharp.Common.Menu("MoveToMouse", "SAwarenessMoveToMouse"));
+                Menu.MoveToMouse.Menu = Menu.Misc.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Move To Mouse", "SAwarenessMoveToMouse"));
                 Menu.MoveToMouse.MenuItems.Add(Menu.MoveToMouse.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessMoveToMouseKey", "Key").SetValue(new KeyBind(90, KeyBindType.Press))));
                 Menu.MoveToMouse.MenuItems.Add(Menu.MoveToMouse.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessMoveToMouseActive", "Active").SetValue(false)));
+                Menu.SurrenderVote.Menu = Menu.Misc.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Surrender Vote", "SAwarenessSurrenderVote"));
+                Menu.SurrenderVote.MenuItems.Add(Menu.SurrenderVote.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSurrenderVoteChatChoice", "Chat Choice").SetValue(new StringList(new string[] { "None", "Local", "Server" }))));
+                Menu.SurrenderVote.MenuItems.Add(Menu.SurrenderVote.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSurrenderVoteActive", "Active").SetValue(true)));
 
 
                 menu.AddItem(new LeagueSharp.Common.MenuItem("By Screeder", "By Screeder V0.8"));
