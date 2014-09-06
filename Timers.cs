@@ -317,7 +317,7 @@ namespace SAwareness
                 {
                     if (health.Locked)
                     {
-                        if (health.NextRespawnTime <= 0 || health.MapId != GMapId)
+                        if (health.NextRespawnTime - (int)Game.Time <= 0 || health.MapId != GMapId)
                             continue;
                         Vector2 sPos = Drawing.WorldToMinimap(health.Position);
                         DirectXDrawer.DrawText(font, (health.NextRespawnTime - (int) Game.Time).ToString(),
