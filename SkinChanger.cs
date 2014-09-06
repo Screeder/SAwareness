@@ -160,7 +160,8 @@ namespace SAwareness
                 "Sheriff",
                 "Safari",
                 "Arctic Warfare",
-                "Officer"
+                "Officer",
+                "Headhunter"
             });
 
             Skins.Add("Cassiopeia", new[]
