@@ -22,7 +22,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.MoveToMouse.GetActive();
+            return Menu.Misc.GetActive() && Menu.MoveToMouse.GetActive();
         }
 
         void Game_OnGameUpdate(EventArgs args)

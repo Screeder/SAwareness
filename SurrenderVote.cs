@@ -25,7 +25,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.SurrenderVote.GetActive();
+            return Menu.Misc.GetActive() && Menu.SurrenderVote.GetActive();
         }
 
         void Game_OnGameProcessPacket(GamePacketEventArgs args)

@@ -36,7 +36,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.SkinChanger.GetActive();
+            return Menu.Misc.GetActive() && Menu.SkinChanger.GetActive();
         }
 
         static SkinChanger()

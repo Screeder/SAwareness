@@ -25,7 +25,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.SafeMovement.GetActive();
+            return Menu.Misc.GetActive() && Menu.SafeMovement.GetActive();
         }
 
         void Game_OnGameSendPacket(GamePacketEventArgs args)

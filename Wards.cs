@@ -109,7 +109,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.InvisibleRevealer.GetActive();
+            return Menu.Wards.GetActive() && Menu.InvisibleRevealer.GetActive();
         }
 
         private void ObjAiBase_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
@@ -214,7 +214,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.BushRevealer.GetActive();
+            return Menu.Wards.GetActive() && Menu.BushRevealer.GetActive();
         }
 
         void Game_OnGameUpdate(EventArgs args)
@@ -419,7 +419,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.WardCorrector.GetActive();
+            return Menu.Wards.GetActive() && Menu.WardCorrector.GetActive();
         }
 
 

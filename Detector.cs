@@ -46,7 +46,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.RecallDetector.GetActive();
+            return Menu.Detector.GetActive() && Menu.RecallDetector.GetActive();
         }
 
         void Game_OnGameProcessPacket(GamePacketEventArgs args) //TODO: Check for Packet id

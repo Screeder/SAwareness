@@ -44,7 +44,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.GankTracker.GetActive();
+            return Menu.Ganks.GetActive() && Menu.GankTracker.GetActive();
         }
 
         void Drawing_OnPostReset(EventArgs args)
@@ -170,7 +170,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.GankDetector.GetActive();
+            return Menu.Ganks.GetActive() && Menu.GankDetector.GetActive();
         }
 
         private void Game_OnGameUpdate(EventArgs args)

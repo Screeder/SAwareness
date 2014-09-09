@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
+using SharpDX;
+using Color = System.Drawing.Color;
 
 namespace SAwareness
 {
@@ -59,12 +61,12 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.AutoPot.GetActive();
+            return Menu.Activator.GetActive() && Menu.AutoPot.GetActive();
         }
 
         void Game_OnGameUpdate(EventArgs args)
         {
-            if (!IsActive() || ObjectManager.Player.IsDead)
+            if (!IsActive() || ObjectManager.Player.IsDead || Utility.InFountain() || ObjectManager.Player.HasBuff("Recall"))
                 return;
             Pot myPot = null;
             if (

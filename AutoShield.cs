@@ -21,7 +21,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.AutoShield.GetActive();
+            return Menu.Activator.GetActive() && Menu.AutoShield.GetActive();
         }
 
         void Game_OnGameUpdate(EventArgs args)

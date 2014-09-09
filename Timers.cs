@@ -38,7 +38,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.ImmuneTimer.GetActive();
+            return Menu.Timers.GetActive() && Menu.ImmuneTimer.GetActive();
         }
 
         private void Game_OnGameUpdate(EventArgs args)

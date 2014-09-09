@@ -25,7 +25,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.AutoLevler.GetActive();
+            return Menu.Misc.GetActive() && Menu.AutoLevler.GetActive();
         }
 
         private void Game_OnGameUpdate(EventArgs args)

@@ -28,7 +28,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.CloneTracker.GetActive();
+            return Menu.Tracker.GetActive() && Menu.CloneTracker.GetActive();
         }
 
         void Drawing_OnDraw(EventArgs args)
@@ -145,7 +145,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.VisionDetector.GetActive();
+            return Menu.Tracker.GetActive() && Menu.VisionDetector.GetActive();
         }
 
         void GameObject_OnCreate(GameObject sender, EventArgs args)
@@ -554,7 +554,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.DestinationTracker.GetActive();
+            return Menu.Tracker.GetActive() && Menu.DestinationTracker.GetActive();
         }
 
         void Drawing_OnDraw(EventArgs args)
@@ -794,7 +794,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.SsCaller.GetActive() && Game.Time < (Menu.SsCaller.GetMenuItem("SAwarenessSSCallerDisableTime").GetValue<Slider>().Value * 60);
+            return Menu.Tracker.GetActive() && Menu.SsCaller.GetActive() && Game.Time < (Menu.SsCaller.GetMenuItem("SAwarenessSSCallerDisableTime").GetValue<Slider>().Value * 60);
         }
 
         void Game_OnGameUpdate(EventArgs args)
@@ -1087,7 +1087,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.UiTracker.GetActive();
+            return Menu.Tracker.GetActive() && Menu.UiTracker.GetActive();
         }
 
         private bool Init(bool force)
@@ -2017,7 +2017,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.UimTracker.GetActive();
+            return Menu.Tracker.GetActive() && Menu.UimTracker.GetActive();
         }
 
         private bool Init(bool force)
@@ -2140,7 +2140,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.WaypointTracker.GetActive();
+            return Menu.Tracker.GetActive() && Menu.WaypointTracker.GetActive();
         }
 
         void Drawing_OnDraw(EventArgs args)

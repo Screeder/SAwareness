@@ -46,7 +46,7 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.AutoSmite.GetActive();
+            return Menu.Activator.GetActive() && Menu.AutoSmite.GetActive();
         }
 
         void Game_OnGameUpdate(EventArgs args)
