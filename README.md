@@ -27,19 +27,49 @@ Includes the following functions:
   - Waypoint
   - Destination
   - Clone
-  - UI (Side UI Champion CD's, Recall state etc.)
+  - UI (Side/Head UI Champion CD's, Recall state etc.)
   - UIM (Last Champ Position)
   - SS
 - Detector
   - Vision (Wards, Traps)
   - Recall
+- Ganks
+  - GankPotentialTracker
+  - GankDetector
 - Object Health
   - Tower
   - Inhibitor
-- AutoLevler
-  - Priority Mode
-- AutoSmite
-- WardPlacer
-- AutoPot
+- Wards
+  - WardCorrector
+  - BushRevealer
+  - InvisibleRevealer
+- Activator
+  - SummonerSpells
+    - Ignite
+    - Heal
+    - Barrier
+    - Exhaust
+    - Cleanse
+    - Smite
+  - OffensiveItems
+    - ADItems
+    - APItems
+  - DefensiveItems
+    - SelfShield
+    - Wooglet/Zhonya
+    - DebuffSlow
+    - CleanseSelf
+    - ShieldBoost
+    - Mikael
+  - AutoShield
+  - AutoPot
+- Misc
+  - SkinChanger
+  - SafeMovement
+  - AutoLevler
+    - Priority Mode
+  - MoveToMouse
+  - SurrenderVote
+
 
 ![Alt text](http://puu.sh/aTVnD/e9b66b129b.jpg "")
