@@ -1353,26 +1353,50 @@ namespace SAwareness
                             {
                                 enemy.Value.SGui.SpellQ.Cd = (int)(s1[0].CooldownExpires - Game.Time);
                             }
+                            else if (s1[0].CooldownExpires - Game.Time <= 0.0f && enemy.Value.SGui.SpellQ.Cd != 0)
+                            {
+                                enemy.Value.SGui.SpellQ.Cd = 0;
+                            }
                             if (s1[1].CooldownExpires - Game.Time > 0.0f)
                             {
                                 enemy.Value.SGui.SpellW.Cd = (int)(s1[1].CooldownExpires - Game.Time);
+                            }
+                            else if (s1[1].CooldownExpires - Game.Time <= 0.0f && enemy.Value.SGui.SpellW.Cd != 0)
+                            {
+                                enemy.Value.SGui.SpellW.Cd = 0;
                             }
                             if (s1[2].CooldownExpires - Game.Time > 0.0f)
                             {
                                 enemy.Value.SGui.SpellE.Cd = (int)(s1[2].CooldownExpires - Game.Time);
                             }
+                            else if (s1[2].CooldownExpires - Game.Time <= 0.0f && enemy.Value.SGui.SpellE.Cd != 0)
+                            {
+                                enemy.Value.SGui.SpellE.Cd = 0;
+                            }
                             if (s1[3].CooldownExpires - Game.Time > 0.0f)
                             {
                                 enemy.Value.SGui.SpellR.Cd = (int)(s1[3].CooldownExpires - Game.Time);
+                            }
+                            else if (s1[3].CooldownExpires - Game.Time <= 0.0f && enemy.Value.SGui.SpellR.Cd != 0)
+                            {
+                                enemy.Value.SGui.SpellR.Cd = 0;
                             }
                             var s2 = hero.SummonerSpellbook.Spells;
                             if (s2[0].CooldownExpires - Game.Time > 0.0f)
                             {
                                 enemy.Value.SGui.SpellSum1.Cd = (int)(s2[0].CooldownExpires - Game.Time);
                             }
+                            else if (s2[0].CooldownExpires - Game.Time <= 0.0f && enemy.Value.SGui.SpellSum1.Cd != 0)
+                            {
+                                enemy.Value.SGui.SpellSum1.Cd = 0;
+                            }
                             if (s2[1].CooldownExpires - Game.Time > 0.0f)
                             {
                                 enemy.Value.SGui.SpellSum2.Cd = (int)(s2[1].CooldownExpires - Game.Time);
+                            }
+                            else if (s2[1].CooldownExpires - Game.Time <= 0.0f && enemy.Value.SGui.SpellSum2.Cd != 0)
+                            {
+                                enemy.Value.SGui.SpellSum2.Cd = 0;
                             }
                             if (hero.DeathDuration - Game.Time > 0.0f)
                             {
