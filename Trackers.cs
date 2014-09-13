@@ -1258,7 +1258,7 @@ namespace SAwareness
                     {
                         float HpPosScale = 1.7f;
                         Vector2 hpPos = enemy.Key.HPBarPosition;
-                        enemy.Value.SGui.SpellSum1.SizeHpBar = new Size((int)hpPos.X - 25, (int)hpPos.Y);
+                        enemy.Value.SGui.SpellSum1.SizeHpBar = new Size((int)hpPos.X - 25, (int)hpPos.Y + 2);
                         enemy.Value.SGui.SpellSum2.SizeHpBar = new Size(enemy.Value.SGui.SpellSum1.SizeHpBar.Width, enemy.Value.SGui.SpellSum1.SizeHpBar.Height + (int)(_sumSize.Height * 1.0f));
                         enemy.Value.SGui.SpellPassive.SizeHpBar = new Size(enemy.Value.SGui.SpellSum1.SizeHpBar.Width + (int)(_spellSize.Width * HpPosScale), enemy.Value.SGui.SpellSum2.SizeHpBar.Height);
                         enemy.Value.SGui.SpellQ.SizeHpBar = new Size(enemy.Value.SGui.SpellPassive.SizeHpBar.Width + (int)(_spellSize.Width * HpPosScale), enemy.Value.SGui.SpellPassive.SizeHpBar.Height);
