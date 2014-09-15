@@ -268,10 +268,20 @@ namespace SAwareness
                 Menu.UiTracker.Menu = Menu.Tracker.Menu.AddSubMenu(new LeagueSharp.Common.Menu("UITracker", "SAwarenessUITracker"));
                 Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessItemPanelActive", "ItemPanel").SetValue(true)));
                 Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerScale", "Scale").SetValue(new Slider(100, 100, 0))));
-                Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerXPos", "X Position").SetValue(new Slider(-1, 10000, 0))));
-                Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerYPos", "Y Position").SetValue(new Slider(-1, 10000, 0))));
-                Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerMode", "Mode").SetValue(new StringList(new string[] { "Side", "Unit", "Both" }))));
-                Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerHeadMode", "Over Head Mode").SetValue(new StringList(new string[] { "Small", "Big" }))));
+                tempSettings = Menu.UiTracker.AddMenuItemSettings("Enemy Tracker",
+                    "SAwarenessUITrackerEnemyTracker");
+                tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerEnemyTrackerXPos", "X Position").SetValue(new Slider(-1, 10000, 0))));
+                tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerEnemyTrackerYPos", "Y Position").SetValue(new Slider(-1, 10000, 0))));
+                tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerEnemyTrackerMode", "Mode").SetValue(new StringList(new string[] { "Side", "Unit", "Both" }))));
+                tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerEnemyTrackerHeadMode", "Over Head Mode").SetValue(new StringList(new string[] { "Small", "Big" }))));
+                tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerEnemyTrackerActive", "Active").SetValue(false)));
+                tempSettings = Menu.UiTracker.AddMenuItemSettings("Ally Tracker",
+                    "SAwarenessUITrackerAllyTracker");
+                tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerAllyTrackerXPos", "X Position").SetValue(new Slider(-1, 10000, 0))));
+                tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerAllyTrackerYPos", "Y Position").SetValue(new Slider(-1, 10000, 0))));
+                tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerAllyTrackerMode", "Mode").SetValue(new StringList(new string[] { "Side", "Unit", "Both" }))));
+                tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerAllyTrackerHeadMode", "Over Head Mode").SetValue(new StringList(new string[] { "Small", "Big" }))));
+                tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerAllyTrackerActive", "Active").SetValue(false)));
                 Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerActive", "Active").SetValue(true)));
                 Menu.UimTracker.Menu = Menu.Tracker.Menu.AddSubMenu(new LeagueSharp.Common.Menu("UIMTracker", "SAwarenessUIMTracker"));
                 Menu.UimTracker.MenuItems.Add(Menu.UimTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUIMTrackerScale", "Scale").SetValue(new Slider(100, 100, 0))));
