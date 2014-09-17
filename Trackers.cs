@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Resources;
 using System.Threading;
 using LeagueSharp;
 using LeagueSharp.Common;
+using SAwareness.Properties;
 using SharpDX;
 using SharpDX.Direct3D9;
 using Color = SharpDX.Color;
@@ -1147,19 +1151,29 @@ namespace SAwareness
                 Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetMenuItem("SAwarenessUITrackerAllyTrackerYPos").SetValue(new Slider((int)_screen.Y, Drawing.Height, 0));
             }
 
-            var loc = Assembly.GetExecutingAssembly().Location;
-            loc = loc.Remove(loc.LastIndexOf("\\", StringComparison.Ordinal));
-            loc = loc + "\\Sprites\\SAwareness\\";
+            //var loc = Assembly.GetExecutingAssembly().Location;
+            //loc = loc.Remove(loc.LastIndexOf("\\", StringComparison.Ordinal));
+            //loc = loc + "\\Sprites\\SAwareness\\";
 
-            SpriteHelper.LoadTexture("SummonerTint.dds", "SUMMONERS/", loc + "SUMMONERS\\SummonerTint.dds", ref _overlaySummoner);
-            SpriteHelper.LoadTexture("SummonerSpellTint.dds", "SUMMONERS/", loc + "SUMMONERS\\SummonerSpellTint.dds", ref _overlaySummonerSpell);
-            SpriteHelper.LoadTexture("SpellTint.dds", "SUMMONERS/", loc + "SUMMONERS\\SpellTint.dds", ref _overlaySpellItem);
+            //SpriteHelper.LoadTexture("SummonerTint.dds", "SUMMONERS/", loc + "SUMMONERS\\SummonerTint.dds", ref _overlaySummoner);
+            //SpriteHelper.LoadTexture("SummonerSpellTint.dds", "SUMMONERS/", loc + "SUMMONERS\\SummonerSpellTint.dds", ref _overlaySummonerSpell);
+            //SpriteHelper.LoadTexture("SpellTint.dds", "SUMMONERS/", loc + "SUMMONERS\\SpellTint.dds", ref _overlaySpellItem);
 
-            SpriteHelper.LoadTexture("BarBackground.dds", "EXT/", loc + "EXT\\BarBackground.dds", ref _backBar);
-            SpriteHelper.LoadTexture("HealthBar.dds", "EXT/", loc + "EXT\\HealthBar.dds", ref _healthBar);
-            SpriteHelper.LoadTexture("ManaBar.dds", "EXT/", loc + "EXT\\ManaBar.dds", ref _manaBar);
-            SpriteHelper.LoadTexture("ItemSlotEmpty.dds", "EXT/", loc + "EXT\\ItemSlotEmpty.dds", ref _overlayEmptyItem);
-            SpriteHelper.LoadTexture("RecallBar.dds", "EXT/", loc + "EXT\\RecallBar.dds", ref _overlayRecall);
+            //SpriteHelper.LoadTexture("BarBackground.dds", "EXT/", loc + "EXT\\BarBackground.dds", ref _backBar);
+            //SpriteHelper.LoadTexture("HealthBar.dds", "EXT/", loc + "EXT\\HealthBar.dds", ref _healthBar);
+            //SpriteHelper.LoadTexture("ManaBar.dds", "EXT/", loc + "EXT\\ManaBar.dds", ref _manaBar);
+            //SpriteHelper.LoadTexture("ItemSlotEmpty.dds", "EXT/", loc + "EXT\\ItemSlotEmpty.dds", ref _overlayEmptyItem);
+            //SpriteHelper.LoadTexture("RecallBar.dds", "EXT/", loc + "EXT\\RecallBar.dds", ref _overlayRecall);
+
+            SpriteHelper.LoadTexture("SummonerTint", ref _overlaySummoner);
+            SpriteHelper.LoadTexture("SummonerSpellTint", ref _overlaySummonerSpell);
+            SpriteHelper.LoadTexture("SpellTint", ref _overlaySpellItem);
+
+            SpriteHelper.LoadTexture("BarBackground", ref _backBar);
+            SpriteHelper.LoadTexture("HealthBar", ref _healthBar);
+            SpriteHelper.LoadTexture("ManaBar", ref _manaBar);
+            SpriteHelper.LoadTexture("ItemSlotEmpty", ref _overlayEmptyItem);
+            SpriteHelper.LoadTexture("RecallBar", ref _overlayRecall);
 
 
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
@@ -1167,17 +1181,25 @@ namespace SAwareness
                 if (hero.IsEnemy)
                 {
                     var champ = new ChampInfos();
-                    SpriteHelper.LoadTexture(hero.ChampionName + ".dds", "CHAMP/", loc + "CHAMP\\" + hero.ChampionName + ".dds", ref champ.SGui.Champ.Texture);
+                    //SpriteHelper.LoadTexture(hero.ChampionName + ".dds", "CHAMP/", loc + "CHAMP\\" + hero.ChampionName + ".dds", ref champ.SGui.Champ.Texture);
+                    SpriteHelper.LoadTexture(hero.ChampionName, ref champ.SGui.Champ.Texture);
                     var s1 = hero.Spellbook.Spells;
                     //SpriteHelper.LoadTexture(s1[0].Name + ".dds", "PASSIVE/", loc + "PASSIVE\\" + s1[0].Name + ".dds", ref champ.SGui.Passive.Texture);
-                    SpriteHelper.LoadTexture(s1[0].Name + ".dds", "SPELLS/", loc + "SPELLS\\" + s1[0].Name + ".dds", ref champ.SGui.SpellQ.Texture);
-                    SpriteHelper.LoadTexture(s1[1].Name + ".dds", "SPELLS/", loc + "SPELLS\\" + s1[1].Name + ".dds", ref champ.SGui.SpellW.Texture);
-                    SpriteHelper.LoadTexture(s1[2].Name + ".dds", "SPELLS/", loc + "SPELLS\\" + s1[2].Name + ".dds", ref champ.SGui.SpellE.Texture);
-                    SpriteHelper.LoadTexture(s1[3].Name + ".dds", "SPELLS/", loc + "SPELLS\\" + s1[3].Name + ".dds", ref champ.SGui.SpellR.Texture);
+                    //SpriteHelper.LoadTexture(s1[0].Name + ".dds", "SPELLS/", loc + "SPELLS\\" + s1[0].Name + ".dds", ref champ.SGui.SpellQ.Texture);
+                    //SpriteHelper.LoadTexture(s1[1].Name + ".dds", "SPELLS/", loc + "SPELLS\\" + s1[1].Name + ".dds", ref champ.SGui.SpellW.Texture);
+                    //SpriteHelper.LoadTexture(s1[2].Name + ".dds", "SPELLS/", loc + "SPELLS\\" + s1[2].Name + ".dds", ref champ.SGui.SpellE.Texture);
+                    //SpriteHelper.LoadTexture(s1[3].Name + ".dds", "SPELLS/", loc + "SPELLS\\" + s1[3].Name + ".dds", ref champ.SGui.SpellR.Texture);
+                    SpriteHelper.LoadTexture(s1[0].Name, ref champ.SGui.SpellQ.Texture);
+                    SpriteHelper.LoadTexture(s1[1].Name, ref champ.SGui.SpellW.Texture);
+                    SpriteHelper.LoadTexture(s1[2].Name, ref champ.SGui.SpellE.Texture);
+                    SpriteHelper.LoadTexture(s1[3].Name, ref champ.SGui.SpellR.Texture);
 
+                    //var s2 = hero.SummonerSpellbook.Spells;
+                    //SpriteHelper.LoadTexture(s2[0].Name + ".dds", "SUMMONERS/", loc + "SUMMONERS\\" + s2[0].Name + ".dds", ref champ.SGui.SpellSum1.Texture);
+                    //SpriteHelper.LoadTexture(s2[1].Name + ".dds", "SUMMONERS/", loc + "SUMMONERS\\" + s2[1].Name + ".dds", ref champ.SGui.SpellSum2.Texture);
                     var s2 = hero.SummonerSpellbook.Spells;
-                    SpriteHelper.LoadTexture(s2[0].Name + ".dds", "SUMMONERS/", loc + "SUMMONERS\\" + s2[0].Name + ".dds", ref champ.SGui.SpellSum1.Texture);
-                    SpriteHelper.LoadTexture(s2[1].Name + ".dds", "SUMMONERS/", loc + "SUMMONERS\\" + s2[1].Name + ".dds", ref champ.SGui.SpellSum2.Texture);
+                    SpriteHelper.LoadTexture(s2[0].Name + "1", ref champ.SGui.SpellSum1.Texture);
+                    SpriteHelper.LoadTexture(s2[1].Name + "1", ref champ.SGui.SpellSum2.Texture);
 
                     Enemies.Add(hero, champ);
                 }
@@ -1185,20 +1207,20 @@ namespace SAwareness
 
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
             {
-                if (!hero.IsEnemy)
+                if (!hero.IsEnemy && !hero.IsMe)
                 {
                     var champ = new ChampInfos();
-                    SpriteHelper.LoadTexture(hero.ChampionName + ".dds", "CHAMP/", loc + "CHAMP\\" + hero.ChampionName + ".dds", ref champ.SGui.Champ.Texture);
+                    SpriteHelper.LoadTexture(hero.ChampionName, ref champ.SGui.Champ.Texture);
                     var s1 = hero.Spellbook.Spells;
                     //SpriteHelper.LoadTexture(s1[0].Name + ".dds", "PASSIVE/", loc + "PASSIVE\\" + s1[0].Name + ".dds", ref champ.SGui.Passive.Texture);
-                    SpriteHelper.LoadTexture(s1[0].Name + ".dds", "SPELLS/", loc + "SPELLS\\" + s1[0].Name + ".dds", ref champ.SGui.SpellQ.Texture);
-                    SpriteHelper.LoadTexture(s1[1].Name + ".dds", "SPELLS/", loc + "SPELLS\\" + s1[1].Name + ".dds", ref champ.SGui.SpellW.Texture);
-                    SpriteHelper.LoadTexture(s1[2].Name + ".dds", "SPELLS/", loc + "SPELLS\\" + s1[2].Name + ".dds", ref champ.SGui.SpellE.Texture);
-                    SpriteHelper.LoadTexture(s1[3].Name + ".dds", "SPELLS/", loc + "SPELLS\\" + s1[3].Name + ".dds", ref champ.SGui.SpellR.Texture);
+                    SpriteHelper.LoadTexture(s1[0].Name, ref champ.SGui.SpellQ.Texture);
+                    SpriteHelper.LoadTexture(s1[1].Name, ref champ.SGui.SpellW.Texture);
+                    SpriteHelper.LoadTexture(s1[2].Name, ref champ.SGui.SpellE.Texture);
+                    SpriteHelper.LoadTexture(s1[3].Name, ref champ.SGui.SpellR.Texture);
 
                     var s2 = hero.SummonerSpellbook.Spells;
-                    SpriteHelper.LoadTexture(s2[0].Name + ".dds", "SUMMONERS/", loc + "SUMMONERS\\" + s2[0].Name + ".dds", ref champ.SGui.SpellSum1.Texture);
-                    SpriteHelper.LoadTexture(s2[1].Name + ".dds", "SUMMONERS/", loc + "SUMMONERS\\" + s2[1].Name + ".dds", ref champ.SGui.SpellSum2.Texture);
+                    SpriteHelper.LoadTexture(s2[0].Name, ref champ.SGui.SpellSum1.Texture);
+                    SpriteHelper.LoadTexture(s2[1].Name + "1", ref champ.SGui.SpellSum2.Texture);
 
                     Allies.Add(hero, champ);
                 }
@@ -1353,9 +1375,9 @@ namespace SAwareness
         {
             if (!Menu.UiTracker.GetMenuItem("SAwarenessItemPanelActive").GetValue<bool>())
                 return;
-            var loc = Assembly.GetExecutingAssembly().Location;
-            loc = loc.Remove(loc.LastIndexOf("\\", StringComparison.Ordinal));
-            loc = loc + "\\Sprites\\SAwareness\\";
+            //var loc = Assembly.GetExecutingAssembly().Location;
+            //loc = loc.Remove(loc.LastIndexOf("\\", StringComparison.Ordinal));
+            //loc = loc + "\\Sprites\\SAwareness\\";
 
             Dictionary<Obj_AI_Hero, ChampInfos> heroes;
 
@@ -1384,9 +1406,10 @@ namespace SAwareness
                                 champ.SGui.Item[inventorySlot.Slot] = new ChampInfos.Gui.SpriteInfos();
                             if (champ.SGui.Item[inventorySlot.Slot].Texture == null || champ.SGui.ItemId[inventorySlot.Slot] != inventorySlot.Id)
                             {
-                                SpriteHelper.LoadTexture(inventorySlot.Id + ".dds", "ITEMS/",
-                                    loc + "ITEMS\\" + inventorySlot.Id + ".dds",
-                                    ref champ.SGui.Item[inventorySlot.Slot].Texture, true);
+                                //SpriteHelper.LoadTexture(inventorySlot.Id + ".dds", "ITEMS/",
+                                //    loc + "ITEMS\\" + inventorySlot.Id + ".dds",
+                                //    ref champ.SGui.Item[inventorySlot.Slot].Texture, true);
+                                SpriteHelper.LoadTexture("_" + inventorySlot.Id, ref champ.SGui.Item[inventorySlot.Slot].Texture);
                                 if( champ.SGui.Item[inventorySlot.Slot].Texture != null )
                                     champ.SGui.ItemId[inventorySlot.Slot] = inventorySlot.Id;
                             }
@@ -2180,16 +2203,17 @@ namespace SAwareness
                 //throw;
             }
 
-            var loc = Assembly.GetExecutingAssembly().Location;
-            loc = loc.Remove(loc.LastIndexOf("\\", StringComparison.Ordinal));
-            loc = loc + "\\Sprites\\SAwareness\\";
+            //var loc = Assembly.GetExecutingAssembly().Location;
+            //loc = loc.Remove(loc.LastIndexOf("\\", StringComparison.Ordinal));
+            //loc = loc + "\\Sprites\\SAwareness\\";
 
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (hero.IsEnemy)
                 {
                     Texture champ = null;
-                    SpriteHelper.LoadTexture(hero.ChampionName + ".dds", "CHAMP/", loc + "CHAMP\\" + hero.ChampionName + ".dds", ref champ);
+                    //SpriteHelper.LoadTexture(hero.ChampionName + ".dds", "CHAMP/", loc + "CHAMP\\" + hero.ChampionName + ".dds", ref champ);
+                    SpriteHelper.LoadTexture(hero.ChampionName, ref champ);
                     Enemies.Add(hero, champ);
                 }
             }

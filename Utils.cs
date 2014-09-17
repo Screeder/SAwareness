@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Resources;
 using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
+using SAwareness.Properties;
 using SharpDX;
 using SharpDX.Direct3D9;
 using SharpDX.Toolkit.Graphics;
@@ -176,80 +180,120 @@ namespace SAwareness
     static class SpriteHelper
     {
         static Downloader Downloader = new Downloader();
+        static readonly Dictionary<String, byte[]> MyResources = new Dictionary<String, byte[]>();
 
-        private static List<SpriteRef> Sprites = new List<SpriteRef>();
+        //private static List<SpriteRef> Sprites = new List<SpriteRef>();
 
-        struct SpriteRef
+        static SpriteHelper()
         {
-            public String OnlineFile;
-            public Texture Texture;
-
-            public SpriteRef(String onlineFile, ref Texture texture)
+            ResourceSet resourceSet = Resources.ResourceManager.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
+            foreach (DictionaryEntry entry in resourceSet)
             {
-                OnlineFile = onlineFile;
-                Texture = texture;
+                MyResources.Add(entry.Key.ToString().ToLower(), (byte[])entry.Value);
             }
         }
 
-        public static void LoadTexture(String onlineFile, String subOnlinePath, String localPathFile,
-            ref Texture texture, bool bForce = false)
+        //struct SpriteRef
+        //{
+        //    public String OnlineFile;
+        //    public Texture Texture;
+
+        //    public SpriteRef(String onlineFile, ref Texture texture)
+        //    {
+        //        OnlineFile = onlineFile;
+        //        Texture = texture;
+        //    }
+        //}
+
+        //public static void LoadTexture(String onlineFile, String subOnlinePath, String localPathFile,
+        //    ref Texture texture, bool bForce = false)
+        //{
+        //    if (!File.Exists(localPathFile))
+        //    {
+        //        try
+        //        {
+        //            Downloader.Path = subOnlinePath;
+        //            Sprites.Add(new SpriteRef(onlineFile, ref texture));
+        //            Downloader.DownloadFileFinished += Downloader_DownloadFileFinished;
+        //            Downloader.AddDownload(onlineFile, localPathFile);
+        //            Downloader.StartDownload();
+        //            //Downloader.DownloadFile(onlineFile, localPathFile);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Console.WriteLine("SAwareness: Path: " + onlineFile + " \nException: " + ex);
+        //        }
+        //    }
+        //    LoadTexture(localPathFile, ref texture, bForce);
+        //}
+
+        //private static void LoadTexture(String localPathFile, ref Texture texture, bool bForce = false)
+        //{
+        //    if (File.Exists(localPathFile) && (bForce || texture == null))
+        //    {
+        //        try
+        //        {
+        //            texture = Texture.FromFile(Drawing.Direct3DDevice, localPathFile);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Console.WriteLine("SAwarness: Couldn't load texture: " + localPathFile + "\n Ex: " + ex);
+        //        }
+        //        if (texture == null)
+        //        {
+        //            return;
+        //        }
+        //    }
+        //}
+
+        public static void LoadTexture(String name, ref Texture texture)
         {
-            if (!File.Exists(localPathFile))
+            if (MyResources.ContainsKey(name.ToLower()))
             {
                 try
                 {
-                    Downloader.Path = subOnlinePath;
-                    Sprites.Add(new SpriteRef(onlineFile, ref texture));
-                    Downloader.DownloadFileFinished += Downloader_DownloadFileFinished;
-                    Downloader.AddDownload(onlineFile, localPathFile);
-                    Downloader.StartDownload();
-                    //Downloader.DownloadFile(onlineFile, localPathFile);
+                    texture = Texture.FromMemory(Drawing.Direct3DDevice, MyResources[name.ToLower()]);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("SAwareness: Path: " + onlineFile + " \nException: " + ex);
+                    Console.WriteLine("SAwarness: Couldn't load texture: " + name + "\n Ex: " + ex);
                 }
             }
-            LoadTexture(localPathFile, ref texture, bForce);
-        }
-
-        private static void LoadTexture(String localPathFile, ref Texture texture, bool bForce = false)
-        {
-            if (File.Exists(localPathFile) && (bForce || texture == null))
+            else if (MyResources.ContainsKey(name.ToLower().Remove(name.Length - 1)))
             {
                 try
                 {
-                    texture = Texture.FromFile(Drawing.Direct3DDevice, localPathFile);
+                    texture = Texture.FromMemory(Drawing.Direct3DDevice, MyResources[name.ToLower().Remove(name.Length - 1)]);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("SAwarness: Couldn't load texture: " + localPathFile + "\n Ex: " + ex);
+                    Console.WriteLine("SAwarness: Couldn't load texture: " + name + "\n Ex: " + ex);
                 }
-                if (texture == null)
-                {
-                    return;
-                }
+            }
+            else
+            {
+                Console.WriteLine("SAwarness: " + name + " is missing. Please inform Screeder!");
             }
         }
 
-        static void Downloader_DownloadFileFinished(object sender, Downloader.DlEventArgs args)
-        {
-            for (int i = 0; i < Sprites.Count - 1; i++)
-            {
-                var spriteRef = Sprites[i];
-                if (spriteRef.OnlineFile.Contains(args.DlFiles.OnlineFile))
-                {
-                    LoadTexture(args.DlFiles.OfflineFile, ref spriteRef.Texture);
-                }
-            }
-            foreach (var spriteRef in Sprites.ToArray())
-            {
-                if (spriteRef.OnlineFile.Contains(args.DlFiles.OnlineFile))
-                {
-                    Sprites.Remove(spriteRef);
-                }
-            }
-        }
+        //static void Downloader_DownloadFileFinished(object sender, Downloader.DlEventArgs args)
+        //{
+        //    for (int i = 0; i < Sprites.Count - 1; i++)
+        //    {
+        //        var spriteRef = Sprites[i];
+        //        if (spriteRef.OnlineFile.Contains(args.DlFiles.OnlineFile))
+        //        {
+        //            LoadTexture(args.DlFiles.OfflineFile, ref spriteRef.Texture);
+        //        }
+        //    }
+        //    foreach (var spriteRef in Sprites.ToArray())
+        //    {
+        //        if (spriteRef.OnlineFile.Contains(args.DlFiles.OnlineFile))
+        //        {
+        //            Sprites.Remove(spriteRef);
+        //        }
+        //    }
+        //}
     }
 
     static class DirectXDrawer
