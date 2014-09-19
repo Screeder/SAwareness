@@ -12,6 +12,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <PreBuildEvent />
+    <OutputPath>bin\Release</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -3231,6 +3232,27 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\SUMMONERS\SummonerTint.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CHAMP\Azir.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PASSIVE\Azir_Passive.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PASSIVE\Gnar_Passive.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\AzirE.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\AzirQ.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\AzirR.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\AzirW.dds" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
