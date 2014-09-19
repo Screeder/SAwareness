@@ -126,6 +126,12 @@ namespace SAwareness
                 "Heartseeker"
             });
 
+            Skins.Add("Azir", new[]
+            {
+                "Classic",
+                "Galactic"
+            });
+
             Skins.Add("Blitzcrank", new[]
             {
                 "Classic",
@@ -315,6 +321,12 @@ namespace SAwareness
                 "Steel Legion"
             });
 
+            Skins.Add("Gnar", new[]
+            {
+                "Classic",
+                "Dino"
+            });
+
             Skins.Add("Gragas", new[]
             {
                 "Classic",
@@ -474,7 +486,8 @@ namespace SAwareness
             Skins.Add("Khazix", new[]
             {
                 "Classic",
-                "Mecha"
+                "Mecha",
+                "Guardian of the Sands"
             });
 
             Skins.Add("Kogmaw", new[]
