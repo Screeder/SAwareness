@@ -10,8 +10,8 @@ namespace SAwareness
 {
     class Ranges
     {
-        
-        int mode = -1;
+
+        StringList mode = new StringList();
         
         public Ranges()
         {
