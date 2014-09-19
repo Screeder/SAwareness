@@ -5,6 +5,8 @@ If something does not work or you have suggestions contact me please here or in 
 
 Username: tHer0x
 
+Remember to activate the options you want to use. They're deactivated.
+
 Includes the following functions:
 
 - Timers
@@ -13,9 +15,9 @@ Includes the following functions:
   - Heal
   - Inhibitor
   - Altar
-  - Immune
+  - Immune (For spells like Tryn R and Kayle R.)
 - Ranges
-  - Experience 
+  - Experience (Draws the range in which you will get EXP.)
   - Attack
   - Tower
   - SpellQ | Sometimes bugged
@@ -23,25 +25,25 @@ Includes the following functions:
   - SpellE | Sometimes bugged
   - SpellR | Sometimes bugged
 - Tracker
-  - Waypoint
-  - Destination
-  - Clone
+  - Waypoint (Shows the last position, where the enemy clicked.)
+  - Destination (Shows shaco q jump etc.)
+  - Clone (e.g. Shaco R, Yorick R)
   - UI (Side/Head UI Champion CD's, Recall state etc.)
   - UIM (Last Champ Position)
-  - SS
+  - SS (Pings if someone is missing for a few seconds.)
 - Detector
   - Vision (Wards, Traps)
-  - Recall
+  - Recall (When someone recalls or aborts it.)
 - Ganks
-  - GankPotentialTracker
-  - GankDetector
+  - GankPotentialTracker (Show lines to the enemies, and the color indictaor is used for the health)
+  - GankDetector (Alerts, when you get ganked.)
 - Object Health
-  - Tower
-  - Inhibitor
+  - Tower (Real value, percent)
+  - Inhibitor (Real value, percent)
 - Wards
-  - WardCorrector
-  - BushRevealer
-  - InvisibleRevealer
+  - WardCorrector (Shows useful ward places and automatically corrects it if you clicked in a specified range on it)
+  - BushRevealer (Auto places wards in a bush when you have a ward rdy, an enemy ran in it and you're  holding the specified key)
+  - InvisibleRevealer (Auto places a pink ward for champs like twitch, shaco etc.)
 - Activator
   - SummonerSpells
     - Ignite
@@ -49,26 +51,26 @@ Includes the following functions:
     - Barrier
     - Exhaust
     - Cleanse
-    - Smite
+    - Smite 
   - OffensiveItems
-    - ADItems
-    - APItems
+    - ADItems (Uses Blade of the Ruined King, Entropy, Ravenous Hydra, Sword Of The Devine, Tiamat, Youmuu's Ghostblade)
+    - APItems (Uses Bilgewater Cutlass, Blackfire Torch, Deathfire Grasp, Hextech Gunblade, Twin Shadows)
   - DefensiveItems
-    - SelfShield
-    - Wooglet/Zhonya
-    - DebuffSlow
-    - CleanseSelf
-    - ShieldBoost
-    - Mikael
-  - AutoShield
-  - AutoPot
+    - SelfShield (Not implemented | Casts a shield for yourself)
+    - Wooglet/Zhonya (Not implemented | Casts it if you get under a specified percent (later maybe before some spells will hit you))
+    - DebuffSlow (Not implemented | Casts Randuins if you get in range.)
+    - CleanseSelf (Cleanse cc spells from yourself which you defined.)
+    - ShieldBoost (Not implemented | )
+    - Mikael (Not implemented | Removes debuffs from allies.)
+  - AutoShield (Not implemented | Casts a shield if someone will get dmg.)
+  - AutoPot (Uses auto heal/mana pot (flask etc. included) when a specified percent is reached.)
 - Misc
-  - SkinChanger
-  - SafeMovement
+  - SkinChanger (Let's you change the ingame skin.)
+  - SafeMovement (Blocks movement packets, so other scripts can't spam them.)
   - AutoLevler
     - Priority Mode
-  - MoveToMouse
-  - SurrenderVote
+  - MoveToMouse (Auto moves to the mouse if activated)
+  - SurrenderVote (Shows only in your team who voted yes or no)
 
 
 ![Alt text](http://puu.sh/bxW5r/49bb130620.jpg "")
