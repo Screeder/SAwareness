@@ -235,6 +235,24 @@
   <data name="AuraofDespair" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SPELLS\AuraofDespair.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="Azir" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CHAMP\Azir.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="AzirE" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\AzirE.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="AzirQ" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\AzirQ.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="AzirR" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\AzirR.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="AzirW" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\AzirW.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Azir_Passive" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PASSIVE\Azir_Passive.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="BandageToss" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SPELLS\BandageToss.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -726,6 +744,9 @@
   </data>
   <data name="GnarW" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SPELLS\GnarW.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Gnar_Passive" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PASSIVE\Gnar_Passive.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Gragas" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\CHAMP\Gragas.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -1883,45 +1904,84 @@
     <value>..\Resources\SPELLS\StaticField.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="SummonerBarrier" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\SummonerBarrier.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SummonerBarrier1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SUMMONERS\SummonerBarrier.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="SummonerBoost" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\SummonerBoost.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SummonerBoost1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SUMMONERS\SummonerBoost.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="SummonerClairvoyance" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\SummonerClairvoyance.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SummonerClairvoyance1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SUMMONERS\SummonerClairvoyance.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="SummonerDot" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\SummonerDot.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SummonerDot1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SUMMONERS\SummonerDot.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="SummonerExhaust" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\SummonerExhaust.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SummonerExhaust1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SUMMONERS\SummonerExhaust.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="SummonerFlash" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\SummonerFlash.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SummonerFlash1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SUMMONERS\SummonerFlash.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="SummonerHaste" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\SummonerHaste.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SummonerHaste1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SUMMONERS\SummonerHaste.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="SummonerHeal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\SummonerHeal.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SummonerHeal1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SUMMONERS\SummonerHeal.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="SummonerMana" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\SummonerMana.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SummonerMana1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SUMMONERS\SummonerMana.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="SummonerOdinGarrison" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\SummonerOdinGarrison.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SummonerOdinGarrison1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SUMMONERS\SummonerOdinGarrison.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="SummonerRevive" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\SummonerRevive.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SummonerRevive1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SUMMONERS\SummonerRevive.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="SummonerSmite" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\SummonerSmite.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SummonerSmite1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SUMMONERS\SummonerSmite.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="SummonerSpellTint" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SUMMONERS\SummonerSpellTint.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="SummonerTeleport" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\SummonerTeleport.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SummonerTeleport1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SUMMONERS\SummonerTeleport.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="SummonerTint" type="System.Resources.ResXFileRef, System.Windows.Forms">

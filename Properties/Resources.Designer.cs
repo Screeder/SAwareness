@@ -2983,6 +2983,66 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Azir {
+            get {
+                object obj = ResourceManager.GetObject("Azir", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Azir_Passive {
+            get {
+                object obj = ResourceManager.GetObject("Azir_Passive", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] AzirE {
+            get {
+                object obj = ResourceManager.GetObject("AzirE", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] AzirQ {
+            get {
+                object obj = ResourceManager.GetObject("AzirQ", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] AzirR {
+            get {
+                object obj = ResourceManager.GetObject("AzirR", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] AzirW {
+            get {
+                object obj = ResourceManager.GetObject("AzirW", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] BandageToss {
             get {
                 object obj = ResourceManager.GetObject("BandageToss", resourceCulture);
@@ -4576,6 +4636,16 @@ namespace SAwareness.Properties {
         internal static byte[] Gnar {
             get {
                 object obj = ResourceManager.GetObject("Gnar", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Gnar_Passive {
+            get {
+                object obj = ResourceManager.GetObject("Gnar_Passive", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -8483,9 +8553,29 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] SummonerBarrier1 {
+            get {
+                object obj = ResourceManager.GetObject("SummonerBarrier1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] SummonerBoost {
             get {
                 object obj = ResourceManager.GetObject("SummonerBoost", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] SummonerBoost1 {
+            get {
+                object obj = ResourceManager.GetObject("SummonerBoost1", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -8503,9 +8593,29 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] SummonerClairvoyance1 {
+            get {
+                object obj = ResourceManager.GetObject("SummonerClairvoyance1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] SummonerDot {
             get {
                 object obj = ResourceManager.GetObject("SummonerDot", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] SummonerDot1 {
+            get {
+                object obj = ResourceManager.GetObject("SummonerDot1", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -8523,9 +8633,29 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] SummonerExhaust1 {
+            get {
+                object obj = ResourceManager.GetObject("SummonerExhaust1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] SummonerFlash {
             get {
                 object obj = ResourceManager.GetObject("SummonerFlash", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] SummonerFlash1 {
+            get {
+                object obj = ResourceManager.GetObject("SummonerFlash1", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -8543,9 +8673,29 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] SummonerHaste1 {
+            get {
+                object obj = ResourceManager.GetObject("SummonerHaste1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] SummonerHeal {
             get {
                 object obj = ResourceManager.GetObject("SummonerHeal", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] SummonerHeal1 {
+            get {
+                object obj = ResourceManager.GetObject("SummonerHeal1", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -8563,9 +8713,29 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] SummonerMana1 {
+            get {
+                object obj = ResourceManager.GetObject("SummonerMana1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] SummonerOdinGarrison {
             get {
                 object obj = ResourceManager.GetObject("SummonerOdinGarrison", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] SummonerOdinGarrison1 {
+            get {
+                object obj = ResourceManager.GetObject("SummonerOdinGarrison1", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -8583,9 +8753,29 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] SummonerRevive1 {
+            get {
+                object obj = ResourceManager.GetObject("SummonerRevive1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] SummonerSmite {
             get {
                 object obj = ResourceManager.GetObject("SummonerSmite", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] SummonerSmite1 {
+            get {
+                object obj = ResourceManager.GetObject("SummonerSmite1", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -8606,6 +8796,16 @@ namespace SAwareness.Properties {
         internal static byte[] SummonerTeleport {
             get {
                 object obj = ResourceManager.GetObject("SummonerTeleport", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] SummonerTeleport1 {
+            get {
+                object obj = ResourceManager.GetObject("SummonerTeleport1", resourceCulture);
                 return ((byte[])(obj));
             }
         }
