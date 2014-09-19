@@ -10,6 +10,9 @@ namespace SAwareness
 {
     class Ranges
     {
+        
+        int mode = -1;
+        
         public Ranges()
         {
             Drawing.OnDraw += Drawing_OnDraw;
@@ -29,6 +32,7 @@ namespace SAwareness
         {
             if (!IsActive())
                 return;
+            mode = Menu.Range.GetMenuItem("SAwarenessRangesMode").GetValue<StringList>();
             DrawExperienceRanges();
             DrawAttackRanges();
             DrawTurretRanges();
@@ -42,13 +46,29 @@ namespace SAwareness
         {
             if (!Menu.ExperienceRange.GetActive())
                 return;
-            Utility.DrawCircle(ObjectManager.Player.Position, 1400, System.Drawing.Color.LawnGreen);
-            foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+            switch (mode.SelectedIndex)
             {
-                if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
-                {
-                    Utility.DrawCircle(enemy.Position, enemy.AttackRange, System.Drawing.Color.IndianRed);
-                }
+                case 0:
+                    Utility.DrawCircle(ObjectManager.Player.Position, 1400, System.Drawing.Color.LawnGreen);
+                break;
+                case 1:
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (!enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
+                        {
+                            Utility.DrawCircle(enemy.Position, 1400, System.Drawing.Color.IndianRed);
+                        }
+                    }
+                break;
+                case 2:
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
+                        {
+                            Utility.DrawCircle(enemy.Position, 1400, System.Drawing.Color.IndianRed);
+                        }
+                    }
+                break;
             }
         }
 
@@ -56,13 +76,29 @@ namespace SAwareness
         {
             if (!Menu.AttackRange.GetActive())
                 return;
-            Utility.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.AttackRange, System.Drawing.Color.LawnGreen);
-            foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+            switch (mode.SelectedIndex)
             {
-                if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
-                {
-                    Utility.DrawCircle(enemy.Position, enemy.AttackRange, System.Drawing.Color.IndianRed);
-                }
+                case 0:
+                    Utility.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.AttackRange, System.Drawing.Color.LawnGreen);
+                break;
+                case 1:
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (!enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
+                        {
+                            Utility.DrawCircle(enemy.Position, enemy.AttackRange, System.Drawing.Color.IndianRed);
+                        }
+                    }
+                break;
+                case 2:
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
+                        {
+                            Utility.DrawCircle(enemy.Position, enemy.AttackRange, System.Drawing.Color.IndianRed);
+                        }
+                    }
+                break;
             }
         }
 
@@ -70,12 +106,27 @@ namespace SAwareness
         {
             if (!Menu.TowerRange.GetActive())
                 return;
-            foreach (Obj_AI_Turret Turret in ObjectManager.Get<Obj_AI_Turret>())
+            switch (mode.SelectedIndex)
             {
-                if (Turret.IsVisible && !Turret.IsDead && Turret.IsValid && Common.IsOnScreen(Turret.ServerPosition))
-                {
-                    Utility.DrawCircle(Turret.Position, 950f, Turret.IsEnemy ? System.Drawing.Color.DarkRed : System.Drawing.Color.LawnGreen);
-                }
+                case 0:
+                case 1:
+                    foreach (Obj_AI_Turret Turret in ObjectManager.Get<Obj_AI_Turret>())
+                    {
+                        if (Turret.IsVisible && !Turret.IsDead && !Turret.IsEnemy && Turret.IsValid && Common.IsOnScreen(Turret.ServerPosition))
+                        {
+                            Utility.DrawCircle(Turret.Position, 900f, System.Drawing.Color.LawnGreen);
+                        }
+                    }
+                break;
+                case 2:
+                    foreach (Obj_AI_Turret Turret in ObjectManager.Get<Obj_AI_Turret>())
+                    {
+                        if (Turret.IsVisible && !Turret.IsDead && Turret.IsEnemy && Turret.IsValid && Common.IsOnScreen(Turret.ServerPosition))
+                        {
+                            Utility.DrawCircle(Turret.Position, 900f, System.Drawing.Color.DarkRed);
+                        }
+                    }
+                break;
             }
         }
 
@@ -83,13 +134,29 @@ namespace SAwareness
         {
             if (!Menu.SpellQRange.GetActive())
                 return;
-            Utility.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).SData.CastRange[0], System.Drawing.Color.LawnGreen);
-            foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+            switch (mode.SelectedIndex)
             {
-                if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
-                {
-                    Utility.DrawCircle(enemy.Position, enemy.Spellbook.GetSpell(SpellSlot.Q).SData.CastRange[0], System.Drawing.Color.IndianRed);
-                }
+                case 0:
+                    Utility.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).SData.CastRange[0], System.Drawing.Color.LawnGreen);
+                break;
+                case 1:
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (!enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
+                        {
+                            Utility.DrawCircle(enemy.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).SData.CastRange[0], System.Drawing.Color.IndianRed);
+                        }
+                    }
+                break;
+                case 2:
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
+                        {
+                            Utility.DrawCircle(enemy.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).SData.CastRange[0], System.Drawing.Color.IndianRed);
+                        }
+                    }
+                break;
             }
         }
 
@@ -97,13 +164,29 @@ namespace SAwareness
         {
             if (!Menu.SpellWRange.GetActive())
                 return;
-            Utility.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).SData.CastRange[0], System.Drawing.Color.LawnGreen);
-            foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+            switch (mode.SelectedIndex)
             {
-                if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
-                {
-                    Utility.DrawCircle(enemy.Position, enemy.Spellbook.GetSpell(SpellSlot.W).SData.CastRange[0], System.Drawing.Color.IndianRed);
-                }
+                case 0:
+                    Utility.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).SData.CastRange[0], System.Drawing.Color.LawnGreen);
+                break;
+                case 1:
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (!enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
+                        {
+                            Utility.DrawCircle(enemy.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).SData.CastRange[0], System.Drawing.Color.IndianRed);
+                        }
+                    }
+                break;
+                case 2:
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
+                        {
+                            Utility.DrawCircle(enemy.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).SData.CastRange[0], System.Drawing.Color.IndianRed);
+                        }
+                    }
+                break;
             }
         }
 
@@ -111,13 +194,29 @@ namespace SAwareness
         {
             if (!Menu.SpellERange.GetActive())
                 return;
-            Utility.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).SData.CastRange[0], System.Drawing.Color.LawnGreen);
-            foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+            switch (mode.SelectedIndex)
             {
-                if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
-                {
-                    Utility.DrawCircle(enemy.Position, enemy.Spellbook.GetSpell(SpellSlot.E).SData.CastRange[0], System.Drawing.Color.IndianRed);
-                }
+                case 0:
+                    Utility.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).SData.CastRange[0], System.Drawing.Color.LawnGreen);
+                break;
+                case 1:
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (!enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
+                        {
+                            Utility.DrawCircle(enemy.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).SData.CastRange[0], System.Drawing.Color.IndianRed);
+                        }
+                    }
+                break;
+                case 2:
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
+                        {
+                            Utility.DrawCircle(enemy.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).SData.CastRange[0], System.Drawing.Color.IndianRed);
+                        }
+                    }
+                break;
             }
         }
 
@@ -125,13 +224,29 @@ namespace SAwareness
         {
             if (!Menu.SpellRRange.GetActive())
                 return;
-            Utility.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).SData.CastRange[0], System.Drawing.Color.LawnGreen);
-            foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+            switch (mode.SelectedIndex)
             {
-                if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
-                {
-                    Utility.DrawCircle(enemy.Position, enemy.Spellbook.GetSpell(SpellSlot.R).SData.CastRange[0], System.Drawing.Color.IndianRed);
-                }
+                case 0:
+                    Utility.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).SData.CastRange[0], System.Drawing.Color.LawnGreen);
+                break;
+                case 1:
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (!enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
+                        {
+                            Utility.DrawCircle(enemy.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).SData.CastRange[0], System.Drawing.Color.IndianRed);
+                        }
+                    }
+                break;
+                case 2:
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
+                        {
+                            Utility.DrawCircle(enemy.Position, ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).SData.CastRange[0], System.Drawing.Color.IndianRed);
+                        }
+                    }
+                break;
             }
         }
     }
