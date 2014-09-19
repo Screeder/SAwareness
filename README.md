@@ -73,4 +73,4 @@ Includes the following functions:
   - SurrenderVote (Shows only in your team who voted yes or no)
 
 
-![Alt text](http://puu.sh/bxW5r/49bb130620.jpg "")
+![Alt text](http://puu.sh/bFyrv/2861422d57.jpg "")
