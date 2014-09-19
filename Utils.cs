@@ -246,9 +246,16 @@ namespace SAwareness
         //    }
         //}
 
-        public static void LoadTexture(String name, ref Texture texture)
+        public enum TextureType
         {
-            if (MyResources.ContainsKey(name.ToLower()))
+            Default,
+            Summoner,
+            Item
+        }
+
+        public static void LoadTexture(String name, ref Texture texture, TextureType type)
+        {
+            if ((type == TextureType.Default || type == TextureType.Summoner) && MyResources.ContainsKey(name.ToLower()))
             {
                 try
                 {
@@ -259,11 +266,22 @@ namespace SAwareness
                     Console.WriteLine("SAwarness: Couldn't load texture: " + name + "\n Ex: " + ex);
                 }
             }
-            else if (MyResources.ContainsKey(name.ToLower().Remove(name.Length - 1)))
+            else if (type == TextureType.Summoner && MyResources.ContainsKey(name.ToLower().Remove(name.Length - 1)))
             {
                 try
                 {
                     texture = Texture.FromMemory(Drawing.Direct3DDevice, MyResources[name.ToLower().Remove(name.Length - 1)]);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("SAwarness: Couldn't load texture: " + name + "\n Ex: " + ex);
+                }
+            }
+            else if (type == TextureType.Item && MyResources.ContainsKey(name.ToLower().Insert(0,"_")))
+            {
+                try
+                {
+                    texture = Texture.FromMemory(Drawing.Direct3DDevice, MyResources[name.ToLower().Insert(0, "_")]);
                 }
                 catch (Exception ex)
                 {
