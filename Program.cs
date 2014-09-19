@@ -260,6 +260,7 @@ namespace SAwareness
                 Menu.SpellERange.MenuItems.Add(Menu.SpellERange.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSpellERangeActive", "Active").SetValue(false)));
                 Menu.SpellRRange.Menu = Menu.Range.Menu.AddSubMenu(new LeagueSharp.Common.Menu("SpellRRange", "SAwarenessSpellRRange"));
                 Menu.SpellRRange.MenuItems.Add(Menu.SpellRRange.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSpellRRangeActive", "Active").SetValue(false)));
+                Menu.Range.MenuItems.Add(Menu.Range.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessRangesMode", "Mode").SetValue(new StringList(new string[] { "Ally", "Enemy", "Both" }))));
                 Menu.Range.MenuItems.Add(Menu.Range.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessRangesActive", "Active").SetValue(false)));
 
                 Menu.Tracker.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Tracker", "SAwarenessTracker"));
