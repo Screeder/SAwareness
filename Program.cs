@@ -435,9 +435,11 @@ namespace SAwareness
                 Menu.ActivatorDefensiveWoogletZhonya.MenuItems.Add(Menu.ActivatorDefensiveWoogletZhonya.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorDefensiveWoogletZhonya", "Zhonya").SetValue(false)));
                 Menu.ActivatorDefensiveWoogletZhonya.MenuItems.Add(Menu.ActivatorDefensiveWoogletZhonya.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorDefensiveWoogletZhonyaActive", "Active").SetValue(false)));
 
-                Menu.ActivatorDefensiveDebuffSlow.Menu = Menu.ActivatorDefensive.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Slow Enemy | Not implemented", "SAwarenessActivatorDefensiveDebuffSlow"));
+                Menu.ActivatorDefensiveDebuffSlow.Menu = Menu.ActivatorDefensive.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Slow Enemy", "SAwarenessActivatorDefensiveDebuffSlow"));
                 Menu.ActivatorDefensiveDebuffSlow.MenuItems.Add(Menu.ActivatorDefensiveDebuffSlow.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorDefensiveDebuffSlowRanduins", "Randuins Omen").SetValue(false)));
-                Menu.ActivatorDefensiveDebuffSlow.MenuItems.Add(Menu.ActivatorDefensiveDebuffSlow.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorDefensiveDebuffSlowConfigRanduins", "Enemy Count").SetValue(new Slider(2, 5, 1))));
+                Menu.ActivatorDefensiveDebuffSlow.MenuItems.Add(Menu.ActivatorDefensiveDebuffSlow.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorDefensiveDebuffSlowConfigRanduins", "Enemy Count Randuins").SetValue(new Slider(2, 5, 1))));
+                Menu.ActivatorDefensiveDebuffSlow.MenuItems.Add(Menu.ActivatorDefensiveDebuffSlow.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorDefensiveDebuffSlowFrostQueensClaim", "Frost Queens Claim").SetValue(false)));
+                Menu.ActivatorDefensiveDebuffSlow.MenuItems.Add(Menu.ActivatorDefensiveDebuffSlow.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorDefensiveDebuffSlowConfigFrostQueensClaim", "Enemy Count FQC").SetValue(new Slider(2, 5, 1))));
                 Menu.ActivatorDefensiveDebuffSlow.MenuItems.Add(Menu.ActivatorDefensiveDebuffSlow.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorDefensiveDebuffSlowActive", "Active").SetValue(false)));
 
                 Menu.ActivatorDefensiveCleanseSelf.Menu = Menu.ActivatorDefensive.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Cleanse me", "SAwarenessActivatorDefensiveCleanseSelf"));

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -79,6 +80,8 @@ namespace SAwareness
             UseQSS();
             UseMS();
             UseDB();
+            UseRanduins();
+            UseFrostQueensClaim();
         }
 
         private void UseQSS()
@@ -144,6 +147,79 @@ namespace SAwareness
                 {
                     db.Cast();
                     LastItemCleanseUse = Game.Time;
+                }
+            }
+        }
+
+        private void UseRanduins()
+        {
+            if (!Menu.ActivatorDefensiveDebuffSlow.GetActive())
+                return;
+
+            Obj_AI_Hero hero = GetHighestAdEnemy();
+            int count = Utility.CountEnemysInRange(400);
+            if (hero == null || !hero.IsValid || hero.IsDead)
+                return;
+
+            if (Menu.ActivatorDefensiveDebuffSlow.GetMenuItem("SAwarenessActivatorDefensiveDebuffSlowRanduins").GetValue<bool>() &&
+                Menu.ActivatorDefensiveDebuffSlow.GetMenuItem("SAwarenessActivatorDefensiveDebuffSlowConfigRanduins").GetValue<Slider>().Value >= count &&
+                ImFleeing(hero) || IsFleeing(hero) && !ImFleeing(hero))
+            {
+                Items.Item randuins = new Items.Item(3143, 0);
+                if (randuins.IsReady())
+                {
+                    randuins.Cast();
+                }
+            }
+        }
+
+        private void UseFrostQueensClaim()
+        {
+            if (!Menu.ActivatorDefensiveDebuffSlow.GetActive())
+                return;
+
+            Obj_AI_Hero enemy = null;
+            int count = 0;
+            int nCount = 0;
+
+            foreach (var hero1 in ObjectManager.Get<Obj_AI_Hero>())
+            {
+                if (hero1.IsEnemy && hero1.IsVisible)
+                {
+                    if (hero1.ServerPosition.Distance(ObjectManager.Player.ServerPosition) < 750)
+                    {
+                        foreach (var hero2 in ObjectManager.Get<Obj_AI_Hero>())
+                        {
+                            if (hero2.IsEnemy && hero2.IsVisible)
+                            {
+                                if (hero2.ServerPosition.Distance(hero1.ServerPosition) < 200)
+                                {
+                                    count++;
+                                }
+                            }
+                        }
+                        if (count == 0)
+                        {
+                            enemy = hero1;
+                        }
+                        else if (nCount < count)
+                        {
+                            nCount = count;
+                            enemy = hero1;
+                        }
+                    }
+                }
+            }
+
+            if (enemy == null || !enemy.IsValid || enemy.IsDead || Menu.ActivatorDefensiveDebuffSlow.GetMenuItem("SAwarenessActivatorDefensiveDebuffSlowConfigFrostQueensClaim").GetValue<Slider>().Value > nCount)
+                return;
+
+            if (Menu.ActivatorDefensiveDebuffSlow.GetMenuItem("SAwarenessActivatorDefensiveDebuffSlowFrostQueensClaim").GetValue<bool>())
+            {
+                Items.Item fqc = new Items.Item(3092, 850);
+                if (fqc.IsReady())
+                {
+                    fqc.Cast(enemy.ServerPosition);
                 }
             }
         }
