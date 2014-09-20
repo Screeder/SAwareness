@@ -11,7 +11,8 @@ namespace SAwareness
 {
     class AutoSmite
     {
-        String[] monsters = { "GreatWraith", "Wraith", "AncientGolem", "GiantWolf", "LizardElder", "Golem", "Worm", "Dragon", "Wight" };
+        private String[] monsters = { "GreatWraith", "Wraith", "AncientGolem", "GiantWolf", "LizardElder", "Golem", "Worm", "Dragon", "Wight", "TT_Spiderboss" };
+        private String[] usefulMonsters = { "AncientGolem", "LizardElder", "Worm", "Dragon", "TT_Spiderboss" };
 
         public AutoSmite()
         {
@@ -37,7 +38,14 @@ namespace SAwareness
                         if (minion.SkinName == monster && minion.IsVisible)
                         {
                             Vector2 pos = Drawing.WorldToScreen(minion.ServerPosition);
-                            Drawing.DrawText(pos[0], pos[1], System.Drawing.Color.SkyBlue, minion.Health != 0 ? (((int)minion.Health - smiteDamage)).ToString() : "");
+                            String health = minion.Health != 0 ? (((int) minion.Health - smiteDamage)).ToString() : "";
+                            health =
+                                !Menu.AutoSmite.GetMenuItem("SAwarenessAutoSmiteKeyActive")
+                                    .GetValue<KeyBind>()
+                                    .Active
+                                    ? health + " Disabled"
+                                    : health;
+                            Drawing.DrawText(pos[0], pos[1], System.Drawing.Color.SkyBlue, health);
                         }
                     }
                 }
@@ -51,7 +59,7 @@ namespace SAwareness
 
         void Game_OnGameUpdate(EventArgs args)
         {
-            if (!IsActive())
+            if (!IsActive() || !Menu.AutoSmite.GetMenuItem("SAwarenessAutoSmiteKeyActive").GetValue<KeyBind>().Active)
                 return;
             foreach (var minion in ObjectManager.Get<Obj_AI_Minion>())
             {
@@ -61,25 +69,43 @@ namespace SAwareness
                     int smiteDamage = GetSmiteDamage();
                     if (minion.Health <= smiteDamage && minion.Health > 0)
                     {
-                        foreach (var monster in monsters)
+                        if (!Menu.AutoSmite.GetMenuItem("SAwarenessAutoSmiteSmallCampsActive").GetValue<bool>())
                         {
-                            if (minion.SkinName == monster && minion.IsVisible)
+                            foreach (var monster in usefulMonsters)
                             {
-                                SpellSlot spellSlot = GetSmiteSlot();
-                                int slot = -1;
-                                if (spellSlot == SpellSlot.Q)
-                                    slot = 64;
-                                else if (spellSlot == SpellSlot.W)
-                                    slot = 65;
-                                if (slot != -1)
+                                if (minion.SkinName == monster && minion.IsVisible)
                                 {
-                                    GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(minion.NetworkId, (SpellSlot)slot));
-                                    gPacketT.Send();
+                                    SmiteIt(minion.NetworkId);
                                 }
                             }
                         }
+                        else
+                        {
+                            foreach (var monster in monsters)
+                            {
+                                if (minion.SkinName == monster && minion.IsVisible)
+                                {
+                                    SmiteIt(minion.NetworkId);
+                                }
+                            }
+                        }                        
                     }
                 }
+            }
+        }
+
+        private void SmiteIt(int networkId)
+        {
+            SpellSlot spellSlot = GetSmiteSlot();
+            int slot = -1;
+            if (spellSlot == SpellSlot.Q)
+                slot = 64;
+            else if (spellSlot == SpellSlot.W)
+                slot = 65;
+            if (slot != -1)
+            {
+                GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(networkId, (SpellSlot)slot));
+                gPacketT.Send();
             }
         }
 

@@ -3254,6 +3254,12 @@
   <ItemGroup>
     <None Include="Resources\SPELLS\AzirW.dds" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\Swipe.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\Pounce.dds" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
