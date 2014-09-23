@@ -9,9 +9,9 @@ using LeagueSharp.Common;
 
 namespace SAwareness
 {
-    class Recall
-    {
 
+    class RecallDetector
+    {
         public List<RecallInfo> _recalls = new List<RecallInfo>();
 
         public class RecallInfo
@@ -27,7 +27,7 @@ namespace SAwareness
             }
         }
 
-        public Recall()
+        public RecallDetector()
         {
             foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>())
             {
@@ -39,7 +39,7 @@ namespace SAwareness
             Game.OnGameProcessPacket += Game_OnGameProcessPacket;
         }
 
-        ~Recall()
+        ~RecallDetector()
         {
             Game.OnGameProcessPacket -= Game_OnGameProcessPacket;
         }
@@ -49,7 +49,7 @@ namespace SAwareness
             return Menu.Detector.GetActive() && Menu.RecallDetector.GetActive();
         }
 
-        void Game_OnGameProcessPacket(GamePacketEventArgs args) //TODO: Check for Packet id
+        void Game_OnGameProcessPacket(GamePacketEventArgs args)
         {
             if (!IsActive())
                 return;

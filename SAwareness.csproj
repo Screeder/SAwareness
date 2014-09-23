@@ -74,6 +74,7 @@
     <Compile Include="Detector.cs" />
     <Compile Include="Ganks.cs" />
     <Compile Include="Health.cs" />
+    <Compile Include="Misc.cs" />
     <Compile Include="MoveToMouse.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

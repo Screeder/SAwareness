@@ -1556,7 +1556,7 @@ namespace SAwareness
             return (percent <= 0 || Single.IsNaN(percent) ? 0 : percent / 100);
         }
 
-        float CalcRecallBar(Recall.RecallInfo recall)
+        float CalcRecallBar(RecallDetector.RecallInfo recall)
         {
             float maxTime = (recall.Recall.Duration / 1000);
             float percent = (100 / maxTime * (Game.Time - recall.StartTime));
@@ -1605,15 +1605,15 @@ namespace SAwareness
                 SumF = new Font(Drawing.Direct3DDevice, font);
         }
 
-        Recall.RecallInfo GetRecall(int networkId)
+        RecallDetector.RecallInfo GetRecall(int networkId)
         {
             StringList t = Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorMode").GetValue<StringList>();
             if (t.SelectedIndex == 1 || t.SelectedIndex == 2)
             {
-                Recall recall = (Recall)Menu.RecallDetector.Item;
-                if (recall == null)
+                RecallDetector recallDetector = (RecallDetector)Menu.RecallDetector.Item;
+                if (recallDetector == null)
                     return null;
-                foreach (var info in recall._recalls)
+                foreach (var info in recallDetector._recalls)
                 {
                     if (info.NetworkId == networkId)
                     {
@@ -1765,7 +1765,7 @@ namespace SAwareness
                         }
                         if (Menu.RecallDetector.GetActive())
                         {
-                            Recall.RecallInfo info = GetRecall(hero.Key.NetworkId);
+                            RecallDetector.RecallInfo info = GetRecall(hero.Key.NetworkId);
                             if (info != null && info.Recall.Duration != null)
                             {
                                 var percentRecall = CalcRecallBar(info);
@@ -1853,7 +1853,7 @@ namespace SAwareness
                         }
                         if (Menu.RecallDetector.GetActive())
                         {
-                            Recall.RecallInfo info = GetRecall(hero.Key.NetworkId);
+                            RecallDetector.RecallInfo info = GetRecall(hero.Key.NetworkId);
                             if (info != null && info.StartTime != 0)
                             {
                                 float time = Game.Time + info.Recall.Duration / 1000 - info.StartTime;
@@ -2221,15 +2221,15 @@ namespace SAwareness
             return true;
         }
 
-        Recall.RecallInfo GetRecall(int networkId)
+        RecallDetector.RecallInfo GetRecall(int networkId)
         {
             StringList t = Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorMode").GetValue<StringList>();
             if (t.SelectedIndex == 1 || t.SelectedIndex == 2)
             {
-                Recall recall = (Recall)Menu.RecallDetector.Item;
-                if (recall == null)
+                RecallDetector recallDetector = (RecallDetector)Menu.RecallDetector.Item;
+                if (recallDetector == null)
                     return null;
-                foreach (var info in recall._recalls)
+                foreach (var info in recallDetector._recalls)
                 {
                     if (info.NetworkId == networkId)
                     {
@@ -2268,7 +2268,7 @@ namespace SAwareness
                 {
                     if (Menu.RecallDetector.GetActive())
                     {
-                        Recall.RecallInfo info = GetRecall(enemy.Key.NetworkId);
+                        RecallDetector.RecallInfo info = GetRecall(enemy.Key.NetworkId);
                         if (info != null && info.StartTime != 0)
                         {
                             float time = Game.Time + info.Recall.Duration/1000 - info.StartTime;

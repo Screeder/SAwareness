@@ -152,7 +152,7 @@ namespace SAwareness
         public static MenuItemSettings DestinationTracker = new MenuItemSettings(typeof(SAwareness.DestinationTracker));  //Work & Needs testing
         public static MenuItemSettings Detector = new MenuItemSettings();
         public static MenuItemSettings VisionDetector = new MenuItemSettings(typeof(SAwareness.HiddenObject)); //Works - OnProcessSpell bugged
-        public static MenuItemSettings RecallDetector = new MenuItemSettings(typeof(SAwareness.Recall)); //Works
+        public static MenuItemSettings RecallDetector = new MenuItemSettings(typeof(SAwareness.RecallDetector)); //Works
         public static MenuItemSettings Range = new MenuItemSettings(typeof(SAwareness.Ranges)); //Many ranges are bugged. Waiting for SpellLib
         public static MenuItemSettings TowerRange = new MenuItemSettings();
         public static MenuItemSettings ExperienceRange = new MenuItemSettings();
@@ -178,6 +178,8 @@ namespace SAwareness
         public static MenuItemSettings Misc = new MenuItemSettings();
         public static MenuItemSettings MoveToMouse = new MenuItemSettings(typeof(SAwareness.MoveToMouse));
         public static MenuItemSettings SurrenderVote = new MenuItemSettings(typeof(SAwareness.SurrenderVote));
+        public static MenuItemSettings AutoLatern = new MenuItemSettings(typeof(SAwareness.AutoLatern));
+        public static MenuItemSettings DisconnectDetector = new MenuItemSettings(typeof(SAwareness.DisconnectDetector));          
         public static MenuItemSettings Activator = new MenuItemSettings(typeof(SAwareness.Activator));
         public static MenuItemSettings ActivatorAutoSummonerSpell = new MenuItemSettings();
         public static MenuItemSettings ActivatorAutoSummonerSpellIgnite = new MenuItemSettings();
@@ -507,9 +509,14 @@ namespace SAwareness
                 Menu.SurrenderVote.Menu = Menu.Misc.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Surrender Vote", "SAwarenessSurrenderVote"));
                 Menu.SurrenderVote.MenuItems.Add(Menu.SurrenderVote.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSurrenderVoteChatChoice", "Chat Choice").SetValue(new StringList(new string[] { "None", "Local", "Server" }))));
                 Menu.SurrenderVote.MenuItems.Add(Menu.SurrenderVote.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSurrenderVoteActive", "Active").SetValue(false)));
+                Menu.AutoLatern.Menu = Menu.Misc.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Auto Latern", "SAwarenessAutoLatern"));
+                Menu.AutoLatern.MenuItems.Add(Menu.AutoLatern.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoLaternKey", "Key").SetValue(new KeyBind(84, KeyBindType.Press))));
+                Menu.AutoLatern.MenuItems.Add(Menu.AutoLatern.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoLaternActive", "Active").SetValue(false)));
+                Menu.DisconnectDetector.Menu = Menu.Misc.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Disconnect Detector", "SAwarenessDisconnectDetector"));
+                Menu.DisconnectDetector.MenuItems.Add(Menu.DisconnectDetector.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessDisconnectDetectorChatChoice", "Chat Choice").SetValue(new StringList(new string[] { "None", "Local", "Server" }))));
+                Menu.DisconnectDetector.MenuItems.Add(Menu.DisconnectDetector.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessDisconnectDetectorActive", "Active").SetValue(false)));
 
-
-                menu.AddItem(new LeagueSharp.Common.MenuItem("By Screeder", "By Screeder V0.82"));
+                menu.AddItem(new LeagueSharp.Common.MenuItem("By Screeder", "By Screeder V0.84"));
                 menu.AddToMainMenu();
             }
             catch (Exception ex)
