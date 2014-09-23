@@ -295,6 +295,8 @@ namespace SAwareness
                 tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerAllyTrackerMode", "Mode").SetValue(new StringList(new string[] { "Side", "Unit", "Both" }))));
                 tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerAllyTrackerHeadMode", "Over Head Mode").SetValue(new StringList(new string[] { "Small", "Big" }))));
                 tempSettings.MenuItems.Add(tempSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerAllyTrackerActive", "Active").SetValue(false)));
+                //Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerCameraMoveActive", "Camera move active").SetValue(false)));
+                Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerPingActive", "Ping active").SetValue(false)));
                 Menu.UiTracker.MenuItems.Add(Menu.UiTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUITrackerActive", "Active").SetValue(false)));
                 Menu.UimTracker.Menu = Menu.Tracker.Menu.AddSubMenu(new LeagueSharp.Common.Menu("UIMTracker", "SAwarenessUIMTracker"));
                 Menu.UimTracker.MenuItems.Add(Menu.UimTracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessUIMTrackerScale", "Scale").SetValue(new Slider(100, 100, 0))));

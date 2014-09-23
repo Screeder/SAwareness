@@ -1041,6 +1041,11 @@ namespace SAwareness
                     if (Common.IsInside(cursorPos, enemy.Value.SGui.Champ.SizeSideBar, _champSize.Width, _champSize.Height))
                     {
                         //TODO: Add Camera move
+                        if (Menu.UiTracker.GetMenuItem("SAwarenessUITrackerPingActive").GetValue<bool>())
+                        {
+                            Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(enemy.Key.ServerPosition.X,
+                                enemy.Key.ServerPosition.Y, 0, 0, Packet.PingType.Normal)).Process();
+                        }
                     }
                 }
             }
