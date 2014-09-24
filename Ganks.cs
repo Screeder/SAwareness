@@ -183,47 +183,60 @@ namespace SAwareness
             }
         }
 
+        private void ChatAndPing(KeyValuePair<Obj_AI_Hero, Time> enemy)
+        {
+            Obj_AI_Hero hero = enemy.Key;
+            var pingType = Packet.PingType.Normal;
+            var t = Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorPingType").GetValue<StringList>();
+            pingType = (Packet.PingType)t.SelectedIndex + 1;
+            Vector3 pos = hero.ServerPosition;
+            GamePacket gPacketT;
+            for (int i = 0;
+                i < Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorPingTimes").GetValue<Slider>().Value;
+                i++)
+            {
+                if (Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorLocalPing").GetValue<bool>())
+                {
+                    gPacketT = Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0, pingType));
+                    gPacketT.Process();
+                }
+                else
+                {
+                    gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos[0], pos[1], 0, pingType));
+                    gPacketT.Send();
+                }
+            }
+
+            if (Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorChatChoice").GetValue<StringList>().SelectedIndex == 1)
+            {
+                Game.PrintChat("Gank: {0}", hero.ChampionName);
+            }
+            else if (Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorChatChoice").GetValue<StringList>().SelectedIndex == 2)
+            {
+                Game.Say("Gank: {0}", hero.ChampionName);
+            }
+            //TODO: Check for Teleport etc.                    
+            
+        }
+
         private void HandleGank(KeyValuePair<Obj_AI_Hero, Time> enemy)
         {
             Obj_AI_Hero hero = enemy.Key;
             if (enemy.Value.InvisibleTime > 5)
             {
-                if (!enemy.Value.Called && hero.IsValid && !hero.IsDead && hero.IsVisible &&
+                if (!enemy.Value.CalledInvisible && hero.IsValid && !hero.IsDead && hero.IsVisible &&
                     Vector3.Distance(ObjectManager.Player.ServerPosition, hero.ServerPosition) <
                     Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorTrackRange").GetValue<Slider>().Value)
                 {
-                    var pingType = Packet.PingType.Normal;
-                    var t = Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorPingType").GetValue<StringList>();
-                    pingType = (Packet.PingType) t.SelectedIndex + 1;
-                    Vector3 pos = hero.ServerPosition;
-                    GamePacket gPacketT;
-                    for (int i = 0;
-                        i < Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorPingTimes").GetValue<Slider>().Value;
-                        i++)
-                    {
-                        if (Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorLocalPing").GetValue<bool>())
-                        {
-                            gPacketT = Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0, pingType));
-                            gPacketT.Process();
-                        }
-                        else
-                        {
-                            gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos[0], pos[1], 0, pingType));
-                            gPacketT.Send();
-                        }
-                    }
-
-                    if (Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorChatChoice").GetValue<StringList>().SelectedIndex == 1)
-                    {
-                        Game.PrintChat("Gank: {0}", hero.ChampionName);
-                    }
-                    else if (Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorChatChoice").GetValue<StringList>().SelectedIndex == 2)
-                    {
-                        Game.Say("Gank: {0}", hero.ChampionName);
-                    }
-                    //TODO: Check for Teleport etc.                    
-                    enemy.Value.Called = true;
+                    ChatAndPing(enemy);
+                    enemy.Value.CalledInvisible = true;
                 }
+            }
+            if (!enemy.Value.CalledVisible && hero.IsValid && !hero.IsDead && enemy.Key.GetWaypoints().Last().Distance(ObjectManager.Player.ServerPosition) <
+                Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorTrackRange").GetValue<Slider>().Value)
+            {
+                ChatAndPing(enemy);
+                enemy.Value.CalledVisible = true;
             }
         }
 
@@ -237,7 +250,7 @@ namespace SAwareness
                 HandleGank(enemy);
                 Enemies[hero].InvisibleTime = 0;
                 Enemies[hero].VisibleTime = (int) Game.Time;
-                enemy.Value.Called = false;
+                enemy.Value.CalledInvisible = false;
             }
             else
             {
@@ -249,12 +262,14 @@ namespace SAwareness
                 {
                     Enemies[hero].InvisibleTime = 0;
                 }
+                enemy.Value.CalledVisible = false;
             }
         }
 
         public class Time
         {
-            public bool Called;
+            public bool CalledInvisible;
+            public bool CalledVisible;
             public int InvisibleTime;
             public int VisibleTime;
         }
