@@ -142,13 +142,13 @@ namespace SAwareness
 
         private void DrawTurrentHealth() //TODO: Draw HP above BarPos
         {
-            if (!IsActive())
+            if (!IsActive() || !drawActive)
                 return;
             if (!Menu.TowerHealth.GetActive())
                 return;
             foreach (Obj_AI_Turret turret in ObjectManager.Get<Obj_AI_Turret>())
             {
-                if (!turret.IsDead && turret.IsValid && turret.Health != 9999)
+                if (!turret.IsDead && turret.IsValid && turret.Health != 9999 && ((turret.Health / turret.MaxHealth) * 100) != 100)
                 {
                     Vector2 pos = Drawing.WorldToMinimap(turret.Position);
                     int health = 0;

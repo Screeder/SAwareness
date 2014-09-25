@@ -387,6 +387,8 @@ namespace SAwareness
             DrawText(font, text, size.Width, size.Height, color);
         }
 
+
+        //TODO: Too many drawtext for shadowtext, need another method fps issues
         public static void DrawText(Font font, String text, int posX, int posY, Color color)
         {
             if (font == null || font.IsDisposed)
@@ -394,10 +396,10 @@ namespace SAwareness
                 throw new SharpDXException("");
             }
             Rectangle rec = font.MeasureText(null, text, FontDrawFlags.Center);
-            font.DrawText(null, text, posX + 1 + rec.X, posY, Color.Black);
+            //font.DrawText(null, text, posX + 1 + rec.X, posY, Color.Black);
             font.DrawText(null, text, posX + 1 + rec.X, posY + 1, Color.Black);
             font.DrawText(null, text, posX + rec.X, posY + 1, Color.Black);
-            font.DrawText(null, text, posX - 1 + rec.X, posY, Color.Black);
+            //font.DrawText(null, text, posX - 1 + rec.X, posY, Color.Black);
             font.DrawText(null, text, posX - 1 + rec.X, posY - 1, Color.Black);
             font.DrawText(null, text, posX + rec.X, posY - 1, Color.Black);
             font.DrawText(null, text, posX + rec.X, posY, color);
@@ -420,7 +422,7 @@ namespace SAwareness
                 sprite.Transform = nMatrix;
                 Matrix mT = Drawing.Direct3DDevice.GetTransform(TransformState.World);
 
-                InternalRender(mT.TranslationVector);
+                //InternalRender(mT.TranslationVector);
                 if (Common.IsOnScreen(new Vector2(size.Width, size.Height)))
                     sprite.Draw(texture, color);
                 sprite.Transform = matrix;

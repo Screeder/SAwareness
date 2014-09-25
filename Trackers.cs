@@ -2266,7 +2266,7 @@ namespace SAwareness
                     Size mPos = new Size((int) (serverPos[0] - 32 * 0.3f), (int) (serverPos[1] - 32 * 0.3f));
                     DirectXDrawer.DrawSprite(S, enemy.Value,
                         mPos.ScaleSize(percentScale, new Vector2(mPos.Width, mPos.Height)),
-                        new[] {0.3f*percentScale, 0.3f*percentScale});
+                        new[] { 0.3f * percentScale, 0.3f * percentScale });
                 }
                 S.End();
                 foreach (var enemy in Enemies)
