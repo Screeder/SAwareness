@@ -392,7 +392,6 @@ namespace SAwareness
             if (font == null || font.IsDisposed)
             {
                 throw new SharpDXException("");
-                return;
             }
             Rectangle rec = font.MeasureText(null, text, FontDrawFlags.Center);
             font.DrawText(null, text, posX + 1 + rec.X, posY, Color.Black);

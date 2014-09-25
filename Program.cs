@@ -225,7 +225,6 @@ namespace SAwareness
             try
             {
                 Menu.MenuItemSettings tempSettings;
-                Menu.MenuItemSettings oldTempSettings;
                 LeagueSharp.Common.Menu menu = new LeagueSharp.Common.Menu("SAwareness", "SAwareness", true);
 
                 Menu.Timers.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Timers", "SAwarenessTimers"));
@@ -464,7 +463,7 @@ namespace SAwareness
                 Menu.ActivatorDefensiveMikaelCleanse.Menu = Menu.ActivatorDefensive.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Mikael Cleanse | Not implemented", "SAwarenessActivatorDefensiveMikaelCleanse"));
                 Menu.ActivatorDefensiveMikaelCleanse.MenuItems.Add(Menu.ActivatorDefensiveMikaelCleanse.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorDefensiveMikaelCleanseConfigAlly", "On Allies").SetValue(false)));
                 Menu.ActivatorDefensiveMikaelCleanse.MenuItems.Add(Menu.ActivatorDefensiveMikaelCleanse.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorDefensiveMikaelCleanseConfigAllyHealth", "Ally Health").SetValue(new Slider(20, 100, 1))));
-                Menu.ActivatorDefensiveMikaelCleanse.MenuItems.Add(Menu.ActivatorDefensiveMikaelCleanse.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorDefensiveMikaelCleanseConfigSelfHealth", "Self Healh").SetValue(new Slider(20, 100, 1))));
+                Menu.ActivatorDefensiveMikaelCleanse.MenuItems.Add(Menu.ActivatorDefensiveMikaelCleanse.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorDefensiveMikaelCleanseConfigSelfHealth", "Self Health").SetValue(new Slider(20, 100, 1))));
                 Menu.ActivatorDefensiveMikaelCleanse.MenuItems.Add(Menu.ActivatorDefensiveMikaelCleanse.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorDefensiveMikaelCleanseConfigMinSpells", "Min Spells").SetValue(new Slider(2, 10, 1))));
                 Menu.ActivatorDefensiveMikaelCleanse.MenuItems.Add(Menu.ActivatorDefensiveMikaelCleanse.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorDefensiveShieldBoostActive", "Active").SetValue(false)));
                 Menu.ActivatorDefensive.MenuItems.Add(Menu.ActivatorDefensive.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorDefensiveActive", "Active").SetValue(false)));
@@ -521,7 +520,7 @@ namespace SAwareness
                 menu.AddItem(new LeagueSharp.Common.MenuItem("By Screeder", "By Screeder V0.84"));
                 menu.AddToMainMenu();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 throw;

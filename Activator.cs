@@ -82,6 +82,7 @@ namespace SAwareness
             UseDB();
             UseRanduins();
             UseFrostQueensClaim();
+            UseMikaelsCrucible();
         }
 
         private void UseQSS()
@@ -224,14 +225,92 @@ namespace SAwareness
             }
         }
 
+        private void UseMikaelsCrucible()
+        {
+            if (!Menu.ActivatorDefensiveDebuffSlow.GetActive() && LastItemCleanseUse + 1 > Game.Time)
+                return;
+
+            Items.Item mc = new Items.Item(3222, 750);
+
+            if (
+                    Menu.ActivatorDefensiveMikaelCleanse.GetMenuItem(
+                        "SAwarenessActivatorDefensiveMikaelCleanseConfigAlly").GetValue<bool>())
+            {
+                foreach (var ally in ObjectManager.Get<Obj_AI_Hero>())
+                {
+                    if (ally.IsEnemy)
+                        return;
+
+                    if (ally.ServerPosition.Distance(ObjectManager.Player.ServerPosition) < 750 && !ally.IsDead &&
+                        !ally.HasBuff("Recall"))
+                    {
+                        double health = (ally.Health / ally.MaxHealth) * 100;
+                        List<BuffInstance> activeCC = GetActiveCCBuffs(ally);
+                        if (activeCC.Count >=
+                            Menu.ActivatorDefensiveMikaelCleanse.GetMenuItem(
+                                "SAwarenessActivatorDefensiveMikaelCleanseConfigMinSpells").GetValue<Slider>().Value)
+                        {
+                            if (mc.IsReady())
+                            {
+                                mc.Cast(ally);
+                                LastItemCleanseUse = Game.Time;
+                            }
+                        }
+                        if (health <= Menu.ActivatorDefensiveMikaelCleanse.GetMenuItem(
+                            "SAwarenessActivatorDefensiveMikaelCleanseConfigAllyHealth").GetValue<Slider>().Value)
+                        {
+                            if (mc.IsReady())
+                            {
+                                mc.Cast(ally);
+                                LastItemCleanseUse = Game.Time;
+                            }
+                        }
+                    }
+                }  
+            }
+            else
+            {
+                if (!ObjectManager.Player.IsDead && !ObjectManager.Player.HasBuff("Recall"))
+                {
+                    double health = (ObjectManager.Player.Health / ObjectManager.Player.MaxHealth) * 100;
+                    List<BuffInstance> activeCC = GetActiveCCBuffs();
+                    if (activeCC.Count >=
+                        Menu.ActivatorDefensiveMikaelCleanse.GetMenuItem(
+                            "SAwarenessActivatorDefensiveMikaelCleanseConfigMinSpells").GetValue<Slider>().Value)
+                    {
+                        if (mc.IsReady())
+                        {
+                            mc.Cast(ObjectManager.Player);
+                            LastItemCleanseUse = Game.Time;
+                        }
+                    }
+                    if (health <= Menu.ActivatorDefensiveMikaelCleanse.GetMenuItem(
+                        "SAwarenessActivatorDefensiveMikaelCleanseConfigSelfHealth").GetValue<Slider>().Value)
+                    {
+                        if (mc.IsReady())
+                        {
+                            mc.Cast(ObjectManager.Player);
+                            LastItemCleanseUse = Game.Time;
+                        }
+                    }
+                }
+            }
+                          
+        }
+
         private List<BuffInstance> GetActiveCCBuffs()
         {
+            return GetActiveCCBuffs(ObjectManager.Player);
+        }
+
+        private List<BuffInstance> GetActiveCCBuffs(Obj_AI_Hero hero)
+        {
             List<BuffInstance> nBuffs = new List<BuffInstance>();
-            foreach (var buff in ObjectManager.Player.Buffs)
+            foreach (var buff in hero.Buffs)
             {
                 foreach (var buffType in buffs)
                 {
-                    if(buff.Type == buffType)
+                    if (buff.Type == buffType)
                         nBuffs.Add(buff);
                 }
             }
@@ -311,7 +390,7 @@ namespace SAwareness
                 Items.Item blackfire = new Items.Item(3188, 750);
                 Items.Item dfg = new Items.Item(3128, 750);
                 Items.Item twinshadows = new Items.Item(3023, 1000);
-                if(Utility.Map.GetMap() == Utility.Map.MapType.CrystalScar)
+                if(Utility.Map.GetMap()._MapType == Utility.Map.MapType.CrystalScar)
                     twinshadows = new Items.Item(3290, 1000);
                 if (bilgewater.IsReady() && Menu.ActivatorOffensive.GetMenuItem("SAwarenessActivatorOffensiveApBilgewaterCutlass").GetValue<bool>())
                 {
@@ -483,7 +562,7 @@ namespace SAwareness
             var target = SimpleTs.GetTarget(600, SimpleTs.DamageType.True);            
             if (target != null && sumIgnite != SpellSlot.Unknown)
             {
-                var igniteDmg = DamageLib.getDmg(target, DamageLib.SpellType.IGNITE);
+                var igniteDmg = ObjectManager.Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
                 if (igniteDmg > target.Health)
                 {
                     SpellSlot spellSlot = GetPacketSlot(sumIgnite);

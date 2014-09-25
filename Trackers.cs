@@ -1771,7 +1771,7 @@ namespace SAwareness
                         if (Menu.RecallDetector.GetActive())
                         {
                             RecallDetector.RecallInfo info = GetRecall(hero.Key.NetworkId);
-                            if (info != null && info.Recall.Duration != null)
+                            if (info != null)
                             {
                                 var percentRecall = CalcRecallBar(info);
                                 if (info != null && info.StartTime != 0)

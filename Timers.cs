@@ -116,7 +116,7 @@ namespace SAwareness
 
     public class Timers
     {
-        private static readonly Utility.Map.MapType GMapId = Utility.Map.GetMap();
+        private static readonly Utility.Map GMap = Utility.Map.GetMap();
         private static Inhibitor _inhibitors;
         private static readonly List<Relic> Relics = new List<Relic>();
         private static readonly List<Altar> Altars = new List<Altar>();
@@ -228,7 +228,7 @@ namespace SAwareness
             {
                 foreach (JungleCamp jungleCamp in JungleCamps)
                 {
-                    if (jungleCamp.NextRespawnTime <= 0 || jungleCamp.MapId != GMapId)
+                    if (jungleCamp.NextRespawnTime <= 0 || jungleCamp.MapType != GMap._MapType)
                         continue;
                     Vector2 sPos = Drawing.WorldToMinimap(jungleCamp.MinimapPosition);
                     DirectXDrawer.DrawText(font, (jungleCamp.NextRespawnTime - (int) Game.Time).ToString(),
@@ -249,7 +249,7 @@ namespace SAwareness
                 {
                     if (altar.Locked)
                     {
-                        if (altar.NextRespawnTime <= 0 || altar.MapId != GMapId)
+                        if (altar.NextRespawnTime <= 0 || altar.MapType != GMap._MapType)
                             continue;
                         Vector2 sPos = Drawing.WorldToMinimap(altar.Obj.ServerPosition);
                         DirectXDrawer.DrawText(font, (altar.NextRespawnTime - (int) Game.Time).ToString(), (int) sPos[0],
@@ -271,7 +271,7 @@ namespace SAwareness
                 {
                     if (relic.Locked)
                     {
-                        if (relic.NextRespawnTime <= 0 || relic.MapId != GMapId)
+                        if (relic.NextRespawnTime <= 0 || relic.MapType != GMap._MapType)
                             continue;
                         Vector2 sPos = Drawing.WorldToMinimap(relic.MinimapPosition);
                         DirectXDrawer.DrawText(font, (relic.NextRespawnTime - (int) Game.Time).ToString(), (int) sPos[0],
@@ -317,7 +317,7 @@ namespace SAwareness
                 {
                     if (health.Locked)
                     {
-                        if (health.NextRespawnTime - (int)Game.Time <= 0 || health.MapId != GMapId)
+                        if (health.NextRespawnTime - (int)Game.Time <= 0 || health.MapId != GMap._MapType)
                             continue;
                         Vector2 sPos = Drawing.WorldToMinimap(health.Position);
                         DirectXDrawer.DrawText(font, (health.NextRespawnTime - (int) Game.Time).ToString(),
@@ -409,14 +409,14 @@ namespace SAwareness
             return false;
         }
 
-        private JungleMob GetJungleMobByName(string name, Utility.Map.MapType mapId)
+        private JungleMob GetJungleMobByName(string name, Utility.Map.MapType mapType)
         {
-            return JungleMobs.Find(jm => jm.Name == name && jm.MapId == mapId);
+            return JungleMobs.Find(jm => jm.Name == name && jm.MapType == mapType);
         }
 
-        private JungleCamp GetJungleCampByID(int id, Utility.Map.MapType mapId)
+        private JungleCamp GetJungleCampByID(int id, Utility.Map.MapType mapType)
         {
-            return JungleCamps.Find(jm => jm.CampId == id && jm.MapId == mapId);
+            return JungleCamps.Find(jm => jm.CampId == id && jm.MapType == mapType);
         }
 
         public void InitJungleMobs()
@@ -830,7 +830,7 @@ namespace SAwareness
         {
             if (emptyType != 3)
             {
-                JungleCamp jungleCamp = GetJungleCampByID(campId, GMapId);
+                JungleCamp jungleCamp = GetJungleCampByID(campId, GMap._MapType);
                 if (jungleCamp != null)
                 {
                     jungleCamp.NextRespawnTime = (int) Game.Time + jungleCamp.RespawnTime;
@@ -885,7 +885,7 @@ namespace SAwareness
             public bool Called;
             public String[] LockNames;
             public bool Locked;
-            public Utility.Map.MapType MapId;
+            public Utility.Map.MapType MapType;
             public Vector3 MapPosition;
             public Vector3 MinimapPosition;
             public String Name;
@@ -905,7 +905,7 @@ namespace SAwareness
                 RespawnTime = 90;
                 Locked = false;
                 NextRespawnTime = 0;
-                MapId = Utility.Map.MapType.TwistedTreeline;
+                MapType = Utility.Map.MapType.TwistedTreeline;
                 Called = false;
             }
         }
@@ -968,7 +968,7 @@ namespace SAwareness
             public bool Called;
             public int CampId;
             public JungleMob[] Creeps;
-            public Utility.Map.MapType MapId;
+            public Utility.Map.MapType MapType;
             public Vector3 MapPosition;
             public Vector3 MinimapPosition;
             public String Name;
@@ -978,14 +978,14 @@ namespace SAwareness
             public GameObjectTeam Team;
 
             public JungleCamp(String name, GameObjectTeam team, int campId, int spawnTime, int respawnTime,
-                Utility.Map.MapType mapId, Vector3 mapPosition, Vector3 minimapPosition, JungleMob[] creeps)
+                Utility.Map.MapType mapType, Vector3 mapPosition, Vector3 minimapPosition, JungleMob[] creeps)
             {
                 Name = name;
                 Team = team;
                 CampId = campId;
                 SpawnTime = spawnTime;
                 RespawnTime = respawnTime;
-                MapId = mapId;
+                MapType = mapType;
                 MapPosition = mapPosition;
                 MinimapPosition = minimapPosition;
                 Creeps = creeps;
@@ -998,19 +998,19 @@ namespace SAwareness
         {
             public bool Boss;
             public bool Buff;
-            public Utility.Map.MapType MapId;
+            public Utility.Map.MapType MapType;
             public String Name;
             public Obj_AI_Minion Obj;
             public bool Smite;
 
-            public JungleMob(string name, Obj_AI_Minion obj, bool smite, bool buff, bool boss, Utility.Map.MapType mapId)
+            public JungleMob(string name, Obj_AI_Minion obj, bool smite, bool buff, bool boss, Utility.Map.MapType mapType)
             {
                 Name = name;
                 Obj = obj;
                 Smite = smite;
                 Buff = buff;
                 Boss = boss;
-                MapId = mapId;
+                MapType = mapType;
             }
         }
 
@@ -1018,7 +1018,7 @@ namespace SAwareness
         {
             public bool Called;
             public bool Locked;
-            public Utility.Map.MapType MapId;
+            public Utility.Map.MapType MapType;
             public Vector3 MapPosition;
             public Vector3 MinimapPosition;
             public String Name;
@@ -1041,7 +1041,7 @@ namespace SAwareness
                 Locked = false;
                 MapPosition = mapPosition;
                 MinimapPosition = minimapPosition;
-                MapId = Utility.Map.MapType.CrystalScar;
+                MapType = Utility.Map.MapType.CrystalScar;
                 NextRespawnTime = 0;
                 Called = false;
             }

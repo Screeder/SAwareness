@@ -63,42 +63,43 @@ namespace SAwareness
 
         private void Game_OnGameUpdate(EventArgs args)
         {
+            Obj_AI_Hero player = ObjectManager.Player;
             foreach (var enemy in Enemies.ToList())
             {
                 double dmg = 0;
                 try
                 {
-                    dmg += DamageLib.getDmg(enemy.Key, DamageLib.SpellType.Q);
+                    dmg += player.GetSpellDamage(enemy.Key, SpellSlot.Q);
                 }
-                catch (InvalidSpellTypeException ex)
+                catch (InvalidSpellTypeException)
                 {
                 }
                 try
                 {
-                    dmg += DamageLib.getDmg(enemy.Key, DamageLib.SpellType.W);
+                    dmg += player.GetSpellDamage(enemy.Key, SpellSlot.W);
                 }
-                catch (InvalidSpellTypeException ex)
+                catch (InvalidSpellTypeException)
                 {
                 }
                 try
                 {
-                    dmg += DamageLib.getDmg(enemy.Key, DamageLib.SpellType.E);
+                    dmg += player.GetSpellDamage(enemy.Key, SpellSlot.E);
                 }
-                catch (InvalidSpellTypeException ex)
+                catch (InvalidSpellTypeException)
                 {
                 }
                 try
                 {
-                    dmg += DamageLib.getDmg(enemy.Key, DamageLib.SpellType.R);
+                    dmg += player.GetSpellDamage(enemy.Key, SpellSlot.R);
                 }
-                catch (InvalidSpellTypeException ex)
+                catch (InvalidSpellTypeException)
                 {
                 }
                 try
                 {
-                    dmg += DamageLib.getDmg(enemy.Key, DamageLib.SpellType.AD);
+                    dmg += player.GetAutoAttackDamage(enemy.Key);
                 }
-                catch (InvalidSpellTypeException ex)
+                catch (InvalidSpellTypeException)
                 {
                 }
                 Enemies[enemy.Key] = dmg;
@@ -107,7 +108,7 @@ namespace SAwareness
 
         private void Drawing_OnEndScene(EventArgs args)
         {
-            if (!IsActive())
+            if (!IsActive() || !drawActive)
                 return;
             Vector2 myPos = Drawing.WorldToScreen(ObjectManager.Player.ServerPosition);
             foreach (var enemy in Enemies)

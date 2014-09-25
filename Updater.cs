@@ -71,7 +71,7 @@ namespace SAwareness
                     System.IO.Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().Location));
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
