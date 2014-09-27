@@ -17,7 +17,7 @@ namespace SAwareness
         List<BuffType> buffs = new List<BuffType>();
         Dictionary<Obj_AI_Hero, List<IncomingDamage>> damages = new Dictionary<Obj_AI_Hero, List<IncomingDamage>>();
 
-        private bool debug = true;
+        private bool debug = false;
 
         public class IncomingDamage
         {
