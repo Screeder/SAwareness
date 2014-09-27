@@ -61,7 +61,8 @@ namespace SAwareness
             damages.Add(new Obj_AI_Hero(), new List<IncomingDamage>());
             Game.OnGameUpdate += Game_OnGameUpdate;
             Obj_AI_Hero.OnProcessSpellCast += Obj_AI_Hero_OnProcessSpellCast;
-            Drawing.OnDraw += Drawing_OnDraw;
+            if (debug)
+                Drawing.OnDraw += Drawing_OnDraw;
         }
 
         void Drawing_OnDraw(EventArgs args)
