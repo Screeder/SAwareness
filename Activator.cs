@@ -557,19 +557,25 @@ namespace SAwareness
                 }
                 if(sender.NetworkId == damage.Key.NetworkId)
                     continue;
-                if (args.Target.Type != GameObjectType.obj_AI_Base && args.Target.Type != GameObjectType.obj_AI_Hero &&
-                    args.Target.Type != GameObjectType.obj_AI_Minion && args.Target.Type != GameObjectType.obj_AI_Turret) //No target, find it later
-                {                    
+                if (args.Target.Type == GameObjectType.obj_LampBulb || args.Target.Type == GameObjectType.Unknown) //No target, find it later
+                {
                     try
                     {
-                        double spellDamage = sender.GetSpellDamage((Obj_AI_Base)args.Target, args.SData.Name);
+                        double spellDamage = sender.GetSpellDamage((Obj_AI_Base) args.Target, args.SData.Name);
                         if (spellDamage != 0.0f)
-                            damages[damages.Last().Key].Add(new IncomingDamage(args.SData.Name, sender, args.Start, args.End, spellDamage, IncomingDamage.CalcTimeHit(args.TimeCast, sender, damage.Key, args.End)));
+                            damages[damages.Last().Key].Add(new IncomingDamage(args.SData.Name, sender, args.Start,
+                                args.End, spellDamage,
+                                IncomingDamage.CalcTimeHit(args.TimeCast, sender, damage.Key, args.End)));
                     }
                     catch (InvalidOperationException)
                     {
                         //Cannot find spell
-                    } 
+                    }
+                    catch (InvalidCastException)
+                    {
+                        //TODO Need a workaround to get the spelldamage for args.Target
+                        return;
+                    }
                 }
                 if (args.SData.Name.ToLower().Contains("attack") && args.Target.NetworkId == damage.Key.NetworkId)
                 {

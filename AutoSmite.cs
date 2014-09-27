@@ -11,6 +11,45 @@ namespace SAwareness
 {
     class AutoSmite
     {
+
+        public enum SpellType
+        {
+            Target,
+            Skillshot,
+            Active
+        }
+
+        public class ExtraDamage
+        {
+            public double Damage;
+            public SpellSlot Slot;
+            public int Range;
+            public SpellType Type;
+
+            public ExtraDamage(double damage, int range, SpellType type, SpellSlot slot)
+            {
+                Damage = AdjustDamage(damage);
+                Range = range;
+                Type = type;
+                Slot = slot;
+            }
+
+            private double AdjustDamage(double damage)
+            {
+                const int spiritStone = 1080;
+                const int spiritElderLizard = 3209;
+                const int spiritSpectralWraith = 3206;
+
+                if (Items.HasItem(spiritStone))
+                    return damage + (damage*0.2);
+                if (Items.HasItem(spiritElderLizard))
+                    return damage + (damage * 0.2);
+                if (Items.HasItem(spiritSpectralWraith))
+                    return damage + (damage * 0.3);
+                return damage;
+            }
+        }
+
         private String[] monsters = { "GreatWraith", "Wraith", "AncientGolem", "GiantWolf", "LizardElder", "Golem", "Worm", "Dragon", "Wight", "TT_Spiderboss" };
         private String[] usefulMonsters = { "AncientGolem", "LizardElder", "Worm", "Dragon", "TT_Spiderboss" };
 
@@ -64,18 +103,26 @@ namespace SAwareness
             foreach (var minion in ObjectManager.Get<Obj_AI_Minion>())
             {
                 List<Obj_AI_Minion> min = ObjectManager.Get<Obj_AI_Minion>().ToList();
-                if (Vector3.Distance(ObjectManager.Player.ServerPosition, minion.ServerPosition) < 750)
+                if (Vector3.Distance(ObjectManager.Player.ServerPosition, minion.ServerPosition) < 750 && minion.Health > 0 && minion.IsVisible)
                 {
                     int smiteDamage = GetSmiteDamage();
-                    if (minion.Health <= smiteDamage && minion.Health > 0)
+                    ExtraDamage extraDamageInfo = null;
+                    int extraDamage = 0;
+                    if (Menu.AutoSmite.GetMenuItem("SAwarenessAutoSmiteAutoSpell").GetValue<bool>())
+                    {
+                        extraDamageInfo = GetExtraDamage(minion);
+                        if(extraDamageInfo != null)
+                            extraDamage = (int)extraDamageInfo.Damage;
+                    }
+                    if (minion.Health <= smiteDamage)
                     {
                         if (!Menu.AutoSmite.GetMenuItem("SAwarenessAutoSmiteSmallCampsActive").GetValue<bool>())
                         {
                             foreach (var monster in usefulMonsters)
                             {
-                                if (minion.SkinName == monster && minion.IsVisible)
+                                if (minion.SkinName == monster)
                                 {
-                                    SmiteIt(minion.NetworkId);
+                                    SmiteIt(minion);
                                 }
                             }
                         }
@@ -83,29 +130,112 @@ namespace SAwareness
                         {
                             foreach (var monster in monsters)
                             {
-                                if (minion.SkinName == monster && minion.IsVisible)
+                                if (minion.SkinName == monster)
                                 {
-                                    SmiteIt(minion.NetworkId);
+                                    SmiteIt(minion);
                                 }
                             }
                         }                        
+                    }
+                    else if (extraDamageInfo != null && minion.Health <= smiteDamage + extraDamage)
+                    {
+                        if (Vector3.Distance(ObjectManager.Player.ServerPosition, minion.ServerPosition) < extraDamageInfo.Range + minion.BoundingRadius)
+                        {
+                            foreach (var monster in usefulMonsters)
+                            {
+                                if (minion.SkinName == monster)
+                                {
+                                    SmiteIt(minion, extraDamageInfo);
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
 
-        private void SmiteIt(int networkId)
+        private void SmiteIt(Obj_AI_Base minion, ExtraDamage extraDamageInfo = null)
         {
-            SpellSlot spellSlot = GetSmiteSlot();
+            SpellSlot smiteSlot = GetSmiteSlot();
             int slot = -1;
-            if (spellSlot == SpellSlot.Q)
+            if (smiteSlot == SpellSlot.Q)
                 slot = 64;
-            else if (spellSlot == SpellSlot.W)
+            else if (smiteSlot == SpellSlot.W)
                 slot = 65;
             if (slot != -1)
             {
-                GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(networkId, (SpellSlot)slot));
-                gPacketT.Send();
+                if (extraDamageInfo == null)
+                {
+                    GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(minion.NetworkId, (SpellSlot)slot));
+                    gPacketT.Send();
+                }
+                else
+                {
+                    GamePacket gPacketT;
+                    switch (extraDamageInfo.Type)
+                    {
+                        case SpellType.Active:
+                            gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(minion.NetworkId, extraDamageInfo.Slot));
+                            gPacketT.Send();
+                        break;
+
+                        case SpellType.Skillshot:
+                        gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, extraDamageInfo.Slot, -1, 0, 0, minion.ServerPosition.X, minion.ServerPosition.Y));
+                            gPacketT.Send();
+                        break;
+
+                        case SpellType.Target:
+                        gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(minion.NetworkId, extraDamageInfo.Slot));
+                            gPacketT.Send();
+                        break;
+                    }
+                    gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(minion.NetworkId, (SpellSlot)slot));
+                    gPacketT.Send();
+                }
+            }
+        }        
+
+        private ExtraDamage GetExtraDamage(Obj_AI_Base minion)
+        {
+            Obj_AI_Hero player = ObjectManager.Player;
+            switch (ObjectManager.Player.ChampionName)
+            {
+                case "Chogath":
+                    return player.Spellbook.CanUseSpell(SpellSlot.R) == SpellState.Ready ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.R), 175, SpellType.Target, SpellSlot.R) : null;
+                case "Elise":
+                    return player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.Q), 475, SpellType.Target, SpellSlot.Q) : null;
+                case "Kayle":
+                    return player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.Q), 650, SpellType.Target, SpellSlot.Q) : null;
+                case "KhaZix":
+                    return player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.Q), 325, SpellType.Target, SpellSlot.Q) : null;
+                case "Lux":
+                    return player.Spellbook.CanUseSpell(SpellSlot.R) == SpellState.Ready ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.R), 3340, SpellType.Skillshot, SpellSlot.R) : null;
+                case "MasterYi":
+                    return player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.Q), 600, SpellType.Target, SpellSlot.Q) : null;
+                case "MonkeyKing":
+                    return player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.Q), 100, SpellType.Active, SpellSlot.Q) : null;
+                case "Nasus":
+                    return player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.Q), 100, SpellType.Active, SpellSlot.Q) : null; //TODO: Check for nasus stacks
+                case "Nunu":
+                    return player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.Q), 155, SpellType.Target, SpellSlot.Q) : null;
+                case "Olaf":
+                    return player.Spellbook.CanUseSpell(SpellSlot.E) == SpellState.Ready ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.E), 325, SpellType.Target, SpellSlot.E) : null;
+                case "Pantheon":
+                    return player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.Q), 600, SpellType.Target, SpellSlot.Q) : null;
+                case "Rammus":
+                    return player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.Q), 100, SpellType.Active, SpellSlot.Q) : null;
+                case "Shaco":
+                    return player.Spellbook.CanUseSpell(SpellSlot.E) == SpellState.Ready ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.E), 625, SpellType.Target, SpellSlot.E) : null;
+                case "Twitch":
+                    return player.Spellbook.CanUseSpell(SpellSlot.E) == SpellState.Ready ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.E), 1200, SpellType.Active, SpellSlot.E) : null;
+                case "Vi":
+                    return player.Spellbook.CanUseSpell(SpellSlot.E) == SpellState.Ready ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.E), 600, SpellType.Target, SpellSlot.E) : null;
+                case "Volibear":
+                    return player.Spellbook.CanUseSpell(SpellSlot.W) == SpellState.Ready ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.W), 400, SpellType.Target, SpellSlot.W) : null;
+                case "Warwick":
+                    return player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.Q), 400, SpellType.Target, SpellSlot.Q) : null;
+                default:
+                    return null;
             }
         }
 

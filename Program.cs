@@ -387,6 +387,7 @@ namespace SAwareness
                 Menu.ActivatorAutoSummonerSpellCleanse.MenuItems.Add(Menu.ActivatorAutoSummonerSpellCleanse.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorAutoSummonerSpellCleanseActive", "Active").SetValue(false)));
                 Menu.AutoSmite.Menu = Menu.ActivatorAutoSummonerSpell.Menu.AddSubMenu(new LeagueSharp.Common.Menu("AutoSmite", "SAwarenessAutoSmite"));
                 Menu.AutoSmite.MenuItems.Add(Menu.AutoSmite.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoSmiteSmallCampsActive", "Smite Small Camps").SetValue(false)));
+                Menu.AutoSmite.MenuItems.Add(Menu.AutoSmite.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoSmiteAutoSpell", "Use Auto Spell").SetValue(false)));
                 Menu.AutoSmite.MenuItems.Add(Menu.AutoSmite.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoSmiteKeyActive", "Key").SetValue(new KeyBind(78, KeyBindType.Toggle))));
                 Menu.AutoSmite.MenuItems.Add(Menu.AutoSmite.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoSmiteActive", "Active").SetValue(false)));
 
