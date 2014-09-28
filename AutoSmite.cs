@@ -189,8 +189,10 @@ namespace SAwareness
                             gPacketT.Send();
                         break;
                     }
-                    gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(minion.NetworkId, (SpellSlot)slot));
-                    gPacketT.Send();
+                    Utility.DelayAction.Add((int)(Game.Time /*+ (extraTimeForCast/1000)*(sender.ServerPosition.Distance(endPos)/1000)*/ +
+                       (ObjectManager.Player.ServerPosition.Distance(minion.ServerPosition)/1000)), () => Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(minion.NetworkId, (SpellSlot)slot)).Send());
+                    //gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(minion.NetworkId, (SpellSlot)slot));
+                    //gPacketT.Send();
                 }
             }
         }        

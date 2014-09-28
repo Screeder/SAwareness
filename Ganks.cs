@@ -71,35 +71,35 @@ namespace SAwareness
                 {
                     dmg += player.GetSpellDamage(enemy.Key, SpellSlot.Q);
                 }
-                catch (InvalidSpellTypeException)
+                catch (InvalidOperationException)
                 {
                 }
                 try
                 {
                     dmg += player.GetSpellDamage(enemy.Key, SpellSlot.W);
                 }
-                catch (InvalidSpellTypeException)
+                catch (InvalidOperationException)
                 {
                 }
                 try
                 {
                     dmg += player.GetSpellDamage(enemy.Key, SpellSlot.E);
                 }
-                catch (InvalidSpellTypeException)
+                catch (InvalidOperationException)
                 {
                 }
                 try
                 {
                     dmg += player.GetSpellDamage(enemy.Key, SpellSlot.R);
                 }
-                catch (InvalidSpellTypeException)
+                catch (InvalidOperationException)
                 {
                 }
                 try
                 {
                     dmg += player.GetAutoAttackDamage(enemy.Key);
                 }
-                catch (InvalidSpellTypeException)
+                catch (InvalidOperationException)
                 {
                 }
                 Enemies[enemy.Key] = dmg;
