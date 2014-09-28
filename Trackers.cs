@@ -1061,6 +1061,8 @@ namespace SAwareness
             SpellF.OnResetDevice();
             SumF.OnResetDevice();
             RecF.OnResetDevice();
+            RecS.OnPostReset();
+            RecB.OnPreReset();
             drawActive = true;
         }
 
@@ -1071,6 +1073,8 @@ namespace SAwareness
             SpellF.OnLostDevice();
             SumF.OnLostDevice();
             RecF.OnLostDevice();
+            RecS.OnPreReset();
+            RecB.OnPreReset();
             drawActive = false;
         }
 
@@ -1088,6 +1092,8 @@ namespace SAwareness
         Font ChampF;
         Font SumF;
         Font RecF;
+        private Render.Rectangle RecB;
+        private Render.Rectangle RecS;
         Vector2 _screen = new Vector2(Drawing.Width, Drawing.Height / 2);
         readonly Dictionary<Obj_AI_Hero, ChampInfos> Enemies = new Dictionary<Obj_AI_Hero, ChampInfos>();
         readonly Dictionary<Obj_AI_Hero, ChampInfos> Allies = new Dictionary<Obj_AI_Hero, ChampInfos>();
@@ -1132,6 +1138,8 @@ namespace SAwareness
                 SpellF = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Times New Roman", 8));
                 ChampF = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Times New Roman", 30));
                 SumF = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Times New Roman", 16));
+                RecS = new Render.Rectangle(0, 0, 16, 16, Color.Green);
+                RecB = new Render.Rectangle(0, 0, (int)(16 * 1.7), (int)(16 * 1.7), Color.Green);
             }
             catch (Exception)
             {
@@ -1635,18 +1643,21 @@ namespace SAwareness
             {
                 StringList modeChoice;
                 StringList modeHeadChoice;
+                StringList modeHeadDisplayChoice;
                 Dictionary<Obj_AI_Hero, ChampInfos> heroes;
                 if (enemy)
                 {
                     heroes = Enemies;
                     modeChoice = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetMenuItem("SAwarenessUITrackerEnemyTrackerMode").GetValue<StringList>();
                     modeHeadChoice = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetMenuItem("SAwarenessUITrackerEnemyTrackerHeadMode").GetValue<StringList>();
+                    modeHeadDisplayChoice = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetMenuItem("SAwarenessUITrackerEnemyTrackerHeadDisplayMode").GetValue<StringList>();
                 }
                 else
                 {
                     heroes = Allies;
                     modeChoice = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetMenuItem("SAwarenessUITrackerAllyTrackerMode").GetValue<StringList>();
                     modeHeadChoice = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetMenuItem("SAwarenessUITrackerAllyTrackerHeadMode").GetValue<StringList>();
+                    modeHeadDisplayChoice = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetMenuItem("SAwarenessUITrackerAllyTrackerHeadDisplayMode").GetValue<StringList>();
                 }
 
                 float percentScale =
@@ -1894,220 +1905,502 @@ namespace SAwareness
                 {
                     CalculateSizes(true);
                     CalculateSizes(false);
-                    if (modeHead.SelectedIndex == 0)
+                    if (modeHeadDisplayChoice.SelectedIndex == 0)
                     {
-                        S.Begin();
-                        foreach (var hero in heroes)
+                        if (modeHead.SelectedIndex == 0)
                         {
-                            if (!hero.Key.IsDead && hero.Key.IsVisible)
+                            S.Begin();
+                            foreach (var hero in heroes)
                             {
-                                DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellPassive.Texture,
-                                    hero.Value.SGui.SpellPassive.SizeHpBar,
-                                    new[] { 1.0f * percentScale, 1.0f * percentScale });
-                                DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellQ.Texture,
-                                    hero.Value.SGui.SpellQ.SizeHpBar,
-                                    new[] { 1.0f * percentScale, 1.0f * percentScale });
-                                DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellW.Texture,
-                                    hero.Value.SGui.SpellW.SizeHpBar,
-                                    new[] { 1.0f * percentScale, 1.0f * percentScale });
-                                DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellE.Texture,
-                                    hero.Value.SGui.SpellE.SizeHpBar,
-                                    new[] { 1.0f * percentScale, 1.0f * percentScale });
-                                DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellR.Texture,
-                                    hero.Value.SGui.SpellR.SizeHpBar,
-                                    new[] { 1.0f * percentScale, 1.0f * percentScale });
-                                DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum1.Texture,
-                                    hero.Value.SGui.SpellSum1.SizeHpBar,
-                                    new[] { 0.8f * percentScale, 0.8f * percentScale });
-                                DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum2.Texture,
-                                    hero.Value.SGui.SpellSum2.SizeHpBar,
-                                    new[] { 0.8f * percentScale, 0.8f * percentScale });
-
-                                if (hero.Value.SGui.SpellQ.Cd > 0.0f ||
-                                    hero.Key.Spellbook.GetSpell(SpellSlot.Q).Level < 1)
+                                if (!hero.Key.IsDead && hero.Key.IsVisible)
                                 {
-                                    DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellPassive.Texture,
+                                        hero.Value.SGui.SpellPassive.SizeHpBar,
+                                        new[] {1.0f*percentScale, 1.0f*percentScale});
+                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellQ.Texture,
                                         hero.Value.SGui.SpellQ.SizeHpBar,
-                                        new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
-                                }
-                                if (hero.Value.SGui.SpellW.Cd > 0.0f ||
-                                    hero.Key.Spellbook.GetSpell(SpellSlot.W).Level < 1)
-                                {
-                                    DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                                        new[] {1.0f*percentScale, 1.0f*percentScale});
+                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellW.Texture,
                                         hero.Value.SGui.SpellW.SizeHpBar,
-                                        new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
-                                }
-                                if (hero.Value.SGui.SpellE.Cd > 0.0f ||
-                                    hero.Key.Spellbook.GetSpell(SpellSlot.E).Level < 1)
-                                {
-                                    DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                                        new[] {1.0f*percentScale, 1.0f*percentScale});
+                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellE.Texture,
                                         hero.Value.SGui.SpellE.SizeHpBar,
-                                        new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
-                                }
-                                if (hero.Value.SGui.SpellR.Cd > 0.0f ||
-                                    hero.Key.Spellbook.GetSpell(SpellSlot.R).Level < 1)
-                                {
-                                    DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                                        new[] {1.0f*percentScale, 1.0f*percentScale});
+                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellR.Texture,
                                         hero.Value.SGui.SpellR.SizeHpBar,
-                                        new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
-                                }
-                                if (hero.Value.SGui.SpellSum1.Cd > 0.0f)
-                                {
-                                    DirectXDrawer.DrawSprite(S, _overlaySummonerSpell,
+                                        new[] {1.0f*percentScale, 1.0f*percentScale});
+                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum1.Texture,
                                         hero.Value.SGui.SpellSum1.SizeHpBar,
-                                        new ColorBGRA(Color3.White, 0.55f), new[] { 0.8f * percentScale, 0.8f * percentScale });
-                                }
-                                if (hero.Value.SGui.SpellSum2.Cd > 0.0f)
-                                {
-                                    DirectXDrawer.DrawSprite(S, _overlaySummonerSpell,
+                                        new[] {0.8f*percentScale, 0.8f*percentScale});
+                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum2.Texture,
                                         hero.Value.SGui.SpellSum2.SizeHpBar,
-                                        new ColorBGRA(Color3.White, 0.55f), new[] { 0.8f * percentScale, 0.8f * percentScale });
+                                        new[] {0.8f*percentScale, 0.8f*percentScale});
+
+                                    if (hero.Value.SGui.SpellQ.Cd > 0.0f ||
+                                        hero.Key.Spellbook.GetSpell(SpellSlot.Q).Level < 1)
+                                    {
+                                        DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                                            hero.Value.SGui.SpellQ.SizeHpBar,
+                                            new ColorBGRA(Color3.White, 0.55f),
+                                            new[] {1.0f*percentScale, 1.0f*percentScale});
+                                    }
+                                    if (hero.Value.SGui.SpellW.Cd > 0.0f ||
+                                        hero.Key.Spellbook.GetSpell(SpellSlot.W).Level < 1)
+                                    {
+                                        DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                                            hero.Value.SGui.SpellW.SizeHpBar,
+                                            new ColorBGRA(Color3.White, 0.55f),
+                                            new[] {1.0f*percentScale, 1.0f*percentScale});
+                                    }
+                                    if (hero.Value.SGui.SpellE.Cd > 0.0f ||
+                                        hero.Key.Spellbook.GetSpell(SpellSlot.E).Level < 1)
+                                    {
+                                        DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                                            hero.Value.SGui.SpellE.SizeHpBar,
+                                            new ColorBGRA(Color3.White, 0.55f),
+                                            new[] {1.0f*percentScale, 1.0f*percentScale});
+                                    }
+                                    if (hero.Value.SGui.SpellR.Cd > 0.0f ||
+                                        hero.Key.Spellbook.GetSpell(SpellSlot.R).Level < 1)
+                                    {
+                                        DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                                            hero.Value.SGui.SpellR.SizeHpBar,
+                                            new ColorBGRA(Color3.White, 0.55f),
+                                            new[] {1.0f*percentScale, 1.0f*percentScale});
+                                    }
+                                    if (hero.Value.SGui.SpellSum1.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawSprite(S, _overlaySummonerSpell,
+                                            hero.Value.SGui.SpellSum1.SizeHpBar,
+                                            new ColorBGRA(Color3.White, 0.55f),
+                                            new[] {0.8f*percentScale, 0.8f*percentScale});
+                                    }
+                                    if (hero.Value.SGui.SpellSum2.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawSprite(S, _overlaySummonerSpell,
+                                            hero.Value.SGui.SpellSum2.SizeHpBar,
+                                            new ColorBGRA(Color3.White, 0.55f),
+                                            new[] {0.8f*percentScale, 0.8f*percentScale});
+                                    }
+                                }
+                            }
+                            S.End();
+                            foreach (var hero in heroes)
+                            {
+                                if (!hero.Key.IsDead && hero.Key.IsVisible)
+                                {
+                                    if (hero.Value.SGui.SpellQ.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellQ.Cd.ToString(),
+                                            hero.Value.SGui.SpellQ.CoordsHpBar, Color.Orange);
+                                    }
+                                    if (hero.Value.SGui.SpellW.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellW.Cd.ToString(),
+                                            hero.Value.SGui.SpellW.CoordsHpBar, Color.Orange);
+                                    }
+                                    if (hero.Value.SGui.SpellE.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellE.Cd.ToString(),
+                                            hero.Value.SGui.SpellE.CoordsHpBar, Color.Orange);
+                                    }
+                                    if (hero.Value.SGui.SpellR.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellR.Cd.ToString(),
+                                            hero.Value.SGui.SpellR.CoordsHpBar, Color.Orange);
+                                    }
+                                    if (hero.Value.SGui.SpellSum1.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum1.Cd.ToString(),
+                                            hero.Value.SGui.SpellSum1.CoordsHpBar, Color.Orange);
+                                    }
+                                    if (hero.Value.SGui.SpellSum2.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum2.Cd.ToString(),
+                                            hero.Value.SGui.SpellSum2.CoordsHpBar, Color.Orange);
+                                    }
                                 }
                             }
                         }
-                        S.End();
-                        foreach (var hero in heroes)
+                        else
                         {
-                            if (!hero.Key.IsDead && hero.Key.IsVisible)
+                            S.Begin();
+                            foreach (var hero in heroes)
                             {
-                                if (hero.Value.SGui.SpellQ.Cd > 0.0f)
+                                if (!hero.Key.IsDead && hero.Key.IsVisible)
                                 {
-                                    DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellQ.Cd.ToString(),
-                                        hero.Value.SGui.SpellQ.CoordsHpBar, Color.Orange);
+                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellPassive.Texture,
+                                        hero.Value.SGui.SpellPassive.SizeHpBar,
+                                        new[] {1.7f*percentScale, 1.7f*percentScale});
+                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellQ.Texture,
+                                        hero.Value.SGui.SpellQ.SizeHpBar,
+                                        new[] {1.7f*percentScale, 1.7f*percentScale});
+                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellW.Texture,
+                                        hero.Value.SGui.SpellW.SizeHpBar,
+                                        new[] {1.7f*percentScale, 1.7f*percentScale});
+                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellE.Texture,
+                                        hero.Value.SGui.SpellE.SizeHpBar,
+                                        new[] {1.7f*percentScale, 1.7f*percentScale});
+                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellR.Texture,
+                                        hero.Value.SGui.SpellR.SizeHpBar,
+                                        new[] {1.7f*percentScale, 1.7f*percentScale});
+                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum1.Texture,
+                                        hero.Value.SGui.SpellSum1.SizeHpBar,
+                                        new[] {1.0f*percentScale, 1.0f*percentScale});
+                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum2.Texture,
+                                        hero.Value.SGui.SpellSum2.SizeHpBar,
+                                        new[] {1.0f*percentScale, 1.0f*percentScale});
+
+                                    if (hero.Value.SGui.SpellQ.Cd > 0.0f ||
+                                        hero.Key.Spellbook.GetSpell(SpellSlot.Q).Level < 1)
+                                    {
+                                        DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                                            hero.Value.SGui.SpellQ.SizeHpBar,
+                                            new ColorBGRA(Color3.White, 0.55f),
+                                            new[] {1.7f*percentScale, 1.7f*percentScale});
+                                    }
+                                    if (hero.Value.SGui.SpellW.Cd > 0.0f ||
+                                        hero.Key.Spellbook.GetSpell(SpellSlot.W).Level < 1)
+                                    {
+                                        DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                                            hero.Value.SGui.SpellW.SizeHpBar,
+                                            new ColorBGRA(Color3.White, 0.55f),
+                                            new[] {1.7f*percentScale, 1.7f*percentScale});
+                                    }
+                                    if (hero.Value.SGui.SpellE.Cd > 0.0f ||
+                                        hero.Key.Spellbook.GetSpell(SpellSlot.E).Level < 1)
+                                    {
+                                        DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                                            hero.Value.SGui.SpellE.SizeHpBar,
+                                            new ColorBGRA(Color3.White, 0.55f),
+                                            new[] {1.7f*percentScale, 1.7f*percentScale});
+                                    }
+                                    if (hero.Value.SGui.SpellR.Cd > 0.0f ||
+                                        hero.Key.Spellbook.GetSpell(SpellSlot.R).Level < 1)
+                                    {
+                                        DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                                            hero.Value.SGui.SpellR.SizeHpBar,
+                                            new ColorBGRA(Color3.White, 0.55f),
+                                            new[] {1.7f*percentScale, 1.7f*percentScale});
+                                    }
+                                    if (hero.Value.SGui.SpellSum1.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawSprite(S, _overlaySummonerSpell,
+                                            hero.Value.SGui.SpellSum1.SizeHpBar,
+                                            new ColorBGRA(Color3.White, 0.55f),
+                                            new[] {1.0f*percentScale, 1.0f*percentScale});
+                                    }
+                                    if (hero.Value.SGui.SpellSum2.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawSprite(S, _overlaySummonerSpell,
+                                            hero.Value.SGui.SpellSum2.SizeHpBar,
+                                            new ColorBGRA(Color3.White, 0.55f),
+                                            new[] {1.0f*percentScale, 1.0f*percentScale});
+                                    }
                                 }
-                                if (hero.Value.SGui.SpellW.Cd > 0.0f)
+                            }
+                            S.End();
+                            foreach (var hero in heroes)
+                            {
+                                if (!hero.Key.IsDead && hero.Key.IsVisible)
                                 {
-                                    DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellW.Cd.ToString(),
-                                        hero.Value.SGui.SpellW.CoordsHpBar, Color.Orange);
-                                }
-                                if (hero.Value.SGui.SpellE.Cd > 0.0f)
-                                {
-                                    DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellE.Cd.ToString(),
-                                        hero.Value.SGui.SpellE.CoordsHpBar, Color.Orange);
-                                }
-                                if (hero.Value.SGui.SpellR.Cd > 0.0f)
-                                {
-                                    DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellR.Cd.ToString(),
-                                        hero.Value.SGui.SpellR.CoordsHpBar, Color.Orange);
-                                }
-                                if (hero.Value.SGui.SpellSum1.Cd > 0.0f)
-                                {
-                                    DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum1.Cd.ToString(),
-                                        hero.Value.SGui.SpellSum1.CoordsHpBar, Color.Orange);
-                                }
-                                if (hero.Value.SGui.SpellSum2.Cd > 0.0f)
-                                {
-                                    DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum2.Cd.ToString(),
-                                        hero.Value.SGui.SpellSum2.CoordsHpBar, Color.Orange);
+                                    if (hero.Value.SGui.SpellQ.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellQ.Cd.ToString(),
+                                            hero.Value.SGui.SpellQ.CoordsHpBar, Color.Orange);
+                                    }
+                                    if (hero.Value.SGui.SpellW.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellW.Cd.ToString(),
+                                            hero.Value.SGui.SpellW.CoordsHpBar, Color.Orange);
+                                    }
+                                    if (hero.Value.SGui.SpellE.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellE.Cd.ToString(),
+                                            hero.Value.SGui.SpellE.CoordsHpBar, Color.Orange);
+                                    }
+                                    if (hero.Value.SGui.SpellR.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellR.Cd.ToString(),
+                                            hero.Value.SGui.SpellR.CoordsHpBar, Color.Orange);
+                                    }
+                                    if (hero.Value.SGui.SpellSum1.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum1.Cd.ToString(),
+                                            hero.Value.SGui.SpellSum1.CoordsHpBar, Color.Orange);
+                                    }
+                                    if (hero.Value.SGui.SpellSum2.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum2.Cd.ToString(),
+                                            hero.Value.SGui.SpellSum2.CoordsHpBar, Color.Orange);
+                                    }
                                 }
                             }
                         }
                     }
                     else
                     {
-                        S.Begin();
-                        foreach (var hero in heroes)
+                        if (modeHead.SelectedIndex == 0)
                         {
-                            if (!hero.Key.IsDead && hero.Key.IsVisible)
+                            S.Begin();
+                            foreach (var hero in heroes)
                             {
-                                DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellPassive.Texture,
-                                hero.Value.SGui.SpellPassive.SizeHpBar,
-                                    new[] { 1.7f * percentScale, 1.7f * percentScale });
-                                DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellQ.Texture,
-                                    hero.Value.SGui.SpellQ.SizeHpBar,
-                                    new[] { 1.7f * percentScale, 1.7f * percentScale });
-                                DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellW.Texture,
-                                    hero.Value.SGui.SpellW.SizeHpBar,
-                                    new[] { 1.7f * percentScale, 1.7f * percentScale });
-                                DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellE.Texture,
-                                    hero.Value.SGui.SpellE.SizeHpBar,
-                                    new[] { 1.7f * percentScale, 1.7f * percentScale });
-                                DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellR.Texture,
-                                    hero.Value.SGui.SpellR.SizeHpBar,
-                                    new[] { 1.7f * percentScale, 1.7f * percentScale });
-                                DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum1.Texture,
-                                    hero.Value.SGui.SpellSum1.SizeHpBar,
-                                    new[] { 1.0f * percentScale, 1.0f * percentScale });
-                                DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum2.Texture,
-                                    hero.Value.SGui.SpellSum2.SizeHpBar,
-                                    new[] { 1.0f * percentScale, 1.0f * percentScale });
-
-                                if (hero.Value.SGui.SpellQ.Cd > 0.0f || hero.Key.Spellbook.GetSpell(SpellSlot.Q).Level < 1)
-                                {
-                                    DirectXDrawer.DrawSprite(S, _overlaySpellItem,
-                                        hero.Value.SGui.SpellQ.SizeHpBar,
-                                        new ColorBGRA(Color3.White, 0.55f), new[] { 1.7f * percentScale, 1.7f * percentScale });
-                                }
-                                if (hero.Value.SGui.SpellW.Cd > 0.0f || hero.Key.Spellbook.GetSpell(SpellSlot.W).Level < 1)
-                                {
-                                    DirectXDrawer.DrawSprite(S, _overlaySpellItem,
-                                        hero.Value.SGui.SpellW.SizeHpBar,
-                                        new ColorBGRA(Color3.White, 0.55f), new[] { 1.7f * percentScale, 1.7f * percentScale });
-                                }
-                                if (hero.Value.SGui.SpellE.Cd > 0.0f || hero.Key.Spellbook.GetSpell(SpellSlot.E).Level < 1)
-                                {
-                                    DirectXDrawer.DrawSprite(S, _overlaySpellItem,
-                                        hero.Value.SGui.SpellE.SizeHpBar,
-                                        new ColorBGRA(Color3.White, 0.55f), new[] { 1.7f * percentScale, 1.7f * percentScale });
-                                }
-                                if (hero.Value.SGui.SpellR.Cd > 0.0f || hero.Key.Spellbook.GetSpell(SpellSlot.R).Level < 1)
-                                {
-                                    DirectXDrawer.DrawSprite(S, _overlaySpellItem,
-                                        hero.Value.SGui.SpellR.SizeHpBar,
-                                        new ColorBGRA(Color3.White, 0.55f), new[] { 1.7f * percentScale, 1.7f * percentScale });
-                                }
-                                if (hero.Value.SGui.SpellSum1.Cd > 0.0f)
-                                {
-                                    DirectXDrawer.DrawSprite(S, _overlaySummonerSpell,
+                                if (!hero.Key.IsDead && hero.Key.IsVisible)
+                                {                                                                       
+                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum1.Texture,
                                         hero.Value.SGui.SpellSum1.SizeHpBar,
-                                        new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
-                                }
-                                if (hero.Value.SGui.SpellSum2.Cd > 0.0f)
-                                {
-                                    DirectXDrawer.DrawSprite(S, _overlaySummonerSpell,
+                                        new[] { 0.8f * percentScale, 0.8f * percentScale });
+                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum2.Texture,
                                         hero.Value.SGui.SpellSum2.SizeHpBar,
-                                        new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
+                                        new[] { 0.8f * percentScale, 0.8f * percentScale });
+
+                                    if (hero.Value.SGui.SpellQ.Cd > 0.0f ||
+                                        hero.Key.Spellbook.GetSpell(SpellSlot.Q).Level < 1)
+                                    {
+                                        RecS.Color = Color.Red;                                        
+                                    }
+                                    else
+                                    {
+                                        RecS.Color = Color.Green; 
+                                    }
+                                    RecS.X = hero.Value.SGui.SpellQ.SizeHpBar.Width;
+                                    RecS.Y = hero.Value.SGui.SpellQ.SizeHpBar.Height;
+                                    RecS.OnEndScene();
+                                    if (hero.Value.SGui.SpellW.Cd > 0.0f ||
+                                        hero.Key.Spellbook.GetSpell(SpellSlot.W).Level < 1)
+                                    {
+                                        RecS.Color = Color.Red;
+                                    }
+                                    else
+                                    {
+                                        RecS.Color = Color.Green;
+                                    }
+                                    RecS.X = hero.Value.SGui.SpellW.SizeHpBar.Width;
+                                    RecS.Y = hero.Value.SGui.SpellW.SizeHpBar.Height;
+                                    RecS.OnEndScene();
+                                    if (hero.Value.SGui.SpellE.Cd > 0.0f ||
+                                        hero.Key.Spellbook.GetSpell(SpellSlot.E).Level < 1)
+                                    {
+                                        RecS.Color = Color.Red;
+                                    }
+                                    else
+                                    {
+                                        RecS.Color = Color.Green;
+                                    }
+                                    RecS.X = hero.Value.SGui.SpellE.SizeHpBar.Width;
+                                    RecS.Y = hero.Value.SGui.SpellE.SizeHpBar.Height;
+                                    RecS.OnEndScene();
+                                    if (hero.Value.SGui.SpellR.Cd > 0.0f ||
+                                        hero.Key.Spellbook.GetSpell(SpellSlot.R).Level < 1)
+                                    {
+                                        RecS.Color = Color.Red;
+                                    }
+                                    else
+                                    {
+                                        RecS.Color = Color.Green;
+                                    }
+                                    RecS.X = hero.Value.SGui.SpellR.SizeHpBar.Width;
+                                    RecS.Y = hero.Value.SGui.SpellR.SizeHpBar.Height;
+                                    RecS.OnEndScene();
+                                    if (hero.Value.SGui.SpellSum1.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawSprite(S, _overlaySummonerSpell,
+                                            hero.Value.SGui.SpellSum1.SizeHpBar,
+                                            new ColorBGRA(Color3.White, 0.55f),
+                                            new[] { 0.8f * percentScale, 0.8f * percentScale });
+                                    }
+                                    if (hero.Value.SGui.SpellSum2.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawSprite(S, _overlaySummonerSpell,
+                                            hero.Value.SGui.SpellSum2.SizeHpBar,
+                                            new ColorBGRA(Color3.White, 0.55f),
+                                            new[] { 0.8f * percentScale, 0.8f * percentScale });
+                                    }
+                                }
+                            }
+                            S.End();
+                            foreach (var hero in heroes)
+                            {
+                                if (!hero.Key.IsDead && hero.Key.IsVisible)
+                                {
+                                    if (hero.Value.SGui.SpellQ.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellQ.Cd.ToString(),
+                                            hero.Value.SGui.SpellQ.CoordsHpBar, Color.Orange);
+                                    }
+                                    else
+                                    {
+                                        DirectXDrawer.DrawText(SpellF, "Q",
+                                            hero.Value.SGui.SpellQ.CoordsHpBar, Color.Orange);
+                                    }
+                                    if (hero.Value.SGui.SpellW.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellW.Cd.ToString(),
+                                            hero.Value.SGui.SpellW.CoordsHpBar, Color.Orange);
+                                    }
+                                    else
+                                    {
+                                        DirectXDrawer.DrawText(SpellF, "W",
+                                            hero.Value.SGui.SpellW.CoordsHpBar, Color.Orange);
+                                    }
+                                    if (hero.Value.SGui.SpellE.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellE.Cd.ToString(),
+                                            hero.Value.SGui.SpellE.CoordsHpBar, Color.Orange);
+                                    }
+                                    else
+                                    {
+                                        DirectXDrawer.DrawText(SpellF, "E",
+                                            hero.Value.SGui.SpellE.CoordsHpBar, Color.Orange);
+                                    }
+                                    if (hero.Value.SGui.SpellR.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellR.Cd.ToString(),
+                                            hero.Value.SGui.SpellR.CoordsHpBar, Color.Orange);
+                                    }
+                                    else
+                                    {
+                                        DirectXDrawer.DrawText(SpellF, "R",
+                                            hero.Value.SGui.SpellR.CoordsHpBar, Color.Orange);
+                                    }
+                                    if (hero.Value.SGui.SpellSum1.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum1.Cd.ToString(),
+                                            hero.Value.SGui.SpellSum1.CoordsHpBar, Color.Orange);
+                                    }
+                                    if (hero.Value.SGui.SpellSum2.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum2.Cd.ToString(),
+                                            hero.Value.SGui.SpellSum2.CoordsHpBar, Color.Orange);
+                                    }
                                 }
                             }
                         }
-                        S.End();
-                        foreach (var hero in heroes)
+                        else
                         {
-                            if (!hero.Key.IsDead && hero.Key.IsVisible)
+                            S.Begin();
+                            foreach (var hero in heroes)
                             {
-                                if (hero.Value.SGui.SpellQ.Cd > 0.0f)
+                                if (!hero.Key.IsDead && hero.Key.IsVisible)
                                 {
-                                    DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellQ.Cd.ToString(),
-                                        hero.Value.SGui.SpellQ.CoordsHpBar, Color.Orange);
+                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum1.Texture,
+                                        hero.Value.SGui.SpellSum1.SizeHpBar,
+                                        new[] { 1.0f * percentScale, 1.0f * percentScale });
+                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum2.Texture,
+                                        hero.Value.SGui.SpellSum2.SizeHpBar,
+                                        new[] { 1.0f * percentScale, 1.0f * percentScale });
+                                    
+                                    if (hero.Value.SGui.SpellQ.Cd > 0.0f ||
+                                        hero.Key.Spellbook.GetSpell(SpellSlot.Q).Level < 1)
+                                    {
+                                        RecB.Color = Color.Red;
+                                    }
+                                    else
+                                    {
+                                        RecB.Color = Color.Green;
+                                    }
+                                    RecB.X = (int)(hero.Value.SGui.SpellQ.SizeHpBar.Width);
+                                    RecB.Y = (int)(hero.Value.SGui.SpellQ.SizeHpBar.Height);
+                                    RecB.OnEndScene();
+                                    if (hero.Value.SGui.SpellW.Cd > 0.0f ||
+                                        hero.Key.Spellbook.GetSpell(SpellSlot.W).Level < 1)
+                                    {
+                                        RecB.Color = Color.Red;
+                                    }
+                                    else
+                                    {
+                                        RecB.Color = Color.Green;
+                                    }
+                                    RecB.X = (int)(hero.Value.SGui.SpellW.SizeHpBar.Width);
+                                    RecB.Y = (int)(hero.Value.SGui.SpellW.SizeHpBar.Height);
+                                    RecB.OnEndScene();
+                                    if (hero.Value.SGui.SpellE.Cd > 0.0f ||
+                                        hero.Key.Spellbook.GetSpell(SpellSlot.E).Level < 1)
+                                    {
+                                        RecB.Color = Color.Red;
+                                    }
+                                    else
+                                    {
+                                        RecB.Color = Color.Green;
+                                    }
+                                    RecB.X = (int)(hero.Value.SGui.SpellE.SizeHpBar.Width);
+                                    RecB.Y = (int)(hero.Value.SGui.SpellE.SizeHpBar.Height);
+                                    RecB.OnEndScene();
+                                    if (hero.Value.SGui.SpellR.Cd > 0.0f ||
+                                        hero.Key.Spellbook.GetSpell(SpellSlot.R).Level < 1)
+                                    {
+                                        RecB.Color = Color.Red;
+                                    }
+                                    else
+                                    {
+                                        RecB.Color = Color.Green;
+                                    }
+                                    RecB.X = (int)(hero.Value.SGui.SpellR.SizeHpBar.Width);
+                                    RecB.Y = (int)(hero.Value.SGui.SpellR.SizeHpBar.Height);
+                                    RecB.OnEndScene();
+                                    
                                 }
-                                if (hero.Value.SGui.SpellW.Cd > 0.0f)
+                            }
+                            S.End();
+                            foreach (var hero in heroes)
+                            {
+                                if (!hero.Key.IsDead && hero.Key.IsVisible)
                                 {
-                                    DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellW.Cd.ToString(),
-                                        hero.Value.SGui.SpellW.CoordsHpBar, Color.Orange);
-                                }
-                                if (hero.Value.SGui.SpellE.Cd > 0.0f)
-                                {
-                                    DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellE.Cd.ToString(),
-                                        hero.Value.SGui.SpellE.CoordsHpBar, Color.Orange);
-                                }
-                                if (hero.Value.SGui.SpellR.Cd > 0.0f)
-                                {
-                                    DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellR.Cd.ToString(),
-                                        hero.Value.SGui.SpellR.CoordsHpBar, Color.Orange);
-                                }
-                                if (hero.Value.SGui.SpellSum1.Cd > 0.0f)
-                                {
-                                    DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum1.Cd.ToString(),
-                                        hero.Value.SGui.SpellSum1.CoordsHpBar, Color.Orange);
-                                }
-                                if (hero.Value.SGui.SpellSum2.Cd > 0.0f)
-                                {
-                                    DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum2.Cd.ToString(),
-                                        hero.Value.SGui.SpellSum2.CoordsHpBar, Color.Orange);
+                                    if (hero.Value.SGui.SpellQ.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellQ.Cd.ToString(),
+                                            hero.Value.SGui.SpellQ.CoordsHpBar, Color.Orange);
+                                    }
+                                    else
+                                    {
+                                        DirectXDrawer.DrawText(SumF, "Q",
+                                            hero.Value.SGui.SpellQ.CoordsHpBar, Color.Orange);
+                                    }
+                                    if (hero.Value.SGui.SpellW.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellW.Cd.ToString(),
+                                            hero.Value.SGui.SpellW.CoordsHpBar, Color.Orange);
+                                    }
+                                    else
+                                    {
+                                        DirectXDrawer.DrawText(SumF, "W",
+                                            hero.Value.SGui.SpellW.CoordsHpBar, Color.Orange);
+                                    }
+                                    if (hero.Value.SGui.SpellE.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellE.Cd.ToString(),
+                                            hero.Value.SGui.SpellE.CoordsHpBar, Color.Orange);
+                                    }
+                                    else
+                                    {
+                                        DirectXDrawer.DrawText(SumF, "E",
+                                            hero.Value.SGui.SpellE.CoordsHpBar, Color.Orange);
+                                    }
+                                    if (hero.Value.SGui.SpellR.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellR.Cd.ToString(),
+                                            hero.Value.SGui.SpellR.CoordsHpBar, Color.Orange);
+                                    }
+                                    else
+                                    {
+                                        DirectXDrawer.DrawText(SumF, "R",
+                                            hero.Value.SGui.SpellR.CoordsHpBar, Color.Orange);
+                                    }
+                                    if (hero.Value.SGui.SpellSum1.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum1.Cd.ToString(),
+                                            hero.Value.SGui.SpellSum1.CoordsHpBar, Color.Orange);
+                                    }
+                                    if (hero.Value.SGui.SpellSum2.Cd > 0.0f)
+                                    {
+                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum2.Cd.ToString(),
+                                            hero.Value.SGui.SpellSum2.CoordsHpBar, Color.Orange);
+                                    }
                                 }
                             }
                         }
                     }
+                    
                 }
             }
             catch (Exception ex)
