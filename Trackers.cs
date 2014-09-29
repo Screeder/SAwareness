@@ -826,13 +826,13 @@ namespace SAwareness
                 {
                     if (Menu.SsCaller.GetMenuItem("SAwarenessSSCallerLocalPing").GetValue<bool>())
                     {
-                        gPacketT = Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0, pingType));
+                        gPacketT = Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0, pingType + 176));
                         gPacketT.Process();
                     }
                     else
                     {
                         gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(enemy.Value.LastPosition.X, enemy.Value.LastPosition.Y, 0, pingType));
-                        gPacketT.Send();
+                        //gPacketT.Send();
                     }
 
                 }
@@ -842,7 +842,7 @@ namespace SAwareness
                 }
                 else if (Menu.SsCaller.GetMenuItem("SAwarenessSSCallerChatChoice").GetValue<StringList>().SelectedIndex == 2)
                 {
-                    Game.Say("ss {0}", hero.ChampionName);
+                    //Game.Say("ss {0}", hero.ChampionName);
                 }
                 enemy.Value.LastTimeCalled = (int)Game.Time;
                 enemy.Value.Called = true;
@@ -1044,7 +1044,7 @@ namespace SAwareness
                         if (Menu.UiTracker.GetMenuItem("SAwarenessUITrackerPingActive").GetValue<bool>())
                         {
                             Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(enemy.Key.ServerPosition.X,
-                                enemy.Key.ServerPosition.Y, 0, 0, Packet.PingType.Normal)).Process();
+                                enemy.Key.ServerPosition.Y, 0, 0, Packet.PingType.NormalSound)).Process();
                         }
                     }
                 }

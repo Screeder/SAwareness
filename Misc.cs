@@ -60,7 +60,7 @@ namespace SAwareness
                 }
                 else if (Menu.DisconnectDetector.GetMenuItem("SAwarenessDisconnectDetectorChatChoice").GetValue<StringList>().SelectedIndex == 2)
                 {
-                    Game.Say("Champion " + disconnect.Player.ChampionName + " has disconnected!");
+                    //Game.Say("Champion " + disconnect.Player.ChampionName + " has disconnected!");
                 }
             }
             catch (Exception ex)

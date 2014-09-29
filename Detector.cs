@@ -104,7 +104,7 @@ namespace SAwareness
                                 }
                                 else if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorChatChoice").GetValue<StringList>().SelectedIndex == 2)
                                 {
-                                    Game.Say(obj.ChampionName + " {0} with {1} hp {2}({3})", text, (int)obj.Health, color, percentHealth);
+                                    //Game.Say(obj.ChampionName + " {0} with {1} hp {2}({3})", text, (int)obj.Health, color, percentHealth);
                                 }
                             }
                             else if (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd || recallEx.Status == Packet.S2C.Recall.RecallStatus.RecallFinished)
@@ -116,7 +116,7 @@ namespace SAwareness
                                 }
                                 else if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorChatChoice").GetValue<StringList>().SelectedIndex == 2)
                                 {
-                                    Game.Say(obj.ChampionName + " {0} with {1} hp {2}({3})", text, (int)obj.Health, color, percentHealth);
+                                    //Game.Say(obj.ChampionName + " {0} with {1} hp {2}({3})", text, (int)obj.Health, color, percentHealth);
                                 }
                             }
                             else
@@ -127,7 +127,7 @@ namespace SAwareness
                                 }
                                 else if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorChatChoice").GetValue<StringList>().SelectedIndex == 2)
                                 {
-                                    Game.Say(obj.ChampionName + " canceled with {0} hp", (int)obj.Health);
+                                    //Game.Say(obj.ChampionName + " canceled with {0} hp", (int)obj.Health);
                                 }
                             }
                         }
@@ -146,13 +146,13 @@ namespace SAwareness
                         GamePacket gPacketT;
                         if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorLocalPing").GetValue<bool>())
                         {
-                            gPacketT = Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1]));
+                            gPacketT = Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0, Packet.PingType.DangerSound));
                             gPacketT.Process();
                         }
                         else
                         {
                             gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos.X, pos.Y, 0, Packet.PingType.Danger));
-                            gPacketT.Send();
+                            //gPacketT.Send();
                         }
                     }
                 }

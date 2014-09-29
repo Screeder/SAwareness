@@ -185,13 +185,13 @@ namespace SAwareness
                 GamePacket gPacketT;
                 if (Menu.Timers.GetMenuItem("SAwarenessTimersLocalPing").GetValue<bool>())
                 {
-                    gPacketT = Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1]));
+                    gPacketT = Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0, Packet.PingType.NormalSound));
                     gPacketT.Process();
                 }
                 else
                 {
                     gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos.X, pos.Y));
-                    gPacketT.Send();
+                    //gPacketT.Send();
                 }
             }
             if (Menu.Timers.GetMenuItem("SAwarenessTimersChatChoice").GetValue<StringList>().SelectedIndex == 1)
@@ -200,7 +200,7 @@ namespace SAwareness
             }
             else if (Menu.Timers.GetMenuItem("SAwarenessTimersChatChoice").GetValue<StringList>().SelectedIndex == 2)
             {
-                Game.Say(text);
+                //Game.Say(text);
             }
             return true;
         }

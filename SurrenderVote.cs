@@ -59,7 +59,7 @@ namespace SAwareness
                             }
                             else if (Menu.SurrenderVote.GetMenuItem("SAwarenessSurrenderVoteChatChoice").GetValue<StringList>().SelectedIndex == 2)
                             {
-                                Game.Say("{0} voted NO", hero.ChampionName);
+                                //Game.Say("{0} voted NO", hero.ChampionName);
                             }
                         }
                         else
@@ -70,7 +70,7 @@ namespace SAwareness
                             }
                             else if (Menu.SurrenderVote.GetMenuItem("SAwarenessSurrenderVoteChatChoice").GetValue<StringList>().SelectedIndex == 2)
                             {
-                                Game.Say("{0} voted YES", hero.ChampionName);
+                                //Game.Say("{0} voted YES", hero.ChampionName);
                             }
                         }
                         break;
