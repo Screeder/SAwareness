@@ -169,7 +169,7 @@ namespace SAwareness
         public static MenuItemSettings Wards = new MenuItemSettings();
         public static MenuItemSettings WardCorrector = new MenuItemSettings(typeof(SAwareness.WardCorrector)); //Works
         public static MenuItemSettings BushRevealer = new MenuItemSettings(typeof(SAwareness.BushRevealer)); //Works        
-        public static MenuItemSettings InvisibleRevealer = new MenuItemSettings(typeof(SAwareness.InvisibleRevealer)); //Not implemented   
+        public static MenuItemSettings InvisibleRevealer = new MenuItemSettings(typeof(SAwareness.InvisibleRevealer)); //Works   
         public static MenuItemSettings SkinChanger = new MenuItemSettings(typeof(SAwareness.SkinChanger)); //Works
         public static MenuItemSettings AutoSmite = new MenuItemSettings(typeof(SAwareness.AutoSmite)); //Works
         public static MenuItemSettings AutoPot = new MenuItemSettings(typeof(SAwareness.AutoPot));
@@ -179,7 +179,9 @@ namespace SAwareness
         public static MenuItemSettings MoveToMouse = new MenuItemSettings(typeof(SAwareness.MoveToMouse));
         public static MenuItemSettings SurrenderVote = new MenuItemSettings(typeof(SAwareness.SurrenderVote));
         public static MenuItemSettings AutoLatern = new MenuItemSettings(typeof(SAwareness.AutoLatern));
-        public static MenuItemSettings DisconnectDetector = new MenuItemSettings(typeof(SAwareness.DisconnectDetector));          
+        public static MenuItemSettings DisconnectDetector = new MenuItemSettings(typeof(SAwareness.DisconnectDetector));
+        public static MenuItemSettings AutoJump = new MenuItemSettings(typeof(SAwareness.AutoJump));
+        public static MenuItemSettings TurnAround = new MenuItemSettings(typeof(SAwareness.TurnAround));
         public static MenuItemSettings Activator = new MenuItemSettings(typeof(SAwareness.Activator));
         public static MenuItemSettings ActivatorAutoSummonerSpell = new MenuItemSettings();
         public static MenuItemSettings ActivatorAutoSummonerSpellIgnite = new MenuItemSettings();
@@ -198,6 +200,7 @@ namespace SAwareness
         public static MenuItemSettings ActivatorDefensiveCleanseSelf = new MenuItemSettings();
         public static MenuItemSettings ActivatorDefensiveShieldBoost = new MenuItemSettings();
         public static MenuItemSettings ActivatorDefensiveMikaelCleanse = new MenuItemSettings();
+        public static MenuItemSettings Killable = new MenuItemSettings(typeof(SAwareness.Killable));
         //public static MenuItemSettings  = new MenuItemSettings();
     }
 
@@ -309,6 +312,8 @@ namespace SAwareness
                 Menu.SsCaller.MenuItems.Add(Menu.SsCaller.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSSCallerChatChoice", "Chat Choice").SetValue(new StringList(new string[] { "None", "Local", "Server" }))));
                 Menu.SsCaller.MenuItems.Add(Menu.SsCaller.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSSCallerDisableTime", "Disable Time").SetValue(new Slider(20, 180, 1))));
                 Menu.SsCaller.MenuItems.Add(Menu.SsCaller.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessSSCallerActive", "Active").SetValue(false)));
+                Menu.Killable.Menu = Menu.Tracker.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Killable", "SAwarenessKillable"));
+                Menu.Killable.MenuItems.Add(Menu.Killable.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessKillableActive", "Active").SetValue(false)));
                 Menu.Tracker.MenuItems.Add(Menu.Tracker.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessTrackerActive", "Active").SetValue(false)));
 
                 Menu.Detector.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Detector", "SAwarenessDetector"));
@@ -516,9 +521,14 @@ namespace SAwareness
                 Menu.AutoLatern.Menu = Menu.Misc.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Auto Latern", "SAwarenessAutoLatern"));
                 Menu.AutoLatern.MenuItems.Add(Menu.AutoLatern.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoLaternKey", "Key").SetValue(new KeyBind(84, KeyBindType.Press))));
                 Menu.AutoLatern.MenuItems.Add(Menu.AutoLatern.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoLaternActive", "Active").SetValue(false)));
+                Menu.AutoJump.Menu = Menu.Misc.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Auto Jump", "SAwarenessAutoJump"));
+                Menu.AutoJump.MenuItems.Add(Menu.AutoJump.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoJumpKey", "Key").SetValue(new KeyBind(85, KeyBindType.Press))));
+                Menu.AutoJump.MenuItems.Add(Menu.AutoJump.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoJumpActive", "Active").SetValue(false)));
                 Menu.DisconnectDetector.Menu = Menu.Misc.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Disconnect Detector", "SAwarenessDisconnectDetector"));
                 Menu.DisconnectDetector.MenuItems.Add(Menu.DisconnectDetector.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessDisconnectDetectorChatChoice", "Chat Choice").SetValue(new StringList(new string[] { "None", "Local", "Server" }))));
                 Menu.DisconnectDetector.MenuItems.Add(Menu.DisconnectDetector.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessDisconnectDetectorActive", "Active").SetValue(false)));
+                Menu.TurnAround.Menu = Menu.Misc.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Turn Around", "SAwarenessTurnAround"));
+                Menu.TurnAround.MenuItems.Add(Menu.TurnAround.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessTurnAroundActive", "Active").SetValue(false)));
 
                 menu.AddItem(new LeagueSharp.Common.MenuItem("By Screeder", "By Screeder V0.84"));
                 menu.AddToMainMenu();

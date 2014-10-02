@@ -718,7 +718,7 @@ namespace SAwareness
             return cc.Any(hero.HasBuffOfType);
         }
 
-        private SpellSlot GetIgniteSlot()
+        public static SpellSlot GetIgniteSlot()
         {
             foreach (var spell in ObjectManager.Player.SummonerSpellbook.Spells)
             {
@@ -728,7 +728,7 @@ namespace SAwareness
             return SpellSlot.Unknown;
         }
 
-        private SpellSlot GetHealSlot()
+        public static SpellSlot GetHealSlot()
         {
             foreach (var spell in ObjectManager.Player.SummonerSpellbook.Spells)
             {
@@ -738,7 +738,7 @@ namespace SAwareness
             return SpellSlot.Unknown;
         }
 
-        private SpellSlot GetBarrierSlot()
+        public static SpellSlot GetBarrierSlot()
         {
             foreach (var spell in ObjectManager.Player.SummonerSpellbook.Spells)
             {
@@ -748,7 +748,7 @@ namespace SAwareness
             return SpellSlot.Unknown;
         }
 
-        private SpellSlot GetExhaustSlot()
+        public static SpellSlot GetExhaustSlot()
         {
             foreach (var spell in ObjectManager.Player.SummonerSpellbook.Spells)
             {
@@ -758,7 +758,7 @@ namespace SAwareness
             return SpellSlot.Unknown;
         }
 
-        private SpellSlot GetCleanseSlot()
+        public static SpellSlot GetCleanseSlot()
         {
             foreach (var spell in ObjectManager.Player.SummonerSpellbook.Spells)
             {

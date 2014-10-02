@@ -13,6 +13,7 @@ using LeagueSharp.Common;
 using SAwareness.Properties;
 using SharpDX;
 using SharpDX.Direct3D9;
+using Buffer = SharpDX.Toolkit.Graphics.Buffer;
 using Color = SharpDX.Color;
 using Font = SharpDX.Direct3D9.Font;
 
@@ -41,7 +42,7 @@ namespace SAwareness
                 return;
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
             {
-                if (hero.IsEnemy)
+                if (hero.IsEnemy && !hero.IsDead)
                 {
                     if (hero.ChampionName.Contains("Shaco") ||
                         hero.ChampionName.Contains("LeBlanc") ||
@@ -2654,5 +2655,206 @@ namespace SAwareness
             Drawing.DrawLine(topLeft.X, topLeft.Y, botRight.X, botRight.Y, thickness, color);
             Drawing.DrawLine(topRight.X, topRight.Y, botLeft.X, botLeft.Y, thickness, color);
         }
+    }
+
+    class Killable //TODO: Add more option for e.g. most damage first, add ignite spell
+    {
+
+        private bool drawActive = true;
+        Render.Text textF = new Render.Text("", 0, 0, 24, Color.Goldenrod);
+
+        public class Item : Items.Item
+        {
+            public String Name;
+
+            public Item(int id, float range, String name) : base(id, range)
+            {
+                Name = name;
+            }
+        }
+
+        public class Spell
+        {
+            public String Name;
+            public SpellSlot SpellSlot;
+
+            public Spell(String name, SpellSlot spellSlot)
+            {
+                Name = name;
+                SpellSlot = spellSlot;
+            }
+        }
+
+        public class Combo
+        {
+            public List<Spell> Spells = new List<Spell>();
+            public List<Item> Items = new List<Item>();
+
+            public bool Killable = false;
+
+
+            public Combo(List<Spell> spells, List<Item> items, bool killable)
+            {
+                Spells = spells;
+                Items = items;
+                Killable = killable;
+            }
+
+            public Combo()
+            {
+            }
+        }
+
+        public Killable()
+        {
+            Drawing.OnEndScene += Drawing_OnEndScene;
+            Drawing.OnPreReset += Drawing_OnPreReset;
+            Drawing.OnPostReset += Drawing_OnPostReset;
+        }      
+
+        ~Killable()
+        {
+            Drawing.OnEndScene -= Drawing_OnEndScene;
+            Drawing.OnPreReset -= Drawing_OnPreReset;
+            Drawing.OnPostReset -= Drawing_OnPostReset;
+        }
+
+        public bool IsActive()
+        {
+            return Menu.Tracker.GetActive() && Menu.Killable.GetActive();
+        }
+
+        Dictionary<Obj_AI_Hero, Combo> CalculateKillable()
+        {
+            Dictionary<Obj_AI_Hero, Combo> enemies = new Dictionary<Obj_AI_Hero, Combo>(); 
+
+            foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>())
+            {
+                if (enemy.IsEnemy)
+                {
+                    enemies.Add(enemy, CalculateKillable(enemy));
+                }                
+            }
+            return enemies;
+        }
+
+        Combo CalculateKillable(Obj_AI_Hero enemy)
+        {
+            Dictionary<Item, Damage.DamageItems> creationItemList = new Dictionary<Item, Damage.DamageItems>();
+            List<LeagueSharp.Common.Spell> creationSpellList = new List<LeagueSharp.Common.Spell>();
+            List<Spell> tempSpellList = new List<Spell>();
+            List<Item> tempItemList = new List<Item>();
+
+            LeagueSharp.Common.Spell ignite = new LeagueSharp.Common.Spell(Activator.GetIgniteSlot(), 1000);
+
+            LeagueSharp.Common.Spell q = new LeagueSharp.Common.Spell(SpellSlot.Q, 1000);
+            LeagueSharp.Common.Spell w = new LeagueSharp.Common.Spell(SpellSlot.W, 1000);
+            LeagueSharp.Common.Spell e = new LeagueSharp.Common.Spell(SpellSlot.E, 1000);
+            LeagueSharp.Common.Spell r = new LeagueSharp.Common.Spell(SpellSlot.R, 1000);
+            creationSpellList.Add(q);
+            creationSpellList.Add(w);
+            creationSpellList.Add(e);
+            creationSpellList.Add(r);
+
+            Item dfg = new Item(3128, 1000, "Dfg");
+            Item bilgewater = new Item(3144, 1000, "Bilgewater");
+            Item hextechgun = new Item(3146, 1000, "Hextech");
+            Item blackfire = new Item(3188, 1000, "Blackfire");
+            Item botrk = new Item(3153, 1000, "Botrk");
+            creationItemList.Add(dfg, Damage.DamageItems.Dfg);
+            creationItemList.Add(bilgewater, Damage.DamageItems.Bilgewater);
+            creationItemList.Add(hextechgun, Damage.DamageItems.Hexgun);
+            creationItemList.Add(blackfire, Damage.DamageItems.BlackFireTorch);
+            creationItemList.Add(botrk, Damage.DamageItems.Botrk);
+
+            double enoughDmg = 0;
+            double enoughMana = 0;
+
+            foreach (var item in creationItemList)
+            {
+                if (item.Key.IsReady())
+                {
+                    enoughDmg += ObjectManager.Player.GetItemDamage(enemy, item.Value);
+                    tempItemList.Add(item.Key);
+                }
+                if (enemy.Health < enoughDmg)
+                {
+                    return new Combo(null, tempItemList, true);
+                }
+            }
+
+            foreach (var spell in creationSpellList)
+            {
+                if (spell.IsReady())
+                {
+                    double spellDamage = spell.GetDamage(enemy, 1);
+                    if (spellDamage > 0)
+                    {
+                        enoughDmg += spellDamage; //TODO: Check if state is 1
+                        enoughMana += spell.Instance.ManaCost;
+                        tempSpellList.Add(new Spell(spell.Slot.ToString(), spell.Slot));
+                    }                    
+                }
+                if (enemy.Health < enoughDmg)
+                {
+                    if(ObjectManager.Player.Mana >= enoughMana)
+                        return new Combo(tempSpellList, tempItemList, true);
+                    else
+                        return new Combo(null, null, false);
+                }
+            }
+
+            if (Activator.GetIgniteSlot() != SpellSlot.Unknown && enemy.Health > enoughDmg)
+            {
+                enoughDmg += ObjectManager.Player.GetSummonerSpellDamage(enemy, Damage.SummonerSpell.Ignite);
+                tempSpellList.Add(new Spell("Ignite", ignite.Slot));
+            }
+            if (enemy.Health < enoughDmg)
+            {
+                return new Combo(tempSpellList, tempItemList, true);
+            }
+
+            return new Combo();
+        }
+
+        void Drawing_OnPostReset(EventArgs args)
+        {
+            textF.OnPostReset();
+            drawActive = true;
+        }
+
+        void Drawing_OnPreReset(EventArgs args)
+        {
+            textF.OnPreReset();
+            drawActive = false;
+        } 
+
+        void Drawing_OnEndScene(EventArgs args)
+        {
+            if (!IsActive() || !drawActive)
+                return;
+
+            int index = 0;
+            foreach (var enemy in CalculateKillable())
+            {
+                if (enemy.Value.Killable && enemy.Key.IsVisible && !enemy.Key.IsDead)
+                {
+                    String killText = "Killable " + enemy.Key.ChampionName + ": ";
+                    if (enemy.Value.Spells != null && enemy.Value.Spells.Count > 0)
+                        enemy.Value.Spells.ForEach(x => killText += x.Name + "/");
+                    if (enemy.Value.Items != null && enemy.Value.Items.Count > 0)
+                        enemy.Value.Items.ForEach(x => killText += x.Name + "/");
+                    if (killText.Contains("/"))
+                        killText = killText.Remove(killText.LastIndexOf("/"));
+                    textF.Centered = true;
+                    textF.text = killText;
+                    textF.X = Drawing.Width/2;
+                    textF.Y = (int)(Drawing.Height*0.80f - (17*index));
+                    textF.OutLined = true;
+                    textF.OnEndScene();
+                    index++;
+                }
+            }
+        } 
     }
 }
