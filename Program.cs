@@ -530,7 +530,7 @@ namespace SAwareness
                 Menu.TurnAround.Menu = Menu.Misc.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Turn Around", "SAwarenessTurnAround"));
                 Menu.TurnAround.MenuItems.Add(Menu.TurnAround.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessTurnAroundActive", "Active").SetValue(false)));
 
-                menu.AddItem(new LeagueSharp.Common.MenuItem("By Screeder", "By Screeder V0.84"));
+                menu.AddItem(new LeagueSharp.Common.MenuItem("By Screeder", "By Screeder V0.85"));
                 menu.AddToMainMenu();
             }
             catch (Exception)
