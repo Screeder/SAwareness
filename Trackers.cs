@@ -2790,7 +2790,7 @@ namespace SAwareness
                     double spellDamage = spell.GetDamage(enemy, 1);
                     if (spellDamage > 0)
                     {
-                        enoughDmg += spellDamage; //TODO: Check if state is 1
+                        enoughDmg += spellDamage;
                         enoughMana += spell.Instance.ManaCost;
                         tempSpellList.Add(new Spell(spell.Slot.ToString(), spell.Slot));
                     }                    
