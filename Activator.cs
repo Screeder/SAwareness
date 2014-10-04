@@ -92,6 +92,7 @@ namespace SAwareness
                 return;
             UseOffensiveItems_OnProcessSpellCast(sender, args);
             GetIncomingDamage_OnProcessSpellCast(sender, args);
+            UseSummonerSpells_OnProcessSpellCast(sender, args);
         }
 
         void Game_OnGameUpdate(EventArgs args)
@@ -791,8 +792,13 @@ namespace SAwareness
             UseIgnite();
             UseHealth();
             UseBarrier();
-            UseExhaust();
+            UseExhaust_OnGameUpdate();
             UseCleanse();
+        }
+
+        private void UseSummonerSpells_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            UseExhaust_OnProcessSpellCast(sender, args);
         }
 
         private void UseCleanse()
@@ -917,7 +923,7 @@ namespace SAwareness
             }
         }
 
-        private void UseExhaust()
+        private void UseExhaust_OnGameUpdate()
         {
             if (!Menu.ActivatorAutoSummonerSpellExhaust.GetActive())
                 return;
@@ -959,6 +965,78 @@ namespace SAwareness
                             gPacketT.Send();
                         }                        
                     } 
+                }
+            }
+        }
+
+        private void UseExhaust_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (!Menu.ActivatorAutoSummonerSpellExhaust.GetActive() || !Menu.ActivatorAutoSummonerSpellExhaust.GetMenuItem("SAwarenessActivatorAutoSummonerSpellExhaustUseUltSpells").GetValue<bool>())
+                return;
+
+            if (sender.IsEnemy)
+            {
+                SpellSlot spellSlot = GetPacketSlot(GetExhaustSlot());
+                if (spellSlot != SpellSlot.Unknown)
+                {
+                    if (args.SData.Name.Contains("InfernalGuardian") || //Annie
+                        args.SData.Name.Contains("BrandWildfire") || //Brand
+                        args.SData.Name.Contains("CaitlynAceintheHole") || //Caitlyn
+                        args.SData.Name.Contains("DravenRCast") || //Draven
+                        args.SData.Name.Contains("EzrealTrueshotBarrage") || //Ezreal
+                        args.SData.Name.Contains("Crowstorm") || //Fiddle
+                        args.SData.Name.Contains("FioraDance") || //Fiora
+                        args.SData.Name.Contains("FizzMarinerDoom") || //Fizz
+                        args.SData.Name.Contains("GragasR") || //Gragas
+                        args.SData.Name.Contains("GravesChargeShot") || //Graves
+                        args.SData.Name.Contains("JinxR") || //Jinx
+                        args.SData.Name.Contains("KatarinaR") || //Katarina
+                        args.SData.Name.Contains("KennenShurikenStorm") || //Kennen
+                        args.SData.Name.Contains("LissandraR") || //Lissandra
+                        args.SData.Name.Contains("LuxMaliceCannon") || //Lux
+                        args.SData.Name.Contains("AlZaharNetherGrasp") || //Malzahar
+                        args.SData.Name.Contains("MissFortuneBulletTime") || //Miss Fortune
+                        args.SData.Name.Contains("OrianaDetonateCommand") || //Orianna
+                        args.SData.Name.Contains("RivenFengShuiEngine") || //Riven
+                        args.SData.Name.Contains("SyndraR") || //Syndra
+                        args.SData.Name.Contains("TalonShadowAssault") || //Talon
+                        args.SData.Name.Contains("BusterShot") || //Tristana
+                        args.SData.Name.Contains("FullAutomatic") || //Twitch
+                        args.SData.Name.Contains("VeigarPrimordialBurst") || //Veigar
+                        args.SData.Name.Contains("VelkozR") || //Vel Koz
+                        args.SData.Name.Contains("ViktorChaosStorm") || //Viktor
+                        args.SData.Name.Contains("MonkeyKingSpinToWin") || //Wukong
+                        args.SData.Name.Contains("XerathLocusOfPower2") || //Xerath
+                        args.SData.Name.Contains("YasuoRKnockUpComboW") || //Yasuo
+                        args.SData.Name.Contains("ZiggsR") || //Ziggs
+                        args.SData.Name.Contains("ZyraBrambleZone")) //Zyra
+                    {
+                        if (sender.ServerPosition.Distance(ObjectManager.Player.ServerPosition) <= 750)
+                        {
+                            Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(sender.NetworkId, spellSlot)).Send();
+                        }
+                    }
+
+                    if (args.SData.Name.Contains("SoulShackles") || //Morgana
+                        args.SData.Name.Contains("KarthusFallenOne") || //Karthus
+                        args.SData.Name.Contains("VladimirHemoplague")) //Vladimir
+                    {
+                        Utility.DelayAction.Add(2500, () =>
+                        {
+                            if (sender.ServerPosition.Distance(ObjectManager.Player.ServerPosition) <= 750)
+                                Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(sender.NetworkId, spellSlot)).Send();
+                        });
+                    }
+
+                    if (args.SData.Name.Contains("AbsoluteZero") || //Nunu
+                        args.SData.Name.Contains("ZedUlt")) //Zed
+                    {
+                        Utility.DelayAction.Add(500, () =>
+                        {
+                            if (sender.ServerPosition.Distance(ObjectManager.Player.ServerPosition) <= 750)
+                                Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(sender.NetworkId, spellSlot)).Send();
+                        });
+                    }
                 }
             }
         }

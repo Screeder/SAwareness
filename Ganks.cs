@@ -201,10 +201,11 @@ namespace SAwareness
                     gPacketT = Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0, pingType + 176));
                     gPacketT.Process();
                 }
-                else
+                else if (!Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorLocalPing").GetValue<bool>() &&
+                    Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
                 {
                     gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos[0], pos[1], 0, pingType));
-                    //gPacketT.Send();
+                    gPacketT.Send();
                 }
             }
 
@@ -212,9 +213,10 @@ namespace SAwareness
             {
                 Game.PrintChat("Gank: {0}", hero.ChampionName);
             }
-            else if (Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorChatChoice").GetValue<StringList>().SelectedIndex == 2)
+            else if (Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorChatChoice").GetValue<StringList>().SelectedIndex == 2 &&
+                        Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
             {
-                //Game.Say("Gank: {0}", hero.ChampionName);
+                Game.Say("Gank: {0}", hero.ChampionName);
             }
             //TODO: Check for Teleport etc.                    
             

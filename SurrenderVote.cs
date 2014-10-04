@@ -57,9 +57,10 @@ namespace SAwareness
                             {
                                 Game.PrintChat("{0} voted NO", hero.ChampionName);
                             }
-                            else if (Menu.SurrenderVote.GetMenuItem("SAwarenessSurrenderVoteChatChoice").GetValue<StringList>().SelectedIndex == 2)
+                            else if (Menu.SurrenderVote.GetMenuItem("SAwarenessSurrenderVoteChatChoice").GetValue<StringList>().SelectedIndex == 2 &&
+                                        Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
                             {
-                                //Game.Say("{0} voted NO", hero.ChampionName);
+                                Game.Say("{0} voted NO", hero.ChampionName);
                             }
                         }
                         else
@@ -68,9 +69,10 @@ namespace SAwareness
                             {
                                 Game.PrintChat("{0} voted YES", hero.ChampionName);
                             }
-                            else if (Menu.SurrenderVote.GetMenuItem("SAwarenessSurrenderVoteChatChoice").GetValue<StringList>().SelectedIndex == 2)
+                            else if (Menu.SurrenderVote.GetMenuItem("SAwarenessSurrenderVoteChatChoice").GetValue<StringList>().SelectedIndex == 2 &&
+                                        Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
                             {
-                                //Game.Say("{0} voted YES", hero.ChampionName);
+                                Game.Say("{0} voted YES", hero.ChampionName);
                             }
                         }
                         break;

@@ -59,9 +59,10 @@ namespace SAwareness
                 {
                     Game.PrintChat("Champion " + disconnect.Player.ChampionName + " has disconnected!");
                 }
-                else if (Menu.DisconnectDetector.GetMenuItem("SAwarenessDisconnectDetectorChatChoice").GetValue<StringList>().SelectedIndex == 2)
+                else if (Menu.DisconnectDetector.GetMenuItem("SAwarenessDisconnectDetectorChatChoice").GetValue<StringList>().SelectedIndex == 2 &&
+                            Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
                 {
-                    //Game.Say("Champion " + disconnect.Player.ChampionName + " has disconnected!");
+                    Game.Say("Champion " + disconnect.Player.ChampionName + " has disconnected!");
                 }
             }
             catch (Exception ex)

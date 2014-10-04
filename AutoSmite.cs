@@ -50,7 +50,7 @@ namespace SAwareness
             }
         }
 
-        private String[] monsters = { "GreatWraith", "Wraith", "AncientGolem", "GiantWolf", "LizardElder", "Golem", "Worm", "Dragon", "Wight", "TT_Spiderboss" };
+        private String[] monsters = { "GreatWraith", "Wraith", "AncientGolem", "GiantWolf", "LizardElder", "Golem", "Worm", "Dragon", "Wight", "TT_Spiderboss", "TTNGolem", "TTNWolf", "TTNWraith" };
         private String[] usefulMonsters = { "AncientGolem", "LizardElder", "Worm", "Dragon", "TT_Spiderboss" };
 
         public AutoSmite()

@@ -201,6 +201,8 @@ namespace SAwareness
         public static MenuItemSettings ActivatorDefensiveShieldBoost = new MenuItemSettings();
         public static MenuItemSettings ActivatorDefensiveMikaelCleanse = new MenuItemSettings();
         public static MenuItemSettings Killable = new MenuItemSettings(typeof(SAwareness.Killable));
+
+        public static MenuItemSettings GlobalSettings = new MenuItemSettings();
         //public static MenuItemSettings  = new MenuItemSettings();
     }
 
@@ -377,6 +379,7 @@ namespace SAwareness
                 Menu.ActivatorAutoSummonerSpellExhaust.MenuItems.Add(Menu.ActivatorAutoSummonerSpellExhaust.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorAutoSummonerSpellExhaustMinEnemies", "Min Enemies").SetValue(new Slider(3, 5, 1))));
                 Menu.ActivatorAutoSummonerSpellExhaust.MenuItems.Add(Menu.ActivatorAutoSummonerSpellExhaust.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorAutoSummonerSpellExhaustAllyPercent", "Ally Percent").SetValue(new Slider(20, 100, 1))));
                 Menu.ActivatorAutoSummonerSpellExhaust.MenuItems.Add(Menu.ActivatorAutoSummonerSpellExhaust.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorAutoSummonerSpellExhaustSelfPercent", "Self Percent").SetValue(new Slider(20, 100, 1))));
+                Menu.ActivatorAutoSummonerSpellExhaust.MenuItems.Add(Menu.ActivatorAutoSummonerSpellExhaust.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorAutoSummonerSpellExhaustUseUltSpells", "Ult Spells").SetValue(false)));
                 Menu.ActivatorAutoSummonerSpellExhaust.MenuItems.Add(Menu.ActivatorAutoSummonerSpellExhaust.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorAutoSummonerSpellExhaustActive", "Active").SetValue(false)));
                 Menu.ActivatorAutoSummonerSpellCleanse.Menu = Menu.ActivatorAutoSummonerSpell.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Auto Cleanse", "SAwarenessActivatorAutoSummonerSpellCleanse"));
                 Menu.ActivatorAutoSummonerSpellCleanse.MenuItems.Add(Menu.ActivatorAutoSummonerSpellCleanse.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorAutoSummonerSpellCleanseStun", "Stun").SetValue(false)));
@@ -530,6 +533,9 @@ namespace SAwareness
                 Menu.TurnAround.Menu = Menu.Misc.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Turn Around", "SAwarenessTurnAround"));
                 Menu.TurnAround.MenuItems.Add(Menu.TurnAround.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessTurnAroundActive", "Active").SetValue(false)));
 
+                Menu.GlobalSettings.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Global Settings", "SAwarenessGlobalSettings"));
+                Menu.GlobalSettings.MenuItems.Add(Menu.GlobalSettings.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessGlobalSettingsServerChatPingActive", "Server Chat/Ping").SetValue(false)));
+                
                 menu.AddItem(new LeagueSharp.Common.MenuItem("By Screeder", "By Screeder V0.85"));
                 menu.AddToMainMenu();
             }
