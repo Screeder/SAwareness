@@ -91,7 +91,7 @@
     <Compile Include="Activator\Activator.cs" />
     <Compile Include="AutoLevler.cs" />
     <Compile Include="Activator\AutoPot.cs" />
-    <Compile Include="AutoShield.cs" />
+    <Compile Include="Activator\AutoShield.cs" />
     <Compile Include="Activator\AutoSmite.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="Detector.cs" />
