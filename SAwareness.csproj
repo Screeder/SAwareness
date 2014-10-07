@@ -13,6 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <PreBuildEvent />
     <OutputPath>bin\Release</OutputPath>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>veröffentlichen\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -25,7 +26,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -48,7 +48,14 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>SAwareness.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Evade, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>H:\Programme\LeagueSharp\System\Evade.dll</HintPath>
+    </Reference>
     <Reference Include="LeagueSharp, Version=1.0.0.25, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>H:\Programme\LeagueSharp\System\LeagueSharp.dll</HintPath>
@@ -81,12 +88,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Activator.cs" />
+    <Compile Include="Activator\Activator.cs" />
     <Compile Include="AutoLevler.cs" />
-    <Compile Include="AutoPot.cs" />
+    <Compile Include="Activator\AutoPot.cs" />
     <Compile Include="AutoShield.cs" />
-    <Compile Include="AutoSmite.cs" />
+    <Compile Include="Activator\AutoSmite.cs" />
+    <Compile Include="Database.cs" />
     <Compile Include="Detector.cs" />
+    <Compile Include="Activator\EmbeddedAssembly.cs" />
     <Compile Include="Ganks.cs" />
     <Compile Include="Health.cs" />
     <Compile Include="Misc.cs" />
@@ -3308,10 +3317,12 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\DLL\Evade.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>copy /y "$(TargetPath)" "C:\Users\Screeder93\AppData\Roaming\LeagueSharp\Assemblies\C14BF944SAwareness.exe"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

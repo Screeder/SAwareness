@@ -1564,6 +1564,9 @@
   <data name="Poppy_ValiantFighter" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\PASSIVE\Poppy_ValiantFighter.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="Pounce" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\Pounce.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="PowerBall" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SPELLS\PowerBall.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -1882,6 +1885,18 @@
   <data name="Soraka" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\CHAMP\Soraka.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="SorakaE" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\SorakaE.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SorakaQ" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\SorakaQ.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SorakaR" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\SorakaR.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SorakaW" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\SorakaW.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="Soraka_Passive" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\PASSIVE\Soraka_Passive.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -1965,6 +1980,9 @@
   </data>
   <data name="SwainTorment" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SPELLS\SwainTorment.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Swipe" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\Swipe.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Syndra" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\CHAMP\Syndra.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -2250,6 +2268,9 @@
   </data>
   <data name="ViktorPowerTransfer" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SPELLS\ViktorPowerTransfer.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Viktor_Passive" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PASSIVE\Viktor_Passive.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="ViPassive" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\PASSIVE\ViPassive.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

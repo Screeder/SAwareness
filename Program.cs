@@ -212,7 +212,6 @@ namespace SAwareness
         {
             try
             {
-
                 //SUpdater.UpdateCheck();
             }
             catch (Exception e)
@@ -341,6 +340,7 @@ namespace SAwareness
                 Menu.GankDetector.MenuItems.Add(Menu.GankDetector.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessGankDetectorActive", "Active").SetValue(false)));
                 Menu.Ganks.MenuItems.Add(Menu.Ganks.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessGanksActive", "Active").SetValue(false)));
 
+                //Not crashing
                 Menu.Health.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Object Health", "SAwarenessObjectHealth"));
                 Menu.TowerHealth.Menu = Menu.Health.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Tower Health", "SAwarenessTowerHealth"));
                 Menu.TowerHealth.MenuItems.Add(Menu.TowerHealth.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessTowerHealthActive", "Active").SetValue(false)));
@@ -349,6 +349,7 @@ namespace SAwareness
                 Menu.Health.MenuItems.Add(Menu.Health.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessHealthMode", "Mode").SetValue(new StringList(new string[] { "Percent", "Normal" }))));
                 Menu.Health.MenuItems.Add(Menu.Health.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessHealthActive", "Active").SetValue(false)));
 
+                //Not crashing
                 Menu.Wards.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Wards", "SAwarenessWards"));
                 Menu.WardCorrector.Menu = Menu.Wards.Menu.AddSubMenu(new LeagueSharp.Common.Menu("WardCorrector", "SAwarenessWardCorrector"));
                 Menu.WardCorrector.MenuItems.Add(Menu.WardCorrector.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessWardCorrectorActive", "Active").SetValue(false)));
@@ -479,7 +480,10 @@ namespace SAwareness
                 Menu.ActivatorDefensiveMikaelCleanse.MenuItems.Add(Menu.ActivatorDefensiveMikaelCleanse.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorDefensiveShieldBoostActive", "Active").SetValue(false)));
                 Menu.ActivatorDefensive.MenuItems.Add(Menu.ActivatorDefensive.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorDefensiveActive", "Active").SetValue(false)));
 
-                Menu.AutoShield.Menu = Menu.Activator.Menu.AddSubMenu(new LeagueSharp.Common.Menu("AutoShield | Not implemented", "SAwarenessAutoShield"));
+                Menu.AutoShield.Menu = Menu.Activator.Menu.AddSubMenu(new LeagueSharp.Common.Menu("AutoShield | Beta", "SAwarenessAutoShield"));
+                Menu.AutoShield.MenuItems.Add(Menu.AutoShield.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoShieldBlockAA", "Block AutoAttack").SetValue(false)));
+                Menu.AutoShield.MenuItems.Add(Menu.AutoShield.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoShieldBlockCC", "Block CC").SetValue(false)));
+                Menu.AutoShield.MenuItems.Add(Menu.AutoShield.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoShieldBlockDamageAmount", "Block Damage").SetValue(new StringList(new string[] { "Medium", "High", "Extreme" }))));
                 Menu.AutoShield.MenuItems.Add(Menu.AutoShield.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoShieldActive", "Active").SetValue(false)));
                 Menu.AutoPot.Menu = Menu.Activator.Menu.AddSubMenu(new LeagueSharp.Common.Menu("AutoPot", "SAwarenessAutoPot"));
                 tempSettings = Menu.AutoPot.AddMenuItemSettings("HealthPot",
@@ -493,6 +497,7 @@ namespace SAwareness
                 Menu.AutoPot.MenuItems.Add(Menu.AutoPot.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessAutoPotActive", "Active").SetValue(false)));
                 Menu.Activator.MenuItems.Add(Menu.Activator.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorActive", "Active").SetValue(false)));
 
+                //Not crashing
                 Menu.Misc.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Misc", "SAwarenessMisc"));
                 Menu.Misc.MenuItems.Add(Menu.Misc.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessMiscActive", "Active").SetValue(false)));
                 Menu.SkinChanger.Menu = Menu.Misc.Menu.AddSubMenu(new LeagueSharp.Common.Menu("SkinChanger", "SAwarenessSkinChanger"));
@@ -553,6 +558,7 @@ namespace SAwareness
                 CreateMenu();
                 Game.PrintChat("SAwareness loaded!");
                 Game.OnGameUpdate += GameOnOnGameUpdate;
+                AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
             }
             catch (Exception e)
             {
@@ -623,6 +629,24 @@ namespace SAwareness
             }
 
             return type.GetProperties(BindingFlags.Static | BindingFlags.Public);
+        }
+
+        static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            return Load();
+        }
+
+        public static Assembly Load()
+        {
+            byte[] ba = null;
+            string resource = "SAwareness.Resources.DLL.Evade.dll";
+            Assembly curAsm = Assembly.GetExecutingAssembly();
+            using (Stream stm = curAsm.GetManifestResourceStream(resource))
+            {
+                ba = new byte[(int)stm.Length];
+                stm.Read(ba, 0, (int)stm.Length);
+                return Assembly.Load(ba);
+            }
         }
     }
 }
