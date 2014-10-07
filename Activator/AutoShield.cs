@@ -73,16 +73,6 @@ namespace SAwareness
                     return;
             }
             Game.OnGameUpdate += Game_OnGameUpdate;
-            Game.OnGameProcessPacket += Game_OnGameProcessPacket;
-        }
-
-        void Game_OnGameProcessPacket(GamePacketEventArgs args)
-        {
-            var reader = new BinaryReader(new MemoryStream(args.PacketData));
-            byte PacketId = reader.ReadByte();
-            if (PacketId != 0xB7)
-                return;
-            Log.LogPacket(args.PacketData);
         }
 
         ~AutoShield()
