@@ -136,8 +136,8 @@ namespace SAwareness
 
             foreach (var damage in tempDamages)
             {
-                Vector2 d2 = Drawing.WorldToScreen(damage.Key.ServerPosition);
-                Drawing.DrawText(d2.X, d2.Y, System.Drawing.Color.Aquamarine, Activator.CalcMaxDamage(damage.Key).ToString());
+                //Vector2 d2 = Drawing.WorldToScreen(damage.Key.ServerPosition);
+                //Drawing.DrawText(d2.X, d2.Y, System.Drawing.Color.Aquamarine, Activator.CalcMaxDamage(damage.Key).ToString());
 
                 if (Activator.CalcMaxDamage(damage.Key) > 0 && damage.Key.Distance(ObjectManager.Player.ServerPosition) < shield.Spell.Range)
                 {
