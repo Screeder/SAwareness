@@ -89,11 +89,11 @@ namespace SAwareness
                     break;
 
                 case "Sivir":
-                    _shield = new Shield(new Spell(SpellSlot.E, 0, 0, 0, 0), true);
+                    _shield = new Shield(new Spell(SpellSlot.E, 0, 0, 0, 0), true, false, true, true);
                     break;
 
                 case "Nocturne":
-                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
+                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true, false, true, true);
                     break;
 
                 default:

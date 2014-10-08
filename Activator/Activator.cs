@@ -866,7 +866,9 @@ namespace SAwareness
             if (target != null && sumIgnite != SpellSlot.Unknown)
             {
                 double igniteDmg = ObjectManager.Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
-                if (igniteDmg > target.Health)
+                double regenpersec = (target.FlatHPRegenMod + (target.HPRegenRate * target.Level));
+                double dmgafter = (igniteDmg - ((regenpersec * 5) / 2));
+                if (dmgafter > target.Health)
                 {
                     SpellSlot spellSlot = GetPacketSlot(sumIgnite);
                     if (spellSlot != SpellSlot.Unknown)
