@@ -177,7 +177,7 @@ namespace SAwareness
                             ObjectManager.Player.Spellbook.CastSpell(_shield.Spell.Slot, predOutput.CastPosition);
                         break;
                     }
-                    if (_shield.OnlySelf)
+                    if (_shield.OnlySelf && damage.Key.NetworkId == ObjectManager.Player.NetworkId)
                     {
                         ObjectManager.Player.Spellbook.CastSpell(_shield.Spell.Slot);
                         break;
