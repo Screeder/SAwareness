@@ -14,6 +14,6 @@
     <VerifyUploadedFiles>false</VerifyUploadedFiles>
   </PropertyGroup>
   <PropertyGroup>
-    <ReferencePath>C:\Users\Screeder93\Documents\Visual Studio 2012\Projects\SAwareness\SAwareness\Resources\DLL\</ReferencePath>
+    <ReferencePath>Resources\DLL\</ReferencePath>
   </PropertyGroup>
 </Project>
