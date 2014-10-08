@@ -424,6 +424,8 @@ namespace SAwareness
                     Menu.UimTracker.Menu.AddItem(
                         new MenuItem("SAwarenessUIMTrackerScale", "Scale").SetValue(new Slider(100, 100, 0))));
                 Menu.UimTracker.MenuItems.Add(
+                    Menu.UimTracker.Menu.AddItem(new MenuItem("SAwarenessUIMTrackerShowSS", "SS Time").SetValue(false)));
+                Menu.UimTracker.MenuItems.Add(
                     Menu.UimTracker.Menu.AddItem(new MenuItem("SAwarenessUIMTrackerActive", "Active").SetValue(false)));
                 Menu.SsCaller.Menu =
                     Menu.Tracker.Menu.AddSubMenu(new LeagueSharp.Common.Menu("SSCaller", "SAwarenessSSCaller"));

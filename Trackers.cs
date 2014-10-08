@@ -767,7 +767,7 @@ namespace SAwareness
 
     internal class SsCaller
     {
-        private static readonly Dictionary<Obj_AI_Hero, Time> Enemies = new Dictionary<Obj_AI_Hero, Time>();
+        public static readonly Dictionary<Obj_AI_Hero, Time> Enemies = new Dictionary<Obj_AI_Hero, Time>();
 
         public SsCaller()
         {
@@ -2826,6 +2826,21 @@ namespace SAwareness
                                  info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallStarted))
                             {
                                 DirectXDrawer.DrawText(_recF, enemy.Key.ChampionName, pos, SharpDX.Color.Chartreuse);
+                            }
+                        }
+                    }
+                }
+                if (Menu.UimTracker.GetMenuItem("SAwarenessUIMTrackerShowSS").GetValue<bool>())
+                { 
+                    foreach (var enemy in SsCaller.Enemies)
+                    {
+                        if (Menu.SsCaller.GetActive())
+                        {
+                            if (!enemy.Key.IsVisible && enemy.Value.InvisibleTime > 0)
+                            {
+                                Vector2 vec = Drawing.WorldToMinimap(enemy.Key.ServerPosition);
+                                var pos = new Size((int)vec.X, (int)vec.Y);
+                                DirectXDrawer.DrawText(_recF, enemy.Value.InvisibleTime.ToString(), pos, SharpDX.Color.Chartreuse);
                             }
                         }
                     }
