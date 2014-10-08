@@ -1538,6 +1538,21 @@ namespace SAwareness
                                     enemy.Value.SGui.InvisibleTime = 0;
                                 }
                             }
+
+                            //Death
+                            float temp = enemy.Key.Level*2.5f + 5;
+                            if (Math.Floor(Game.Time/60) >= 25)
+                            {
+                                enemy.Value.SGui.DeathTime = (int)(temp + ((temp / 50) * (Math.Floor(Game.Time / 60) - 25)));
+                            }
+                            else
+                            {
+                                enemy.Value.SGui.DeathTime = (int)temp;
+                            }
+                            if (enemy.Key.ChampionName.Contains("KogMaw"))
+                            {
+                                enemy.Value.SGui.DeathTime -= 4;
+                            }
                         }
                     }
                 }
