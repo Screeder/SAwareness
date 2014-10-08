@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -57,7 +58,8 @@ namespace SAwareness
         {
             Vision,
             Sight,
-            Trap
+            Trap,
+            Unknown
         }
 
         private const int WardRange = 1200;
@@ -71,13 +73,13 @@ namespace SAwareness
                 6424612, Color.BlueViolet));
             Objects.Add(new Object(ObjectType.Sight, "Stealth Ward", "SightWard", "SightWard", 180.0f, 161, 234594676,
                 Color.Green));
-            Objects.Add(new Object(ObjectType.Sight, "Warding Totem (Trinket)", "SightWard", "TrinketTotemLvl1", 60.0f,
+            Objects.Add(new Object(ObjectType.Sight, "Warding Totem (Trinket)", "YellowTrinket", "TrinketTotemLvl1", 60.0f,
                 56, 263796881, Color.Green));
-            Objects.Add(new Object(ObjectType.Sight, "Warding Totem (Trinket)", "SightWard", "trinkettotemlvl2", 120.0f,
+            Objects.Add(new Object(ObjectType.Sight, "Warding Totem (Trinket)", "YellowTrinketUpgrade", "trinkettotemlvl2", 120.0f,
                 56, 263796882, Color.Green));
             Objects.Add(new Object(ObjectType.Sight, "Greater Stealth Totem (Trinket)", "SightWard", "TrinketTotemLvl3",
                 180.0f, 56, 263796882, Color.Green));
-            Objects.Add(new Object(ObjectType.Sight, "Greater Vision Totem (Trinket)", "SightWard", "TrinketTotemLvl3B",
+            Objects.Add(new Object(ObjectType.Sight, "Greater Vision Totem (Trinket)", "VisionWard", "TrinketTotemLvl3B",
                 9999.9f, 137, 194218338, Color.BlueViolet));
             Objects.Add(new Object(ObjectType.Sight, "Wriggle's Lantern", "SightWard", "wrigglelantern", 180.0f, 73,
                 177752558, Color.Green));
@@ -99,6 +101,31 @@ namespace SAwareness
             GameObject.OnDelete += Obj_AI_Base_OnDelete;
             Drawing.OnDraw += Drawing_OnDraw;
             GameObject.OnCreate += GameObject_OnCreate;
+            Game.OnGameUpdate += Game_OnGameUpdate;
+            foreach (var obj in ObjectManager.Get<Obj_AI_Base>())
+            {
+                GameObject_OnCreate(obj, new EventArgs());
+            }
+        }
+
+        void Game_OnGameUpdate(EventArgs args)
+        {
+            if (!IsActive())
+                return;
+            List<ObjectData> objects = HidObjects.FindAll(x => x.ObjectBase.Name == "Unknown");
+            foreach (var obj1 in HidObjects.ToArray())
+            {
+                if(obj1.ObjectBase.Name.Contains("Unknown"))
+                    continue;
+                foreach (var obj2 in objects)
+                {
+                    if (Geometry.ProjectOn(obj1.EndPosition.To2D(), obj2.StartPosition.To2D(), obj2.EndPosition.To2D()).IsOnSegment)
+                    {
+                        HidObjects.Remove(obj2);
+                    }
+                }
+            }
+            
         }
 
         ~HiddenObject()
@@ -121,16 +148,35 @@ namespace SAwareness
                 return;
             try
             {
-                if (sender.Type == GameObjectType.obj_AI_Marker && ObjectManager.Player.Team != sender.Team)
-                {
+                if(!sender.IsValid)
+                    return;
+                if (sender is Obj_AI_Base && ObjectManager.Player.Team == sender.Team)
+                {   
                     foreach (Object obj in Objects)
                     {
-                        if (sender.Name == obj.ObjectName && !ObjectExist(sender.Position))
+                        if (((Obj_AI_Base)sender).BaseSkinName == obj.ObjectName && !ObjectExist(sender.Position))
                         {
-                            HidObjects.Add(new ObjectData(obj, sender.Position, Game.Time + obj.Duration, sender.Name,
+                            HidObjects.Add(new ObjectData(obj, sender.Position, Game.Time + ((Obj_AI_Base)sender).Mana, sender.Name,
                                 null, sender.NetworkId));
                             break;
                         }
+                    }
+                }
+                
+                if (sender is Obj_SpellLineMissile && ObjectManager.Player.Team == ((Obj_SpellMissile)sender).SpellCaster.Team)
+                {
+                    if (((Obj_SpellMissile)sender).SData.Name.Contains("itemplacementmissile"))
+                    {
+                        Utility.DelayAction.Add(10, () =>
+                        {
+                            if (!ObjectExist(((Obj_SpellMissile)sender).EndPosition))
+                            {
+
+                                HidObjects.Add(new ObjectData(new Object(ObjectType.Unknown, "Unknown", "Unknown", "Unknown", 180.0f, 0, 0, Color.Yellow), ((Obj_SpellMissile)sender).EndPosition, Game.Time + 180.0f, sender.Name, null,
+                                    sender.NetworkId, ((Obj_SpellMissile)sender).StartPosition));
+                            }
+                        });
+                        
                     }
                 }
             }
@@ -154,14 +200,14 @@ namespace SAwareness
                         HidObjects.RemoveAt(i);
                         break;
                     }
-                    Vector2 objMPos = Drawing.WorldToMinimap(obj.Position);
-                    Vector2 objPos = Drawing.WorldToScreen(obj.Position);
+                    Vector2 objMPos = Drawing.WorldToMinimap(obj.EndPosition);
+                    Vector2 objPos = Drawing.WorldToScreen(obj.EndPosition);
                     var posList = new List<Vector3>();
                     switch (obj.ObjectBase.Type)
                     {
                         case ObjectType.Sight:
-                            Utility.DrawCircle(obj.Position, WardRange, obj.ObjectBase.Color);
-                            posList = GetVision(obj.Position, WardRange);
+                            Utility.DrawCircle(obj.EndPosition, WardRange, obj.ObjectBase.Color);
+                            posList = GetVision(obj.EndPosition, WardRange);
                             for (int j = 0; j < posList.Count; j++)
                             {
                                 Vector2 visionPos1 = Drawing.WorldToScreen(posList[i]);
@@ -173,8 +219,8 @@ namespace SAwareness
                             break;
 
                         case ObjectType.Trap:
-                            Utility.DrawCircle(obj.Position, TrapRange, obj.ObjectBase.Color);
-                            posList = GetVision(obj.Position, TrapRange);
+                            Utility.DrawCircle(obj.EndPosition, TrapRange, obj.ObjectBase.Color);
+                            posList = GetVision(obj.EndPosition, TrapRange);
                             for (int j = 0; j < posList.Count; j++)
                             {
                                 Vector2 visionPos1 = Drawing.WorldToScreen(posList[i]);
@@ -186,8 +232,8 @@ namespace SAwareness
                             break;
 
                         case ObjectType.Vision:
-                            Utility.DrawCircle(obj.Position, WardRange, obj.ObjectBase.Color);
-                            posList = GetVision(obj.Position, WardRange);
+                            Utility.DrawCircle(obj.EndPosition, WardRange, obj.ObjectBase.Color);
+                            posList = GetVision(obj.EndPosition, WardRange);
                             for (int j = 0; j < posList.Count; j++)
                             {
                                 Vector2 visionPos1 = Drawing.WorldToScreen(posList[i]);
@@ -197,8 +243,12 @@ namespace SAwareness
                             }
                             Drawing.DrawText(objMPos[0], objMPos[1], obj.ObjectBase.Color, "V");
                             break;
+
+                        case ObjectType.Unknown:
+                            Drawing.DrawLine(Drawing.WorldToScreen(obj.StartPosition), Drawing.WorldToScreen(obj.EndPosition), 1, obj.ObjectBase.Color);
+                            break;
                     }
-                    Utility.DrawCircle(obj.Position, 50, obj.ObjectBase.Color);
+                    Utility.DrawCircle(obj.EndPosition, 50, obj.ObjectBase.Color);
                     float endTime = obj.EndTime - Game.Time;
                     if (!float.IsInfinity(endTime) && !float.IsNaN(endTime) && endTime.CompareTo(float.MaxValue) != 0)
                     {
@@ -244,7 +294,7 @@ namespace SAwareness
 
         private bool ObjectExist(Vector3 pos)
         {
-            return HidObjects.Any(obj => pos.Distance(obj.Position) < 30);
+            return HidObjects.Any(obj => pos.Distance(obj.EndPosition) < 30);
         }
 
         private void Game_OnGameProcessPacket(GamePacketEventArgs args)
@@ -285,7 +335,7 @@ namespace SAwareness
                                     {
                                         var objNew = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(networkId);
                                         if (objNew != null && objNew.IsValid)
-                                            objectData.Position = objNew.Position;
+                                            objectData.EndPosition = objNew.Position;
                                     }
                                 }
                             });
@@ -305,7 +355,7 @@ namespace SAwareness
                             ObjectData objectData = HidObjects[i];
                             if (objectData != null && objectData.NetworkId == networkId)
                             {
-                                objectData.Position = gObject.Position;
+                                objectData.EndPosition = gObject.Position;
                             }
                         }
                     }
@@ -336,12 +386,14 @@ namespace SAwareness
                 return;
             try
             {
+                if (!sender.IsValid)
+                    return;
                 for (int i = 0; i < HidObjects.Count; i++)
                 {
                     ObjectData obj = HidObjects[i];
-                    if (sender.Name == obj.ObjectBase.ObjectName ||
+                    if ((obj.ObjectBase != null && sender.Name == obj.ObjectBase.ObjectName) ||
                         sender.Name.Contains("Ward") && sender.Name.Contains("Death"))
-                        if (sender.Position.Distance(obj.Position) < 30)
+                        if (sender.Position.Distance(obj.EndPosition) < 30 || sender.Position.Distance(obj.StartPosition) < 30)
                         {
                             HidObjects.RemoveAt(i);
                         }
@@ -359,7 +411,9 @@ namespace SAwareness
                 return;
             try
             {
-                if (sender.Type == GameObjectType.obj_AI_Minion && ObjectManager.Player.Team != sender.Team)
+                if (!sender.IsValid)
+                    return;
+                if (ObjectManager.Player.Team != sender.Team)
                 {
                     foreach (Object obj in Objects)
                     {
@@ -410,17 +464,19 @@ namespace SAwareness
             public int NetworkId;
             public Object ObjectBase;
             public List<Vector2> Points;
-            public Vector3 Position;
+            public Vector3 EndPosition;
+            public Vector3 StartPosition;
 
-            public ObjectData(Object objectBase, Vector3 position, float endTime, String creator, List<Vector2> points,
-                int networkId)
+            public ObjectData(Object objectBase, Vector3 endPosition, float endTime, String creator, List<Vector2> points,
+                int networkId, Vector3 startPosition = new Vector3())
             {
                 ObjectBase = objectBase;
-                Position = position;
+                EndPosition = endPosition;
                 EndTime = endTime;
                 Creator = creator;
                 Points = points;
                 NetworkId = networkId;
+                StartPosition = startPosition;
             }
         }
     }
