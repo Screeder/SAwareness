@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 
 namespace SAwareness
 {
-    class SurrenderVote
+    internal class SurrenderVote
     {
-        private int lastNoVoteCount = 0;
+        private int _lastNoVoteCount;
 
         public SurrenderVote()
         {
@@ -28,7 +24,7 @@ namespace SAwareness
             return Menu.Misc.GetActive() && Menu.SurrenderVote.GetActive();
         }
 
-        void Game_OnGameProcessPacket(GamePacketEventArgs args)
+        private void Game_OnGameProcessPacket(GamePacketEventArgs args)
         {
             if (!IsActive())
                 return;
@@ -36,41 +32,55 @@ namespace SAwareness
             try
             {
                 var reader = new BinaryReader(new MemoryStream(args.PacketData));
-                byte PacketId = reader.ReadByte(); //PacketId
-                if (PacketId != 201)
+                byte packetId = reader.ReadByte(); //PacketId
+                if (packetId != 201)
                     return;
-                GamePacket gamePacket = new GamePacket(args.PacketData);
+                var gamePacket = new GamePacket(args.PacketData);
                 gamePacket.Position = 6;
-                var networkId = gamePacket.ReadInteger();
+                int networkId = gamePacket.ReadInteger();
                 gamePacket.Position = 11;
-                var noVote = gamePacket.ReadByte();
-                var allVote = gamePacket.ReadByte();
-                var team = gamePacket.ReadByte();
+                byte noVote = gamePacket.ReadByte();
+                byte allVote = gamePacket.ReadByte();
+                byte team = gamePacket.ReadByte();
 
-                foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+                foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>())
                 {
                     if (hero.NetworkId == networkId)
                     {
-                        if (noVote > lastNoVoteCount)
+                        if (noVote > _lastNoVoteCount)
                         {
-                            if (Menu.SurrenderVote.GetMenuItem("SAwarenessSurrenderVoteChatChoice").GetValue<StringList>().SelectedIndex == 1)
+                            if (
+                                Menu.SurrenderVote.GetMenuItem("SAwarenessSurrenderVoteChatChoice")
+                                    .GetValue<StringList>()
+                                    .SelectedIndex == 1)
                             {
                                 Game.PrintChat("{0} voted NO", hero.ChampionName);
                             }
-                            else if (Menu.SurrenderVote.GetMenuItem("SAwarenessSurrenderVoteChatChoice").GetValue<StringList>().SelectedIndex == 2 &&
-                                        Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
+                            else if (
+                                Menu.SurrenderVote.GetMenuItem("SAwarenessSurrenderVoteChatChoice")
+                                    .GetValue<StringList>()
+                                    .SelectedIndex == 2 &&
+                                Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive")
+                                    .GetValue<bool>())
                             {
                                 Game.Say("{0} voted NO", hero.ChampionName);
                             }
                         }
                         else
                         {
-                            if (Menu.SurrenderVote.GetMenuItem("SAwarenessSurrenderVoteChatChoice").GetValue<StringList>().SelectedIndex == 1)
+                            if (
+                                Menu.SurrenderVote.GetMenuItem("SAwarenessSurrenderVoteChatChoice")
+                                    .GetValue<StringList>()
+                                    .SelectedIndex == 1)
                             {
                                 Game.PrintChat("{0} voted YES", hero.ChampionName);
                             }
-                            else if (Menu.SurrenderVote.GetMenuItem("SAwarenessSurrenderVoteChatChoice").GetValue<StringList>().SelectedIndex == 2 &&
-                                        Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
+                            else if (
+                                Menu.SurrenderVote.GetMenuItem("SAwarenessSurrenderVoteChatChoice")
+                                    .GetValue<StringList>()
+                                    .SelectedIndex == 2 &&
+                                Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive")
+                                    .GetValue<bool>())
                             {
                                 Game.Say("{0} voted YES", hero.ChampionName);
                             }
@@ -78,12 +88,11 @@ namespace SAwareness
                         break;
                     }
                 }
-                lastNoVoteCount = noVote;
+                _lastNoVoteCount = noVote;
             }
             catch (Exception ex)
             {
-                Console.WriteLine("SurrenderProcess: " + ex.ToString());
-                return;
+                Console.WriteLine("SurrenderProcess: " + ex);
             }
         }
     }

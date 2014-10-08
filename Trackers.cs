@@ -1,25 +1,19 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Resources;
 using System.Threading;
 using LeagueSharp;
 using LeagueSharp.Common;
-using SAwareness.Properties;
 using SharpDX;
 using SharpDX.Direct3D9;
-using Buffer = SharpDX.Toolkit.Graphics.Buffer;
-using Color = SharpDX.Color;
+using Color = System.Drawing.Color;
 using Font = SharpDX.Direct3D9.Font;
 
 namespace SAwareness
 {
-    class CloneTracker
+    internal class CloneTracker
     {
         public CloneTracker()
         {
@@ -36,11 +30,11 @@ namespace SAwareness
             return Menu.Tracker.GetActive() && Menu.CloneTracker.GetActive();
         }
 
-        void Drawing_OnDraw(EventArgs args)
+        private void Drawing_OnDraw(EventArgs args)
         {
             if (!IsActive())
                 return;
-            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+            foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (hero.IsEnemy && !hero.IsDead)
                 {
@@ -49,60 +43,16 @@ namespace SAwareness
                         hero.ChampionName.Contains("MonkeyKing") ||
                         hero.ChampionName.Contains("Yorick"))
                     {
-                        Utility.DrawCircle(hero.ServerPosition, 100, System.Drawing.Color.Red);
-                        Utility.DrawCircle(hero.ServerPosition, 110, System.Drawing.Color.Red);
+                        Utility.DrawCircle(hero.ServerPosition, 100, Color.Red);
+                        Utility.DrawCircle(hero.ServerPosition, 110, Color.Red);
                     }
                 }
             }
         }
     }
 
-    class HiddenObject
+    internal class HiddenObject
     {
-        public class Object
-        {
-            public ObjectType Type;
-            public String Name;
-            public String ObjectName;
-            public String SpellName;
-            public float Duration;
-            public int Id;
-            public int Id2;
-            public System.Drawing.Color Color;
-
-            public Object(ObjectType type, String name, String objectName, String spellName, float duration, int id, int id2, System.Drawing.Color color)
-            {
-                Type = type;
-                Name = name;
-                ObjectName = objectName;
-                SpellName = spellName;
-                Duration = duration;
-                Id = id;
-                Id2 = id2;
-                Color = color;
-            }
-        }
-
-        public class ObjectData
-        {
-            public Object ObjectBase;
-            public Vector3 Position;
-            public float EndTime;
-            public String Creator;
-            public List<Vector2> Points;
-            public int NetworkId;
-
-            public ObjectData(Object objectBase, Vector3 position, float endTime, String creator, List<Vector2> points, int networkId)
-            {
-                ObjectBase = objectBase;
-                Position = position;
-                EndTime = endTime;
-                Creator = creator;
-                Points = points;
-                NetworkId = networkId;
-            }
-        }
-
         public enum ObjectType
         {
             Vision,
@@ -110,27 +60,39 @@ namespace SAwareness
             Trap
         }
 
-        const int WardRange = 1200;
-        const int TrapRange = 300;
-        public List<Object> Objects = new List<Object>();
+        private const int WardRange = 1200;
+        private const int TrapRange = 300;
         public List<ObjectData> HidObjects = new List<ObjectData>();
+        public List<Object> Objects = new List<Object>();
 
         public HiddenObject()
         {
-            Objects.Add(new Object(ObjectType.Vision, "Vision Ward", "VisionWard", "VisionWard", float.MaxValue, 8, 6424612, System.Drawing.Color.BlueViolet));
-            Objects.Add(new Object(ObjectType.Sight, "Stealth Ward", "SightWard", "SightWard", 180.0f, 161, 234594676, System.Drawing.Color.Green));
-            Objects.Add(new Object(ObjectType.Sight, "Warding Totem (Trinket)", "SightWard", "TrinketTotemLvl1", 60.0f, 56, 263796881, System.Drawing.Color.Green));
-            Objects.Add(new Object(ObjectType.Sight, "Warding Totem (Trinket)", "SightWard", "trinkettotemlvl2", 120.0f, 56, 263796882, System.Drawing.Color.Green));
-            Objects.Add(new Object(ObjectType.Sight, "Greater Stealth Totem (Trinket)", "SightWard", "TrinketTotemLvl3", 180.0f, 56, 263796882, System.Drawing.Color.Green));
-            Objects.Add(new Object(ObjectType.Sight, "Greater Vision Totem (Trinket)", "SightWard", "TrinketTotemLvl3B", 9999.9f, 137, 194218338, System.Drawing.Color.BlueViolet));
-            Objects.Add(new Object(ObjectType.Sight, "Wriggle's Lantern", "SightWard", "wrigglelantern", 180.0f, 73, 177752558, System.Drawing.Color.Green));
-            Objects.Add(new Object(ObjectType.Sight, "Quill Coat", "SightWard", "", 180.0f, 73, 135609454, System.Drawing.Color.Green));
-            Objects.Add(new Object(ObjectType.Sight, "Ghost Ward", "SightWard", "ItemGhostWard", 180.0f, 229, 101180708, System.Drawing.Color.Green));
+            Objects.Add(new Object(ObjectType.Vision, "Vision Ward", "VisionWard", "VisionWard", float.MaxValue, 8,
+                6424612, Color.BlueViolet));
+            Objects.Add(new Object(ObjectType.Sight, "Stealth Ward", "SightWard", "SightWard", 180.0f, 161, 234594676,
+                Color.Green));
+            Objects.Add(new Object(ObjectType.Sight, "Warding Totem (Trinket)", "SightWard", "TrinketTotemLvl1", 60.0f,
+                56, 263796881, Color.Green));
+            Objects.Add(new Object(ObjectType.Sight, "Warding Totem (Trinket)", "SightWard", "trinkettotemlvl2", 120.0f,
+                56, 263796882, Color.Green));
+            Objects.Add(new Object(ObjectType.Sight, "Greater Stealth Totem (Trinket)", "SightWard", "TrinketTotemLvl3",
+                180.0f, 56, 263796882, Color.Green));
+            Objects.Add(new Object(ObjectType.Sight, "Greater Vision Totem (Trinket)", "SightWard", "TrinketTotemLvl3B",
+                9999.9f, 137, 194218338, Color.BlueViolet));
+            Objects.Add(new Object(ObjectType.Sight, "Wriggle's Lantern", "SightWard", "wrigglelantern", 180.0f, 73,
+                177752558, Color.Green));
+            Objects.Add(new Object(ObjectType.Sight, "Quill Coat", "SightWard", "", 180.0f, 73, 135609454, Color.Green));
+            Objects.Add(new Object(ObjectType.Sight, "Ghost Ward", "SightWard", "ItemGhostWard", 180.0f, 229, 101180708,
+                Color.Green));
 
-            Objects.Add(new Object(ObjectType.Trap, "Yordle Snap Trap", "Cupcake Trap", "CaitlynYordleTrap", 240.0f, 62, 176176816, System.Drawing.Color.Red));
-            Objects.Add(new Object(ObjectType.Trap, "Jack In The Box", "Jack In The Box", "JackInTheBox", 60.0f, 2, 44637032, System.Drawing.Color.Red));
-            Objects.Add(new Object(ObjectType.Trap, "Bushwhack", "Noxious Trap", "Bushwhack", 240.0f, 9, 167611995, System.Drawing.Color.Red));
-            Objects.Add(new Object(ObjectType.Trap, "Noxious Trap", "Noxious Trap", "BantamTrap", 600.0f, 48, 176304336, System.Drawing.Color.Red));
+            Objects.Add(new Object(ObjectType.Trap, "Yordle Snap Trap", "Cupcake Trap", "CaitlynYordleTrap", 240.0f, 62,
+                176176816, Color.Red));
+            Objects.Add(new Object(ObjectType.Trap, "Jack In The Box", "Jack In The Box", "JackInTheBox", 60.0f, 2,
+                44637032, Color.Red));
+            Objects.Add(new Object(ObjectType.Trap, "Bushwhack", "Noxious Trap", "Bushwhack", 240.0f, 9, 167611995,
+                Color.Red));
+            Objects.Add(new Object(ObjectType.Trap, "Noxious Trap", "Noxious Trap", "BantamTrap", 600.0f, 48, 176304336,
+                Color.Red));
 
             Game.OnGameProcessPacket += Game_OnGameProcessPacket;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
@@ -153,7 +115,7 @@ namespace SAwareness
             return Menu.Tracker.GetActive() && Menu.VisionDetector.GetActive();
         }
 
-        void GameObject_OnCreate(GameObject sender, EventArgs args)
+        private void GameObject_OnCreate(GameObject sender, EventArgs args)
         {
             if (!IsActive())
                 return;
@@ -165,7 +127,8 @@ namespace SAwareness
                     {
                         if (sender.Name == obj.ObjectName && !ObjectExist(sender.Position))
                         {
-                            HidObjects.Add(new ObjectData(obj, sender.Position, Game.Time + obj.Duration, sender.Name, null, sender.NetworkId));
+                            HidObjects.Add(new ObjectData(obj, sender.Position, Game.Time + obj.Duration, sender.Name,
+                                null, sender.NetworkId));
                             break;
                         }
                     }
@@ -173,12 +136,11 @@ namespace SAwareness
             }
             catch (Exception ex)
             {
-                Console.WriteLine("HiddenObjectCreate: " + ex.ToString());
-                return;
+                Console.WriteLine("HiddenObjectCreate: " + ex);
             }
         }
 
-        void Drawing_OnDraw(EventArgs args)
+        private void Drawing_OnDraw(EventArgs args)
         {
             if (!IsActive())
                 return;
@@ -194,7 +156,7 @@ namespace SAwareness
                     }
                     Vector2 objMPos = Drawing.WorldToMinimap(obj.Position);
                     Vector2 objPos = Drawing.WorldToScreen(obj.Position);
-                    List<Vector3> posList = new List<Vector3>();
+                    var posList = new List<Vector3>();
                     switch (obj.ObjectBase.Type)
                     {
                         case ObjectType.Sight:
@@ -204,7 +166,8 @@ namespace SAwareness
                             {
                                 Vector2 visionPos1 = Drawing.WorldToScreen(posList[i]);
                                 Vector2 visionPos2 = Drawing.WorldToScreen(posList[i]);
-                                Drawing.DrawLine(visionPos1[0], visionPos1[1], visionPos2[0], visionPos2[1], 1.0f, obj.ObjectBase.Color);
+                                Drawing.DrawLine(visionPos1[0], visionPos1[1], visionPos2[0], visionPos2[1], 1.0f,
+                                    obj.ObjectBase.Color);
                             }
                             Drawing.DrawText(objMPos[0], objMPos[1], obj.ObjectBase.Color, "S");
                             break;
@@ -216,7 +179,8 @@ namespace SAwareness
                             {
                                 Vector2 visionPos1 = Drawing.WorldToScreen(posList[i]);
                                 Vector2 visionPos2 = Drawing.WorldToScreen(posList[i]);
-                                Drawing.DrawLine(visionPos1[0], visionPos1[1], visionPos2[0], visionPos2[1], 1.0f, obj.ObjectBase.Color);
+                                Drawing.DrawLine(visionPos1[0], visionPos1[1], visionPos2[0], visionPos2[1], 1.0f,
+                                    obj.ObjectBase.Color);
                             }
                             Drawing.DrawText(objMPos[0], objMPos[1], obj.ObjectBase.Color, "T");
                             break;
@@ -228,7 +192,8 @@ namespace SAwareness
                             {
                                 Vector2 visionPos1 = Drawing.WorldToScreen(posList[i]);
                                 Vector2 visionPos2 = Drawing.WorldToScreen(posList[i]);
-                                Drawing.DrawLine(visionPos1[0], visionPos1[1], visionPos2[0], visionPos2[1], 1.0f, obj.ObjectBase.Color);
+                                Drawing.DrawLine(visionPos1[0], visionPos1[1], visionPos2[0], visionPos2[1], 1.0f,
+                                    obj.ObjectBase.Color);
                             }
                             Drawing.DrawText(objMPos[0], objMPos[1], obj.ObjectBase.Color, "V");
                             break;
@@ -237,26 +202,22 @@ namespace SAwareness
                     float endTime = obj.EndTime - Game.Time;
                     if (!float.IsInfinity(endTime) && !float.IsNaN(endTime) && endTime.CompareTo(float.MaxValue) != 0)
                     {
-                        var m = (float)Math.Floor(endTime / 60);
-                        var s = (float)Math.Ceiling(endTime % 60);
+                        var m = (float) Math.Floor(endTime/60);
+                        var s = (float) Math.Ceiling(endTime%60);
                         String ms = (s < 10 ? m + ":0" + s : m + ":" + s);
                         Drawing.DrawText(objPos[0], objPos[1], obj.ObjectBase.Color, ms);
                     }
-
-
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("HiddenObjectDraw: " + ex.ToString());
-                return;
+                Console.WriteLine("HiddenObjectDraw: " + ex);
             }
-
         }
 
-        List<Vector3> GetVision(Vector3 viewPos, float range) //TODO: ADD IT
+        private List<Vector3> GetVision(Vector3 viewPos, float range) //TODO: ADD IT
         {
-            List<Vector3> list = new List<Vector3>();
+            var list = new List<Vector3>();
             //double qual = 2*Math.PI/25;
             //for (double i = 0; i < 2*Math.PI + qual;)
             //{
@@ -276,32 +237,32 @@ namespace SAwareness
             return list;
         }
 
-        Object HiddenObjectById(int id)
+        private Object HiddenObjectById(int id)
         {
             return Objects.FirstOrDefault(vision => id == vision.Id2);
         }
 
-        bool ObjectExist(Vector3 pos)
+        private bool ObjectExist(Vector3 pos)
         {
             return HidObjects.Any(obj => pos.Distance(obj.Position) < 30);
         }
 
-        void Game_OnGameProcessPacket(GamePacketEventArgs args)
+        private void Game_OnGameProcessPacket(GamePacketEventArgs args)
         {
             if (!IsActive())
                 return;
             try
             {
                 var reader = new BinaryReader(new MemoryStream(args.PacketData));
-                byte PacketId = reader.ReadByte(); //PacketId
-                if (PacketId == 181) //OLD 180
+                byte packetId = reader.ReadByte(); //PacketId
+                if (packetId == 181) //OLD 180
                 {
                     int networkId = BitConverter.ToInt32(reader.ReadBytes(4), 0);
                     var creator = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(networkId);
                     if (creator != null && creator.Team != ObjectManager.Player.Team)
                     {
                         reader.ReadBytes(7);
-                        var id = reader.ReadInt32();
+                        int id = reader.ReadInt32();
                         reader.ReadBytes(21);
                         networkId = BitConverter.ToInt32(reader.ReadBytes(4), 0);
                         reader.ReadBytes(12);
@@ -319,7 +280,7 @@ namespace SAwareness
                             {
                                 for (int i = 0; i < HidObjects.Count; i++)
                                 {
-                                    var objectData = HidObjects[i];
+                                    ObjectData objectData = HidObjects[i];
                                     if (objectData != null && objectData.NetworkId == networkId)
                                     {
                                         var objNew = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(networkId);
@@ -328,11 +289,12 @@ namespace SAwareness
                                     }
                                 }
                             });
-                            HidObjects.Add(new ObjectData(obj, pos, Game.Time + obj.Duration, creator.Name, null, networkId));
+                            HidObjects.Add(new ObjectData(obj, pos, Game.Time + obj.Duration, creator.Name, null,
+                                networkId));
                         }
                     }
                 }
-                else if (PacketId == 178)
+                else if (packetId == 178)
                 {
                     int networkId = BitConverter.ToInt32(reader.ReadBytes(4), 0);
                     var gObject = ObjectManager.GetUnitByNetworkId<GameObject>(networkId);
@@ -340,7 +302,7 @@ namespace SAwareness
                     {
                         for (int i = 0; i < HidObjects.Count; i++)
                         {
-                            var objectData = HidObjects[i];
+                            ObjectData objectData = HidObjects[i];
                             if (objectData != null && objectData.NetworkId == networkId)
                             {
                                 objectData.Position = gObject.Position;
@@ -348,12 +310,12 @@ namespace SAwareness
                         }
                     }
                 }
-                else if (PacketId == 50) //OLD 49
+                else if (packetId == 50) //OLD 49
                 {
                     int networkId = BitConverter.ToInt32(reader.ReadBytes(4), 0);
                     for (int i = 0; i < HidObjects.Count; i++)
                     {
-                        var objectData = HidObjects[i];
+                        ObjectData objectData = HidObjects[i];
                         var gObject = ObjectManager.GetUnitByNetworkId<GameObject>(networkId);
                         if (objectData != null && objectData.NetworkId == networkId)
                         {
@@ -364,13 +326,11 @@ namespace SAwareness
             }
             catch (Exception ex)
             {
-                Console.WriteLine("HiddenObjectProcess: " + ex.ToString());
-                return;
+                Console.WriteLine("HiddenObjectProcess: " + ex);
             }
-
         }
 
-        void Obj_AI_Base_OnDelete(GameObject sender, EventArgs args)
+        private void Obj_AI_Base_OnDelete(GameObject sender, EventArgs args)
         {
             if (!IsActive())
                 return;
@@ -379,7 +339,8 @@ namespace SAwareness
                 for (int i = 0; i < HidObjects.Count; i++)
                 {
                     ObjectData obj = HidObjects[i];
-                    if (sender.Name == obj.ObjectBase.ObjectName || sender.Name.Contains("Ward") && sender.Name.Contains("Death"))
+                    if (sender.Name == obj.ObjectBase.ObjectName ||
+                        sender.Name.Contains("Ward") && sender.Name.Contains("Death"))
                         if (sender.Position.Distance(obj.Position) < 30)
                         {
                             HidObjects.RemoveAt(i);
@@ -388,13 +349,11 @@ namespace SAwareness
             }
             catch (Exception ex)
             {
-                Console.WriteLine("HiddenObjectDelete: " + ex.ToString());
-                return;
+                Console.WriteLine("HiddenObjectDelete: " + ex);
             }
-
         }
 
-        void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        private void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (!IsActive())
                 return;
@@ -406,7 +365,8 @@ namespace SAwareness
                     {
                         if (args.SData.Name == obj.SpellName && !ObjectExist(args.End))
                         {
-                            HidObjects.Add(new ObjectData(obj, args.End, Game.Time + obj.Duration, sender.Name, null, sender.NetworkId));
+                            HidObjects.Add(new ObjectData(obj, args.End, Game.Time + obj.Duration, sender.Name, null,
+                                sender.NetworkId));
                             break;
                         }
                     }
@@ -414,61 +374,70 @@ namespace SAwareness
             }
             catch (Exception ex)
             {
-                Console.WriteLine("HiddenObjectSpell: " + ex.ToString());
-                return;
+                Console.WriteLine("HiddenObjectSpell: " + ex);
             }
+        }
 
+        public class Object
+        {
+            public Color Color;
+            public float Duration;
+            public int Id;
+            public int Id2;
+            public String Name;
+            public String ObjectName;
+            public String SpellName;
+            public ObjectType Type;
+
+            public Object(ObjectType type, String name, String objectName, String spellName, float duration, int id,
+                int id2, Color color)
+            {
+                Type = type;
+                Name = name;
+                ObjectName = objectName;
+                SpellName = spellName;
+                Duration = duration;
+                Id = id;
+                Id2 = id2;
+                Color = color;
+            }
+        }
+
+        public class ObjectData
+        {
+            public String Creator;
+            public float EndTime;
+            public int NetworkId;
+            public Object ObjectBase;
+            public List<Vector2> Points;
+            public Vector3 Position;
+
+            public ObjectData(Object objectBase, Vector3 position, float endTime, String creator, List<Vector2> points,
+                int networkId)
+            {
+                ObjectBase = objectBase;
+                Position = position;
+                EndTime = endTime;
+                Creator = creator;
+                Points = points;
+                NetworkId = networkId;
+            }
         }
     }
 
-    class DestinationTracker
+    internal class DestinationTracker
     {
-        static readonly Dictionary<Obj_AI_Hero, List<Ability>> Enemies = new Dictionary<Obj_AI_Hero, List<Ability>>();
-
-        public class Ability
-        {
-            public String SpellName;
-            public int Range;
-            public float Delay;
-            public bool Casted;
-            public int TimeCasted;
-            public Vector3 StartPos;
-            public Vector3 EndPos;
-            public bool OutOfBush;
-            public Obj_AI_Hero Owner;
-            public Obj_AI_Hero Target;
-            public bool TargetDead;
-            public int ExtraTicks;
-
-            public Ability(string spellName, int range, float delay, Obj_AI_Hero owner)
-            {
-                SpellName = spellName;
-                Range = range;
-                Delay = delay;
-                Owner = owner;
-            }
-        }
-
-        private bool AddObject(Obj_AI_Hero hero, List<Ability> abilities)
-        {
-            if (Enemies.ContainsKey(hero))
-                return false;
-            else
-            {
-                Enemies.Add(hero, abilities);
-            }
-            return true;
-            //TODO:Add
-        }
+        private static readonly Dictionary<Obj_AI_Hero, List<Ability>> Enemies =
+            new Dictionary<Obj_AI_Hero, List<Ability>>();
 
         public DestinationTracker()
         {
-            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+            foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (hero.IsEnemy)
                 {
                     var abilities = new List<Ability>();
-                    foreach (var spell in hero.SummonerSpellbook.Spells)
+                    foreach (SpellDataInst spell in hero.SummonerSpellbook.Spells)
                     {
                         if (spell.Name.Contains("Flash"))
                         {
@@ -549,6 +518,15 @@ namespace SAwareness
             Drawing.OnDraw += Drawing_OnDraw;
         }
 
+        private bool AddObject(Obj_AI_Hero hero, List<Ability> abilities)
+        {
+            if (Enemies.ContainsKey(hero))
+                return false;
+            Enemies.Add(hero, abilities);
+            return true;
+            //TODO:Add
+        }
+
         ~DestinationTracker()
         {
             Game.OnGameUpdate -= Game_OnGameUpdate;
@@ -562,13 +540,13 @@ namespace SAwareness
             return Menu.Tracker.GetActive() && Menu.DestinationTracker.GetActive();
         }
 
-        void Drawing_OnDraw(EventArgs args)
+        private void Drawing_OnDraw(EventArgs args)
         {
             if (!IsActive())
                 return;
             foreach (var enemy in Enemies)
             {
-                foreach (var ability in enemy.Value)
+                foreach (Ability ability in enemy.Value)
                 {
                     if (ability.Casted)
                     {
@@ -577,24 +555,25 @@ namespace SAwareness
 
                         if (ability.OutOfBush)
                         {
-                            Utility.DrawCircle(ability.EndPos, ability.Range, System.Drawing.Color.Red);
+                            Utility.DrawCircle(ability.EndPos, ability.Range, Color.Red);
                         }
                         else
                         {
-                            Utility.DrawCircle(ability.EndPos, ability.Range, System.Drawing.Color.Red);
-                            Drawing.DrawLine(startPos[0], startPos[1], endPos[0], endPos[1], 1.0f, System.Drawing.Color.Red);
+                            Utility.DrawCircle(ability.EndPos, ability.Range, Color.Red);
+                            Drawing.DrawLine(startPos[0], startPos[1], endPos[0], endPos[1], 1.0f, Color.Red);
                         }
-                        Drawing.DrawText(endPos[0], endPos[1], System.Drawing.Color.Bisque, enemy.Key.ChampionName + " " + ability.SpellName);
+                        Drawing.DrawText(endPos[0], endPos[1], Color.Bisque,
+                            enemy.Key.ChampionName + " " + ability.SpellName);
                     }
                 }
             }
         }
 
-        void Obj_AI_Base_OnCreate(GameObject sender, EventArgs args)
+        private void Obj_AI_Base_OnCreate(GameObject sender, EventArgs args)
         {
             if (!IsActive())
                 return;
-            foreach (KeyValuePair<Obj_AI_Hero, List<Ability>> enemy in Enemies)
+            foreach (var enemy in Enemies)
             {
                 if (enemy.Key.ChampionName == "Shaco")
                 {
@@ -603,15 +582,14 @@ namespace SAwareness
                         enemy.Value[0].StartPos = sender.Position;
                         enemy.Value[0].EndPos = sender.Position;
                         enemy.Value[0].Casted = true;
-                        enemy.Value[0].TimeCasted = (int)Game.Time;
+                        enemy.Value[0].TimeCasted = (int) Game.Time;
                         enemy.Value[0].OutOfBush = true;
                     }
                 }
             }
-
         }
 
-        Vector3 CalculateEndPos(Ability ability, GameObjectProcessSpellCastEventArgs args)
+        private Vector3 CalculateEndPos(Ability ability, GameObjectProcessSpellCastEventArgs args)
         {
             float dist = Vector3.Distance(args.Start, args.End);
             if (dist <= ability.Range)
@@ -622,7 +600,7 @@ namespace SAwareness
             {
                 Vector3 norm = args.Start - args.End;
                 norm.Normalize();
-                Vector3 endPos = args.Start - norm * ability.Range;
+                Vector3 endPos = args.Start - norm*ability.Range;
 
                 //endPos = FindNearestNonWall(); TODO: Add FindNearestNonWall
 
@@ -631,28 +609,28 @@ namespace SAwareness
             return ability.EndPos;
         }
 
-        void Obj_AI_Hero_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        private void Obj_AI_Hero_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (!IsActive())
                 return;
-            if (sender.GetType() == typeof(Obj_AI_Hero))
+            if (sender.GetType() == typeof (Obj_AI_Hero))
             {
-                var hero = (Obj_AI_Hero)sender;
+                var hero = (Obj_AI_Hero) sender;
                 if (hero.IsEnemy)
                 {
                     Obj_AI_Hero enemy = hero;
-                    foreach (KeyValuePair<Obj_AI_Hero, List<Ability>> abilities in Enemies)
+                    foreach (var abilities in Enemies)
                     {
                         if (abilities.Key.NetworkId != enemy.NetworkId)
                             continue;
                         int index = 0;
-                        foreach (var ability in abilities.Value)
+                        foreach (Ability ability in abilities.Value)
                         {
                             if (args.SData.Name == "vayneinquisition")
                             {
                                 if (ability.ExtraTicks > 0)
                                 {
-                                    ability.ExtraTicks = (int)Game.Time + 6 + 2 * args.Level;
+                                    ability.ExtraTicks = (int) Game.Time + 6 + 2*args.Level;
                                     return;
                                 }
                             }
@@ -712,7 +690,7 @@ namespace SAwareness
                                         break;
                                 }
                                 ability.Casted = true;
-                                ability.TimeCasted = (int)Game.Time;
+                                ability.TimeCasted = (int) Game.Time;
                                 return;
                             }
                             index++;
@@ -722,13 +700,13 @@ namespace SAwareness
             }
         }
 
-        void Game_OnGameUpdate(EventArgs args)
+        private void Game_OnGameUpdate(EventArgs args)
         {
             if (!IsActive())
                 return;
-            foreach (KeyValuePair<Obj_AI_Hero, List<Ability>> abilities in Enemies)
+            foreach (var abilities in Enemies)
             {
-                foreach (var ability in abilities.Value)
+                foreach (Ability ability in abilities.Value)
                 {
                     if (ability.Casted)
                     {
@@ -737,17 +715,13 @@ namespace SAwareness
                         {
                             if (Game.Time > (ability.TimeCasted + ability.Delay + 0.2))
                                 ability.Casted = false;
-                            /*else if (ability.Target.IsDead()) TODO: Waiting for adding Target
+                                /*else if (ability.Target.IsDead()) TODO: Waiting for adding Target
                             {
                                 Vector3 temp = ability.EndPos;
                                 ability.EndPos = ability.StartPos;
                                 ability.StartPos = temp;
                                 ability.TargetDead = true;
                             }*/
-                            else
-                            {
-                                //ability.EndPos = ability.Target.ServerPosition; TODO: Waiting for adding Target
-                            }
                         }
                         else if (ability.Owner.IsDead ||
                                  (!ability.Owner.IsValid && Game.Time > (ability.TimeCasted + /*variable*/ 2)) ||
@@ -765,24 +739,39 @@ namespace SAwareness
                 }
             }
         }
+
+        public class Ability
+        {
+            public bool Casted;
+            public float Delay;
+            public Vector3 EndPos;
+            public int ExtraTicks;
+            public bool OutOfBush;
+            public Obj_AI_Hero Owner;
+            public int Range;
+            public String SpellName;
+            public Vector3 StartPos;
+            public Obj_AI_Hero Target;
+            public bool TargetDead;
+            public int TimeCasted;
+
+            public Ability(string spellName, int range, float delay, Obj_AI_Hero owner)
+            {
+                SpellName = spellName;
+                Range = range;
+                Delay = delay;
+                Owner = owner;
+            }
+        }
     }
 
-    class SsCaller
+    internal class SsCaller
     {
-        static readonly Dictionary<Obj_AI_Hero, Time> Enemies = new Dictionary<Obj_AI_Hero, Time>();
-
-        public class Time
-        {
-            public int VisibleTime;
-            public int InvisibleTime;
-            public int LastTimeCalled;
-            public Vector3 LastPosition;
-            public bool Called;
-        }
+        private static readonly Dictionary<Obj_AI_Hero, Time> Enemies = new Dictionary<Obj_AI_Hero, Time>();
 
         public SsCaller()
         {
-            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+            foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (hero.IsEnemy)
                 {
@@ -799,66 +788,74 @@ namespace SAwareness
 
         public bool IsActive()
         {
-            return Menu.Tracker.GetActive() && Menu.SsCaller.GetActive() && Game.Time < (Menu.SsCaller.GetMenuItem("SAwarenessSSCallerDisableTime").GetValue<Slider>().Value * 60);
+            return Menu.Tracker.GetActive() && Menu.SsCaller.GetActive() &&
+                   Game.Time < (Menu.SsCaller.GetMenuItem("SAwarenessSSCallerDisableTime").GetValue<Slider>().Value*60);
         }
 
-        void Game_OnGameUpdate(EventArgs args)
+        private void Game_OnGameUpdate(EventArgs args)
         {
             if (!IsActive())
                 return;
-            foreach (KeyValuePair<Obj_AI_Hero, Time> enemy in Enemies)
+            foreach (var enemy in Enemies)
             {
                 UpdateTime(enemy);
                 HandleSs(enemy);
             }
         }
 
-        void HandleSs(KeyValuePair<Obj_AI_Hero, Time> enemy)
+        private void HandleSs(KeyValuePair<Obj_AI_Hero, Time> enemy)
         {
             Obj_AI_Hero hero = enemy.Key;
             if (enemy.Value.InvisibleTime > 5 && !enemy.Value.Called && Game.Time - enemy.Value.LastTimeCalled > 30)
             {
-                Vector2 pos = new Vector2(hero.Position.X, hero.Position.Y);
-                Packet.PingType pingType = Packet.PingType.Normal;
-                StringList t = Menu.SsCaller.GetMenuItem("SAwarenessSSCallerPingType").GetValue<StringList>();
-                pingType = (Packet.PingType)t.SelectedIndex + 1;
+                var pos = new Vector2(hero.Position.X, hero.Position.Y);
+                var pingType = Packet.PingType.Normal;
+                var t = Menu.SsCaller.GetMenuItem("SAwarenessSSCallerPingType").GetValue<StringList>();
+                pingType = (Packet.PingType) t.SelectedIndex + 1;
                 GamePacket gPacketT;
-                for (int i = 0; i < Menu.SsCaller.GetMenuItem("SAwarenessSSCallerPingTimes").GetValue<Slider>().Value; i++)
+                for (int i = 0;
+                    i < Menu.SsCaller.GetMenuItem("SAwarenessSSCallerPingTimes").GetValue<Slider>().Value;
+                    i++)
                 {
                     if (Menu.SsCaller.GetMenuItem("SAwarenessSSCallerLocalPing").GetValue<bool>())
                     {
-                        gPacketT = Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0, pingType + 176));
+                        gPacketT =
+                            Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0, pingType + 176));
                         gPacketT.Process();
                     }
                     else if (!Menu.SsCaller.GetMenuItem("SAwarenessSSCallerLocalPing").GetValue<bool>() &&
-                    Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
+                             Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive")
+                                 .GetValue<bool>())
                     {
-                        gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(enemy.Value.LastPosition.X, enemy.Value.LastPosition.Y, 0, pingType));
+                        gPacketT =
+                            Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(enemy.Value.LastPosition.X,
+                                enemy.Value.LastPosition.Y, 0, pingType));
                         gPacketT.Send();
                     }
-
                 }
                 if (Menu.SsCaller.GetMenuItem("SAwarenessSSCallerChatChoice").GetValue<StringList>().SelectedIndex == 1)
                 {
                     Game.PrintChat("ss {0}", hero.ChampionName);
                 }
-                else if (Menu.SsCaller.GetMenuItem("SAwarenessSSCallerChatChoice").GetValue<StringList>().SelectedIndex == 2 &&
+                else if (
+                    Menu.SsCaller.GetMenuItem("SAwarenessSSCallerChatChoice").GetValue<StringList>().SelectedIndex ==
+                    2 &&
                     Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
                 {
                     Game.Say("ss {0}", hero.ChampionName);
                 }
-                enemy.Value.LastTimeCalled = (int)Game.Time;
+                enemy.Value.LastTimeCalled = (int) Game.Time;
                 enemy.Value.Called = true;
             }
         }
 
-        void UpdateTime(KeyValuePair<Obj_AI_Hero, Time> enemy)
+        private void UpdateTime(KeyValuePair<Obj_AI_Hero, Time> enemy)
         {
             Obj_AI_Hero hero = enemy.Key;
             if (hero.IsVisible)
             {
                 Enemies[hero].InvisibleTime = 0;
-                Enemies[hero].VisibleTime = (int)Game.Time;
+                Enemies[hero].VisibleTime = (int) Game.Time;
                 enemy.Value.Called = false;
                 Enemies[hero].LastPosition = hero.ServerPosition;
             }
@@ -866,7 +863,7 @@ namespace SAwareness
             {
                 if (Enemies[hero].VisibleTime != 0)
                 {
-                    Enemies[hero].InvisibleTime = (int)(Game.Time - Enemies[hero].VisibleTime);
+                    Enemies[hero].InvisibleTime = (int) (Game.Time - Enemies[hero].VisibleTime);
                 }
                 else
                 {
@@ -874,56 +871,62 @@ namespace SAwareness
                 }
             }
         }
+
+        public class Time
+        {
+            public bool Called;
+            public int InvisibleTime;
+            public Vector3 LastPosition;
+            public int LastTimeCalled;
+            public int VisibleTime;
+        }
     }
 
-    public class UITracker
+    public class UiTracker
     {
-        class ChampInfos
-        {
+        private readonly Dictionary<Obj_AI_Hero, ChampInfos> _allies = new Dictionary<Obj_AI_Hero, ChampInfos>();
+        private readonly Dictionary<Obj_AI_Hero, ChampInfos> _enemies = new Dictionary<Obj_AI_Hero, ChampInfos>();
+        private Font _champF;
+        private Render.Rectangle _recB;
+        private Font _recF;
+        private Render.Rectangle _recS;
+        private Sprite _s;
+        private Font _spellF;
+        private Font _sumF;
+        private Texture _backBar;
+        private Size _backBarSize = new Size(96, 10);
+        private Size _champSize = new Size(64, 64);
+        private Texture _healthBar;
+        private Size _healthManaBarSize = new Size(96, 5);
+        private Texture _manaBar;
+        private Texture _overlayEmptyItem;
+        private Texture _overlayRecall;
+        private Texture _overlaySpellItem;
+        private Texture _overlaySummoner;
+        private Texture _overlaySummonerSpell;
+        private Size _recSize = new Size(64, 12);
+        private Vector2 _screen = new Vector2(Drawing.Width, Drawing.Height/2);
+        private Size _spellSize = new Size(16, 16);
+        private Size _sumSize = new Size(32, 32);
+        private bool _drawActive = true;
 
-            public class Gui
-            {
-                public class SpriteInfos
-                {
-                    public Texture Texture;
-                    public int Cd;
-                    public Size SizeSideBar;
-                    public Size SizeHpBar;
-                    public Size CoordsSideBar;
-                    public Size CoordsHpBar;
-                }
 
-                public SpriteInfos Champ = new SpriteInfos();
-                public SpriteInfos SpellPassive = new SpriteInfos();
-                public SpriteInfos SpellQ = new SpriteInfos();
-                public SpriteInfos SpellW = new SpriteInfos();
-                public SpriteInfos SpellE = new SpriteInfos();
-                public SpriteInfos SpellR = new SpriteInfos();
-                public SpriteInfos SpellSum1 = new SpriteInfos();
-                public SpriteInfos SpellSum2 = new SpriteInfos();
-                public SpriteInfos BackBar = new SpriteInfos();
-                public SpriteInfos HealthBar = new SpriteInfos();
-                public SpriteInfos ManaBar = new SpriteInfos();
-                public SpriteInfos RecallBar = new SpriteInfos();
-                public SpriteInfos[] Item = new SpriteInfos[7];
-                public ItemId[] ItemId = new ItemId[7];
-                public int DeathTime;
-                public int VisibleTime;
-                public int InvisibleTime;
-                public String SHealth;
-                public String SMana;
-                public Vector2 Pos = new Vector2();
-            }
+        private Size _hudSize;
+        private Vector2 _lastCursorPos;
+        private bool _moveActive;
+        private int _oldAx = 0;
+        private int _oldAy = 0;
+        private int _oldEx;
+        private int _oldEy;
+        private float _scalePc = 1.0f;
+        private bool _shiftActive;
 
-            public Gui SGui = new Gui();
-        }
-
-        public UITracker()
+        public UiTracker()
         {
             if (!IsActive())
                 return;
-            var loaded = false;
-            var tries = 0;
+            bool loaded = false;
+            int tries = 0;
             while (!loaded)
             {
                 loaded = Init(tries >= 5);
@@ -948,100 +951,125 @@ namespace SAwareness
             AppDomain.CurrentDomain.ProcessExit += delegate { Drawing_OnPreReset(new EventArgs()); };
         }
 
-        void Game_OnWndProc(WndEventArgs args)
+        private void Game_OnWndProc(WndEventArgs args)
         {
             if (!IsActive())
                 return;
-            HandleInput((WindowsMessages)args.Msg, Utils.GetCursorPos(), args.WParam);
+            HandleInput((WindowsMessages) args.Msg, Utils.GetCursorPos(), args.WParam);
         }
 
-        void HandleInput(WindowsMessages message, Vector2 cursorPos, uint key)
+        private void HandleInput(WindowsMessages message, Vector2 cursorPos, uint key)
         {
-            HandleUIMove(message, cursorPos, key);
+            HandleUiMove(message, cursorPos, key);
             HandleChampClick(message, cursorPos, key);
         }
 
-        void HandleUIMove(WindowsMessages message, Vector2 cursorPos, uint key)
+        private void HandleUiMove(WindowsMessages message, Vector2 cursorPos, uint key)
         {
-            if (message != WindowsMessages.WM_LBUTTONDOWN && message != WindowsMessages.WM_MOUSEMOVE && message != WindowsMessages.WM_LBUTTONUP || (!moveActive && message == WindowsMessages.WM_MOUSEMOVE)
+            if (message != WindowsMessages.WM_LBUTTONDOWN && message != WindowsMessages.WM_MOUSEMOVE &&
+                message != WindowsMessages.WM_LBUTTONUP || (!_moveActive && message == WindowsMessages.WM_MOUSEMOVE)
                 )
             {
                 return;
             }
             if (message == WindowsMessages.WM_LBUTTONDOWN)
             {
-                lastCursorPos = cursorPos;
+                _lastCursorPos = cursorPos;
             }
             if (message == WindowsMessages.WM_LBUTTONUP)
             {
-                lastCursorPos = new Vector2();
-                moveActive = false;
+                _lastCursorPos = new Vector2();
+                _moveActive = false;
                 return;
             }
-            KeyValuePair<Obj_AI_Hero, ChampInfos> firstEnemyHero = new KeyValuePair<Obj_AI_Hero, ChampInfos>();
-            foreach (KeyValuePair<Obj_AI_Hero, ChampInfos> enemy in Enemies.Reverse())
+            var firstEnemyHero = new KeyValuePair<Obj_AI_Hero, ChampInfos>();
+            foreach (var enemy in _enemies.Reverse())
             {
                 firstEnemyHero = enemy;
                 break;
             }
-            if (firstEnemyHero.Key != null && Common.IsInside(cursorPos, firstEnemyHero.Value.SGui.SpellPassive.SizeSideBar, 
-                hudSize.Width, hudSize.Height))
+            if (firstEnemyHero.Key != null &&
+                Common.IsInside(cursorPos, firstEnemyHero.Value.SGui.SpellPassive.SizeSideBar,
+                    _hudSize.Width, _hudSize.Height))
             {
-                moveActive = true;
+                _moveActive = true;
                 if (message == WindowsMessages.WM_MOUSEMOVE)
                 {
-                    Slider curSliderX = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetMenuItem("SAwarenessUITrackerEnemyTrackerXPos").GetValue<Slider>();
-                    Slider curSliderY = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetMenuItem("SAwarenessUITrackerEnemyTrackerYPos").GetValue<Slider>();
-                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetMenuItem("SAwarenessUITrackerEnemyTrackerXPos")
-                        .SetValue(new Slider((int)(curSliderX.Value + cursorPos.X - lastCursorPos.X), curSliderX.MinValue, curSliderX.MaxValue));
-                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetMenuItem("SAwarenessUITrackerEnemyTrackerYPos")
-                        .SetValue(new Slider((int)(curSliderY.Value + cursorPos.Y - lastCursorPos.Y), curSliderY.MinValue, curSliderY.MaxValue));
-                    lastCursorPos = cursorPos;
+                    var curSliderX =
+                        Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker")
+                            .GetMenuItem("SAwarenessUITrackerEnemyTrackerXPos")
+                            .GetValue<Slider>();
+                    var curSliderY =
+                        Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker")
+                            .GetMenuItem("SAwarenessUITrackerEnemyTrackerYPos")
+                            .GetValue<Slider>();
+                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker")
+                        .GetMenuItem("SAwarenessUITrackerEnemyTrackerXPos")
+                        .SetValue(new Slider((int) (curSliderX.Value + cursorPos.X - _lastCursorPos.X),
+                            curSliderX.MinValue, curSliderX.MaxValue));
+                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker")
+                        .GetMenuItem("SAwarenessUITrackerEnemyTrackerYPos")
+                        .SetValue(new Slider((int) (curSliderY.Value + cursorPos.Y - _lastCursorPos.Y),
+                            curSliderY.MinValue, curSliderY.MaxValue));
+                    _lastCursorPos = cursorPos;
                 }
             }
-            KeyValuePair<Obj_AI_Hero, ChampInfos> firstAllyHero = new KeyValuePair<Obj_AI_Hero, ChampInfos>();
-            foreach (KeyValuePair<Obj_AI_Hero, ChampInfos> ally in Allies.Reverse())
+            var firstAllyHero = new KeyValuePair<Obj_AI_Hero, ChampInfos>();
+            foreach (var ally in _allies.Reverse())
             {
                 firstAllyHero = ally;
                 break;
             }
-            if (firstAllyHero.Key != null && Common.IsInside(cursorPos, firstAllyHero.Value.SGui.SpellPassive.SizeSideBar,
-                hudSize.Width, hudSize.Height))
+            if (firstAllyHero.Key != null &&
+                Common.IsInside(cursorPos, firstAllyHero.Value.SGui.SpellPassive.SizeSideBar,
+                    _hudSize.Width, _hudSize.Height))
             {
-                moveActive = true;
+                _moveActive = true;
                 if (message == WindowsMessages.WM_MOUSEMOVE)
                 {
-                    Slider curSliderX = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetMenuItem("SAwarenessUITrackerAllyTrackerXPos").GetValue<Slider>();
-                    Slider curSliderY = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetMenuItem("SAwarenessUITrackerAllyTrackerYPos").GetValue<Slider>();
-                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetMenuItem("SAwarenessUITrackerAllyTrackerXPos")
-                        .SetValue(new Slider((int)(curSliderX.Value + cursorPos.X - lastCursorPos.X), curSliderX.MinValue, curSliderX.MaxValue));
-                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetMenuItem("SAwarenessUITrackerAllyTrackerYPos")
-                        .SetValue(new Slider((int)(curSliderY.Value + cursorPos.Y - lastCursorPos.Y), curSliderY.MinValue, curSliderY.MaxValue));
-                    lastCursorPos = cursorPos;
+                    var curSliderX =
+                        Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker")
+                            .GetMenuItem("SAwarenessUITrackerAllyTrackerXPos")
+                            .GetValue<Slider>();
+                    var curSliderY =
+                        Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker")
+                            .GetMenuItem("SAwarenessUITrackerAllyTrackerYPos")
+                            .GetValue<Slider>();
+                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker")
+                        .GetMenuItem("SAwarenessUITrackerAllyTrackerXPos")
+                        .SetValue(new Slider((int) (curSliderX.Value + cursorPos.X - _lastCursorPos.X),
+                            curSliderX.MinValue, curSliderX.MaxValue));
+                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker")
+                        .GetMenuItem("SAwarenessUITrackerAllyTrackerYPos")
+                        .SetValue(new Slider((int) (curSliderY.Value + cursorPos.Y - _lastCursorPos.Y),
+                            curSliderY.MinValue, curSliderY.MaxValue));
+                    _lastCursorPos = cursorPos;
                 }
             }
-            
         }
 
-        void HandleChampClick(WindowsMessages message, Vector2 cursorPos, uint key)
+        private void HandleChampClick(WindowsMessages message, Vector2 cursorPos, uint key)
         {
-            if ((message != WindowsMessages.WM_KEYDOWN && key == 16) && message != WindowsMessages.WM_LBUTTONDOWN && (message != WindowsMessages.WM_KEYUP && key == 16) || (!shiftActive && message == WindowsMessages.WM_LBUTTONDOWN))
+            if ((message != WindowsMessages.WM_KEYDOWN && key == 16) && message != WindowsMessages.WM_LBUTTONDOWN &&
+                (message != WindowsMessages.WM_KEYUP && key == 16) ||
+                (!_shiftActive && message == WindowsMessages.WM_LBUTTONDOWN))
             {
                 return;
             }
             if (message == WindowsMessages.WM_KEYDOWN && key == 16)
             {
-                shiftActive = true;
+                _shiftActive = true;
             }
             if (message == WindowsMessages.WM_KEYUP && key == 16)
             {
-                shiftActive = false;
+                _shiftActive = false;
             }
             if (message == WindowsMessages.WM_LBUTTONDOWN)
             {
-                foreach (KeyValuePair<Obj_AI_Hero, ChampInfos> enemy in Enemies.Reverse())
+                foreach (var enemy in _enemies.Reverse())
                 {
-                    if (Common.IsInside(cursorPos, enemy.Value.SGui.Champ.SizeSideBar, _champSize.Width, _champSize.Height))
+                    if (Common.IsInside(cursorPos, enemy.Value.SGui.Champ.SizeSideBar, _champSize.Width,
+                        _champSize.Height))
                     {
                         //TODO: Add Camera move
                         if (Menu.UiTracker.GetMenuItem("SAwarenessUITrackerPingActive").GetValue<bool>())
@@ -1052,80 +1080,41 @@ namespace SAwareness
                     }
                 }
             }
-            
         }
 
-        void Drawing_OnPostReset(EventArgs args)
+        private void Drawing_OnPostReset(EventArgs args)
         {
             if (Drawing.Direct3DDevice == null || Drawing.Direct3DDevice.IsDisposed)
                 return;
-            S.OnResetDevice();
-            ChampF.OnResetDevice();
-            SpellF.OnResetDevice();
-            SumF.OnResetDevice();
-            RecF.OnResetDevice();
-            RecS.OnPostReset();
-            RecB.OnPreReset();
-            drawActive = true;
+            _s.OnResetDevice();
+            _champF.OnResetDevice();
+            _spellF.OnResetDevice();
+            _sumF.OnResetDevice();
+            _recF.OnResetDevice();
+            _recS.OnPostReset();
+            _recB.OnPreReset();
+            _drawActive = true;
         }
 
-        void Drawing_OnPreReset(EventArgs args)
+        private void Drawing_OnPreReset(EventArgs args)
         {
-            S.OnLostDevice();
-            ChampF.OnLostDevice();
-            SpellF.OnLostDevice();
-            SumF.OnLostDevice();
-            RecF.OnLostDevice();
-            RecS.OnPreReset();
-            RecB.OnPreReset();
-            drawActive = false;
+            _s.OnLostDevice();
+            _champF.OnLostDevice();
+            _spellF.OnLostDevice();
+            _sumF.OnLostDevice();
+            _recF.OnLostDevice();
+            _recS.OnPreReset();
+            _recB.OnPreReset();
+            _drawActive = false;
         }
 
-        ~UITracker()
+        ~UiTracker()
         {
             Game.OnGameUpdate -= Game_OnGameUpdate;
             Drawing.OnPreReset -= Drawing_OnPreReset;
             Drawing.OnPostReset -= Drawing_OnPostReset;
             Drawing.OnEndScene -= Drawing_OnEndScene;
         }
-
-        private bool drawActive = true;
-        Sprite S;
-        Font SpellF;
-        Font ChampF;
-        Font SumF;
-        Font RecF;
-        private Render.Rectangle RecB;
-        private Render.Rectangle RecS;
-        Vector2 _screen = new Vector2(Drawing.Width, Drawing.Height / 2);
-        readonly Dictionary<Obj_AI_Hero, ChampInfos> Enemies = new Dictionary<Obj_AI_Hero, ChampInfos>();
-        readonly Dictionary<Obj_AI_Hero, ChampInfos> Allies = new Dictionary<Obj_AI_Hero, ChampInfos>();
-        private Texture _overlaySummoner;
-        private Texture _overlaySummonerSpell;
-        private Texture _overlaySpellItem;
-        private Texture _overlayEmptyItem;
-        private Texture _overlayRecall;
-        private Texture _healthBar;
-        private Texture _manaBar;
-        private Texture _backBar;
-        Size _champSize = new Size(64, 64);
-        Size _sumSize = new Size(32, 32);
-        Size _spellSize = new Size(16, 16);
-        Size _healthManaBarSize = new Size(96, 5);
-        Size _backBarSize = new Size(96, 10);
-        Size _recSize = new Size(64, 12);
-
-        
-
-        private float scalePc = 1.0f;
-        private int oldEX = 0;
-        private int oldEY = 0;
-        private int oldAX = 0;
-        private int oldAY = 0;
-        private Size hudSize = new Size();
-        private bool moveActive = false;
-        private bool shiftActive = false;
-        private Vector2 lastCursorPos = new Vector2();
 
         public bool IsActive()
         {
@@ -1136,35 +1125,58 @@ namespace SAwareness
         {
             try
             {
-                S = new Sprite(Drawing.Direct3DDevice);
-                RecF = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Times New Roman", 12));
-                SpellF = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Times New Roman", 8));
-                ChampF = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Times New Roman", 30));
-                SumF = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Times New Roman", 16));
-                RecS = new Render.Rectangle(0, 0, 16, 16, Color.Green);
-                RecB = new Render.Rectangle(0, 0, (int)(16 * 1.7), (int)(16 * 1.7), Color.Green);
+                _s = new Sprite(Drawing.Direct3DDevice);
+                _recF = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Times New Roman", 12));
+                _spellF = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Times New Roman", 8));
+                _champF = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Times New Roman", 30));
+                _sumF = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Times New Roman", 16));
+                _recS = new Render.Rectangle(0, 0, 16, 16, SharpDX.Color.Green);
+                _recB = new Render.Rectangle(0, 0, (int) (16*1.7), (int) (16*1.7), SharpDX.Color.Green);
             }
             catch (Exception)
             {
-
                 return false;
                 //throw;
             }
-            if (Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetMenuItem("SAwarenessUITrackerEnemyTrackerXPos").GetValue<Slider>().Value == -1)
+            if (
+                Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker")
+                    .GetMenuItem("SAwarenessUITrackerEnemyTrackerXPos")
+                    .GetValue<Slider>()
+                    .Value == -1)
             {
-                Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetMenuItem("SAwarenessUITrackerEnemyTrackerXPos").SetValue(new Slider((int)_screen.X, Drawing.Width, 0));
+                Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker")
+                    .GetMenuItem("SAwarenessUITrackerEnemyTrackerXPos")
+                    .SetValue(new Slider((int) _screen.X, Drawing.Width, 0));
             }
-            if (Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetMenuItem("SAwarenessUITrackerEnemyTrackerYPos").GetValue<Slider>().Value == -1)
+            if (
+                Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker")
+                    .GetMenuItem("SAwarenessUITrackerEnemyTrackerYPos")
+                    .GetValue<Slider>()
+                    .Value == -1)
             {
-                Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetMenuItem("SAwarenessUITrackerEnemyTrackerYPos").SetValue(new Slider((int)_screen.Y, Drawing.Height, 0));
+                Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker")
+                    .GetMenuItem("SAwarenessUITrackerEnemyTrackerYPos")
+                    .SetValue(new Slider((int) _screen.Y, Drawing.Height, 0));
             }
-            if (Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetMenuItem("SAwarenessUITrackerAllyTrackerXPos").GetValue<Slider>().Value == -1)
+            if (
+                Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker")
+                    .GetMenuItem("SAwarenessUITrackerAllyTrackerXPos")
+                    .GetValue<Slider>()
+                    .Value == -1)
             {
-                Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetMenuItem("SAwarenessUITrackerAllyTrackerXPos").SetValue(new Slider((int)_screen.X, Drawing.Width, 0));
+                Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker")
+                    .GetMenuItem("SAwarenessUITrackerAllyTrackerXPos")
+                    .SetValue(new Slider((int) _screen.X, Drawing.Width, 0));
             }
-            if (Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetMenuItem("SAwarenessUITrackerAllyTrackerYPos").GetValue<Slider>().Value == -1)
+            if (
+                Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker")
+                    .GetMenuItem("SAwarenessUITrackerAllyTrackerYPos")
+                    .GetValue<Slider>()
+                    .Value == -1)
             {
-                Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetMenuItem("SAwarenessUITrackerAllyTrackerYPos").SetValue(new Slider((int)_screen.Y, Drawing.Height, 0));
+                Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker")
+                    .GetMenuItem("SAwarenessUITrackerAllyTrackerYPos")
+                    .SetValue(new Slider((int) _screen.Y, Drawing.Height, 0));
             }
 
             //var loc = Assembly.GetExecutingAssembly().Location;
@@ -1192,14 +1204,15 @@ namespace SAwareness
             SpriteHelper.LoadTexture("RecallBar", ref _overlayRecall, SpriteHelper.TextureType.Default);
 
 
-            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+            foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (hero.IsEnemy)
                 {
                     var champ = new ChampInfos();
                     //SpriteHelper.LoadTexture(hero.ChampionName + ".dds", "CHAMP/", loc + "CHAMP\\" + hero.ChampionName + ".dds", ref champ.SGui.Champ.Texture);
-                    SpriteHelper.LoadTexture(hero.ChampionName, ref champ.SGui.Champ.Texture, SpriteHelper.TextureType.Default);
-                    var s1 = hero.Spellbook.Spells;
+                    SpriteHelper.LoadTexture(hero.ChampionName, ref champ.SGui.Champ.Texture,
+                        SpriteHelper.TextureType.Default);
+                    SpellDataInst[] s1 = hero.Spellbook.Spells;
                     //SpriteHelper.LoadTexture(s1[0].Name + ".dds", "PASSIVE/", loc + "PASSIVE\\" + s1[0].Name + ".dds", ref champ.SGui.Passive.Texture);
                     //SpriteHelper.LoadTexture(s1[0].Name + ".dds", "SPELLS/", loc + "SPELLS\\" + s1[0].Name + ".dds", ref champ.SGui.SpellQ.Texture);
                     //SpriteHelper.LoadTexture(s1[1].Name + ".dds", "SPELLS/", loc + "SPELLS\\" + s1[1].Name + ".dds", ref champ.SGui.SpellW.Texture);
@@ -1213,32 +1226,37 @@ namespace SAwareness
                     //var s2 = hero.SummonerSpellbook.Spells;
                     //SpriteHelper.LoadTexture(s2[0].Name + ".dds", "SUMMONERS/", loc + "SUMMONERS\\" + s2[0].Name + ".dds", ref champ.SGui.SpellSum1.Texture);
                     //SpriteHelper.LoadTexture(s2[1].Name + ".dds", "SUMMONERS/", loc + "SUMMONERS\\" + s2[1].Name + ".dds", ref champ.SGui.SpellSum2.Texture);
-                    var s2 = hero.SummonerSpellbook.Spells;
-                    SpriteHelper.LoadTexture(s2[0].Name + "1", ref champ.SGui.SpellSum1.Texture, SpriteHelper.TextureType.Summoner);
-                    SpriteHelper.LoadTexture(s2[1].Name + "1", ref champ.SGui.SpellSum2.Texture, SpriteHelper.TextureType.Summoner);
+                    SpellDataInst[] s2 = hero.SummonerSpellbook.Spells;
+                    SpriteHelper.LoadTexture(s2[0].Name + "1", ref champ.SGui.SpellSum1.Texture,
+                        SpriteHelper.TextureType.Summoner);
+                    SpriteHelper.LoadTexture(s2[1].Name + "1", ref champ.SGui.SpellSum2.Texture,
+                        SpriteHelper.TextureType.Summoner);
 
-                    Enemies.Add(hero, champ);
+                    _enemies.Add(hero, champ);
                 }
             }
 
-            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+            foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (!hero.IsEnemy && !hero.IsMe)
                 {
                     var champ = new ChampInfos();
-                    SpriteHelper.LoadTexture(hero.ChampionName, ref champ.SGui.Champ.Texture, SpriteHelper.TextureType.Default);
-                    var s1 = hero.Spellbook.Spells;
+                    SpriteHelper.LoadTexture(hero.ChampionName, ref champ.SGui.Champ.Texture,
+                        SpriteHelper.TextureType.Default);
+                    SpellDataInst[] s1 = hero.Spellbook.Spells;
                     //SpriteHelper.LoadTexture(s1[0].Name + ".dds", "PASSIVE/", loc + "PASSIVE\\" + s1[0].Name + ".dds", ref champ.SGui.Passive.Texture);
                     SpriteHelper.LoadTexture(s1[0].Name, ref champ.SGui.SpellQ.Texture, SpriteHelper.TextureType.Default);
                     SpriteHelper.LoadTexture(s1[1].Name, ref champ.SGui.SpellW.Texture, SpriteHelper.TextureType.Default);
                     SpriteHelper.LoadTexture(s1[2].Name, ref champ.SGui.SpellE.Texture, SpriteHelper.TextureType.Default);
                     SpriteHelper.LoadTexture(s1[3].Name, ref champ.SGui.SpellR.Texture, SpriteHelper.TextureType.Default);
 
-                    var s2 = hero.SummonerSpellbook.Spells;
-                    SpriteHelper.LoadTexture(s2[0].Name, ref champ.SGui.SpellSum1.Texture, SpriteHelper.TextureType.Summoner);
-                    SpriteHelper.LoadTexture(s2[1].Name + "1", ref champ.SGui.SpellSum2.Texture, SpriteHelper.TextureType.Summoner);
+                    SpellDataInst[] s2 = hero.SummonerSpellbook.Spells;
+                    SpriteHelper.LoadTexture(s2[0].Name, ref champ.SGui.SpellSum1.Texture,
+                        SpriteHelper.TextureType.Summoner);
+                    SpriteHelper.LoadTexture(s2[1].Name + "1", ref champ.SGui.SpellSum2.Texture,
+                        SpriteHelper.TextureType.Summoner);
 
-                    Allies.Add(hero, champ);
+                    _allies.Add(hero, champ);
                 }
             }
             UpdateItems(true);
@@ -1261,130 +1279,263 @@ namespace SAwareness
             int yOffsetAdd;
             if (calcEenemy)
             {
-                heroes = Enemies;
-                percentScale = (float)Menu.UiTracker.GetMenuItem("SAwarenessUITrackerScale").GetValue<Slider>().Value / 100;
-                mode = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetMenuItem("SAwarenessUITrackerEnemyTrackerMode").GetValue<StringList>();
-                modeHead = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetMenuItem("SAwarenessUITrackerEnemyTrackerHeadMode").GetValue<StringList>();
+                heroes = _enemies;
+                percentScale = (float) Menu.UiTracker.GetMenuItem("SAwarenessUITrackerScale").GetValue<Slider>().Value/
+                               100;
+                mode =
+                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker")
+                        .GetMenuItem("SAwarenessUITrackerEnemyTrackerMode")
+                        .GetValue<StringList>();
+                modeHead =
+                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker")
+                        .GetMenuItem("SAwarenessUITrackerEnemyTrackerHeadMode")
+                        .GetValue<StringList>();
                 count = 0;
-                xOffset = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetMenuItem("SAwarenessUITrackerEnemyTrackerXPos").GetValue<Slider>().Value;
-                oldEX = xOffset;
-                yOffset = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetMenuItem("SAwarenessUITrackerEnemyTrackerYPos").GetValue<Slider>().Value;
-                oldEY = yOffset;
-                yOffsetAdd = (int)(20 * percentScale);
+                xOffset =
+                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker")
+                        .GetMenuItem("SAwarenessUITrackerEnemyTrackerXPos")
+                        .GetValue<Slider>()
+                        .Value;
+                _oldEx = xOffset;
+                yOffset =
+                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker")
+                        .GetMenuItem("SAwarenessUITrackerEnemyTrackerYPos")
+                        .GetValue<Slider>()
+                        .Value;
+                _oldEy = yOffset;
+                yOffsetAdd = (int) (20*percentScale);
             }
             else
             {
-                heroes = Allies;
-                percentScale = (float)Menu.UiTracker.GetMenuItem("SAwarenessUITrackerScale").GetValue<Slider>().Value / 100;
-                mode = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetMenuItem("SAwarenessUITrackerAllyTrackerMode").GetValue<StringList>();
-                modeHead = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetMenuItem("SAwarenessUITrackerAllyTrackerHeadMode").GetValue<StringList>();
+                heroes = _allies;
+                percentScale = (float) Menu.UiTracker.GetMenuItem("SAwarenessUITrackerScale").GetValue<Slider>().Value/
+                               100;
+                mode =
+                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker")
+                        .GetMenuItem("SAwarenessUITrackerAllyTrackerMode")
+                        .GetValue<StringList>();
+                modeHead =
+                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker")
+                        .GetMenuItem("SAwarenessUITrackerAllyTrackerHeadMode")
+                        .GetValue<StringList>();
                 count = 0;
-                xOffset = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetMenuItem("SAwarenessUITrackerAllyTrackerXPos").GetValue<Slider>().Value;
-                oldEX = xOffset;
-                yOffset = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetMenuItem("SAwarenessUITrackerAllyTrackerYPos").GetValue<Slider>().Value;
-                oldEY = yOffset;
-                yOffsetAdd = (int)(20 * percentScale);
+                xOffset =
+                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker")
+                        .GetMenuItem("SAwarenessUITrackerAllyTrackerXPos")
+                        .GetValue<Slider>()
+                        .Value;
+                _oldAx = xOffset;
+                yOffset =
+                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker")
+                        .GetMenuItem("SAwarenessUITrackerAllyTrackerYPos")
+                        .GetValue<Slider>()
+                        .Value;
+                _oldAy = yOffset;
+                yOffsetAdd = (int) (20*percentScale);
             }
-            
-            hudSize = new Size();
+
+            _hudSize = new Size();
             foreach (var hero in heroes)
             {
                 if (mode.SelectedIndex == 0 || mode.SelectedIndex == 2)
                 {
-                    hero.Value.SGui.SpellPassive.SizeSideBar = new Size((int)xOffset - (int)(_champSize.Width * percentScale) - (int)(_sumSize.Width * percentScale) - (int)(_spellSize.Width * percentScale), (int)yOffset - (int)(_spellSize.Height * percentScale) * (count * 4 - 0) - count * (int)(_backBarSize.Height * percentScale) - count * (int)(_spellSize.Height * percentScale) - yOffsetAdd);
-                    hero.Value.SGui.SpellQ.SizeSideBar = new Size(hero.Value.SGui.SpellPassive.SizeSideBar.Width, hero.Value.SGui.SpellPassive.SizeSideBar.Height + (int)(_spellSize.Height * percentScale) * 1);
-                    hero.Value.SGui.SpellW.SizeSideBar = new Size(hero.Value.SGui.SpellPassive.SizeSideBar.Width, hero.Value.SGui.SpellPassive.SizeSideBar.Height + (int)(_spellSize.Height * percentScale) * 2);
-                    hero.Value.SGui.SpellE.SizeSideBar = new Size(hero.Value.SGui.SpellPassive.SizeSideBar.Width, hero.Value.SGui.SpellPassive.SizeSideBar.Height + (int)(_spellSize.Height * percentScale) * 3);
-                    hero.Value.SGui.SpellR.SizeSideBar = new Size(hero.Value.SGui.SpellPassive.SizeSideBar.Width, hero.Value.SGui.SpellPassive.SizeSideBar.Height + (int)(_spellSize.Height * percentScale) * 4);
+                    hero.Value.SGui.SpellPassive.SizeSideBar =
+                        new Size(
+                            xOffset - (int) (_champSize.Width*percentScale) - (int) (_sumSize.Width*percentScale) -
+                            (int) (_spellSize.Width*percentScale),
+                            yOffset - (int) (_spellSize.Height*percentScale)*(count*4 - 0) -
+                            count*(int) (_backBarSize.Height*percentScale) -
+                            count*(int) (_spellSize.Height*percentScale) - yOffsetAdd);
+                    hero.Value.SGui.SpellQ.SizeSideBar = new Size(hero.Value.SGui.SpellPassive.SizeSideBar.Width,
+                        hero.Value.SGui.SpellPassive.SizeSideBar.Height + (int) (_spellSize.Height*percentScale)*1);
+                    hero.Value.SGui.SpellW.SizeSideBar = new Size(hero.Value.SGui.SpellPassive.SizeSideBar.Width,
+                        hero.Value.SGui.SpellPassive.SizeSideBar.Height + (int) (_spellSize.Height*percentScale)*2);
+                    hero.Value.SGui.SpellE.SizeSideBar = new Size(hero.Value.SGui.SpellPassive.SizeSideBar.Width,
+                        hero.Value.SGui.SpellPassive.SizeSideBar.Height + (int) (_spellSize.Height*percentScale)*3);
+                    hero.Value.SGui.SpellR.SizeSideBar = new Size(hero.Value.SGui.SpellPassive.SizeSideBar.Width,
+                        hero.Value.SGui.SpellPassive.SizeSideBar.Height + (int) (_spellSize.Height*percentScale)*4);
 
-                    hero.Value.SGui.Champ.SizeSideBar = new Size(hero.Value.SGui.SpellPassive.SizeSideBar.Width + (int)(_spellSize.Width * percentScale), hero.Value.SGui.SpellPassive.SizeSideBar.Height);
-                    hero.Value.SGui.SpellSum1.SizeSideBar = new Size(hero.Value.SGui.Champ.SizeSideBar.Width + (int)(_champSize.Width * percentScale), hero.Value.SGui.SpellPassive.SizeSideBar.Height);
-                    hero.Value.SGui.SpellSum2.SizeSideBar = new Size(hero.Value.SGui.SpellSum1.SizeSideBar.Width, hero.Value.SGui.SpellPassive.SizeSideBar.Height + (int)(_sumSize.Height * percentScale));
+                    hero.Value.SGui.Champ.SizeSideBar =
+                        new Size(
+                            hero.Value.SGui.SpellPassive.SizeSideBar.Width + (int) (_spellSize.Width*percentScale),
+                            hero.Value.SGui.SpellPassive.SizeSideBar.Height);
+                    hero.Value.SGui.SpellSum1.SizeSideBar =
+                        new Size(hero.Value.SGui.Champ.SizeSideBar.Width + (int) (_champSize.Width*percentScale),
+                            hero.Value.SGui.SpellPassive.SizeSideBar.Height);
+                    hero.Value.SGui.SpellSum2.SizeSideBar = new Size(hero.Value.SGui.SpellSum1.SizeSideBar.Width,
+                        hero.Value.SGui.SpellPassive.SizeSideBar.Height + (int) (_sumSize.Height*percentScale));
 
                     if (hero.Value.SGui.Item[0] == null)
                         hero.Value.SGui.Item[0] = new ChampInfos.Gui.SpriteInfos();
-                    hero.Value.SGui.Item[0].SizeSideBar = new Size(hero.Value.SGui.SpellR.SizeSideBar.Width, hero.Value.SGui.SpellR.SizeSideBar.Height + (int)(_spellSize.Height * percentScale));
+                    hero.Value.SGui.Item[0].SizeSideBar = new Size(hero.Value.SGui.SpellR.SizeSideBar.Width,
+                        hero.Value.SGui.SpellR.SizeSideBar.Height + (int) (_spellSize.Height*percentScale));
                     for (int i = 1; i < hero.Value.SGui.Item.Length; i++)
                     {
                         if (hero.Value.SGui.Item[i] == null)
                             hero.Value.SGui.Item[i] = new ChampInfos.Gui.SpriteInfos();
-                        hero.Value.SGui.Item[i].SizeSideBar = new Size(hero.Value.SGui.Item[0].SizeSideBar.Width + (int)(_spellSize.Width * percentScale) * i, hero.Value.SGui.Item[0].SizeSideBar.Height);
+                        hero.Value.SGui.Item[i].SizeSideBar =
+                            new Size(
+                                hero.Value.SGui.Item[0].SizeSideBar.Width + (int) (_spellSize.Width*percentScale)*i,
+                                hero.Value.SGui.Item[0].SizeSideBar.Height);
                     }
 
-                    hero.Value.SGui.SpellSum1.CoordsSideBar = new Size(hero.Value.SGui.SpellSum1.SizeSideBar.Width + (int)(_sumSize.Width * percentScale) / 2, hero.Value.SGui.SpellSum1.SizeSideBar.Height + (int)(_sumSize.Height * percentScale) / 8);
-                    hero.Value.SGui.SpellSum2.CoordsSideBar = new Size(hero.Value.SGui.SpellSum2.SizeSideBar.Width + (int)(_sumSize.Width * percentScale) / 2, hero.Value.SGui.SpellSum2.SizeSideBar.Height + (int)(_sumSize.Height * percentScale) / 8);
-                    hero.Value.SGui.Champ.CoordsSideBar = new Size(hero.Value.SGui.Champ.SizeSideBar.Width + (int)(_champSize.Width * percentScale) / 2, hero.Value.SGui.Champ.SizeSideBar.Height + (int)(_champSize.Height * percentScale) / 8);
-                    hero.Value.SGui.SpellPassive.CoordsSideBar = new Size(hero.Value.SGui.SpellPassive.SizeSideBar.Width + (int)(_spellSize.Width * percentScale) / 2, hero.Value.SGui.SpellPassive.SizeSideBar.Height + (int)(_spellSize.Height * percentScale) / 8);
-                    hero.Value.SGui.SpellQ.CoordsSideBar = new Size(hero.Value.SGui.SpellQ.SizeSideBar.Width + (int)(_spellSize.Width * percentScale) / 2, hero.Value.SGui.SpellQ.SizeSideBar.Height + (int)(_spellSize.Height * percentScale) / 8);
-                    hero.Value.SGui.SpellW.CoordsSideBar = new Size(hero.Value.SGui.SpellW.SizeSideBar.Width + (int)(_spellSize.Width * percentScale) / 2, hero.Value.SGui.SpellW.SizeSideBar.Height + (int)(_spellSize.Height * percentScale) / 8);
-                    hero.Value.SGui.SpellE.CoordsSideBar = new Size(hero.Value.SGui.SpellE.SizeSideBar.Width + (int)(_spellSize.Width * percentScale) / 2, hero.Value.SGui.SpellE.SizeSideBar.Height + (int)(_spellSize.Height * percentScale) / 8);
-                    hero.Value.SGui.SpellR.CoordsSideBar = new Size(hero.Value.SGui.SpellR.SizeSideBar.Width + (int)(_spellSize.Width * percentScale) / 2, hero.Value.SGui.SpellR.SizeSideBar.Height + (int)(_spellSize.Height * percentScale) / 8);
+                    hero.Value.SGui.SpellSum1.CoordsSideBar =
+                        new Size(hero.Value.SGui.SpellSum1.SizeSideBar.Width + (int) (_sumSize.Width*percentScale)/2,
+                            hero.Value.SGui.SpellSum1.SizeSideBar.Height + (int) (_sumSize.Height*percentScale)/8);
+                    hero.Value.SGui.SpellSum2.CoordsSideBar =
+                        new Size(hero.Value.SGui.SpellSum2.SizeSideBar.Width + (int) (_sumSize.Width*percentScale)/2,
+                            hero.Value.SGui.SpellSum2.SizeSideBar.Height + (int) (_sumSize.Height*percentScale)/8);
+                    hero.Value.SGui.Champ.CoordsSideBar =
+                        new Size(hero.Value.SGui.Champ.SizeSideBar.Width + (int) (_champSize.Width*percentScale)/2,
+                            hero.Value.SGui.Champ.SizeSideBar.Height + (int) (_champSize.Height*percentScale)/8);
+                    hero.Value.SGui.SpellPassive.CoordsSideBar =
+                        new Size(
+                            hero.Value.SGui.SpellPassive.SizeSideBar.Width + (int) (_spellSize.Width*percentScale)/2,
+                            hero.Value.SGui.SpellPassive.SizeSideBar.Height + (int) (_spellSize.Height*percentScale)/8);
+                    hero.Value.SGui.SpellQ.CoordsSideBar =
+                        new Size(hero.Value.SGui.SpellQ.SizeSideBar.Width + (int) (_spellSize.Width*percentScale)/2,
+                            hero.Value.SGui.SpellQ.SizeSideBar.Height + (int) (_spellSize.Height*percentScale)/8);
+                    hero.Value.SGui.SpellW.CoordsSideBar =
+                        new Size(hero.Value.SGui.SpellW.SizeSideBar.Width + (int) (_spellSize.Width*percentScale)/2,
+                            hero.Value.SGui.SpellW.SizeSideBar.Height + (int) (_spellSize.Height*percentScale)/8);
+                    hero.Value.SGui.SpellE.CoordsSideBar =
+                        new Size(hero.Value.SGui.SpellE.SizeSideBar.Width + (int) (_spellSize.Width*percentScale)/2,
+                            hero.Value.SGui.SpellE.SizeSideBar.Height + (int) (_spellSize.Height*percentScale)/8);
+                    hero.Value.SGui.SpellR.CoordsSideBar =
+                        new Size(hero.Value.SGui.SpellR.SizeSideBar.Width + (int) (_spellSize.Width*percentScale)/2,
+                            hero.Value.SGui.SpellR.SizeSideBar.Height + (int) (_spellSize.Height*percentScale)/8);
 
-                    hero.Value.SGui.BackBar.SizeSideBar = new Size(hero.Value.SGui.Champ.SizeSideBar.Width, hero.Value.SGui.SpellSum2.SizeSideBar.Height + (int)(_sumSize.Height * percentScale));
-                    hero.Value.SGui.HealthBar.SizeSideBar = new Size(hero.Value.SGui.BackBar.SizeSideBar.Width, hero.Value.SGui.BackBar.SizeSideBar.Height);
-                    hero.Value.SGui.ManaBar.SizeSideBar = new Size(hero.Value.SGui.BackBar.SizeSideBar.Width, hero.Value.SGui.BackBar.SizeSideBar.Height + (int)(_healthManaBarSize.Height * percentScale) + 3);
-                    hero.Value.SGui.SHealth = ((int)hero.Key.Health) + "/" + ((int)hero.Key.MaxHealth);
-                    hero.Value.SGui.SMana = ((int)hero.Key.Mana) + "/" + ((int)hero.Key.MaxMana);
-                    hero.Value.SGui.HealthBar.CoordsSideBar = new Size(hero.Value.SGui.HealthBar.SizeSideBar.Width + (int)(_healthManaBarSize.Width * percentScale) / 2, hero.Value.SGui.HealthBar.SizeSideBar.Height - (int)(_healthManaBarSize.Height * percentScale) / 2);
-                    hero.Value.SGui.ManaBar.CoordsSideBar = new Size(hero.Value.SGui.ManaBar.SizeSideBar.Width + (int)(_healthManaBarSize.Width * percentScale) / 2, hero.Value.SGui.ManaBar.SizeSideBar.Height - (int)(_healthManaBarSize.Height * percentScale) / 2);
+                    hero.Value.SGui.BackBar.SizeSideBar = new Size(hero.Value.SGui.Champ.SizeSideBar.Width,
+                        hero.Value.SGui.SpellSum2.SizeSideBar.Height + (int) (_sumSize.Height*percentScale));
+                    hero.Value.SGui.HealthBar.SizeSideBar = new Size(hero.Value.SGui.BackBar.SizeSideBar.Width,
+                        hero.Value.SGui.BackBar.SizeSideBar.Height);
+                    hero.Value.SGui.ManaBar.SizeSideBar = new Size(hero.Value.SGui.BackBar.SizeSideBar.Width,
+                        hero.Value.SGui.BackBar.SizeSideBar.Height + (int) (_healthManaBarSize.Height*percentScale) + 3);
+                    hero.Value.SGui.SHealth = ((int) hero.Key.Health) + "/" + ((int) hero.Key.MaxHealth);
+                    hero.Value.SGui.SMana = ((int) hero.Key.Mana) + "/" + ((int) hero.Key.MaxMana);
+                    hero.Value.SGui.HealthBar.CoordsSideBar =
+                        new Size(
+                            hero.Value.SGui.HealthBar.SizeSideBar.Width +
+                            (int) (_healthManaBarSize.Width*percentScale)/2,
+                            hero.Value.SGui.HealthBar.SizeSideBar.Height -
+                            (int) (_healthManaBarSize.Height*percentScale)/2);
+                    hero.Value.SGui.ManaBar.CoordsSideBar =
+                        new Size(
+                            hero.Value.SGui.ManaBar.SizeSideBar.Width + (int) (_healthManaBarSize.Width*percentScale)/2,
+                            hero.Value.SGui.ManaBar.SizeSideBar.Height -
+                            (int) (_healthManaBarSize.Height*percentScale)/2);
 
-                    hero.Value.SGui.RecallBar.SizeSideBar = new Size(hero.Value.SGui.Champ.SizeSideBar.Width, hero.Value.SGui.BackBar.SizeSideBar.Height - (int)(_champSize.Height * percentScale) / 4);
-                    hero.Value.SGui.RecallBar.CoordsSideBar = new Size(hero.Value.SGui.RecallBar.SizeSideBar.Width + (int)(_recSize.Width * percentScale) / 2, hero.Value.SGui.RecallBar.SizeSideBar.Height - (int)(_recSize.Height * percentScale) / 2);
+                    hero.Value.SGui.RecallBar.SizeSideBar = new Size(hero.Value.SGui.Champ.SizeSideBar.Width,
+                        hero.Value.SGui.BackBar.SizeSideBar.Height - (int) (_champSize.Height*percentScale)/4);
+                    hero.Value.SGui.RecallBar.CoordsSideBar =
+                        new Size(hero.Value.SGui.RecallBar.SizeSideBar.Width + (int) (_recSize.Width*percentScale)/2,
+                            hero.Value.SGui.RecallBar.SizeSideBar.Height - (int) (_recSize.Height*percentScale)/2);
 
-                    yOffsetAdd += (int)(20 * percentScale);
+                    yOffsetAdd += (int) (20*percentScale);
                     Size nSize = (hero.Value.SGui.Item[hero.Value.SGui.Item.Length - 1].SizeSideBar) -
-                        (hero.Value.SGui.SpellPassive.SizeSideBar);
-                    nSize.Height += (int)(8 * percentScale);
-                    hudSize += nSize;
-                    hudSize.Width = nSize.Width;
-                    hudSize.Width += _spellSize.Width;
-                    hudSize.Height += (int)(20 * percentScale);
+                                 (hero.Value.SGui.SpellPassive.SizeSideBar);
+                    nSize.Height += (int) (8*percentScale);
+                    _hudSize += nSize;
+                    _hudSize.Width = nSize.Width;
+                    _hudSize.Width += _spellSize.Width;
+                    _hudSize.Height += (int) (20*percentScale);
                     count++;
                 }
                 if (mode.SelectedIndex == 1 || mode.SelectedIndex == 2)
                 {
                     if (modeHead.SelectedIndex == 0)
                     {
-                        float HpPosScale = 0.8f;
+                        const float hpPosScale = 0.8f;
                         Vector2 hpPos = hero.Key.HPBarPosition;
-                        hero.Value.SGui.SpellSum1.SizeHpBar = new Size((int)hpPos.X - 20, (int)hpPos.Y);
-                        hero.Value.SGui.SpellSum2.SizeHpBar = new Size(hero.Value.SGui.SpellSum1.SizeHpBar.Width, hero.Value.SGui.SpellSum1.SizeHpBar.Height + (int)(_sumSize.Height * HpPosScale));
-                        hero.Value.SGui.SpellPassive.SizeHpBar = new Size(hero.Value.SGui.SpellSum1.SizeHpBar.Width + _sumSize.Width, hero.Value.SGui.SpellSum2.SizeHpBar.Height + (int)((_spellSize.Height * HpPosScale) / 1.5));
-                        hero.Value.SGui.SpellQ.SizeHpBar = new Size(hero.Value.SGui.SpellPassive.SizeHpBar.Width + _spellSize.Width, hero.Value.SGui.SpellPassive.SizeHpBar.Height);
-                        hero.Value.SGui.SpellW.SizeHpBar = new Size(hero.Value.SGui.SpellQ.SizeHpBar.Width + _spellSize.Width, hero.Value.SGui.SpellQ.SizeHpBar.Height);
-                        hero.Value.SGui.SpellE.SizeHpBar = new Size(hero.Value.SGui.SpellW.SizeHpBar.Width + _spellSize.Width, hero.Value.SGui.SpellW.SizeHpBar.Height);
-                        hero.Value.SGui.SpellR.SizeHpBar = new Size(hero.Value.SGui.SpellE.SizeHpBar.Width + _spellSize.Width, hero.Value.SGui.SpellE.SizeHpBar.Height);
+                        hero.Value.SGui.SpellSum1.SizeHpBar = new Size((int) hpPos.X - 20, (int) hpPos.Y);
+                        hero.Value.SGui.SpellSum2.SizeHpBar = new Size(hero.Value.SGui.SpellSum1.SizeHpBar.Width,
+                            hero.Value.SGui.SpellSum1.SizeHpBar.Height + (int) (_sumSize.Height*hpPosScale));
+                        hero.Value.SGui.SpellPassive.SizeHpBar =
+                            new Size(hero.Value.SGui.SpellSum1.SizeHpBar.Width + _sumSize.Width,
+                                hero.Value.SGui.SpellSum2.SizeHpBar.Height + (int) ((_spellSize.Height*hpPosScale)/1.5));
+                        hero.Value.SGui.SpellQ.SizeHpBar =
+                            new Size(hero.Value.SGui.SpellPassive.SizeHpBar.Width + _spellSize.Width,
+                                hero.Value.SGui.SpellPassive.SizeHpBar.Height);
+                        hero.Value.SGui.SpellW.SizeHpBar =
+                            new Size(hero.Value.SGui.SpellQ.SizeHpBar.Width + _spellSize.Width,
+                                hero.Value.SGui.SpellQ.SizeHpBar.Height);
+                        hero.Value.SGui.SpellE.SizeHpBar =
+                            new Size(hero.Value.SGui.SpellW.SizeHpBar.Width + _spellSize.Width,
+                                hero.Value.SGui.SpellW.SizeHpBar.Height);
+                        hero.Value.SGui.SpellR.SizeHpBar =
+                            new Size(hero.Value.SGui.SpellE.SizeHpBar.Width + _spellSize.Width,
+                                hero.Value.SGui.SpellE.SizeHpBar.Height);
 
-                        hero.Value.SGui.SpellSum1.CoordsHpBar = new Size(hero.Value.SGui.SpellSum1.SizeHpBar.Width + _sumSize.Width / 2, hero.Value.SGui.SpellSum1.SizeHpBar.Height + _sumSize.Height / 8);
-                        hero.Value.SGui.SpellSum2.CoordsHpBar = new Size(hero.Value.SGui.SpellSum2.SizeHpBar.Width + _sumSize.Width / 2, hero.Value.SGui.SpellSum2.SizeHpBar.Height + _sumSize.Height / 8);
-                        hero.Value.SGui.SpellPassive.CoordsHpBar = new Size(hero.Value.SGui.SpellPassive.SizeHpBar.Width + _spellSize.Width / 2, hero.Value.SGui.SpellPassive.SizeHpBar.Height + _spellSize.Height / 8);
-                        hero.Value.SGui.SpellQ.CoordsHpBar = new Size(hero.Value.SGui.SpellQ.SizeHpBar.Width + _spellSize.Width / 2, hero.Value.SGui.SpellQ.SizeHpBar.Height + _spellSize.Height / 8);
-                        hero.Value.SGui.SpellW.CoordsHpBar = new Size(hero.Value.SGui.SpellW.SizeHpBar.Width + _spellSize.Width / 2, hero.Value.SGui.SpellW.SizeHpBar.Height + _spellSize.Height / 8);
-                        hero.Value.SGui.SpellE.CoordsHpBar = new Size(hero.Value.SGui.SpellE.SizeHpBar.Width + _spellSize.Width / 2, hero.Value.SGui.SpellE.SizeHpBar.Height + _spellSize.Height / 8);
-                        hero.Value.SGui.SpellR.CoordsHpBar = new Size(hero.Value.SGui.SpellR.SizeHpBar.Width + _spellSize.Width / 2, hero.Value.SGui.SpellR.SizeHpBar.Height + _spellSize.Height / 8);
+                        hero.Value.SGui.SpellSum1.CoordsHpBar =
+                            new Size(hero.Value.SGui.SpellSum1.SizeHpBar.Width + _sumSize.Width/2,
+                                hero.Value.SGui.SpellSum1.SizeHpBar.Height + _sumSize.Height/8);
+                        hero.Value.SGui.SpellSum2.CoordsHpBar =
+                            new Size(hero.Value.SGui.SpellSum2.SizeHpBar.Width + _sumSize.Width/2,
+                                hero.Value.SGui.SpellSum2.SizeHpBar.Height + _sumSize.Height/8);
+                        hero.Value.SGui.SpellPassive.CoordsHpBar =
+                            new Size(hero.Value.SGui.SpellPassive.SizeHpBar.Width + _spellSize.Width/2,
+                                hero.Value.SGui.SpellPassive.SizeHpBar.Height + _spellSize.Height/8);
+                        hero.Value.SGui.SpellQ.CoordsHpBar =
+                            new Size(hero.Value.SGui.SpellQ.SizeHpBar.Width + _spellSize.Width/2,
+                                hero.Value.SGui.SpellQ.SizeHpBar.Height + _spellSize.Height/8);
+                        hero.Value.SGui.SpellW.CoordsHpBar =
+                            new Size(hero.Value.SGui.SpellW.SizeHpBar.Width + _spellSize.Width/2,
+                                hero.Value.SGui.SpellW.SizeHpBar.Height + _spellSize.Height/8);
+                        hero.Value.SGui.SpellE.CoordsHpBar =
+                            new Size(hero.Value.SGui.SpellE.SizeHpBar.Width + _spellSize.Width/2,
+                                hero.Value.SGui.SpellE.SizeHpBar.Height + _spellSize.Height/8);
+                        hero.Value.SGui.SpellR.CoordsHpBar =
+                            new Size(hero.Value.SGui.SpellR.SizeHpBar.Width + _spellSize.Width/2,
+                                hero.Value.SGui.SpellR.SizeHpBar.Height + _spellSize.Height/8);
                     }
                     else
                     {
-                        float HpPosScale = 1.7f;
+                        const float hpPosScale = 1.7f;
                         Vector2 hpPos = hero.Key.HPBarPosition;
-                        hero.Value.SGui.SpellSum1.SizeHpBar = new Size((int)hpPos.X - 25, (int)hpPos.Y + 2);
-                        hero.Value.SGui.SpellSum2.SizeHpBar = new Size(hero.Value.SGui.SpellSum1.SizeHpBar.Width, hero.Value.SGui.SpellSum1.SizeHpBar.Height + (int)(_sumSize.Height * 1.0f));
-                        hero.Value.SGui.SpellPassive.SizeHpBar = new Size(hero.Value.SGui.SpellSum1.SizeHpBar.Width + (int)(_spellSize.Width * HpPosScale), hero.Value.SGui.SpellSum2.SizeHpBar.Height);
-                        hero.Value.SGui.SpellQ.SizeHpBar = new Size(hero.Value.SGui.SpellPassive.SizeHpBar.Width + (int)(_spellSize.Width * HpPosScale), hero.Value.SGui.SpellPassive.SizeHpBar.Height);
-                        hero.Value.SGui.SpellW.SizeHpBar = new Size(hero.Value.SGui.SpellQ.SizeHpBar.Width + (int)(_spellSize.Width * HpPosScale), hero.Value.SGui.SpellQ.SizeHpBar.Height);
-                        hero.Value.SGui.SpellE.SizeHpBar = new Size(hero.Value.SGui.SpellW.SizeHpBar.Width + (int)(_spellSize.Width * HpPosScale), hero.Value.SGui.SpellW.SizeHpBar.Height);
-                        hero.Value.SGui.SpellR.SizeHpBar = new Size(hero.Value.SGui.SpellE.SizeHpBar.Width + (int)(_spellSize.Width * HpPosScale), hero.Value.SGui.SpellE.SizeHpBar.Height);
+                        hero.Value.SGui.SpellSum1.SizeHpBar = new Size((int) hpPos.X - 25, (int) hpPos.Y + 2);
+                        hero.Value.SGui.SpellSum2.SizeHpBar = new Size(hero.Value.SGui.SpellSum1.SizeHpBar.Width,
+                            hero.Value.SGui.SpellSum1.SizeHpBar.Height + (int) (_sumSize.Height*1.0f));
+                        hero.Value.SGui.SpellPassive.SizeHpBar =
+                            new Size(hero.Value.SGui.SpellSum1.SizeHpBar.Width + (int) (_spellSize.Width*hpPosScale),
+                                hero.Value.SGui.SpellSum2.SizeHpBar.Height);
+                        hero.Value.SGui.SpellQ.SizeHpBar =
+                            new Size(
+                                hero.Value.SGui.SpellPassive.SizeHpBar.Width + (int) (_spellSize.Width*hpPosScale),
+                                hero.Value.SGui.SpellPassive.SizeHpBar.Height);
+                        hero.Value.SGui.SpellW.SizeHpBar =
+                            new Size(hero.Value.SGui.SpellQ.SizeHpBar.Width + (int) (_spellSize.Width*hpPosScale),
+                                hero.Value.SGui.SpellQ.SizeHpBar.Height);
+                        hero.Value.SGui.SpellE.SizeHpBar =
+                            new Size(hero.Value.SGui.SpellW.SizeHpBar.Width + (int) (_spellSize.Width*hpPosScale),
+                                hero.Value.SGui.SpellW.SizeHpBar.Height);
+                        hero.Value.SGui.SpellR.SizeHpBar =
+                            new Size(hero.Value.SGui.SpellE.SizeHpBar.Width + (int) (_spellSize.Width*hpPosScale),
+                                hero.Value.SGui.SpellE.SizeHpBar.Height);
 
-                        hero.Value.SGui.SpellSum1.CoordsHpBar = new Size(hero.Value.SGui.SpellSum1.SizeHpBar.Width + _sumSize.Width / 2, hero.Value.SGui.SpellSum1.SizeHpBar.Height + _sumSize.Height / 8);
-                        hero.Value.SGui.SpellSum2.CoordsHpBar = new Size(hero.Value.SGui.SpellSum2.SizeHpBar.Width + _sumSize.Width / 2, hero.Value.SGui.SpellSum2.SizeHpBar.Height + _sumSize.Height / 8);
-                        hero.Value.SGui.SpellPassive.CoordsHpBar = new Size(hero.Value.SGui.SpellPassive.SizeHpBar.Width + (int)(_spellSize.Width / 1.7), hero.Value.SGui.SpellPassive.SizeHpBar.Height + _spellSize.Height / 8);
-                        hero.Value.SGui.SpellQ.CoordsHpBar = new Size(hero.Value.SGui.SpellQ.SizeHpBar.Width + (int)(_spellSize.Width / 1.3), hero.Value.SGui.SpellQ.SizeHpBar.Height + _spellSize.Height / 8);
-                        hero.Value.SGui.SpellW.CoordsHpBar = new Size(hero.Value.SGui.SpellW.SizeHpBar.Width + (int)(_spellSize.Width / 1.3), hero.Value.SGui.SpellW.SizeHpBar.Height + _spellSize.Height / 8);
-                        hero.Value.SGui.SpellE.CoordsHpBar = new Size(hero.Value.SGui.SpellE.SizeHpBar.Width + (int)(_spellSize.Width / 1.3), hero.Value.SGui.SpellE.SizeHpBar.Height + _spellSize.Height / 8);
-                        hero.Value.SGui.SpellR.CoordsHpBar = new Size(hero.Value.SGui.SpellR.SizeHpBar.Width + (int)(_spellSize.Width / 1.3), hero.Value.SGui.SpellR.SizeHpBar.Height + _spellSize.Height / 8);
-                    }                    
-                }                
-            }           
+                        hero.Value.SGui.SpellSum1.CoordsHpBar =
+                            new Size(hero.Value.SGui.SpellSum1.SizeHpBar.Width + _sumSize.Width/2,
+                                hero.Value.SGui.SpellSum1.SizeHpBar.Height + _sumSize.Height/8);
+                        hero.Value.SGui.SpellSum2.CoordsHpBar =
+                            new Size(hero.Value.SGui.SpellSum2.SizeHpBar.Width + _sumSize.Width/2,
+                                hero.Value.SGui.SpellSum2.SizeHpBar.Height + _sumSize.Height/8);
+                        hero.Value.SGui.SpellPassive.CoordsHpBar =
+                            new Size(hero.Value.SGui.SpellPassive.SizeHpBar.Width + (int) (_spellSize.Width/1.7),
+                                hero.Value.SGui.SpellPassive.SizeHpBar.Height + _spellSize.Height/8);
+                        hero.Value.SGui.SpellQ.CoordsHpBar =
+                            new Size(hero.Value.SGui.SpellQ.SizeHpBar.Width + (int) (_spellSize.Width/1.3),
+                                hero.Value.SGui.SpellQ.SizeHpBar.Height + _spellSize.Height/8);
+                        hero.Value.SGui.SpellW.CoordsHpBar =
+                            new Size(hero.Value.SGui.SpellW.SizeHpBar.Width + (int) (_spellSize.Width/1.3),
+                                hero.Value.SGui.SpellW.SizeHpBar.Height + _spellSize.Height/8);
+                        hero.Value.SGui.SpellE.CoordsHpBar =
+                            new Size(hero.Value.SGui.SpellE.SizeHpBar.Width + (int) (_spellSize.Width/1.3),
+                                hero.Value.SGui.SpellE.SizeHpBar.Height + _spellSize.Height/8);
+                        hero.Value.SGui.SpellR.CoordsHpBar =
+                            new Size(hero.Value.SGui.SpellR.SizeHpBar.Width + (int) (_spellSize.Width/1.3),
+                                hero.Value.SGui.SpellR.SizeHpBar.Height + _spellSize.Height/8);
+                    }
+                }
+            }
         }
 
         private void UpdateItems(bool enemy)
@@ -1399,37 +1550,39 @@ namespace SAwareness
 
             if (enemy)
             {
-                heroes = Enemies;
+                heroes = _enemies;
             }
             else
             {
-                heroes = Allies;
+                heroes = _allies;
             }
 
             foreach (var hero in heroes)
             {
                 InventorySlot[] i1 = hero.Key.InventoryItems;
-                var champ = hero.Value;
+                ChampInfos champ = hero.Value;
                 var slot = new List<int>();
-                var unusedId = new List<int> { 0, 1, 2, 3, 4, 5, 6 };
-                foreach (var inventorySlot in i1)
+                var unusedId = new List<int> {0, 1, 2, 3, 4, 5, 6};
+                foreach (InventorySlot inventorySlot in i1)
                 {
-                        slot.Add(inventorySlot.Slot);
-                        if (inventorySlot.Slot >= 0 && inventorySlot.Slot <= 6)
+                    slot.Add(inventorySlot.Slot);
+                    if (inventorySlot.Slot >= 0 && inventorySlot.Slot <= 6)
+                    {
+                        unusedId.Remove(inventorySlot.Slot);
+                        if (champ.SGui.Item[inventorySlot.Slot] == null)
+                            champ.SGui.Item[inventorySlot.Slot] = new ChampInfos.Gui.SpriteInfos();
+                        if (champ.SGui.Item[inventorySlot.Slot].Texture == null ||
+                            champ.SGui.ItemId[inventorySlot.Slot] != inventorySlot.Id)
                         {
-                            unusedId.Remove(inventorySlot.Slot);
-                            if (champ.SGui.Item[inventorySlot.Slot] == null)
-                                champ.SGui.Item[inventorySlot.Slot] = new ChampInfos.Gui.SpriteInfos();
-                            if (champ.SGui.Item[inventorySlot.Slot].Texture == null || champ.SGui.ItemId[inventorySlot.Slot] != inventorySlot.Id)
-                            {
-                                //SpriteHelper.LoadTexture(inventorySlot.Id + ".dds", "ITEMS/",
-                                //    loc + "ITEMS\\" + inventorySlot.Id + ".dds",
-                                //    ref champ.SGui.Item[inventorySlot.Slot].Texture, true);
-                                SpriteHelper.LoadTexture(inventorySlot.Id.ToString(), ref champ.SGui.Item[inventorySlot.Slot].Texture, SpriteHelper.TextureType.Item);
-                                if( champ.SGui.Item[inventorySlot.Slot].Texture != null )
-                                    champ.SGui.ItemId[inventorySlot.Slot] = inventorySlot.Id;
-                            }
+                            //SpriteHelper.LoadTexture(inventorySlot.Id + ".dds", "ITEMS/",
+                            //    loc + "ITEMS\\" + inventorySlot.Id + ".dds",
+                            //    ref champ.SGui.Item[inventorySlot.Slot].Texture, true);
+                            SpriteHelper.LoadTexture(inventorySlot.Id.ToString(),
+                                ref champ.SGui.Item[inventorySlot.Slot].Texture, SpriteHelper.TextureType.Item);
+                            if (champ.SGui.Item[inventorySlot.Slot].Texture != null)
+                                champ.SGui.ItemId[inventorySlot.Slot] = inventorySlot.Id;
                         }
+                    }
                 }
 
                 for (int i = 0; i < unusedId.Count; i++)
@@ -1439,7 +1592,8 @@ namespace SAwareness
                     if (champ.SGui.Item[id] == null)
                         champ.SGui.Item[id] = new ChampInfos.Gui.SpriteInfos();
                     champ.SGui.Item[id].Texture = null;
-                    if (/*id == i*/champ.SGui.Item[id].Texture == null && champ.SGui.Item[id].Texture != _overlayEmptyItem)
+                    if ( /*id == i*/champ.SGui.Item[id].Texture == null &&
+                                    champ.SGui.Item[id].Texture != _overlayEmptyItem)
                     {
                         champ.SGui.Item[id].Texture = _overlayEmptyItem;
                     }
@@ -1447,31 +1601,27 @@ namespace SAwareness
             }
         }
 
-        void UpdateCds(Dictionary<Obj_AI_Hero, ChampInfos> heroes)
+        private void UpdateCds(Dictionary<Obj_AI_Hero, ChampInfos> heroes)
         {
             try
             {
                 UpdateItems(true);
                 UpdateItems(false);
 
-                if (ObjectManager.Player.DeathDuration > 0.0f)
-                {
-
-                }
-                foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+                foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>())
                 {
                     foreach (var enemy in heroes)
                     {
-                        enemy.Value.SGui.SHealth = ((int)enemy.Key.Health) + "/" + ((int)enemy.Key.MaxHealth);
-                        enemy.Value.SGui.SMana = ((int)enemy.Key.Mana) + "/" + ((int)enemy.Key.MaxMana);
+                        enemy.Value.SGui.SHealth = ((int) enemy.Key.Health) + "/" + ((int) enemy.Key.MaxHealth);
+                        enemy.Value.SGui.SMana = ((int) enemy.Key.Mana) + "/" + ((int) enemy.Key.MaxMana);
                         if (enemy.Key.NetworkId == hero.NetworkId)
                         {
                             //InventorySlot[] i1 = hero.InventoryItems; TODO: Add Item Cooldowns
 
-                            var s1 = hero.Spellbook.Spells;
+                            SpellDataInst[] s1 = hero.Spellbook.Spells;
                             if (s1[0].CooldownExpires - Game.Time > 0.0f)
                             {
-                                enemy.Value.SGui.SpellQ.Cd = (int)(s1[0].CooldownExpires - Game.Time);
+                                enemy.Value.SGui.SpellQ.Cd = (int) (s1[0].CooldownExpires - Game.Time);
                             }
                             else if (s1[0].CooldownExpires - Game.Time <= 0.0f && enemy.Value.SGui.SpellQ.Cd != 0)
                             {
@@ -1479,7 +1629,7 @@ namespace SAwareness
                             }
                             if (s1[1].CooldownExpires - Game.Time > 0.0f)
                             {
-                                enemy.Value.SGui.SpellW.Cd = (int)(s1[1].CooldownExpires - Game.Time);
+                                enemy.Value.SGui.SpellW.Cd = (int) (s1[1].CooldownExpires - Game.Time);
                             }
                             else if (s1[1].CooldownExpires - Game.Time <= 0.0f && enemy.Value.SGui.SpellW.Cd != 0)
                             {
@@ -1487,7 +1637,7 @@ namespace SAwareness
                             }
                             if (s1[2].CooldownExpires - Game.Time > 0.0f)
                             {
-                                enemy.Value.SGui.SpellE.Cd = (int)(s1[2].CooldownExpires - Game.Time);
+                                enemy.Value.SGui.SpellE.Cd = (int) (s1[2].CooldownExpires - Game.Time);
                             }
                             else if (s1[2].CooldownExpires - Game.Time <= 0.0f && enemy.Value.SGui.SpellE.Cd != 0)
                             {
@@ -1495,16 +1645,16 @@ namespace SAwareness
                             }
                             if (s1[3].CooldownExpires - Game.Time > 0.0f)
                             {
-                                enemy.Value.SGui.SpellR.Cd = (int)(s1[3].CooldownExpires - Game.Time);
+                                enemy.Value.SGui.SpellR.Cd = (int) (s1[3].CooldownExpires - Game.Time);
                             }
                             else if (s1[3].CooldownExpires - Game.Time <= 0.0f && enemy.Value.SGui.SpellR.Cd != 0)
                             {
                                 enemy.Value.SGui.SpellR.Cd = 0;
                             }
-                            var s2 = hero.SummonerSpellbook.Spells;
+                            SpellDataInst[] s2 = hero.SummonerSpellbook.Spells;
                             if (s2[0].CooldownExpires - Game.Time > 0.0f)
                             {
-                                enemy.Value.SGui.SpellSum1.Cd = (int)(s2[0].CooldownExpires - Game.Time);
+                                enemy.Value.SGui.SpellSum1.Cd = (int) (s2[0].CooldownExpires - Game.Time);
                             }
                             else if (s2[0].CooldownExpires - Game.Time <= 0.0f && enemy.Value.SGui.SpellSum1.Cd != 0)
                             {
@@ -1512,26 +1662,22 @@ namespace SAwareness
                             }
                             if (s2[1].CooldownExpires - Game.Time > 0.0f)
                             {
-                                enemy.Value.SGui.SpellSum2.Cd = (int)(s2[1].CooldownExpires - Game.Time);
+                                enemy.Value.SGui.SpellSum2.Cd = (int) (s2[1].CooldownExpires - Game.Time);
                             }
                             else if (s2[1].CooldownExpires - Game.Time <= 0.0f && enemy.Value.SGui.SpellSum2.Cd != 0)
                             {
                                 enemy.Value.SGui.SpellSum2.Cd = 0;
                             }
-                            if (hero.DeathDuration - Game.Time > 0.0f)
-                            {
-                                enemy.Value.SGui.DeathTime = (int)(hero.DeathDuration - Game.Time);
-                            }
                             if (hero.IsVisible)
                             {
                                 enemy.Value.SGui.InvisibleTime = 0;
-                                enemy.Value.SGui.VisibleTime = (int)Game.Time;
+                                enemy.Value.SGui.VisibleTime = (int) Game.Time;
                             }
                             else
                             {
                                 if (enemy.Value.SGui.VisibleTime != 0)
                                 {
-                                    enemy.Value.SGui.InvisibleTime = (int)(Game.Time - enemy.Value.SGui.VisibleTime);
+                                    enemy.Value.SGui.InvisibleTime = (int) (Game.Time - enemy.Value.SGui.VisibleTime);
                                 }
                                 else
                                 {
@@ -1540,71 +1686,86 @@ namespace SAwareness
                             }
 
                             //Death
-                            float temp = enemy.Key.Level*2.5f + 5;
-                            if (Math.Floor(Game.Time/60) >= 25)
+                            if (hero.IsDead && !enemy.Value.SGui.Dead)
                             {
-                                enemy.Value.SGui.DeathTime = (int)(temp + ((temp / 50) * (Math.Floor(Game.Time / 60) - 25)));
+                                enemy.Value.SGui.Dead = true;
+                                float temp = enemy.Key.Level * 2.5f + 5 + 2;
+                                if (Math.Floor(Game.Time / 60) >= 25)
+                                {
+                                    enemy.Value.SGui.DeathTime = (int)(temp + ((temp / 50) * (Math.Floor(Game.Time / 60) - 25))) + (int)Game.Time;
+                                }
+                                else
+                                {
+                                    enemy.Value.SGui.DeathTime = (int)temp + (int)Game.Time;
+                                }
+                                if (enemy.Key.ChampionName.Contains("KogMaw"))
+                                {
+                                    enemy.Value.SGui.DeathTime -= 4;
+                                }
+                            } 
+                            else if (!hero.IsDead && enemy.Value.SGui.Dead)
+                            {
+                                enemy.Value.SGui.Dead = false;
+                                enemy.Value.SGui.DeathTime = 0;
                             }
-                            else
+                            if (enemy.Value.SGui.DeathTime - Game.Time > 0.0f)
                             {
-                                enemy.Value.SGui.DeathTime = (int)temp;
+                                enemy.Value.SGui.DeathTimeDisplay = (int)(enemy.Value.SGui.DeathTime - Game.Time);
                             }
-                            if (enemy.Key.ChampionName.Contains("KogMaw"))
+                            else if (enemy.Value.SGui.DeathTime - Game.Time <= 0.0f &&
+                                     enemy.Value.SGui.DeathTimeDisplay != 0)
                             {
-                                enemy.Value.SGui.DeathTime -= 4;
+                                enemy.Value.SGui.DeathTimeDisplay = 0;
                             }
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
-                Console.WriteLine("UITrackerUpdate: " + ex.ToString());
+                Console.WriteLine("UITrackerUpdate: " + ex);
                 throw;
             }
         }
 
-        void Game_OnGameUpdate(EventArgs args)
+        private void Game_OnGameUpdate(EventArgs args)
         {
             if (!IsActive())
                 return;
-            
-            UpdateCds(Enemies);
-            UpdateCds(Allies);
 
+            UpdateCds(_enemies);
+            UpdateCds(_allies);
         }
 
-        float CalcHpBar(Obj_AI_Hero hero)
+        private float CalcHpBar(Obj_AI_Hero hero)
         {
-            float percent = (100 / hero.MaxHealth * hero.Health);
-            return percent / 100;
+            float percent = (100/hero.MaxHealth*hero.Health);
+            return percent/100;
         }
 
-        float CalcManaBar(Obj_AI_Hero hero)
+        private float CalcManaBar(Obj_AI_Hero hero)
         {
-            float percent = (100 / hero.MaxMana * hero.Mana);
-            return (percent <= 0 || Single.IsNaN(percent) ? 0 : percent / 100);
+            float percent = (100/hero.MaxMana*hero.Mana);
+            return (percent <= 0 || Single.IsNaN(percent) ? 0 : percent/100);
         }
 
-        float CalcRecallBar(RecallDetector.RecallInfo recall)
+        private float CalcRecallBar(RecallDetector.RecallInfo recall)
         {
-            float maxTime = (recall.Recall.Duration / 1000);
-            float percent = (100 / maxTime * (Game.Time - recall.StartTime));
-            return (percent <= 100 ? percent / 100 : 1);
+            float maxTime = (recall.Recall.Duration/1000);
+            float percent = (100/maxTime*(Game.Time - recall.StartTime));
+            return (percent <= 100 ? percent/100 : 1);
         }
 
-        System.Drawing.Font CalcFont(int size, float scale)
+        private System.Drawing.Font CalcFont(int size, float scale)
         {
-            double calcSize = (int)(size * scale);
-            int newSize = (int)Math.Ceiling(calcSize);
+            double calcSize = (int) (size*scale);
+            var newSize = (int) Math.Ceiling(calcSize);
             if (newSize%2 == 0 && newSize != 0)
-                return new System.Drawing.Font("Times New Roman", (int)(size * scale));
-            else 
-                return null;
+                return new System.Drawing.Font("Times New Roman", (int) (size*scale));
+            return null;
         }
 
-        void CheckValidSprite(ref Sprite sprite)
+        private void CheckValidSprite(ref Sprite sprite)
         {
             if (sprite.Device != Drawing.Direct3DDevice)
             {
@@ -1612,39 +1773,39 @@ namespace SAwareness
             }
         }
 
-        void CheckValidFont(ref Font font)
+        private void CheckValidFont(ref Font font)
         {
             if (font.Device != Drawing.Direct3DDevice)
             {
-                AssingFonts(scalePc, true);
+                AssingFonts(_scalePc, true);
             }
         }
 
-        void AssingFonts(float percentScale, bool force = false)
+        private void AssingFonts(float percentScale, bool force = false)
         {
             System.Drawing.Font font = CalcFont(12, percentScale);
             if (font != null || force)
-                RecF = new Font(Drawing.Direct3DDevice, font);
+                _recF = new Font(Drawing.Direct3DDevice, font);
             font = CalcFont(8, percentScale);
             if (font != null || force)
-                SpellF = new Font(Drawing.Direct3DDevice, font);
+                _spellF = new Font(Drawing.Direct3DDevice, font);
             font = CalcFont(30, percentScale);
             if (font != null || force)
-                ChampF = new Font(Drawing.Direct3DDevice, font);
+                _champF = new Font(Drawing.Direct3DDevice, font);
             font = CalcFont(16, percentScale);
             if (font != null || force)
-                SumF = new Font(Drawing.Direct3DDevice, font);
+                _sumF = new Font(Drawing.Direct3DDevice, font);
         }
 
-        RecallDetector.RecallInfo GetRecall(int networkId)
+        private RecallDetector.RecallInfo GetRecall(int networkId)
         {
-            StringList t = Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorMode").GetValue<StringList>();
+            var t = Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorMode").GetValue<StringList>();
             if (t.SelectedIndex == 1 || t.SelectedIndex == 2)
             {
-                RecallDetector recallDetector = (RecallDetector)Menu.RecallDetector.Item;
+                var recallDetector = (RecallDetector) Menu.RecallDetector.Item;
                 if (recallDetector == null)
                     return null;
-                foreach (var info in recallDetector._recalls)
+                foreach (RecallDetector.RecallInfo info in recallDetector.Recalls)
                 {
                     if (info.NetworkId == networkId)
                     {
@@ -1655,7 +1816,7 @@ namespace SAwareness
             return null;
         }
 
-        void DrawInterface(bool enemy)
+        private void DrawInterface(bool enemy)
         {
             try
             {
@@ -1665,255 +1826,286 @@ namespace SAwareness
                 Dictionary<Obj_AI_Hero, ChampInfos> heroes;
                 if (enemy)
                 {
-                    heroes = Enemies;
-                    modeChoice = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetMenuItem("SAwarenessUITrackerEnemyTrackerMode").GetValue<StringList>();
-                    modeHeadChoice = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetMenuItem("SAwarenessUITrackerEnemyTrackerHeadMode").GetValue<StringList>();
-                    modeHeadDisplayChoice = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetMenuItem("SAwarenessUITrackerEnemyTrackerHeadDisplayMode").GetValue<StringList>();
+                    heroes = _enemies;
+                    modeChoice =
+                        Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker")
+                            .GetMenuItem("SAwarenessUITrackerEnemyTrackerMode")
+                            .GetValue<StringList>();
+                    modeHeadChoice =
+                        Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker")
+                            .GetMenuItem("SAwarenessUITrackerEnemyTrackerHeadMode")
+                            .GetValue<StringList>();
+                    modeHeadDisplayChoice =
+                        Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker")
+                            .GetMenuItem("SAwarenessUITrackerEnemyTrackerHeadDisplayMode")
+                            .GetValue<StringList>();
                 }
                 else
                 {
-                    heroes = Allies;
-                    modeChoice = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetMenuItem("SAwarenessUITrackerAllyTrackerMode").GetValue<StringList>();
-                    modeHeadChoice = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetMenuItem("SAwarenessUITrackerAllyTrackerHeadMode").GetValue<StringList>();
-                    modeHeadDisplayChoice = Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetMenuItem("SAwarenessUITrackerAllyTrackerHeadDisplayMode").GetValue<StringList>();
+                    heroes = _allies;
+                    modeChoice =
+                        Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker")
+                            .GetMenuItem("SAwarenessUITrackerAllyTrackerMode")
+                            .GetValue<StringList>();
+                    modeHeadChoice =
+                        Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker")
+                            .GetMenuItem("SAwarenessUITrackerAllyTrackerHeadMode")
+                            .GetValue<StringList>();
+                    modeHeadDisplayChoice =
+                        Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker")
+                            .GetMenuItem("SAwarenessUITrackerAllyTrackerHeadDisplayMode")
+                            .GetValue<StringList>();
                 }
 
                 float percentScale =
-                    (float)Menu.UiTracker.GetMenuItem("SAwarenessUITrackerScale").GetValue<Slider>().Value / 100;
-                if (Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetMenuItem("SAwarenessUITrackerEnemyTrackerXPos").GetValue<Slider>().Value != oldEX ||
-                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetMenuItem("SAwarenessUITrackerEnemyTrackerYPos").GetValue<Slider>().Value != oldEY
+                    (float) Menu.UiTracker.GetMenuItem("SAwarenessUITrackerScale").GetValue<Slider>().Value/100;
+                if (
+                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker")
+                        .GetMenuItem("SAwarenessUITrackerEnemyTrackerXPos")
+                        .GetValue<Slider>()
+                        .Value != _oldEx ||
+                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker")
+                        .GetMenuItem("SAwarenessUITrackerEnemyTrackerYPos")
+                        .GetValue<Slider>()
+                        .Value != _oldEy
                     ||
-                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetMenuItem("SAwarenessUITrackerAllyTrackerXPos").GetValue<Slider>().Value != oldAX ||
-                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetMenuItem("SAwarenessUITrackerAllyTrackerYPos").GetValue<Slider>().Value != oldAY
-                    || percentScale != scalePc)
+                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker")
+                        .GetMenuItem("SAwarenessUITrackerAllyTrackerXPos")
+                        .GetValue<Slider>()
+                        .Value != _oldAx ||
+                    Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker")
+                        .GetMenuItem("SAwarenessUITrackerAllyTrackerYPos")
+                        .GetValue<Slider>()
+                        .Value != _oldAy
+                    || percentScale != _scalePc)
                 {
                     CalculateSizes(true);
                     CalculateSizes(false);
                 }
-                   
-                if (percentScale != scalePc)
+
+                if (percentScale != _scalePc)
                 {
-                    scalePc = percentScale;
+                    _scalePc = percentScale;
                     AssingFonts(percentScale);
                 }
 
                 StringList mode = modeChoice;
                 StringList modeHead = modeHeadChoice;
-                if (S == null || S.IsDisposed)
+                if (_s == null || _s.IsDisposed)
                 {
                     return;
                 }
                 if (mode.SelectedIndex == 0 || mode.SelectedIndex == 2)
                 {
-                    S.Begin();
+                    _s.Begin();
                     foreach (var hero in heroes)
                     {
-                        var percentHealth = CalcHpBar(hero.Key);
-                        var percentMana = CalcManaBar(hero.Key);
+                        float percentHealth = CalcHpBar(hero.Key);
+                        float percentMana = CalcManaBar(hero.Key);
 
                         //DrawSprite(S, enemy.Value.PassiveTexture, nPassiveSize, Color.White);
-                        DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellQ.Texture,
+                        DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellQ.Texture,
                             hero.Value.SGui.SpellQ.SizeSideBar,
-                            new[] { 1.0f * percentScale, 1.0f * percentScale });
-                        DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellW.Texture,
+                            new[] {1.0f*percentScale, 1.0f*percentScale});
+                        DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellW.Texture,
                             hero.Value.SGui.SpellW.SizeSideBar,
-                            new[] { 1.0f * percentScale, 1.0f * percentScale });
-                        DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellE.Texture,
+                            new[] {1.0f*percentScale, 1.0f*percentScale});
+                        DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellE.Texture,
                             hero.Value.SGui.SpellE.SizeSideBar,
-                            new[] { 1.0f * percentScale, 1.0f * percentScale });
-                        DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellR.Texture,
+                            new[] {1.0f*percentScale, 1.0f*percentScale});
+                        DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellR.Texture,
                             hero.Value.SGui.SpellR.SizeSideBar,
-                            new[] { 1.0f * percentScale, 1.0f * percentScale });
+                            new[] {1.0f*percentScale, 1.0f*percentScale});
 
-                        DirectXDrawer.DrawSprite(S, hero.Value.SGui.Champ.Texture,
+                        DirectXDrawer.DrawSprite(_s, hero.Value.SGui.Champ.Texture,
                             hero.Value.SGui.Champ.SizeSideBar,
-                            new[] { 1.0f * percentScale, 1.0f * percentScale });
-                        DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum1.Texture,
+                            new[] {1.0f*percentScale, 1.0f*percentScale});
+                        DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellSum1.Texture,
                             hero.Value.SGui.SpellSum1.SizeSideBar,
-                            new[] { 1.0f * percentScale, 1.0f * percentScale });
-                        DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum2.Texture,
+                            new[] {1.0f*percentScale, 1.0f*percentScale});
+                        DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellSum2.Texture,
                             hero.Value.SGui.SpellSum2.SizeSideBar,
-                            new[] { 1.0f * percentScale, 1.0f * percentScale });
+                            new[] {1.0f*percentScale, 1.0f*percentScale});
 
-                        DirectXDrawer.DrawSprite(S, _backBar,
+                        DirectXDrawer.DrawSprite(_s, _backBar,
                             hero.Value.SGui.BackBar.SizeSideBar,
-                            new[] { 1.0f * percentScale * 0.75f, 1.0f * percentScale });
-                        DirectXDrawer.DrawSprite(S, _healthBar,
+                            new[] {1.0f*percentScale*0.75f, 1.0f*percentScale});
+                        DirectXDrawer.DrawSprite(_s, _healthBar,
                             hero.Value.SGui.HealthBar.SizeSideBar,
-                            new[] { 1.0f * percentHealth * percentScale * 0.75f, 1.0f * percentScale });
-                        DirectXDrawer.DrawSprite(S, _manaBar,
+                            new[] {1.0f*percentHealth*percentScale*0.75f, 1.0f*percentScale});
+                        DirectXDrawer.DrawSprite(_s, _manaBar,
                             hero.Value.SGui.ManaBar.SizeSideBar,
-                            new[] { 1.0f * percentMana * percentScale * 0.75f, 1.0f * percentScale });
+                            new[] {1.0f*percentMana*percentScale*0.75f, 1.0f*percentScale});
 
                         if (Menu.UiTracker.GetMenuItem("SAwarenessItemPanelActive").GetValue<bool>())
                         {
-                            foreach (var spriteInfo in hero.Value.SGui.Item)
+                            foreach (ChampInfos.Gui.SpriteInfos spriteInfo in hero.Value.SGui.Item)
                             {
-                                DirectXDrawer.DrawSprite(S, spriteInfo.Texture,
+                                DirectXDrawer.DrawSprite(_s, spriteInfo.Texture,
                                     spriteInfo.SizeSideBar,
-                                    new[] { 1.0f * percentScale, 1.0f * percentScale });
+                                    new[] {1.0f*percentScale, 1.0f*percentScale});
                             }
                         }
 
                         if (hero.Value.SGui.SpellQ.Cd > 0.0f || hero.Key.Spellbook.GetSpell(SpellSlot.Q).Level < 1)
                         {
-                            DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                            DirectXDrawer.DrawSprite(_s, _overlaySpellItem,
                                 hero.Value.SGui.SpellQ.SizeSideBar,
-                                new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
+                                new ColorBGRA(Color3.White, 0.55f), new[] {1.0f*percentScale, 1.0f*percentScale});
                         }
                         if (hero.Value.SGui.SpellW.Cd > 0.0f || hero.Key.Spellbook.GetSpell(SpellSlot.W).Level < 1)
                         {
-                            DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                            DirectXDrawer.DrawSprite(_s, _overlaySpellItem,
                                 hero.Value.SGui.SpellW.SizeSideBar,
-                                new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
+                                new ColorBGRA(Color3.White, 0.55f), new[] {1.0f*percentScale, 1.0f*percentScale});
                         }
                         if (hero.Value.SGui.SpellE.Cd > 0.0f || hero.Key.Spellbook.GetSpell(SpellSlot.E).Level < 1)
                         {
-                            DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                            DirectXDrawer.DrawSprite(_s, _overlaySpellItem,
                                 hero.Value.SGui.SpellE.SizeSideBar,
-                                new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
+                                new ColorBGRA(Color3.White, 0.55f), new[] {1.0f*percentScale, 1.0f*percentScale});
                         }
                         if (hero.Value.SGui.SpellR.Cd > 0.0f || hero.Key.Spellbook.GetSpell(SpellSlot.R).Level < 1)
                         {
-                            DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                            DirectXDrawer.DrawSprite(_s, _overlaySpellItem,
                                 hero.Value.SGui.SpellR.SizeSideBar,
-                                new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
+                                new ColorBGRA(Color3.White, 0.55f), new[] {1.0f*percentScale, 1.0f*percentScale});
                         }
-                        if (hero.Value.SGui.DeathTime > 0.0f)
+                        if (hero.Value.SGui.DeathTimeDisplay > 0.0f)
                         {
-                            DirectXDrawer.DrawSprite(S, _overlaySummoner,
+                            DirectXDrawer.DrawSprite(_s, _overlaySummoner,
                                 hero.Value.SGui.Champ.SizeSideBar,
-                                new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
+                                new ColorBGRA(Color3.White, 0.55f), new[] {1.0f*percentScale, 1.0f*percentScale});
                         }
                         if (hero.Value.SGui.SpellSum1.Cd > 0.0f)
                         {
-                            DirectXDrawer.DrawSprite(S, _overlaySummonerSpell,
+                            DirectXDrawer.DrawSprite(_s, _overlaySummonerSpell,
                                 hero.Value.SGui.SpellSum1.SizeSideBar,
-                                new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
+                                new ColorBGRA(Color3.White, 0.55f), new[] {1.0f*percentScale, 1.0f*percentScale});
                         }
                         if (hero.Value.SGui.SpellSum2.Cd > 0.0f)
                         {
-                            DirectXDrawer.DrawSprite(S, _overlaySummonerSpell,
+                            DirectXDrawer.DrawSprite(_s, _overlaySummonerSpell,
                                 hero.Value.SGui.SpellSum2.SizeSideBar,
-                                new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
+                                new ColorBGRA(Color3.White, 0.55f), new[] {1.0f*percentScale, 1.0f*percentScale});
                         }
                         if (Menu.RecallDetector.GetActive())
                         {
                             RecallDetector.RecallInfo info = GetRecall(hero.Key.NetworkId);
                             if (info != null)
                             {
-                                var percentRecall = CalcRecallBar(info);
+                                float percentRecall = CalcRecallBar(info);
                                 if (info != null && info.StartTime != 0)
                                 {
-                                    float time = Game.Time + info.Recall.Duration / 1000 - info.StartTime;
+                                    float time = Game.Time + info.Recall.Duration/1000 - info.StartTime;
                                     if (time > 0.0f &&
                                         (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportStart ||
                                          info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallStarted))
                                     {
-                                        DirectXDrawer.DrawSprite(S, _overlayRecall,
+                                        DirectXDrawer.DrawSprite(_s, _overlayRecall,
                                             hero.Value.SGui.RecallBar.SizeSideBar,
                                             new ColorBGRA(Color3.White, 0.80f),
-                                            new[] { 1.0f * percentRecall * percentScale, 1.0f * percentScale });
+                                            new[] {1.0f*percentRecall*percentScale, 1.0f*percentScale});
                                     }
                                     else if (time < 30.0f &&
                                              (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd ||
                                               info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallFinished))
                                     {
-                                        DirectXDrawer.DrawSprite(S, _overlayRecall,
+                                        DirectXDrawer.DrawSprite(_s, _overlayRecall,
                                             hero.Value.SGui.RecallBar.SizeSideBar,
                                             new ColorBGRA(Color3.White, 0.80f),
-                                            new[] { 1.0f * percentScale, 1.0f * percentScale });
+                                            new[] {1.0f*percentScale, 1.0f*percentScale});
                                     }
                                     else if (time < 30.0f &&
                                              (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportAbort ||
                                               info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallAborted))
                                     {
-                                        DirectXDrawer.DrawSprite(S, _overlayRecall,
+                                        DirectXDrawer.DrawSprite(_s, _overlayRecall,
                                             hero.Value.SGui.RecallBar.SizeSideBar,
                                             new ColorBGRA(Color3.White, 0.80f),
-                                            new[] { 1.0f * percentScale, 1.0f * percentScale });
+                                            new[] {1.0f*percentScale, 1.0f*percentScale});
                                     }
                                 }
                             }
                         }
                     }
-                    S.End();
+                    _s.End();
 
                     foreach (var hero in heroes)
                     {
-                        DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SHealth,
-                            hero.Value.SGui.HealthBar.CoordsSideBar, Color.Orange);
-                        DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SMana,
-                            hero.Value.SGui.ManaBar.CoordsSideBar, Color.Orange);
+                        DirectXDrawer.DrawText(_spellF, hero.Value.SGui.SHealth,
+                            hero.Value.SGui.HealthBar.CoordsSideBar, SharpDX.Color.Orange);
+                        DirectXDrawer.DrawText(_spellF, hero.Value.SGui.SMana,
+                            hero.Value.SGui.ManaBar.CoordsSideBar, SharpDX.Color.Orange);
                         if (hero.Value.SGui.SpellQ.Cd > 0.0f)
                         {
-                            DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellQ.Cd.ToString(),
-                                hero.Value.SGui.SpellQ.CoordsSideBar, Color.Orange);
+                            DirectXDrawer.DrawText(_spellF, hero.Value.SGui.SpellQ.Cd.ToString(),
+                                hero.Value.SGui.SpellQ.CoordsSideBar, SharpDX.Color.Orange);
                         }
                         if (hero.Value.SGui.SpellW.Cd > 0.0f)
                         {
-                            DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellW.Cd.ToString(),
-                                hero.Value.SGui.SpellW.CoordsSideBar, Color.Orange);
+                            DirectXDrawer.DrawText(_spellF, hero.Value.SGui.SpellW.Cd.ToString(),
+                                hero.Value.SGui.SpellW.CoordsSideBar, SharpDX.Color.Orange);
                         }
                         if (hero.Value.SGui.SpellE.Cd > 0.0f)
                         {
-                            DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellE.Cd.ToString(),
-                                hero.Value.SGui.SpellE.CoordsSideBar, Color.Orange);
+                            DirectXDrawer.DrawText(_spellF, hero.Value.SGui.SpellE.Cd.ToString(),
+                                hero.Value.SGui.SpellE.CoordsSideBar, SharpDX.Color.Orange);
                         }
                         if (hero.Value.SGui.SpellR.Cd > 0.0f)
                         {
-                            DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellR.Cd.ToString(),
-                                hero.Value.SGui.SpellR.CoordsSideBar, Color.Orange);
+                            DirectXDrawer.DrawText(_spellF, hero.Value.SGui.SpellR.Cd.ToString(),
+                                hero.Value.SGui.SpellR.CoordsSideBar, SharpDX.Color.Orange);
                         }
-                        if (hero.Value.SGui.DeathTime > 0.0f && hero.Key.IsDead)
+                        if (hero.Value.SGui.DeathTimeDisplay > 0.0f && hero.Key.IsDead)
                         {
-                            DirectXDrawer.DrawText(ChampF, hero.Value.SGui.DeathTime.ToString(),
-                                hero.Value.SGui.Champ.CoordsSideBar, Color.Orange);
+                            DirectXDrawer.DrawText(_champF, hero.Value.SGui.DeathTimeDisplay.ToString(),
+                                hero.Value.SGui.Champ.CoordsSideBar, SharpDX.Color.Orange);
                         }
                         else if (hero.Value.SGui.InvisibleTime > 0.0f && !hero.Key.IsVisible)
                         {
-                            DirectXDrawer.DrawText(ChampF, hero.Value.SGui.InvisibleTime.ToString(),
-                                hero.Value.SGui.Champ.CoordsSideBar, Color.Red);
+                            DirectXDrawer.DrawText(_champF, hero.Value.SGui.InvisibleTime.ToString(),
+                                hero.Value.SGui.Champ.CoordsSideBar, SharpDX.Color.Red);
                         }
                         if (hero.Value.SGui.SpellSum1.Cd > 0.0f)
                         {
-                            DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum1.Cd.ToString(),
-                                hero.Value.SGui.SpellSum1.CoordsSideBar, Color.Orange);
+                            DirectXDrawer.DrawText(_sumF, hero.Value.SGui.SpellSum1.Cd.ToString(),
+                                hero.Value.SGui.SpellSum1.CoordsSideBar, SharpDX.Color.Orange);
                         }
                         if (hero.Value.SGui.SpellSum2.Cd > 0.0f)
                         {
-                            DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum2.Cd.ToString(),
-                                hero.Value.SGui.SpellSum2.CoordsSideBar, Color.Orange);
+                            DirectXDrawer.DrawText(_sumF, hero.Value.SGui.SpellSum2.Cd.ToString(),
+                                hero.Value.SGui.SpellSum2.CoordsSideBar, SharpDX.Color.Orange);
                         }
                         if (Menu.RecallDetector.GetActive())
                         {
                             RecallDetector.RecallInfo info = GetRecall(hero.Key.NetworkId);
                             if (info != null && info.StartTime != 0)
                             {
-                                float time = Game.Time + info.Recall.Duration / 1000 - info.StartTime;
+                                float time = Game.Time + info.Recall.Duration/1000 - info.StartTime;
                                 if (time > 0.0f &&
                                     (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportStart ||
                                      info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallStarted))
                                 {
-                                    DirectXDrawer.DrawText(RecF, "Porting",
+                                    DirectXDrawer.DrawText(_recF, "Porting",
                                         hero.Value.SGui.RecallBar.CoordsSideBar,
-                                        Color.Chartreuse);
+                                        SharpDX.Color.Chartreuse);
                                 }
                                 else if (time < 30.0f &&
                                          (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd ||
                                           info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallFinished))
                                 {
-                                    DirectXDrawer.DrawText(RecF, "Ported",
+                                    DirectXDrawer.DrawText(_recF, "Ported",
                                         hero.Value.SGui.RecallBar.CoordsSideBar,
-                                        Color.Chartreuse);
+                                        SharpDX.Color.Chartreuse);
                                 }
                                 else if (time < 30.0f &&
                                          (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportAbort ||
                                           info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallAborted))
                                 {
-                                    DirectXDrawer.DrawText(RecF, "Canceled",
+                                    DirectXDrawer.DrawText(_recF, "Canceled",
                                         hero.Value.SGui.RecallBar.CoordsSideBar,
-                                        Color.Chartreuse);
+                                        SharpDX.Color.Chartreuse);
                                 }
                             }
                         }
@@ -1927,37 +2119,37 @@ namespace SAwareness
                     {
                         if (modeHead.SelectedIndex == 0)
                         {
-                            S.Begin();
+                            _s.Begin();
                             foreach (var hero in heroes)
                             {
                                 if (!hero.Key.IsDead && hero.Key.IsVisible)
                                 {
-                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellPassive.Texture,
+                                    DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellPassive.Texture,
                                         hero.Value.SGui.SpellPassive.SizeHpBar,
                                         new[] {1.0f*percentScale, 1.0f*percentScale});
-                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellQ.Texture,
+                                    DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellQ.Texture,
                                         hero.Value.SGui.SpellQ.SizeHpBar,
                                         new[] {1.0f*percentScale, 1.0f*percentScale});
-                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellW.Texture,
+                                    DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellW.Texture,
                                         hero.Value.SGui.SpellW.SizeHpBar,
                                         new[] {1.0f*percentScale, 1.0f*percentScale});
-                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellE.Texture,
+                                    DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellE.Texture,
                                         hero.Value.SGui.SpellE.SizeHpBar,
                                         new[] {1.0f*percentScale, 1.0f*percentScale});
-                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellR.Texture,
+                                    DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellR.Texture,
                                         hero.Value.SGui.SpellR.SizeHpBar,
                                         new[] {1.0f*percentScale, 1.0f*percentScale});
-                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum1.Texture,
+                                    DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellSum1.Texture,
                                         hero.Value.SGui.SpellSum1.SizeHpBar,
                                         new[] {0.8f*percentScale, 0.8f*percentScale});
-                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum2.Texture,
+                                    DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellSum2.Texture,
                                         hero.Value.SGui.SpellSum2.SizeHpBar,
                                         new[] {0.8f*percentScale, 0.8f*percentScale});
 
                                     if (hero.Value.SGui.SpellQ.Cd > 0.0f ||
                                         hero.Key.Spellbook.GetSpell(SpellSlot.Q).Level < 1)
                                     {
-                                        DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                                        DirectXDrawer.DrawSprite(_s, _overlaySpellItem,
                                             hero.Value.SGui.SpellQ.SizeHpBar,
                                             new ColorBGRA(Color3.White, 0.55f),
                                             new[] {1.0f*percentScale, 1.0f*percentScale});
@@ -1965,7 +2157,7 @@ namespace SAwareness
                                     if (hero.Value.SGui.SpellW.Cd > 0.0f ||
                                         hero.Key.Spellbook.GetSpell(SpellSlot.W).Level < 1)
                                     {
-                                        DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                                        DirectXDrawer.DrawSprite(_s, _overlaySpellItem,
                                             hero.Value.SGui.SpellW.SizeHpBar,
                                             new ColorBGRA(Color3.White, 0.55f),
                                             new[] {1.0f*percentScale, 1.0f*percentScale});
@@ -1973,7 +2165,7 @@ namespace SAwareness
                                     if (hero.Value.SGui.SpellE.Cd > 0.0f ||
                                         hero.Key.Spellbook.GetSpell(SpellSlot.E).Level < 1)
                                     {
-                                        DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                                        DirectXDrawer.DrawSprite(_s, _overlaySpellItem,
                                             hero.Value.SGui.SpellE.SizeHpBar,
                                             new ColorBGRA(Color3.White, 0.55f),
                                             new[] {1.0f*percentScale, 1.0f*percentScale});
@@ -1981,98 +2173,98 @@ namespace SAwareness
                                     if (hero.Value.SGui.SpellR.Cd > 0.0f ||
                                         hero.Key.Spellbook.GetSpell(SpellSlot.R).Level < 1)
                                     {
-                                        DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                                        DirectXDrawer.DrawSprite(_s, _overlaySpellItem,
                                             hero.Value.SGui.SpellR.SizeHpBar,
                                             new ColorBGRA(Color3.White, 0.55f),
                                             new[] {1.0f*percentScale, 1.0f*percentScale});
                                     }
                                     if (hero.Value.SGui.SpellSum1.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawSprite(S, _overlaySummonerSpell,
+                                        DirectXDrawer.DrawSprite(_s, _overlaySummonerSpell,
                                             hero.Value.SGui.SpellSum1.SizeHpBar,
                                             new ColorBGRA(Color3.White, 0.55f),
                                             new[] {0.8f*percentScale, 0.8f*percentScale});
                                     }
                                     if (hero.Value.SGui.SpellSum2.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawSprite(S, _overlaySummonerSpell,
+                                        DirectXDrawer.DrawSprite(_s, _overlaySummonerSpell,
                                             hero.Value.SGui.SpellSum2.SizeHpBar,
                                             new ColorBGRA(Color3.White, 0.55f),
                                             new[] {0.8f*percentScale, 0.8f*percentScale});
                                     }
                                 }
                             }
-                            S.End();
+                            _s.End();
                             foreach (var hero in heroes)
                             {
                                 if (!hero.Key.IsDead && hero.Key.IsVisible)
                                 {
                                     if (hero.Value.SGui.SpellQ.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellQ.Cd.ToString(),
-                                            hero.Value.SGui.SpellQ.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_spellF, hero.Value.SGui.SpellQ.Cd.ToString(),
+                                            hero.Value.SGui.SpellQ.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     if (hero.Value.SGui.SpellW.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellW.Cd.ToString(),
-                                            hero.Value.SGui.SpellW.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_spellF, hero.Value.SGui.SpellW.Cd.ToString(),
+                                            hero.Value.SGui.SpellW.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     if (hero.Value.SGui.SpellE.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellE.Cd.ToString(),
-                                            hero.Value.SGui.SpellE.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_spellF, hero.Value.SGui.SpellE.Cd.ToString(),
+                                            hero.Value.SGui.SpellE.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     if (hero.Value.SGui.SpellR.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellR.Cd.ToString(),
-                                            hero.Value.SGui.SpellR.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_spellF, hero.Value.SGui.SpellR.Cd.ToString(),
+                                            hero.Value.SGui.SpellR.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     if (hero.Value.SGui.SpellSum1.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum1.Cd.ToString(),
-                                            hero.Value.SGui.SpellSum1.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_sumF, hero.Value.SGui.SpellSum1.Cd.ToString(),
+                                            hero.Value.SGui.SpellSum1.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     if (hero.Value.SGui.SpellSum2.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum2.Cd.ToString(),
-                                            hero.Value.SGui.SpellSum2.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_sumF, hero.Value.SGui.SpellSum2.Cd.ToString(),
+                                            hero.Value.SGui.SpellSum2.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                 }
                             }
                         }
                         else
                         {
-                            S.Begin();
+                            _s.Begin();
                             foreach (var hero in heroes)
                             {
                                 if (!hero.Key.IsDead && hero.Key.IsVisible)
                                 {
-                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellPassive.Texture,
+                                    DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellPassive.Texture,
                                         hero.Value.SGui.SpellPassive.SizeHpBar,
                                         new[] {1.7f*percentScale, 1.7f*percentScale});
-                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellQ.Texture,
+                                    DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellQ.Texture,
                                         hero.Value.SGui.SpellQ.SizeHpBar,
                                         new[] {1.7f*percentScale, 1.7f*percentScale});
-                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellW.Texture,
+                                    DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellW.Texture,
                                         hero.Value.SGui.SpellW.SizeHpBar,
                                         new[] {1.7f*percentScale, 1.7f*percentScale});
-                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellE.Texture,
+                                    DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellE.Texture,
                                         hero.Value.SGui.SpellE.SizeHpBar,
                                         new[] {1.7f*percentScale, 1.7f*percentScale});
-                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellR.Texture,
+                                    DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellR.Texture,
                                         hero.Value.SGui.SpellR.SizeHpBar,
                                         new[] {1.7f*percentScale, 1.7f*percentScale});
-                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum1.Texture,
+                                    DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellSum1.Texture,
                                         hero.Value.SGui.SpellSum1.SizeHpBar,
                                         new[] {1.0f*percentScale, 1.0f*percentScale});
-                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum2.Texture,
+                                    DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellSum2.Texture,
                                         hero.Value.SGui.SpellSum2.SizeHpBar,
                                         new[] {1.0f*percentScale, 1.0f*percentScale});
 
                                     if (hero.Value.SGui.SpellQ.Cd > 0.0f ||
                                         hero.Key.Spellbook.GetSpell(SpellSlot.Q).Level < 1)
                                     {
-                                        DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                                        DirectXDrawer.DrawSprite(_s, _overlaySpellItem,
                                             hero.Value.SGui.SpellQ.SizeHpBar,
                                             new ColorBGRA(Color3.White, 0.55f),
                                             new[] {1.7f*percentScale, 1.7f*percentScale});
@@ -2080,7 +2272,7 @@ namespace SAwareness
                                     if (hero.Value.SGui.SpellW.Cd > 0.0f ||
                                         hero.Key.Spellbook.GetSpell(SpellSlot.W).Level < 1)
                                     {
-                                        DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                                        DirectXDrawer.DrawSprite(_s, _overlaySpellItem,
                                             hero.Value.SGui.SpellW.SizeHpBar,
                                             new ColorBGRA(Color3.White, 0.55f),
                                             new[] {1.7f*percentScale, 1.7f*percentScale});
@@ -2088,7 +2280,7 @@ namespace SAwareness
                                     if (hero.Value.SGui.SpellE.Cd > 0.0f ||
                                         hero.Key.Spellbook.GetSpell(SpellSlot.E).Level < 1)
                                     {
-                                        DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                                        DirectXDrawer.DrawSprite(_s, _overlaySpellItem,
                                             hero.Value.SGui.SpellE.SizeHpBar,
                                             new ColorBGRA(Color3.White, 0.55f),
                                             new[] {1.7f*percentScale, 1.7f*percentScale});
@@ -2096,61 +2288,61 @@ namespace SAwareness
                                     if (hero.Value.SGui.SpellR.Cd > 0.0f ||
                                         hero.Key.Spellbook.GetSpell(SpellSlot.R).Level < 1)
                                     {
-                                        DirectXDrawer.DrawSprite(S, _overlaySpellItem,
+                                        DirectXDrawer.DrawSprite(_s, _overlaySpellItem,
                                             hero.Value.SGui.SpellR.SizeHpBar,
                                             new ColorBGRA(Color3.White, 0.55f),
                                             new[] {1.7f*percentScale, 1.7f*percentScale});
                                     }
                                     if (hero.Value.SGui.SpellSum1.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawSprite(S, _overlaySummonerSpell,
+                                        DirectXDrawer.DrawSprite(_s, _overlaySummonerSpell,
                                             hero.Value.SGui.SpellSum1.SizeHpBar,
                                             new ColorBGRA(Color3.White, 0.55f),
                                             new[] {1.0f*percentScale, 1.0f*percentScale});
                                     }
                                     if (hero.Value.SGui.SpellSum2.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawSprite(S, _overlaySummonerSpell,
+                                        DirectXDrawer.DrawSprite(_s, _overlaySummonerSpell,
                                             hero.Value.SGui.SpellSum2.SizeHpBar,
                                             new ColorBGRA(Color3.White, 0.55f),
                                             new[] {1.0f*percentScale, 1.0f*percentScale});
                                     }
                                 }
                             }
-                            S.End();
+                            _s.End();
                             foreach (var hero in heroes)
                             {
                                 if (!hero.Key.IsDead && hero.Key.IsVisible)
                                 {
                                     if (hero.Value.SGui.SpellQ.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellQ.Cd.ToString(),
-                                            hero.Value.SGui.SpellQ.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_sumF, hero.Value.SGui.SpellQ.Cd.ToString(),
+                                            hero.Value.SGui.SpellQ.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     if (hero.Value.SGui.SpellW.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellW.Cd.ToString(),
-                                            hero.Value.SGui.SpellW.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_sumF, hero.Value.SGui.SpellW.Cd.ToString(),
+                                            hero.Value.SGui.SpellW.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     if (hero.Value.SGui.SpellE.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellE.Cd.ToString(),
-                                            hero.Value.SGui.SpellE.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_sumF, hero.Value.SGui.SpellE.Cd.ToString(),
+                                            hero.Value.SGui.SpellE.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     if (hero.Value.SGui.SpellR.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellR.Cd.ToString(),
-                                            hero.Value.SGui.SpellR.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_sumF, hero.Value.SGui.SpellR.Cd.ToString(),
+                                            hero.Value.SGui.SpellR.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     if (hero.Value.SGui.SpellSum1.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum1.Cd.ToString(),
-                                            hero.Value.SGui.SpellSum1.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_sumF, hero.Value.SGui.SpellSum1.Cd.ToString(),
+                                            hero.Value.SGui.SpellSum1.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     if (hero.Value.SGui.SpellSum2.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum2.Cd.ToString(),
-                                            hero.Value.SGui.SpellSum2.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_sumF, hero.Value.SGui.SpellSum2.Cd.ToString(),
+                                            hero.Value.SGui.SpellSum2.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                 }
                             }
@@ -2160,271 +2352,269 @@ namespace SAwareness
                     {
                         if (modeHead.SelectedIndex == 0)
                         {
-                            S.Begin();
+                            _s.Begin();
                             foreach (var hero in heroes)
                             {
                                 if (!hero.Key.IsDead && hero.Key.IsVisible)
-                                {                                                                       
-                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum1.Texture,
+                                {
+                                    DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellSum1.Texture,
                                         hero.Value.SGui.SpellSum1.SizeHpBar,
-                                        new[] { 0.8f * percentScale, 0.8f * percentScale });
-                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum2.Texture,
+                                        new[] {0.8f*percentScale, 0.8f*percentScale});
+                                    DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellSum2.Texture,
                                         hero.Value.SGui.SpellSum2.SizeHpBar,
-                                        new[] { 0.8f * percentScale, 0.8f * percentScale });
+                                        new[] {0.8f*percentScale, 0.8f*percentScale});
 
                                     if (hero.Value.SGui.SpellQ.Cd > 0.0f ||
                                         hero.Key.Spellbook.GetSpell(SpellSlot.Q).Level < 1)
                                     {
-                                        RecS.Color = Color.Red;                                        
+                                        _recS.Color = SharpDX.Color.Red;
                                     }
                                     else
                                     {
-                                        RecS.Color = Color.Green; 
+                                        _recS.Color = SharpDX.Color.Green;
                                     }
-                                    RecS.X = hero.Value.SGui.SpellQ.SizeHpBar.Width;
-                                    RecS.Y = hero.Value.SGui.SpellQ.SizeHpBar.Height;
-                                    RecS.OnEndScene();
+                                    _recS.X = hero.Value.SGui.SpellQ.SizeHpBar.Width;
+                                    _recS.Y = hero.Value.SGui.SpellQ.SizeHpBar.Height;
+                                    _recS.OnEndScene();
                                     if (hero.Value.SGui.SpellW.Cd > 0.0f ||
                                         hero.Key.Spellbook.GetSpell(SpellSlot.W).Level < 1)
                                     {
-                                        RecS.Color = Color.Red;
+                                        _recS.Color = SharpDX.Color.Red;
                                     }
                                     else
                                     {
-                                        RecS.Color = Color.Green;
+                                        _recS.Color = SharpDX.Color.Green;
                                     }
-                                    RecS.X = hero.Value.SGui.SpellW.SizeHpBar.Width;
-                                    RecS.Y = hero.Value.SGui.SpellW.SizeHpBar.Height;
-                                    RecS.OnEndScene();
+                                    _recS.X = hero.Value.SGui.SpellW.SizeHpBar.Width;
+                                    _recS.Y = hero.Value.SGui.SpellW.SizeHpBar.Height;
+                                    _recS.OnEndScene();
                                     if (hero.Value.SGui.SpellE.Cd > 0.0f ||
                                         hero.Key.Spellbook.GetSpell(SpellSlot.E).Level < 1)
                                     {
-                                        RecS.Color = Color.Red;
+                                        _recS.Color = SharpDX.Color.Red;
                                     }
                                     else
                                     {
-                                        RecS.Color = Color.Green;
+                                        _recS.Color = SharpDX.Color.Green;
                                     }
-                                    RecS.X = hero.Value.SGui.SpellE.SizeHpBar.Width;
-                                    RecS.Y = hero.Value.SGui.SpellE.SizeHpBar.Height;
-                                    RecS.OnEndScene();
+                                    _recS.X = hero.Value.SGui.SpellE.SizeHpBar.Width;
+                                    _recS.Y = hero.Value.SGui.SpellE.SizeHpBar.Height;
+                                    _recS.OnEndScene();
                                     if (hero.Value.SGui.SpellR.Cd > 0.0f ||
                                         hero.Key.Spellbook.GetSpell(SpellSlot.R).Level < 1)
                                     {
-                                        RecS.Color = Color.Red;
+                                        _recS.Color = SharpDX.Color.Red;
                                     }
                                     else
                                     {
-                                        RecS.Color = Color.Green;
+                                        _recS.Color = SharpDX.Color.Green;
                                     }
-                                    RecS.X = hero.Value.SGui.SpellR.SizeHpBar.Width;
-                                    RecS.Y = hero.Value.SGui.SpellR.SizeHpBar.Height;
-                                    RecS.OnEndScene();
+                                    _recS.X = hero.Value.SGui.SpellR.SizeHpBar.Width;
+                                    _recS.Y = hero.Value.SGui.SpellR.SizeHpBar.Height;
+                                    _recS.OnEndScene();
                                     if (hero.Value.SGui.SpellSum1.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawSprite(S, _overlaySummonerSpell,
+                                        DirectXDrawer.DrawSprite(_s, _overlaySummonerSpell,
                                             hero.Value.SGui.SpellSum1.SizeHpBar,
                                             new ColorBGRA(Color3.White, 0.55f),
-                                            new[] { 0.8f * percentScale, 0.8f * percentScale });
+                                            new[] {0.8f*percentScale, 0.8f*percentScale});
                                     }
                                     if (hero.Value.SGui.SpellSum2.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawSprite(S, _overlaySummonerSpell,
+                                        DirectXDrawer.DrawSprite(_s, _overlaySummonerSpell,
                                             hero.Value.SGui.SpellSum2.SizeHpBar,
                                             new ColorBGRA(Color3.White, 0.55f),
-                                            new[] { 0.8f * percentScale, 0.8f * percentScale });
+                                            new[] {0.8f*percentScale, 0.8f*percentScale});
                                     }
                                 }
                             }
-                            S.End();
+                            _s.End();
                             foreach (var hero in heroes)
                             {
                                 if (!hero.Key.IsDead && hero.Key.IsVisible)
                                 {
                                     if (hero.Value.SGui.SpellQ.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellQ.Cd.ToString(),
-                                            hero.Value.SGui.SpellQ.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_spellF, hero.Value.SGui.SpellQ.Cd.ToString(),
+                                            hero.Value.SGui.SpellQ.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     else
                                     {
-                                        DirectXDrawer.DrawText(SpellF, "Q",
-                                            hero.Value.SGui.SpellQ.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_spellF, "Q",
+                                            hero.Value.SGui.SpellQ.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     if (hero.Value.SGui.SpellW.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellW.Cd.ToString(),
-                                            hero.Value.SGui.SpellW.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_spellF, hero.Value.SGui.SpellW.Cd.ToString(),
+                                            hero.Value.SGui.SpellW.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     else
                                     {
-                                        DirectXDrawer.DrawText(SpellF, "W",
-                                            hero.Value.SGui.SpellW.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_spellF, "W",
+                                            hero.Value.SGui.SpellW.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     if (hero.Value.SGui.SpellE.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellE.Cd.ToString(),
-                                            hero.Value.SGui.SpellE.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_spellF, hero.Value.SGui.SpellE.Cd.ToString(),
+                                            hero.Value.SGui.SpellE.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     else
                                     {
-                                        DirectXDrawer.DrawText(SpellF, "E",
-                                            hero.Value.SGui.SpellE.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_spellF, "E",
+                                            hero.Value.SGui.SpellE.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     if (hero.Value.SGui.SpellR.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SpellF, hero.Value.SGui.SpellR.Cd.ToString(),
-                                            hero.Value.SGui.SpellR.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_spellF, hero.Value.SGui.SpellR.Cd.ToString(),
+                                            hero.Value.SGui.SpellR.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     else
                                     {
-                                        DirectXDrawer.DrawText(SpellF, "R",
-                                            hero.Value.SGui.SpellR.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_spellF, "R",
+                                            hero.Value.SGui.SpellR.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     if (hero.Value.SGui.SpellSum1.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum1.Cd.ToString(),
-                                            hero.Value.SGui.SpellSum1.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_sumF, hero.Value.SGui.SpellSum1.Cd.ToString(),
+                                            hero.Value.SGui.SpellSum1.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     if (hero.Value.SGui.SpellSum2.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum2.Cd.ToString(),
-                                            hero.Value.SGui.SpellSum2.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_sumF, hero.Value.SGui.SpellSum2.Cd.ToString(),
+                                            hero.Value.SGui.SpellSum2.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                 }
                             }
                         }
                         else
                         {
-                            S.Begin();
+                            _s.Begin();
                             foreach (var hero in heroes)
                             {
                                 if (!hero.Key.IsDead && hero.Key.IsVisible)
                                 {
-                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum1.Texture,
+                                    DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellSum1.Texture,
                                         hero.Value.SGui.SpellSum1.SizeHpBar,
-                                        new[] { 1.0f * percentScale, 1.0f * percentScale });
-                                    DirectXDrawer.DrawSprite(S, hero.Value.SGui.SpellSum2.Texture,
+                                        new[] {1.0f*percentScale, 1.0f*percentScale});
+                                    DirectXDrawer.DrawSprite(_s, hero.Value.SGui.SpellSum2.Texture,
                                         hero.Value.SGui.SpellSum2.SizeHpBar,
-                                        new[] { 1.0f * percentScale, 1.0f * percentScale });
-                                    
+                                        new[] {1.0f*percentScale, 1.0f*percentScale});
+
                                     if (hero.Value.SGui.SpellQ.Cd > 0.0f ||
                                         hero.Key.Spellbook.GetSpell(SpellSlot.Q).Level < 1)
                                     {
-                                        RecB.Color = Color.Red;
+                                        _recB.Color = SharpDX.Color.Red;
                                     }
                                     else
                                     {
-                                        RecB.Color = Color.Green;
+                                        _recB.Color = SharpDX.Color.Green;
                                     }
-                                    RecB.X = (int)(hero.Value.SGui.SpellQ.SizeHpBar.Width);
-                                    RecB.Y = (int)(hero.Value.SGui.SpellQ.SizeHpBar.Height);
-                                    RecB.OnEndScene();
+                                    _recB.X = hero.Value.SGui.SpellQ.SizeHpBar.Width;
+                                    _recB.Y = hero.Value.SGui.SpellQ.SizeHpBar.Height;
+                                    _recB.OnEndScene();
                                     if (hero.Value.SGui.SpellW.Cd > 0.0f ||
                                         hero.Key.Spellbook.GetSpell(SpellSlot.W).Level < 1)
                                     {
-                                        RecB.Color = Color.Red;
+                                        _recB.Color = SharpDX.Color.Red;
                                     }
                                     else
                                     {
-                                        RecB.Color = Color.Green;
+                                        _recB.Color = SharpDX.Color.Green;
                                     }
-                                    RecB.X = (int)(hero.Value.SGui.SpellW.SizeHpBar.Width);
-                                    RecB.Y = (int)(hero.Value.SGui.SpellW.SizeHpBar.Height);
-                                    RecB.OnEndScene();
+                                    _recB.X = hero.Value.SGui.SpellW.SizeHpBar.Width;
+                                    _recB.Y = hero.Value.SGui.SpellW.SizeHpBar.Height;
+                                    _recB.OnEndScene();
                                     if (hero.Value.SGui.SpellE.Cd > 0.0f ||
                                         hero.Key.Spellbook.GetSpell(SpellSlot.E).Level < 1)
                                     {
-                                        RecB.Color = Color.Red;
+                                        _recB.Color = SharpDX.Color.Red;
                                     }
                                     else
                                     {
-                                        RecB.Color = Color.Green;
+                                        _recB.Color = SharpDX.Color.Green;
                                     }
-                                    RecB.X = (int)(hero.Value.SGui.SpellE.SizeHpBar.Width);
-                                    RecB.Y = (int)(hero.Value.SGui.SpellE.SizeHpBar.Height);
-                                    RecB.OnEndScene();
+                                    _recB.X = hero.Value.SGui.SpellE.SizeHpBar.Width;
+                                    _recB.Y = hero.Value.SGui.SpellE.SizeHpBar.Height;
+                                    _recB.OnEndScene();
                                     if (hero.Value.SGui.SpellR.Cd > 0.0f ||
                                         hero.Key.Spellbook.GetSpell(SpellSlot.R).Level < 1)
                                     {
-                                        RecB.Color = Color.Red;
+                                        _recB.Color = SharpDX.Color.Red;
                                     }
                                     else
                                     {
-                                        RecB.Color = Color.Green;
+                                        _recB.Color = SharpDX.Color.Green;
                                     }
-                                    RecB.X = (int)(hero.Value.SGui.SpellR.SizeHpBar.Width);
-                                    RecB.Y = (int)(hero.Value.SGui.SpellR.SizeHpBar.Height);
-                                    RecB.OnEndScene();
-                                    
+                                    _recB.X = hero.Value.SGui.SpellR.SizeHpBar.Width;
+                                    _recB.Y = hero.Value.SGui.SpellR.SizeHpBar.Height;
+                                    _recB.OnEndScene();
                                 }
                             }
-                            S.End();
+                            _s.End();
                             foreach (var hero in heroes)
                             {
                                 if (!hero.Key.IsDead && hero.Key.IsVisible)
                                 {
                                     if (hero.Value.SGui.SpellQ.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellQ.Cd.ToString(),
-                                            hero.Value.SGui.SpellQ.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_sumF, hero.Value.SGui.SpellQ.Cd.ToString(),
+                                            hero.Value.SGui.SpellQ.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     else
                                     {
-                                        DirectXDrawer.DrawText(SumF, "Q",
-                                            hero.Value.SGui.SpellQ.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_sumF, "Q",
+                                            hero.Value.SGui.SpellQ.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     if (hero.Value.SGui.SpellW.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellW.Cd.ToString(),
-                                            hero.Value.SGui.SpellW.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_sumF, hero.Value.SGui.SpellW.Cd.ToString(),
+                                            hero.Value.SGui.SpellW.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     else
                                     {
-                                        DirectXDrawer.DrawText(SumF, "W",
-                                            hero.Value.SGui.SpellW.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_sumF, "W",
+                                            hero.Value.SGui.SpellW.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     if (hero.Value.SGui.SpellE.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellE.Cd.ToString(),
-                                            hero.Value.SGui.SpellE.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_sumF, hero.Value.SGui.SpellE.Cd.ToString(),
+                                            hero.Value.SGui.SpellE.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     else
                                     {
-                                        DirectXDrawer.DrawText(SumF, "E",
-                                            hero.Value.SGui.SpellE.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_sumF, "E",
+                                            hero.Value.SGui.SpellE.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     if (hero.Value.SGui.SpellR.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellR.Cd.ToString(),
-                                            hero.Value.SGui.SpellR.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_sumF, hero.Value.SGui.SpellR.Cd.ToString(),
+                                            hero.Value.SGui.SpellR.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     else
                                     {
-                                        DirectXDrawer.DrawText(SumF, "R",
-                                            hero.Value.SGui.SpellR.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_sumF, "R",
+                                            hero.Value.SGui.SpellR.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     if (hero.Value.SGui.SpellSum1.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum1.Cd.ToString(),
-                                            hero.Value.SGui.SpellSum1.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_sumF, hero.Value.SGui.SpellSum1.Cd.ToString(),
+                                            hero.Value.SGui.SpellSum1.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                     if (hero.Value.SGui.SpellSum2.Cd > 0.0f)
                                     {
-                                        DirectXDrawer.DrawText(SumF, hero.Value.SGui.SpellSum2.Cd.ToString(),
-                                            hero.Value.SGui.SpellSum2.CoordsHpBar, Color.Orange);
+                                        DirectXDrawer.DrawText(_sumF, hero.Value.SGui.SpellSum2.Cd.ToString(),
+                                            hero.Value.SGui.SpellSum2.CoordsHpBar, SharpDX.Color.Orange);
                                     }
                                 }
                             }
                         }
                     }
-                    
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                if (ex.GetType() == typeof(SharpDXException))
+                if (ex.GetType() == typeof (SharpDXException))
                 {
                     Menu.UiTracker.SetActive(false);
                     Game.PrintChat("UITracker: An error occured. Please activate CDPanel in your menu again.");
@@ -2432,31 +2622,72 @@ namespace SAwareness
             }
         }
 
-        void Drawing_OnEndScene(EventArgs args)
+        private void Drawing_OnEndScene(EventArgs args)
         {
-            if (!IsActive() || !drawActive)
+            if (!IsActive() || !_drawActive)
                 return;
 
-            if(Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetActive())
+            if (Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker").GetActive())
                 DrawInterface(true);
             if (Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetActive())
                 DrawInterface(false);
         }
+
+        private class ChampInfos
+        {
+            public readonly Gui SGui = new Gui();
+
+            public class Gui
+            {
+                public readonly SpriteInfos BackBar = new SpriteInfos();
+                public readonly SpriteInfos Champ = new SpriteInfos();
+                public readonly SpriteInfos HealthBar = new SpriteInfos();
+                public readonly SpriteInfos[] Item = new SpriteInfos[7];
+                public readonly ItemId[] ItemId = new ItemId[7];
+                public readonly SpriteInfos ManaBar = new SpriteInfos();
+                public readonly SpriteInfos RecallBar = new SpriteInfos();
+                public readonly SpriteInfos SpellE = new SpriteInfos();
+                public readonly SpriteInfos SpellPassive = new SpriteInfos();
+                public readonly SpriteInfos SpellQ = new SpriteInfos();
+                public readonly SpriteInfos SpellR = new SpriteInfos();
+                public readonly SpriteInfos SpellSum1 = new SpriteInfos();
+                public readonly SpriteInfos SpellSum2 = new SpriteInfos();
+                public readonly SpriteInfos SpellW = new SpriteInfos();
+                public int DeathTime;
+                public int DeathTimeDisplay;
+                public bool Dead;
+                public int InvisibleTime;
+                public Vector2 Pos = new Vector2();
+                public String SHealth;
+                public String SMana;
+                public int VisibleTime;
+
+                public class SpriteInfos
+                {
+                    public int Cd;
+                    public Size CoordsHpBar;
+                    public Size CoordsSideBar;
+                    public Size SizeHpBar;
+                    public Size SizeSideBar;
+                    public Texture Texture;
+                }
+            }
+        }
     }
 
-    public class UIMTracker
+    public class UimTracker
     {
-        private bool drawActive = true;
-        Sprite S;
-        Font RecF;
-        readonly Dictionary<Obj_AI_Hero, Texture> Enemies = new Dictionary<Obj_AI_Hero, Texture>();
+        private readonly Dictionary<Obj_AI_Hero, Texture> _enemies = new Dictionary<Obj_AI_Hero, Texture>();
+        private Font _recF;
+        private Sprite _s;
+        private bool _drawActive = true;
 
-        public UIMTracker()
+        public UimTracker()
         {
             if (!IsActive())
                 return;
-            var loaded = false;
-            var tries = 0;
+            bool loaded = false;
+            int tries = 0;
             while (!loaded)
             {
                 loaded = Init(tries >= 5);
@@ -2479,21 +2710,21 @@ namespace SAwareness
             AppDomain.CurrentDomain.ProcessExit += delegate { Drawing_OnPreReset(new EventArgs()); };
         }
 
-        void Drawing_OnPostReset(EventArgs args)
+        private void Drawing_OnPostReset(EventArgs args)
         {
-            S.OnResetDevice();
-            RecF.OnResetDevice();
-            drawActive = true;
+            _s.OnResetDevice();
+            _recF.OnResetDevice();
+            _drawActive = true;
         }
 
-        void Drawing_OnPreReset(EventArgs args)
+        private void Drawing_OnPreReset(EventArgs args)
         {
-            S.OnLostDevice();
-            RecF.OnLostDevice();
-            drawActive = false;
+            _s.OnLostDevice();
+            _recF.OnLostDevice();
+            _drawActive = false;
         }
 
-        ~UIMTracker()
+        ~UimTracker()
         {
             Drawing.OnPreReset -= Drawing_OnPreReset;
             Drawing.OnPostReset -= Drawing_OnPostReset;
@@ -2509,12 +2740,11 @@ namespace SAwareness
         {
             try
             {
-                S = new Sprite(Drawing.Direct3DDevice);
-                RecF = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Times New Roman", 8));
+                _s = new Sprite(Drawing.Direct3DDevice);
+                _recF = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Times New Roman", 8));
             }
             catch (Exception)
             {
-
                 return false;
                 //throw;
             }
@@ -2523,29 +2753,29 @@ namespace SAwareness
             //loc = loc.Remove(loc.LastIndexOf("\\", StringComparison.Ordinal));
             //loc = loc + "\\Sprites\\SAwareness\\";
 
-            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+            foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (hero.IsEnemy)
                 {
                     Texture champ = null;
                     //SpriteHelper.LoadTexture(hero.ChampionName + ".dds", "CHAMP/", loc + "CHAMP\\" + hero.ChampionName + ".dds", ref champ);
                     SpriteHelper.LoadTexture(hero.ChampionName, ref champ, SpriteHelper.TextureType.Default);
-                    Enemies.Add(hero, champ);
+                    _enemies.Add(hero, champ);
                 }
             }
 
             return true;
         }
 
-        RecallDetector.RecallInfo GetRecall(int networkId)
+        private RecallDetector.RecallInfo GetRecall(int networkId)
         {
-            StringList t = Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorMode").GetValue<StringList>();
+            var t = Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorMode").GetValue<StringList>();
             if (t.SelectedIndex == 1 || t.SelectedIndex == 2)
             {
-                RecallDetector recallDetector = (RecallDetector)Menu.RecallDetector.Item;
+                var recallDetector = (RecallDetector) Menu.RecallDetector.Item;
                 if (recallDetector == null)
                     return null;
-                foreach (var info in recallDetector._recalls)
+                foreach (RecallDetector.RecallInfo info in recallDetector.Recalls)
                 {
                     if (info.NetworkId == networkId)
                     {
@@ -2556,31 +2786,32 @@ namespace SAwareness
             return null;
         }
 
-        void Drawing_OnEndScene(EventArgs args)
+        private void Drawing_OnEndScene(EventArgs args)
         {
-            if (!IsActive() || !drawActive)
+            if (!IsActive() || !_drawActive)
                 return;
             try
             {
-                float percentScale = (float)Menu.UimTracker.GetMenuItem("SAwarenessUIMTrackerScale").GetValue<Slider>().Value / 100;
+                float percentScale =
+                    (float) Menu.UimTracker.GetMenuItem("SAwarenessUIMTrackerScale").GetValue<Slider>().Value/100;
 
-                if (S.IsDisposed)
+                if (_s.IsDisposed)
                 {
                     return;
                 }
-                S.Begin();
-                foreach (var enemy in Enemies)
+                _s.Begin();
+                foreach (var enemy in _enemies)
                 {
-                    if(enemy.Key.IsVisible)
+                    if (enemy.Key.IsVisible)
                         continue;
                     Vector2 serverPos = Drawing.WorldToMinimap(enemy.Key.ServerPosition);
-                    Size mPos = new Size((int) (serverPos[0] - 32 * 0.3f), (int) (serverPos[1] - 32 * 0.3f));
-                    DirectXDrawer.DrawSprite(S, enemy.Value,
+                    var mPos = new Size((int) (serverPos[0] - 32*0.3f), (int) (serverPos[1] - 32*0.3f));
+                    DirectXDrawer.DrawSprite(_s, enemy.Value,
                         mPos.ScaleSize(percentScale, new Vector2(mPos.Width, mPos.Height)),
-                        new[] { 0.3f * percentScale, 0.3f * percentScale });
+                        new[] {0.3f*percentScale, 0.3f*percentScale});
                 }
-                S.End();
-                foreach (var enemy in Enemies)
+                _s.End();
+                foreach (var enemy in _enemies)
                 {
                     if (Menu.RecallDetector.GetActive())
                     {
@@ -2589,12 +2820,12 @@ namespace SAwareness
                         {
                             float time = Game.Time + info.Recall.Duration/1000 - info.StartTime;
                             Vector2 vec = Drawing.WorldToMinimap(enemy.Key.ServerPosition);
-                            Size pos = new Size((int)vec.X, (int)vec.Y);
+                            var pos = new Size((int) vec.X, (int) vec.Y);
                             if (time > 0.0f &&
                                 (info.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportStart ||
                                  info.Recall.Status == Packet.S2C.Recall.RecallStatus.RecallStarted))
                             {
-                                DirectXDrawer.DrawText(RecF, enemy.Key.ChampionName, pos, Color.Chartreuse);
+                                DirectXDrawer.DrawText(_recF, enemy.Key.ChampionName, pos, SharpDX.Color.Chartreuse);
                             }
                         }
                     }
@@ -2603,7 +2834,7 @@ namespace SAwareness
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                if (ex.GetType() == typeof(SharpDXException))
+                if (ex.GetType() == typeof (SharpDXException))
                 {
                     Menu.UimTracker.SetActive(false);
                     Game.PrintChat("UIM: An error occured. Please activate UI Minimap in your menu again.");
@@ -2612,7 +2843,7 @@ namespace SAwareness
         }
     }
 
-    class WaypointTracker
+    internal class WaypointTracker
     {
         public WaypointTracker()
         {
@@ -2629,16 +2860,16 @@ namespace SAwareness
             return Menu.Tracker.GetActive() && Menu.WaypointTracker.GetActive();
         }
 
-        void Drawing_OnDraw(EventArgs args)
+        private void Drawing_OnDraw(EventArgs args)
         {
             if (!IsActive())
                 return;
-            foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>())
+            foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
             {
                 float arrivalTime = 0.0f;
                 if (enemy.IsValid && enemy.IsVisible && !enemy.IsDead && enemy.IsEnemy)
                 {
-                    var waypoints = enemy.GetWaypoints();
+                    List<Vector2> waypoints = enemy.GetWaypoints();
                     for (int i = 0; i < waypoints.Count - 1; i++)
                     {
                         Vector2 oWp;
@@ -2646,88 +2877,45 @@ namespace SAwareness
                         float time = 0;
                         oWp = Drawing.WorldToScreen(waypoints[i].To3D());
                         nWp = Drawing.WorldToScreen(waypoints[i + 1].To3D());
-                        Drawing.DrawLine(oWp[0], oWp[1], nWp[0], nWp[1], 1, System.Drawing.Color.White);
+                        Drawing.DrawLine(oWp[0], oWp[1], nWp[0], nWp[1], 1, Color.White);
                         time =
-                                ((Vector3.Distance(waypoints[i].To3D(), waypoints[i + 1].To3D()) /
-                                  (ObjectManager.Player.MoveSpeed / 1000)) / 1000);
-                        time = (float)Math.Round(time, 2);
+                            ((Vector3.Distance(waypoints[i].To3D(), waypoints[i + 1].To3D())/
+                              (ObjectManager.Player.MoveSpeed/1000))/1000);
+                        time = (float) Math.Round(time, 2);
                         arrivalTime += time;
                         if (i == enemy.Path.Length - 1)
                         {
-                            DrawCross(nWp[0], nWp[1], 1.0f, 3.0f, System.Drawing.Color.Red);
-                            Drawing.DrawText(nWp[0] - 15, nWp[1] + 10, System.Drawing.Color.Red, arrivalTime.ToString());
+                            DrawCross(nWp[0], nWp[1], 1.0f, 3.0f, Color.Red);
+                            Drawing.DrawText(nWp[0] - 15, nWp[1] + 10, Color.Red, arrivalTime.ToString());
                         }
                     }
                 }
             }
         }
 
-        void DrawCross(float x, float y, float size, float thickness, System.Drawing.Color color)
+        private void DrawCross(float x, float y, float size, float thickness, Color color)
         {
-            var topLeft = new Vector2(x - 10 * size, y - 10 * size);
-            var topRight = new Vector2(x + 10 * size, y - 10 * size);
-            var botLeft = new Vector2(x - 10 * size, y + 10 * size);
-            var botRight = new Vector2(x + 10 * size, y + 10 * size);
+            var topLeft = new Vector2(x - 10*size, y - 10*size);
+            var topRight = new Vector2(x + 10*size, y - 10*size);
+            var botLeft = new Vector2(x - 10*size, y + 10*size);
+            var botRight = new Vector2(x + 10*size, y + 10*size);
 
             Drawing.DrawLine(topLeft.X, topLeft.Y, botRight.X, botRight.Y, thickness, color);
             Drawing.DrawLine(topRight.X, topRight.Y, botLeft.X, botLeft.Y, thickness, color);
         }
     }
 
-    class Killable //TODO: Add more option for e.g. most damage first, add ignite spell
+    internal class Killable //TODO: Add more option for e.g. most damage first, add ignite spell
     {
-
-        private bool drawActive = true;
-        Render.Text textF = new Render.Text("", 0, 0, 24, Color.Goldenrod);
-
-        public class Item : Items.Item
-        {
-            public String Name;
-
-            public Item(int id, float range, String name) : base(id, range)
-            {
-                Name = name;
-            }
-        }
-
-        public class Spell
-        {
-            public String Name;
-            public SpellSlot SpellSlot;
-
-            public Spell(String name, SpellSlot spellSlot)
-            {
-                Name = name;
-                SpellSlot = spellSlot;
-            }
-        }
-
-        public class Combo
-        {
-            public List<Spell> Spells = new List<Spell>();
-            public List<Item> Items = new List<Item>();
-
-            public bool Killable = false;
-
-
-            public Combo(List<Spell> spells, List<Item> items, bool killable)
-            {
-                Spells = spells;
-                Items = items;
-                Killable = killable;
-            }
-
-            public Combo()
-            {
-            }
-        }
+        private readonly Render.Text _textF = new Render.Text("", 0, 0, 24, SharpDX.Color.Goldenrod);
+        private bool _drawActive = true;
 
         public Killable()
         {
             Drawing.OnEndScene += Drawing_OnEndScene;
             Drawing.OnPreReset += Drawing_OnPreReset;
             Drawing.OnPostReset += Drawing_OnPostReset;
-        }      
+        }
 
         ~Killable()
         {
@@ -2741,43 +2929,43 @@ namespace SAwareness
             return Menu.Tracker.GetActive() && Menu.Killable.GetActive();
         }
 
-        Dictionary<Obj_AI_Hero, Combo> CalculateKillable()
+        private Dictionary<Obj_AI_Hero, Combo> CalculateKillable()
         {
-            Dictionary<Obj_AI_Hero, Combo> enemies = new Dictionary<Obj_AI_Hero, Combo>(); 
+            var enemies = new Dictionary<Obj_AI_Hero, Combo>();
 
-            foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>())
+            foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (enemy.IsEnemy)
                 {
                     enemies.Add(enemy, CalculateKillable(enemy));
-                }                
+                }
             }
             return enemies;
         }
 
-        Combo CalculateKillable(Obj_AI_Hero enemy)
+        private Combo CalculateKillable(Obj_AI_Hero enemy)
         {
-            Dictionary<Item, Damage.DamageItems> creationItemList = new Dictionary<Item, Damage.DamageItems>();
-            List<LeagueSharp.Common.Spell> creationSpellList = new List<LeagueSharp.Common.Spell>();
-            List<Spell> tempSpellList = new List<Spell>();
-            List<Item> tempItemList = new List<Item>();
+            var creationItemList = new Dictionary<Item, Damage.DamageItems>();
+            var creationSpellList = new List<LeagueSharp.Common.Spell>();
+            var tempSpellList = new List<Spell>();
+            var tempItemList = new List<Item>();
 
-            LeagueSharp.Common.Spell ignite = new LeagueSharp.Common.Spell(Activator.GetIgniteSlot(), 1000);
+            var ignite = new LeagueSharp.Common.Spell(Activator.GetIgniteSlot(), 1000);
 
-            LeagueSharp.Common.Spell q = new LeagueSharp.Common.Spell(SpellSlot.Q, 1000);
-            LeagueSharp.Common.Spell w = new LeagueSharp.Common.Spell(SpellSlot.W, 1000);
-            LeagueSharp.Common.Spell e = new LeagueSharp.Common.Spell(SpellSlot.E, 1000);
-            LeagueSharp.Common.Spell r = new LeagueSharp.Common.Spell(SpellSlot.R, 1000);
+            var q = new LeagueSharp.Common.Spell(SpellSlot.Q, 1000);
+            var w = new LeagueSharp.Common.Spell(SpellSlot.W, 1000);
+            var e = new LeagueSharp.Common.Spell(SpellSlot.E, 1000);
+            var r = new LeagueSharp.Common.Spell(SpellSlot.R, 1000);
             creationSpellList.Add(q);
             creationSpellList.Add(w);
             creationSpellList.Add(e);
             creationSpellList.Add(r);
 
-            Item dfg = new Item(3128, 1000, "Dfg");
-            Item bilgewater = new Item(3144, 1000, "Bilgewater");
-            Item hextechgun = new Item(3146, 1000, "Hextech");
-            Item blackfire = new Item(3188, 1000, "Blackfire");
-            Item botrk = new Item(3153, 1000, "Botrk");
+            var dfg = new Item(3128, 1000, "Dfg");
+            var bilgewater = new Item(3144, 1000, "Bilgewater");
+            var hextechgun = new Item(3146, 1000, "Hextech");
+            var blackfire = new Item(3188, 1000, "Blackfire");
+            var botrk = new Item(3153, 1000, "Botrk");
             creationItemList.Add(dfg, Damage.DamageItems.Dfg);
             creationItemList.Add(bilgewater, Damage.DamageItems.Bilgewater);
             creationItemList.Add(hextechgun, Damage.DamageItems.Hexgun);
@@ -2800,7 +2988,7 @@ namespace SAwareness
                 }
             }
 
-            foreach (var spell in creationSpellList)
+            foreach (LeagueSharp.Common.Spell spell in creationSpellList)
             {
                 if (spell.IsReady())
                 {
@@ -2810,14 +2998,13 @@ namespace SAwareness
                         enoughDmg += spellDamage;
                         enoughMana += spell.Instance.ManaCost;
                         tempSpellList.Add(new Spell(spell.Slot.ToString(), spell.Slot));
-                    }                    
+                    }
                 }
                 if (enemy.Health < enoughDmg)
                 {
-                    if(ObjectManager.Player.Mana >= enoughMana)
+                    if (ObjectManager.Player.Mana >= enoughMana)
                         return new Combo(tempSpellList, tempItemList, true);
-                    else
-                        return new Combo(null, null, false);
+                    return new Combo(null, null, false);
                 }
             }
 
@@ -2834,21 +3021,21 @@ namespace SAwareness
             return new Combo();
         }
 
-        void Drawing_OnPostReset(EventArgs args)
+        private void Drawing_OnPostReset(EventArgs args)
         {
-            textF.OnPostReset();
-            drawActive = true;
+            _textF.OnPostReset();
+            _drawActive = true;
         }
 
-        void Drawing_OnPreReset(EventArgs args)
+        private void Drawing_OnPreReset(EventArgs args)
         {
-            textF.OnPreReset();
-            drawActive = false;
-        } 
+            _textF.OnPreReset();
+            _drawActive = false;
+        }
 
-        void Drawing_OnEndScene(EventArgs args)
+        private void Drawing_OnEndScene(EventArgs args)
         {
-            if (!IsActive() || !drawActive)
+            if (!IsActive() || !_drawActive)
                 return;
 
             int index = 0;
@@ -2863,15 +3050,57 @@ namespace SAwareness
                         enemy.Value.Items.ForEach(x => killText += x.Name + "/");
                     if (killText.Contains("/"))
                         killText = killText.Remove(killText.LastIndexOf("/"));
-                    textF.Centered = true;
-                    textF.text = killText;
-                    textF.X = Drawing.Width/2;
-                    textF.Y = (int)(Drawing.Height*0.80f - (17*index));
-                    textF.OutLined = true;
-                    textF.OnEndScene();
+                    _textF.Centered = true;
+                    _textF.text = killText;
+                    _textF.X = Drawing.Width/2;
+                    _textF.Y = (int) (Drawing.Height*0.80f - (17*index));
+                    _textF.OutLined = true;
+                    _textF.OnEndScene();
                     index++;
                 }
             }
-        } 
+        }
+
+        public class Combo
+        {
+            public List<Item> Items = new List<Item>();
+
+            public bool Killable = false;
+            public List<Spell> Spells = new List<Spell>();
+
+
+            public Combo(List<Spell> spells, List<Item> items, bool killable)
+            {
+                Spells = spells;
+                Items = items;
+                Killable = killable;
+            }
+
+            public Combo()
+            {
+            }
+        }
+
+        public class Item : Items.Item
+        {
+            public String Name;
+
+            public Item(int id, float range, String name) : base(id, range)
+            {
+                Name = name;
+            }
+        }
+
+        public class Spell
+        {
+            public String Name;
+            public SpellSlot SpellSlot;
+
+            public Spell(String name, SpellSlot spellSlot)
+            {
+                Name = name;
+                SpellSlot = spellSlot;
+            }
+        }
     }
 }

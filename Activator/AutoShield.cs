@@ -1,72 +1,99 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using Evade;
 using LeagueSharp;
 using LeagueSharp.Common;
-using SharpDX;
 
 namespace SAwareness
 {
-    class AutoShield
+    internal class AutoShield
     {
-
-        class Shield
-        {
-            public bool OnlyMagic;
-            public bool Instant;
-            public bool Skillshot;
-            public Spell Spell;
-
-            public Shield(Spell spell, bool instant = true, bool skillshot = false, bool onlyMagic = false)
-            {
-                Spell = spell;
-                Instant = instant;
-                Skillshot = skillshot;
-                OnlyMagic = onlyMagic;
-            }
-        }
-
-        class Spell : LeagueSharp.Common.Spell
-        {
-            public Spell(SpellSlot slot, float range, float delay = 0, float width = 0, float speed = 0) : base(slot, range)
-            {
-                this.SetSkillshot(delay, width, speed, false, SkillshotType.SkillshotLine);
-            }
-        }
-
-        private Shield shield;
+        private readonly Shield _shield;
 
         public AutoShield()
         {
             switch (ObjectManager.Player.ChampionName)
             {
                 case "Janna":
-                    shield = new Shield(new Spell(SpellSlot.E, 900, 0, 0, 0));
+                    _shield = new Shield(new Spell(SpellSlot.E, 900, 0, 0, 0));
                     break;
 
                 case "Morgana":
-                    shield = new Shield(new Spell(SpellSlot.E, 850, 0, 0, 0), true, false, true);
+                    _shield = new Shield(new Spell(SpellSlot.E, 850, 0, 0, 0), true, false, true);
                     break;
 
                 case "Lux":
-                    shield = new Shield(new Spell(SpellSlot.W, 1175, 0.5f, 150, 1200), false, true);
+                    _shield = new Shield(new Spell(SpellSlot.W, 1175, 0.5f, 150, 1200), false, true);
                     break;
 
                 case "Orianna":
-                    shield = new Shield(new Spell(SpellSlot.E, 1295, 0.5f, 0, 1200), false);
+                    _shield = new Shield(new Spell(SpellSlot.E, 1295, 0.5f, 0, 1200), false);
                     break;
 
                 case "Karma":
-                    shield = new Shield(new Spell(SpellSlot.E, 900, 0, 0, 0));
+                    _shield = new Shield(new Spell(SpellSlot.E, 900, 0, 0, 0));
                     break;
 
                 case "Lulu":
-                    shield = new Shield(new Spell(SpellSlot.E, 750, 0, 0, 0));
+                    _shield = new Shield(new Spell(SpellSlot.E, 750, 0, 0, 0));
+                    break;
+
+                case "LeeSin":
+                    _shield = new Shield(new Spell(SpellSlot.W, 800, 0, 0, 1500), false);
+                    break;
+
+                case "Thresh":
+                    _shield = new Shield(new Spell(SpellSlot.W, 1050, 0, 0, 0));
+                    break;
+
+                    //Self
+
+                case "JarvanIV":
+                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
+                    break;
+
+                case "Nautilus":
+                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
+                    break;
+
+                case "Rumble":
+                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
+                    break;
+
+                case "Sion":
+                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
+                    break;
+
+                case "Shen":
+                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
+                    break;
+
+                case "Skarner":
+                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
+                    break;
+
+                case "Urgot":
+                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
+                    break;
+
+                case "Diana":
+                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
+                    break;
+
+                case "Udyr":
+                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
+                    break;
+
+                case "Riven":
+                    _shield = new Shield(new Spell(SpellSlot.E, 0, 0, 0, 0), true);
+                    break;
+
+                case "Sivir":
+                    _shield = new Shield(new Spell(SpellSlot.E, 0, 0, 0, 0), true);
+                    break;
+
+                case "Nocturne":
+                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
                     break;
 
                 default:
@@ -90,21 +117,23 @@ namespace SAwareness
             if (!IsActive())
                 return;
 
-            Dictionary<Obj_AI_Hero, List<Activator.IncomingDamage>> tempDamages =
-                new Dictionary<Obj_AI_Hero, List<Activator.IncomingDamage>>(Activator.damages);
-            foreach (KeyValuePair<Obj_AI_Hero, List<Activator.IncomingDamage>> damage in Activator.damages)
+            var tempDamages =
+                new Dictionary<Obj_AI_Hero, List<Activator.IncomingDamage>>(Activator.Damages);
+            foreach (var damage in Activator.Damages)
             {
                 Obj_AI_Hero hero = damage.Key;
 
-                foreach (var tDamage in tempDamages[hero].ToArray())
+                foreach (Activator.IncomingDamage tDamage in tempDamages[hero].ToArray())
                 {
-                    foreach (var spell in Database.GetSpellList())
+                    foreach (Database.Spell spell in Database.GetSpellList())
                     {
                         if (spell.Name.Contains(tDamage.SpellName))
                         {
-                            if (shield.OnlyMagic)
+                            if (_shield.OnlyMagic)
                             {
-                                if (!IsDamageType((Obj_AI_Hero)tDamage.Source, tDamage.SpellName, Damage.DamageType.Magical))
+                                if (
+                                    !IsDamageType((Obj_AI_Hero) tDamage.Source, tDamage.SpellName,
+                                        Damage.DamageType.Magical))
                                 {
                                     tempDamages[hero].Remove(tDamage);
                                     continue;
@@ -112,23 +141,22 @@ namespace SAwareness
                                 if (
                                     Menu.AutoShield.GetMenuItem("SAwarenessAutoShieldBlockCC")
                                         .GetValue<bool>() &&
-                                    !ContainsCC(tDamage.SpellName))
+                                    !ContainsCc(tDamage.SpellName))
                                 {
                                     tempDamages[hero].Remove(tDamage);
                                     continue;
                                 }
                             }
-                            if (!CheckDamagelevel(tDamage.SpellName) && !shield.OnlyMagic)
+                            if (!CheckDamagelevel(tDamage.SpellName) && !_shield.OnlyMagic)
                             {
                                 tempDamages[hero].Remove(tDamage);
                                 continue;
-                            }                            
+                            }
                         }
                         if (!Menu.AutoShield.GetMenuItem("SAwarenessAutoShieldBlockAA")
-                                        .GetValue<bool>() && IsAutoAttack(tDamage.SpellName))
+                            .GetValue<bool>() && IsAutoAttack(tDamage.SpellName))
                         {
                             tempDamages[hero].Remove(tDamage);
-                            continue;
                         }
                     }
                 }
@@ -139,31 +167,37 @@ namespace SAwareness
                 //Vector2 d2 = Drawing.WorldToScreen(damage.Key.ServerPosition);
                 //Drawing.DrawText(d2.X, d2.Y, System.Drawing.Color.Aquamarine, Activator.CalcMaxDamage(damage.Key).ToString());
 
-                if (Activator.CalcMaxDamage(damage.Key) > 0 && damage.Key.Distance(ObjectManager.Player.ServerPosition) < shield.Spell.Range)
+                if (Activator.CalcMaxDamage(damage.Key) > 0 &&
+                    (_shield.OnlySelf || damage.Key.Distance(ObjectManager.Player.ServerPosition) < _shield.Spell.Range))
                 {
-                    if (shield.Skillshot)
+                    if (_shield.Skillshot)
                     {
-                        PredictionOutput predOutput = shield.Spell.GetPrediction(damage.Key);
+                        PredictionOutput predOutput = _shield.Spell.GetPrediction(damage.Key);
                         if (predOutput.Hitchance > HitChance.Medium)
-                            ObjectManager.Player.Spellbook.CastSpell(shield.Spell.Slot, predOutput.CastPosition);
+                            ObjectManager.Player.Spellbook.CastSpell(_shield.Spell.Slot, predOutput.CastPosition);
                         break;
                     }
-                    if (shield.Instant)
+                    if (_shield.OnlySelf)
                     {
-                        ObjectManager.Player.Spellbook.CastSpell(shield.Spell.Slot, damage.Key);
+                        ObjectManager.Player.Spellbook.CastSpell(_shield.Spell.Slot);
+                        break;
+                    }
+                    if (_shield.Instant)
+                    {
+                        ObjectManager.Player.Spellbook.CastSpell(_shield.Spell.Slot, damage.Key);
                         break;
                     }
                 }
             }
         }
 
-        private static bool ContainsCC(String spellName)
+        private static bool ContainsCc(String spellName)
         {
-            foreach (var spell in Database.GetSpellList())
+            foreach (Database.Spell spell in Database.GetSpellList())
             {
                 if (spellName.Contains(spell.Name))
                 {
-                    if (spell.CCType != Database.Spell.CCtype.NoCC)
+                    if (spell.CcType != Database.Spell.CCtype.NoCc)
                         return true;
                 }
             }
@@ -172,24 +206,33 @@ namespace SAwareness
 
         private static bool CheckDamagelevel(String spellName)
         {
-            foreach (var spell in Database.GetSpellList())
+            foreach (Database.Spell spell in Database.GetSpellList())
             {
                 if (spell.Name.Contains(spellName))
                 {
-                    if (Menu.AutoShield.GetMenuItem("SAwarenessAutoShieldBlockDamageAmount").GetValue<StringList>().SelectedIndex == 0)
+                    if (
+                        Menu.AutoShield.GetMenuItem("SAwarenessAutoShieldBlockDamageAmount")
+                            .GetValue<StringList>()
+                            .SelectedIndex == 0)
                     {
                         if (spell.Damagelvl == Database.Spell.DamageLevel.Medium ||
                             spell.Damagelvl == Database.Spell.DamageLevel.High ||
                             spell.Damagelvl == Database.Spell.DamageLevel.Extrem)
                             return true;
                     }
-                    else if (Menu.AutoShield.GetMenuItem("SAwarenessAutoShieldBlockDamageAmount").GetValue<StringList>().SelectedIndex == 1)
+                    else if (
+                        Menu.AutoShield.GetMenuItem("SAwarenessAutoShieldBlockDamageAmount")
+                            .GetValue<StringList>()
+                            .SelectedIndex == 1)
                     {
                         if (spell.Damagelvl == Database.Spell.DamageLevel.High ||
                             spell.Damagelvl == Database.Spell.DamageLevel.Extrem)
                             return true;
                     }
-                    if (Menu.AutoShield.GetMenuItem("SAwarenessAutoShieldBlockDamageAmount").GetValue<StringList>().SelectedIndex == 2)
+                    if (
+                        Menu.AutoShield.GetMenuItem("SAwarenessAutoShieldBlockDamageAmount")
+                            .GetValue<StringList>()
+                            .SelectedIndex == 2)
                     {
                         if (spell.Damagelvl == Database.Spell.DamageLevel.Extrem)
                             return true;
@@ -201,7 +244,7 @@ namespace SAwareness
 
         private static bool IsAutoAttack(String spellName)
         {
-            if(spellName.ToLower().Contains("attack"))
+            if (spellName.ToLower().Contains("attack"))
                 return true;
             return false;
         }
@@ -214,13 +257,12 @@ namespace SAwareness
                 if (string.Equals(spellDataInst.Name, spellName,
                     StringComparison.InvariantCultureIgnoreCase))
                 {
-                    damageSpell = Enumerable.FirstOrDefault<DamageSpell>((IEnumerable<DamageSpell>)Damage.Spells[hero.ChampionName], (Func<DamageSpell, bool>)(s =>
+                    damageSpell = Damage.Spells[hero.ChampionName].FirstOrDefault(s =>
                     {
                         if (s.Slot == spellDataInst.Slot)
                             return 0 == s.Stage;
-                        else
-                            return false;
-                    })) ?? Enumerable.FirstOrDefault<DamageSpell>((IEnumerable<DamageSpell>)Damage.Spells[hero.ChampionName], (Func<DamageSpell, bool>)(s => s.Slot == spellDataInst.Slot));
+                        return false;
+                    }) ?? Damage.Spells[hero.ChampionName].FirstOrDefault(s => s.Slot == spellDataInst.Slot);
                     if (damageSpell != null)
                         break;
                 }
@@ -229,6 +271,51 @@ namespace SAwareness
                 return false;
             return true;
         }
-       
+
+        private class Shield
+        {
+            public readonly bool Instant;
+            public readonly bool OnlyMagic;
+            public readonly bool OnlySelf;
+            public readonly bool Skillshot;
+            public readonly Spell Spell;
+
+            public Shield(Spell spell, bool instant = true, bool skillshot = false, bool onlyMagic = false,
+                bool onlySelf = false)
+            {
+                Spell = spell;
+                Instant = instant;
+                Skillshot = skillshot;
+                OnlyMagic = onlyMagic;
+                OnlySelf = onlySelf;
+            }
+
+            public Shield(Spell spell, bool onlySelf = false)
+            {
+                Spell = spell;
+                Instant = true;
+                Skillshot = false;
+                OnlyMagic = false;
+                OnlySelf = onlySelf;
+            }
+
+            public Shield(Spell spell)
+            {
+                Spell = spell;
+                Instant = true;
+                Skillshot = false;
+                OnlyMagic = false;
+                OnlySelf = false;
+            }
+        }
+
+        private class Spell : LeagueSharp.Common.Spell
+        {
+            public Spell(SpellSlot slot, float range, float delay = 0, float width = 0, float speed = 0)
+                : base(slot, range)
+            {
+                SetSkillshot(delay, width, speed, false, SkillshotType.SkillshotLine);
+            }
+        }
     }
 }

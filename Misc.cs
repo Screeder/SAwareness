@@ -1,23 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 
 namespace SAwareness
 {
-    class Misc
+    internal class Misc
     {
     }
 
-    class DisconnectDetector
+    internal class DisconnectDetector
     {
-
-        Dictionary<Obj_AI_Hero, bool> _disconnects = new Dictionary<Obj_AI_Hero, bool>();  
+        private readonly Dictionary<Obj_AI_Hero, bool> _disconnects = new Dictionary<Obj_AI_Hero, bool>();
 
         public DisconnectDetector()
         {
@@ -34,15 +30,15 @@ namespace SAwareness
             return Menu.Misc.GetActive() && Menu.DisconnectDetector.GetActive();
         }
 
-        void Game_OnGameProcessPacket(GamePacketEventArgs args)
+        private void Game_OnGameProcessPacket(GamePacketEventArgs args)
         {
             if (!IsActive())
                 return;
             try
             {
                 var reader = new BinaryReader(new MemoryStream(args.PacketData));
-                byte PacketId = reader.ReadByte(); //PacketId
-                if (PacketId != Packet.S2C.PlayerDisconnect.Header)
+                byte packetId = reader.ReadByte(); //PacketId
+                if (packetId != Packet.S2C.PlayerDisconnect.Header)
                     return;
                 Packet.S2C.PlayerDisconnect.Struct disconnect = Packet.S2C.PlayerDisconnect.Decoded(args.PacketData);
                 if (disconnect.Player == null)
@@ -55,27 +51,30 @@ namespace SAwareness
                 {
                     _disconnects.Add(disconnect.Player, true);
                 }
-                if (Menu.DisconnectDetector.GetMenuItem("SAwarenessDisconnectDetectorChatChoice").GetValue<StringList>().SelectedIndex == 1)
+                if (
+                    Menu.DisconnectDetector.GetMenuItem("SAwarenessDisconnectDetectorChatChoice")
+                        .GetValue<StringList>()
+                        .SelectedIndex == 1)
                 {
                     Game.PrintChat("Champion " + disconnect.Player.ChampionName + " has disconnected!");
                 }
-                else if (Menu.DisconnectDetector.GetMenuItem("SAwarenessDisconnectDetectorChatChoice").GetValue<StringList>().SelectedIndex == 2 &&
-                            Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
+                else if (
+                    Menu.DisconnectDetector.GetMenuItem("SAwarenessDisconnectDetectorChatChoice")
+                        .GetValue<StringList>()
+                        .SelectedIndex == 2 &&
+                    Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
                 {
                     Game.Say("Champion " + disconnect.Player.ChampionName + " has disconnected!");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("DisconnectProcess: " + ex.ToString());
-                return;
+                Console.WriteLine("DisconnectProcess: " + ex);
             }
-
         }
-
     }
 
-    class AutoLatern
+    internal class AutoLatern
     {
         public AutoLatern()
         {
@@ -92,39 +91,43 @@ namespace SAwareness
             return Menu.AutoLatern.GetActive() && Menu.AutoLatern.GetActive();
         }
 
-        void Game_OnGameUpdate(EventArgs args)
+        private void Game_OnGameUpdate(EventArgs args)
         {
             if (!IsActive() || !Menu.AutoLatern.GetMenuItem("SAwarenessAutoLaternKey").GetValue<KeyBind>().Active)
                 return;
 
-            foreach (var gObject in ObjectManager.Get<GameObject>())
+            foreach (GameObject gObject in ObjectManager.Get<GameObject>())
             {
-                if (gObject.Name.Contains("ThreshLantern") && gObject.IsAlly && gObject.Position.Distance(ObjectManager.Player.ServerPosition) < 400 && !ObjectManager.Player.ChampionName.Contains("Thresh"))
+                if (gObject.Name.Contains("ThreshLantern") && gObject.IsAlly &&
+                    gObject.Position.Distance(ObjectManager.Player.ServerPosition) < 400 &&
+                    !ObjectManager.Player.ChampionName.Contains("Thresh"))
                 {
-                    GamePacket gPacket = Packet.C2S.InteractObject.Encoded(new Packet.C2S.InteractObject.Struct(ObjectManager.Player.NetworkId,
-                        gObject.NetworkId));
+                    GamePacket gPacket =
+                        Packet.C2S.InteractObject.Encoded(
+                            new Packet.C2S.InteractObject.Struct(ObjectManager.Player.NetworkId,
+                                gObject.NetworkId));
                     gPacket.Send();
                 }
             }
         }
     }
 
-    class TurnAround
+    internal class TurnAround
     {
-        private float lastTime = Game.Time;
-        private Vector2 lastMove = ObjectManager.Player.ServerPosition.To2D();
-        
+        private Vector2 _lastMove = ObjectManager.Player.ServerPosition.To2D();
+        private float _lastTime = Game.Time;
+
         public TurnAround()
         {
             Game.OnGameUpdate += Game_OnGameUpdate;
-            Obj_AI_Hero.OnProcessSpellCast += Obj_AI_Hero_OnProcessSpellCast;
+            Obj_AI_Base.OnProcessSpellCast += Obj_AI_Hero_OnProcessSpellCast;
             Game.OnGameSendPacket += Game_OnGameSendPacket;
         }
 
         ~TurnAround()
         {
             Game.OnGameUpdate -= Game_OnGameUpdate;
-            Obj_AI_Hero.OnProcessSpellCast -= Obj_AI_Hero_OnProcessSpellCast;
+            Obj_AI_Base.OnProcessSpellCast -= Obj_AI_Hero_OnProcessSpellCast;
             Game.OnGameSendPacket -= Game_OnGameSendPacket;
         }
 
@@ -133,66 +136,82 @@ namespace SAwareness
             return Menu.TurnAround.GetActive() && Menu.TurnAround.GetActive();
         }
 
-        void Obj_AI_Hero_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        private void Obj_AI_Hero_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (!IsActive())
                 return;
-            if(!sender.IsEnemy)
+            if (!sender.IsEnemy)
                 return;
             if (args.SData.Name.Contains("CassiopeiaPetrifyingGaze"))
             {
                 if (ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition) <= 750)
                 {
-                    Vector2 pos = new Vector2(ObjectManager.Player.ServerPosition.X + ((sender.ServerPosition.X - ObjectManager.Player.ServerPosition.X) * (-100) / ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition)), ObjectManager.Player.ServerPosition.
-                    Y + ((sender.ServerPosition.Y - ObjectManager.Player.ServerPosition.Y)*(-100)/ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition)));
+                    var pos =
+                        new Vector2(
+                            ObjectManager.Player.ServerPosition.X +
+                            ((sender.ServerPosition.X - ObjectManager.Player.ServerPosition.X)*(-100)/
+                             ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition)),
+                            ObjectManager.Player.ServerPosition.
+                                Y +
+                            ((sender.ServerPosition.Y - ObjectManager.Player.ServerPosition.Y)*(-100)/
+                             ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition)));
                     Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(pos.X, pos.Y)).Send();
-                    lastTime = Game.Time;
-                    Utility.DelayAction.Add(750, () => Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(lastMove.X, lastMove.Y)).Send());
+                    _lastTime = Game.Time;
+                    Utility.DelayAction.Add(750,
+                        () => Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(_lastMove.X, _lastMove.Y)).Send());
                 }
-            } else if (args.SData.Name.Contains("MockingShout"))
+            }
+            else if (args.SData.Name.Contains("MockingShout"))
             {
                 if (ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition) <= 850)
                 {
-                    Vector2 pos = new Vector2(ObjectManager.Player.ServerPosition.X + ((sender.ServerPosition.X - ObjectManager.Player.ServerPosition.X) * (100) / ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition)), ObjectManager.Player.ServerPosition.
-                    Y + ((sender.ServerPosition.Y - ObjectManager.Player.ServerPosition.Y) * (100) / ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition)));
+                    var pos =
+                        new Vector2(
+                            ObjectManager.Player.ServerPosition.X +
+                            ((sender.ServerPosition.X - ObjectManager.Player.ServerPosition.X)*(100)/
+                             ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition)),
+                            ObjectManager.Player.ServerPosition.
+                                Y +
+                            ((sender.ServerPosition.Y - ObjectManager.Player.ServerPosition.Y)*(100)/
+                             ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition)));
                     Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(pos.X, pos.Y)).Send();
-                    lastTime = Game.Time;
-                    Utility.DelayAction.Add(750, () => Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(lastMove.X, lastMove.Y)).Send());
+                    _lastTime = Game.Time;
+                    Utility.DelayAction.Add(750,
+                        () => Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(_lastMove.X, _lastMove.Y)).Send());
                 }
             }
         }
 
-        void Game_OnGameSendPacket(GamePacketEventArgs args)
+        private void Game_OnGameSendPacket(GamePacketEventArgs args)
         {
             if (!IsActive())
                 return;
 
             try
             {
-                decimal milli = DateTime.Now.Ticks / (decimal)TimeSpan.TicksPerMillisecond;
+                decimal milli = DateTime.Now.Ticks/(decimal) TimeSpan.TicksPerMillisecond;
                 var reader = new BinaryReader(new MemoryStream(args.PacketData));
-                byte PacketId = reader.ReadByte();
-                if (PacketId != Packet.C2S.Move.Header)
+                byte packetId = reader.ReadByte();
+                if (packetId != Packet.C2S.Move.Header)
                     return;
                 Packet.C2S.Move.Struct move = Packet.C2S.Move.Decoded(args.PacketData);
                 if (move.MoveType == 2)
                 {
                     if (move.SourceNetworkId == ObjectManager.Player.NetworkId)
                     {
-                        lastMove = new Vector2(move.X, move.Y);
-                        if (lastTime + 1 > Game.Time)
+                        _lastMove = new Vector2(move.X, move.Y);
+                        if (_lastTime + 1 > Game.Time)
                             args.Process = false;
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("MovementSend: " + ex.ToString());
-                return;
+                Console.WriteLine("MovementSend: " + ex);
             }
         }
 
-        void Game_OnGameUpdate(EventArgs args)
+        private void Game_OnGameUpdate(EventArgs args)
         {
             if (!IsActive())
                 return;
@@ -209,42 +228,42 @@ namespace SAwareness
         }
     }
 
-    class AutoJump //DONT PLACE COUR CURSOR ON A WALL IT WILL FAIL
+    internal class AutoJump //DONT PLACE COUR CURSOR ON A WALL IT WILL FAIL
     {
-        private Spell jumpSpell;
-        private bool onlyAlly = false;
-        private bool onlyEnemy = false;
-        private bool useWard = true;
-        private float lastCast = Game.Time;
+        private readonly Spell _jumpSpell;
+        private readonly bool _onlyAlly;
+        private readonly bool _onlyEnemy;
+        private readonly bool _useWard = true;
+        private float _lastCast = Game.Time;
 
         public AutoJump()
         {
             switch (ObjectManager.Player.ChampionName)
             {
                 case "Katarina":
-                    jumpSpell = new Spell(SpellSlot.E, 790);
+                    _jumpSpell = new Spell(SpellSlot.E, 790);
                     break;
 
                 case "Jax":
-                    jumpSpell = new Spell(SpellSlot.Q, 790);
+                    _jumpSpell = new Spell(SpellSlot.Q, 790);
                     break;
 
                 case "LeeSin":
-                    jumpSpell = new Spell(SpellSlot.W, 790);
-                    onlyAlly = true;
+                    _jumpSpell = new Spell(SpellSlot.W, 790);
+                    _onlyAlly = true;
                     break;
 
                 case "Talon":
-                    jumpSpell = new Spell(SpellSlot.E, 790);
-                    onlyEnemy = true;
-                    useWard = false;
+                    _jumpSpell = new Spell(SpellSlot.E, 790);
+                    _onlyEnemy = true;
+                    _useWard = false;
                     break;
 
                 default:
                     return;
             }
             Game.OnGameUpdate += Game_OnGameUpdate;
-            Obj_AI_Base.OnCreate += Obj_AI_Base_OnCreate;
+            GameObject.OnCreate += Obj_AI_Base_OnCreate;
         }
 
         ~AutoJump()
@@ -257,52 +276,56 @@ namespace SAwareness
             return Menu.AutoJump.GetActive() && Menu.AutoJump.GetActive();
         }
 
-        void Game_OnGameUpdate(EventArgs args)
+        private void Game_OnGameUpdate(EventArgs args)
         {
-            if (!IsActive() || !Menu.AutoJump.GetMenuItem("SAwarenessAutoJumpKey").GetValue<KeyBind>().Active || !jumpSpell.IsReady())
-                return;           
+            if (!IsActive() || !Menu.AutoJump.GetMenuItem("SAwarenessAutoJumpKey").GetValue<KeyBind>().Active ||
+                !_jumpSpell.IsReady())
+                return;
 
-            foreach (var gObject in ObjectManager.Get<GameObject>())
+            foreach (GameObject gObject in ObjectManager.Get<GameObject>())
             {
-                if ((useWard && (gObject.Name.Contains("SightWard") || gObject.Name.Contains("VisionWard"))) || gObject.Type == GameObjectType.obj_AI_Minion)
+                if ((_useWard && (gObject.Name.Contains("SightWard") || gObject.Name.Contains("VisionWard"))) ||
+                    gObject.Type == GameObjectType.obj_AI_Minion)
                 {
-                    if (!onlyAlly && !onlyEnemy || (onlyAlly && gObject.IsAlly) || (onlyEnemy && gObject.IsEnemy))
+                    if (!_onlyAlly && !_onlyEnemy || (_onlyAlly && gObject.IsAlly) || (_onlyEnemy && gObject.IsEnemy))
                     {
-                        if(!gObject.IsValid || ((Obj_AI_Base)gObject).Health < 1)
+                        if (!gObject.IsValid || ((Obj_AI_Base) gObject).Health < 1)
                             continue;
-                        if(Game.CursorPos.Distance(gObject.Position) > 150)
+                        if (Game.CursorPos.Distance(gObject.Position) > 150)
                             continue;
-                        if (lastCast + 1 > Game.Time)
+                        if (_lastCast + 1 > Game.Time)
                             continue;
-                        Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(gObject.Position.X, gObject.Position.Y)).Send();
-                        jumpSpell.Cast((Obj_AI_Base)gObject, true);
-                        lastCast = Game.Time;
+                        Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(gObject.Position.X, gObject.Position.Y))
+                            .Send();
+                        _jumpSpell.Cast((Obj_AI_Base) gObject, true);
+                        _lastCast = Game.Time;
                         return;
                     }
                 }
             }
-            if (jumpSpell.IsReady() && useWard)
+            if (_jumpSpell.IsReady() && _useWard)
             {
-                if (lastCast + 1 > Game.Time)
+                if (_lastCast + 1 > Game.Time)
                     return;
                 InventorySlot slot = Wards.GetWardSlot();
                 slot.UseItem(Game.CursorPos);
-                jumpSpell.Cast(Game.CursorPos, true);
-                lastCast = Game.Time;
+                _jumpSpell.Cast(Game.CursorPos, true);
+                _lastCast = Game.Time;
             }
         }
 
-        void Obj_AI_Base_OnCreate(GameObject sender, EventArgs args)
+        private void Obj_AI_Base_OnCreate(GameObject sender, EventArgs args)
         {
-            if (!IsActive() || !Menu.AutoJump.GetMenuItem("SAwarenessAutoJumpKey").GetValue<KeyBind>().Active || !jumpSpell.IsReady())
-                return; 
+            if (!IsActive() || !Menu.AutoJump.GetMenuItem("SAwarenessAutoJumpKey").GetValue<KeyBind>().Active ||
+                !_jumpSpell.IsReady())
+                return;
             if (sender.Name.Contains("SightWard") || sender.Name.Contains("VisionWard"))
             {
                 if (Game.CursorPos.Distance(sender.Position) > 150)
                     return;
                 Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(sender.Position.X, sender.Position.Y)).Send();
-                jumpSpell.Cast((Obj_AI_Base)sender, true);
-                lastCast = Game.Time;
+                _jumpSpell.Cast((Obj_AI_Base) sender, true);
+                _lastCast = Game.Time;
             }
         }
     }

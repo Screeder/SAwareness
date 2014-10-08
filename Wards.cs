@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -11,35 +9,15 @@ using Color = System.Drawing.Color;
 
 namespace SAwareness
 {
-    class Wards
+    internal class Wards
     {
-        public static readonly List<WardItem> WardItems = new List<WardItem>();
-
         public enum WardType
         {
             Stealth,
             Vision
         }
 
-        public class WardItem
-        {
-            public readonly int Id;
-            public int Duration;
-            public String Name;
-            public int Range;
-            public String SpellName;
-            public WardType Type;
-
-            public WardItem(int id, string name, string spellName, int range, int duration, WardType type)
-            {
-                Id = id;
-                Name = name;
-                SpellName = spellName;
-                Range = range;
-                Duration = duration;
-                Type = type;
-            }
-        }
+        public static readonly List<WardItem> WardItems = new List<WardItem>();
 
         static Wards()
         {
@@ -70,34 +48,55 @@ namespace SAwareness
 
         public static InventorySlot GetWardSlot()
         {
-            foreach (var ward in WardItems)
+            foreach (WardItem ward in WardItems)
             {
                 if (Items.CanUseItem(ward.Id))
                 {
-                    return ObjectManager.Player.InventoryItems.FirstOrDefault(slot => slot.Id == (ItemId)ward.Id);
+                    return ObjectManager.Player.InventoryItems.FirstOrDefault(slot => slot.Id == (ItemId) ward.Id);
                 }
             }
             return null;
         }
+
+        public class WardItem
+        {
+            public readonly int Id;
+            public int Duration;
+            public String Name;
+            public int Range;
+            public String SpellName;
+            public WardType Type;
+
+            public WardItem(int id, string name, string spellName, int range, int duration, WardType type)
+            {
+                Id = id;
+                Name = name;
+                SpellName = spellName;
+                Range = range;
+                Duration = duration;
+                Type = type;
+            }
+        }
     }
 
-    class InvisibleRevealer //TODO: Check for other Wards
+    internal class InvisibleRevealer //TODO: Check for other Wards
     {
-        List<String> SpellList = new List<string>();
-        private int lastTimeVayne = 0;
-        int lastTimeWarded;
+        private readonly List<String> _spellList = new List<string>();
+        private int _lastTimeVayne;
+        private int _lastTimeWarded;
 
         public InvisibleRevealer() //Passive Evelynn, Teemo Missing
         {
-            SpellList.Add("AkaliSmokeBomb"); //Akali W
-            SpellList.Add("RengarR"); //Rengar R
-            SpellList.Add("KhazixR"); //Kha R
-            SpellList.Add("khazixrlong"); //Kha R Evolved
-            SpellList.Add("Deceive"); //Shaco Q
-            SpellList.Add("TalonShadowAssault"); //Talon R
-            SpellList.Add("HideInShadows"); //Twitch Q
-            SpellList.Add("VayneTumble"); //Vayne Q -> Check before if args.SData.Name == "vayneinquisition" then ability.ExtraTicks = (int)Game.Time + 6 + 2 * args.Level; if (Game.Time >= ability.ExtraTicks) return;
-            SpellList.Add("MonkeyKingDecoy"); //Wukong W
+            _spellList.Add("AkaliSmokeBomb"); //Akali W
+            _spellList.Add("RengarR"); //Rengar R
+            _spellList.Add("KhazixR"); //Kha R
+            _spellList.Add("khazixrlong"); //Kha R Evolved
+            _spellList.Add("Deceive"); //Shaco Q
+            _spellList.Add("TalonShadowAssault"); //Talon R
+            _spellList.Add("HideInShadows"); //Twitch Q
+            _spellList.Add("VayneTumble");
+                //Vayne Q -> Check before if args.SData.Name == "vayneinquisition" then ability.ExtraTicks = (int)Game.Time + 6 + 2 * args.Level; if (Game.Time >= ability.ExtraTicks) return;
+            _spellList.Add("MonkeyKingDecoy"); //Wukong W
 
             Obj_AI_Base.OnProcessSpellCast += ObjAiBase_OnProcessSpellCast;
         }
@@ -117,21 +116,23 @@ namespace SAwareness
             if (!IsActive())
                 return;
 
-            StringList mode =
-                        Menu.InvisibleRevealer.GetMenuItem("SAwarenessInvisibleRevealerMode")
-                            .GetValue<StringList>();
+            var mode =
+                Menu.InvisibleRevealer.GetMenuItem("SAwarenessInvisibleRevealerMode")
+                    .GetValue<StringList>();
 
             if (sender.IsEnemy && sender.IsValid && !sender.IsDead)
             {
                 if (args.SData.Name.ToLower().Contains("vayneinquisition"))
                 {
-                    lastTimeVayne = Environment.TickCount + 6000 + 2000*args.Level;
+                    _lastTimeVayne = Environment.TickCount + 6000 + 2000*args.Level;
                 }
-                if (mode.SelectedIndex == 0 && Menu.InvisibleRevealer.GetMenuItem("SAwarenessInvisibleRevealerKey").GetValue<KeyBind>().Active || mode.SelectedIndex == 1)
+                if (mode.SelectedIndex == 0 &&
+                    Menu.InvisibleRevealer.GetMenuItem("SAwarenessInvisibleRevealerKey").GetValue<KeyBind>().Active ||
+                    mode.SelectedIndex == 1)
                 {
-                    if (SpellList.Exists(x => x.ToLower().Contains(args.SData.Name.ToLower())))
+                    if (_spellList.Exists(x => x.ToLower().Contains(args.SData.Name.ToLower())))
                     {
-                        if (lastTimeWarded == 0 || Environment.TickCount - lastTimeWarded > 500)
+                        if (_lastTimeWarded == 0 || Environment.TickCount - _lastTimeWarded > 500)
                         {
                             Wards.WardItem wardItem =
                                 Wards.WardItems.First(
@@ -139,7 +140,7 @@ namespace SAwareness
                                         Items.HasItem(x.Id) && Items.CanUseItem(x.Id) && x.Type == Wards.WardType.Vision);
                             if (wardItem == null)
                                 return;
-                            if(sender.ServerPosition.Distance(ObjectManager.Player.ServerPosition) > wardItem.Range)
+                            if (sender.ServerPosition.Distance(ObjectManager.Player.ServerPosition) > wardItem.Range)
                                 return;
 
                             InventorySlot invSlot =
@@ -149,11 +150,11 @@ namespace SAwareness
                                 return;
 
                             if (args.SData.Name.ToLower().Contains("vaynetumble") &&
-                                Environment.TickCount >= lastTimeVayne)
+                                Environment.TickCount >= _lastTimeVayne)
                                 return;
 
                             invSlot.UseItem(args.End);
-                            lastTimeWarded = Environment.TickCount;
+                            _lastTimeWarded = Environment.TickCount;
                         }
                     }
                 }
@@ -161,45 +162,10 @@ namespace SAwareness
         }
     }
 
-    class BushRevealer //By Beaving & Blm95
+    internal class BushRevealer //By Beaving & Blm95
     {
-        private List<PlayerInfo> _playerInfo = new List<PlayerInfo>();
-        int lastTimeWarded;
-
-        class PlayerInfo
-        {
-            public Obj_AI_Hero Player;
-            public int LastSeen;
-
-            public PlayerInfo(Obj_AI_Hero player)
-            {
-                Player = player;
-            }
-        }
-
-        class WardLocation
-        {
-            public Vector3 Pos;
-            public bool Grass;
-
-            public WardLocation(Vector3 pos, bool grass)
-            {
-                Pos = pos;
-                Grass = grass;
-            }
-        }
-
-        class GrassLocation
-        {
-            public int Index;
-            public int Count;
-
-            public GrassLocation(int index, int count)
-            {
-                Index = index;
-                Count = count;
-            }
-        }
+        private readonly List<PlayerInfo> _playerInfo = new List<PlayerInfo>();
+        private int _lastTimeWarded;
 
         public BushRevealer()
         {
@@ -217,7 +183,7 @@ namespace SAwareness
             return Menu.Wards.GetActive() && Menu.BushRevealer.GetActive();
         }
 
-        void Game_OnGameUpdate(EventArgs args)
+        private void Game_OnGameUpdate(EventArgs args)
         {
             if (!IsActive())
                 return;
@@ -242,24 +208,25 @@ namespace SAwareness
                 {
                     Vector3 bestWardPos = GetWardPos(enemy.ServerPosition, 165, 2);
 
-                    if (bestWardPos != null && bestWardPos != enemy.ServerPosition && bestWardPos != Vector3.Zero && bestWardPos.Distance(ObjectManager.Player.ServerPosition) < ward.Range)
+                    if (bestWardPos != enemy.ServerPosition && bestWardPos != Vector3.Zero &&
+                        bestWardPos.Distance(ObjectManager.Player.ServerPosition) < ward.Range)
                     {
-                        if (lastTimeWarded == 0 || Environment.TickCount - lastTimeWarded > 500)
+                        if (_lastTimeWarded == 0 || Environment.TickCount - _lastTimeWarded > 500)
                         {
                             InventorySlot wardSlot = Wards.GetWardSlot();
 
                             if (wardSlot != null && wardSlot.Id != ItemId.Unknown)
                             {
                                 wardSlot.UseItem(bestWardPos);
-                                lastTimeWarded = Environment.TickCount;
+                                _lastTimeWarded = Environment.TickCount;
                             }
                         }
                     }
                 }
             }
-        }  
+        }
 
-        Vector3 GetWardPos(Vector3 lastPos, int radius = 165, int precision = 3)
+        private Vector3 GetWardPos(Vector3 lastPos, int radius = 165, int precision = 3)
         {
             //Vector3 averagePos = Vector3.Zero;
 
@@ -270,17 +237,18 @@ namespace SAwareness
             {
                 int vertices = radius;
 
-                WardLocation[] wardLocations = new WardLocation[vertices];
-                double angle = 2 * Math.PI / vertices;
+                var wardLocations = new WardLocation[vertices];
+                double angle = 2*Math.PI/vertices;
 
                 for (int i = 0; i < vertices; i++)
                 {
-                    double th = angle * i;
-                    Vector3 pos = new Vector3((float)(lastPos.X + radius * Math.Cos(th)), (float)(lastPos.Y + radius * Math.Sin(th)), 0); //wardPos.Z
+                    double th = angle*i;
+                    var pos = new Vector3((float) (lastPos.X + radius*Math.Cos(th)),
+                        (float) (lastPos.Y + radius*Math.Sin(th)), 0); //wardPos.Z
                     wardLocations[i] = new WardLocation(pos, NavMesh.IsWallOfGrass(pos));
                 }
 
-                List<GrassLocation> grassLocations = new List<GrassLocation>();
+                var grassLocations = new List<GrassLocation>();
 
                 for (int i = 0; i < wardLocations.Length; i++)
                 {
@@ -297,10 +265,10 @@ namespace SAwareness
 
                 if (grassLocation != null) //else: no pos found. increase/decrease radius?
                 {
-                    int midelement = (int)Math.Ceiling((float)grassLocation.Count / 2f);
+                    var midelement = (int) Math.Ceiling(grassLocation.Count/2f);
                     //averagePos += wardLocations[grassLocation.Index + midelement - 1].Pos; //uncomment if using averagePos
                     lastPos = wardLocations[grassLocation.Index + midelement - 1].Pos; //comment if using averagePos
-                    radius = (int)Math.Floor((float)radius / 2f); //precision recommended: 2-3; comment if using averagePos
+                    radius = (int) Math.Floor(radius/2f); //precision recommended: 2-3; comment if using averagePos
 
                     //calculated++; //uncomment if using averagePos
                 }
@@ -308,18 +276,53 @@ namespace SAwareness
                 count--;
             }
 
-            return lastPos;//averagePos /= calculated; //uncomment if using averagePos
+            return lastPos; //averagePos /= calculated; //uncomment if using averagePos
+        }
+
+        private class GrassLocation
+        {
+            public readonly int Index;
+            public int Count;
+
+            public GrassLocation(int index, int count)
+            {
+                Index = index;
+                Count = count;
+            }
+        }
+
+        private class PlayerInfo
+        {
+            public readonly Obj_AI_Hero Player;
+            public int LastSeen;
+
+            public PlayerInfo(Obj_AI_Hero player)
+            {
+                Player = player;
+            }
+        }
+
+        private class WardLocation
+        {
+            public readonly bool Grass;
+            public readonly Vector3 Pos;
+
+            public WardLocation(Vector3 pos, bool grass)
+            {
+                Pos = pos;
+                Grass = grass;
+            }
         }
     }
 
-    class WardCorrector
+    internal class WardCorrector
     {
         private static readonly List<WardSpot> WardSpots = new List<WardSpot>();
-        
-        private bool drawSpots;
-        private SpellSlot latestSpellSlot = SpellSlot.Unknown;
-        private WardSpot latestWardSpot;
-        private bool wardAlreadyCorrected;
+
+        private bool _drawSpots;
+        private SpellSlot _latestSpellSlot = SpellSlot.Unknown;
+        private WardSpot _latestWardSpot;
+        private bool _wardAlreadyCorrected;
 
         public WardCorrector() //TODO: Add SpellNames for WardItems
         {
@@ -431,8 +434,8 @@ namespace SAwareness
             var gPacket = new GamePacket(args.PacketData);
             var reader = new BinaryReader(new MemoryStream(args.PacketData));
 
-            byte PacketId = reader.ReadByte(); //PacketId
-            if (PacketId == 0x9A) //OLD 0x9A
+            byte packetId = reader.ReadByte(); //PacketId
+            if (packetId == 0x9A) //OLD 0x9A
             {
                 int mNetworkId = BitConverter.ToInt32(reader.ReadBytes(4), 0);
                 byte spellId = reader.ReadByte();
@@ -442,22 +445,22 @@ namespace SAwareness
                 float toY = BitConverter.ToSingle(reader.ReadBytes(4), 0);
                 int tNetworkId = BitConverter.ToInt32(reader.ReadBytes(4), 0);
                 PacketSpellId nSpellId = PacketSpellId.ConvertPacketCastToId(spellId);
-                if (latestSpellSlot == nSpellId.SSpellSlot && latestSpellSlot != SpellSlot.Unknown)
+                if (_latestSpellSlot == nSpellId.SSpellSlot && _latestSpellSlot != SpellSlot.Unknown)
                 {
-                    drawSpots = false;
+                    _drawSpots = false;
                     foreach (WardSpot wardSpot in WardSpots)
                     {
                         if (!wardSpot.SafeWard &&
                             Vector3.Distance(wardSpot.Pos,
                                 new Vector3(fromX, fromY, ObjectManager.Player.ServerPosition.Z)) <= 350 &&
-                            !wardAlreadyCorrected)
+                            !_wardAlreadyCorrected)
                         {
                             args.Process = false;
-                            wardAlreadyCorrected = true;
+                            _wardAlreadyCorrected = true;
                             //SendPacket
-                            var s_castPacket = new byte[28];
-                            var writer = new BinaryWriter(new MemoryStream(s_castPacket));
-                            writer.Write((byte)0x9A);
+                            var sCastPacket = new byte[28];
+                            var writer = new BinaryWriter(new MemoryStream(sCastPacket));
+                            writer.Write((byte) 0x9A);
                             writer.Write(mNetworkId);
                             writer.Write(spellId);
                             writer.Write(wardSpot.Pos.X);
@@ -465,21 +468,21 @@ namespace SAwareness
                             writer.Write(wardSpot.Pos.X);
                             writer.Write(wardSpot.Pos.Y);
                             writer.Write(tNetworkId);
-                            Game.SendPacket(s_castPacket, PacketChannel.C2S, PacketProtocolFlags.Reliable);
+                            Game.SendPacket(sCastPacket, PacketChannel.C2S, PacketProtocolFlags.Reliable);
                             //TODO: Check if its correct
-                            wardAlreadyCorrected = false;
+                            _wardAlreadyCorrected = false;
                             return;
                         }
                         if (wardSpot.SafeWard &&
                             Vector3.Distance(wardSpot.MagneticPos,
                                 new Vector3(fromX, fromY, ObjectManager.Player.ServerPosition.Z)) <=
                             100 &&
-                            !wardAlreadyCorrected)
+                            !_wardAlreadyCorrected)
                         {
                             args.Process = false;
                             ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo,
                                 new Vector3(wardSpot.MovePos.X, wardSpot.MovePos.Y, wardSpot.MovePos.Z));
-                            latestWardSpot = wardSpot;
+                            _latestWardSpot = wardSpot;
                             return;
                         }
                     }
@@ -503,85 +506,85 @@ namespace SAwareness
             if (args.Msg == WM_KEYDOWN)
             {
                 InventorySlot inventoryItem = null;
-                int inventoryItemID = -1;
+                int inventoryItemId = -1;
                 switch (args.WParam)
                 {
                     case '1':
-                        latestSpellSlot = SpellSlot.Item1;
-                        inventoryItemID = 0;
+                        _latestSpellSlot = SpellSlot.Item1;
+                        inventoryItemId = 0;
                         break;
 
                     case '2':
-                        latestSpellSlot = SpellSlot.Item2;
-                        inventoryItemID = 1;
+                        _latestSpellSlot = SpellSlot.Item2;
+                        inventoryItemId = 1;
                         break;
 
                     case '3':
-                        latestSpellSlot = SpellSlot.Item3;
-                        inventoryItemID = 2;
+                        _latestSpellSlot = SpellSlot.Item3;
+                        inventoryItemId = 2;
                         break;
 
                     case '4':
-                        latestSpellSlot = SpellSlot.Trinket;
-                        inventoryItemID = 6;
+                        _latestSpellSlot = SpellSlot.Trinket;
+                        inventoryItemId = 6;
                         break;
 
                     case '5':
-                        latestSpellSlot = SpellSlot.Item5;
-                        inventoryItemID = 3;
+                        _latestSpellSlot = SpellSlot.Item5;
+                        inventoryItemId = 3;
                         break;
 
                     case '6':
-                        latestSpellSlot = SpellSlot.Item6;
-                        inventoryItemID = 4;
+                        _latestSpellSlot = SpellSlot.Item6;
+                        inventoryItemId = 4;
                         break;
 
                     case '7':
-                        latestSpellSlot = SpellSlot.Item4;
-                        inventoryItemID = 5;
+                        _latestSpellSlot = SpellSlot.Item4;
+                        inventoryItemId = 5;
                         break;
 
                     default:
-                        drawSpots = false;
-                        latestSpellSlot = SpellSlot.Unknown;
+                        _drawSpots = false;
+                        _latestSpellSlot = SpellSlot.Unknown;
                         break;
                 }
 
                 foreach (InventorySlot inventorySlot in ObjectManager.Player.InventoryItems)
                 {
-                    if (inventorySlot.Slot == inventoryItemID)
+                    if (inventorySlot.Slot == inventoryItemId)
                     {
                         inventoryItem = inventorySlot;
                         break;
                     }
                 }
 
-                if (latestSpellSlot != SpellSlot.Unknown)
+                if (_latestSpellSlot != SpellSlot.Unknown)
                 {
                     if (inventoryItem != null)
                     {
                         foreach (Wards.WardItem wardItem in Wards.WardItems)
                         {
-                            if ((int)inventoryItem.Id == wardItem.Id &&
-                                ObjectManager.Player.Spellbook.CanUseSpell(latestSpellSlot) == SpellState.Ready)
+                            if ((int) inventoryItem.Id == wardItem.Id &&
+                                ObjectManager.Player.Spellbook.CanUseSpell(_latestSpellSlot) == SpellState.Ready)
                             {
-                                drawSpots = true;
+                                _drawSpots = true;
                             }
                         }
                     }
                 }
             }
-            else if (args.Msg == WM_LBUTTONUP && drawSpots)
+            else if (args.Msg == WM_LBUTTONUP && _drawSpots)
             {
-                drawSpots = false;
+                _drawSpots = false;
             }
-            else if (args.Msg == WM_RBUTTONDOWN && drawSpots)
+            else if (args.Msg == WM_RBUTTONDOWN && _drawSpots)
             {
-                drawSpots = false;
+                _drawSpots = false;
             }
             else if (args.Msg == WM_RBUTTONDOWN)
             {
-                latestWardSpot = null;
+                _latestWardSpot = null;
             }
         }
 
@@ -589,12 +592,12 @@ namespace SAwareness
         {
             if (!IsActive())
                 return;
-            if (latestWardSpot != null)
+            if (_latestWardSpot != null)
             {
-                if (Vector3.Distance(ObjectManager.Player.ServerPosition, latestWardSpot.ClickPos) <= 650)
+                if (Vector3.Distance(ObjectManager.Player.ServerPosition, _latestWardSpot.ClickPos) <= 650)
                 {
-                    ObjectManager.Player.Spellbook.CastSpell(latestSpellSlot, latestWardSpot.ClickPos);
-                    latestWardSpot = null;
+                    ObjectManager.Player.Spellbook.CastSpell(_latestSpellSlot, _latestWardSpot.ClickPos);
+                    _latestWardSpot = null;
                 }
             }
         }
@@ -603,18 +606,18 @@ namespace SAwareness
         {
             if (!IsActive())
                 return;
-            if (!drawSpots)
+            if (!_drawSpots)
                 return;
             foreach (WardSpot ward in WardSpots)
             {
                 if (Common.IsOnScreen(ward.Pos))
-                    Utility.DrawCircle(ward.Pos, 50, System.Drawing.Color.GreenYellow);
+                    Utility.DrawCircle(ward.Pos, 50, Color.GreenYellow);
                 if (ward.SafeWard)
                 {
                     if (Common.IsOnScreen(ward.MagneticPos))
                     {
-                        Utility.DrawCircle(ward.MagneticPos, 30, System.Drawing.Color.Red);
-                        DrawArrow(ward.MagneticPos, ward.Pos, System.Drawing.Color.RoyalBlue);
+                        Utility.DrawCircle(ward.MagneticPos, 30, Color.Red);
+                        DrawArrow(ward.MagneticPos, ward.Pos, Color.RoyalBlue);
                     }
                 }
             }

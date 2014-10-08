@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 
 namespace SAwareness
 {
-    class SafeMovement
+    internal class SafeMovement
     {
-        private decimal lastSend = 0;
+        private decimal _lastSend;
 
         public SafeMovement()
         {
@@ -28,7 +24,7 @@ namespace SAwareness
             return Menu.Misc.GetActive() && Menu.SafeMovement.GetActive();
         }
 
-        void Game_OnGameSendPacket(GamePacketEventArgs args)
+        private void Game_OnGameSendPacket(GamePacketEventArgs args)
         {
             if (!IsActive())
                 return;
@@ -37,34 +33,35 @@ namespace SAwareness
             {
                 decimal milli = DateTime.Now.Ticks/(decimal) TimeSpan.TicksPerMillisecond;
                 var reader = new BinaryReader(new MemoryStream(args.PacketData));
-                byte PacketId = reader.ReadByte();
-                if (PacketId != Packet.C2S.Move.Header)
+                byte packetId = reader.ReadByte();
+                if (packetId != Packet.C2S.Move.Header)
                     return;
                 Packet.C2S.Move.Struct move = Packet.C2S.Move.Decoded(args.PacketData);
                 if (move.MoveType == 2)
                 {
                     if (move.SourceNetworkId == ObjectManager.Player.NetworkId)
                     {
-                        if (milli - lastSend < Menu.SafeMovement.GetMenuItem("SAwarenessSafeMovementBlockIntervall").GetValue<Slider>().Value)
+                        if (milli - _lastSend <
+                            Menu.SafeMovement.GetMenuItem("SAwarenessSafeMovementBlockIntervall")
+                                .GetValue<Slider>()
+                                .Value)
                         {
                             args.Process = false;
                         }
                         else
                         {
-                            lastSend = milli;
+                            _lastSend = milli;
                         }
                     }
-                    
                 }
                 else if (move.MoveType == 3)
                 {
-                    lastSend = 0;
+                    _lastSend = 0;
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("MovementProcess: " + ex.ToString());
-                return;
+                Console.WriteLine("MovementProcess: " + ex);
             }
         }
     }

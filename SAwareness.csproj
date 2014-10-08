@@ -57,7 +57,7 @@
       <HintPath>H:\Programme\LeagueSharp\System\Evade.dll</HintPath>
     </Reference>
     <Reference Include="Evade.1.0.0.1.Fakes">
-      <HintPath>FakesAssemblies\Evade.1.0.0.1.Fakes.dll</HintPath>
+      <HintPath>H:\Programme\LeagueSharp\System\Evade.1.0.0.1.Fakes.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp, Version=1.0.0.25, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
@@ -3327,8 +3327,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>copy /y "$(TargetPath)" "C:\Users\Screeder93\AppData\Roaming\LeagueSharp\Assemblies\C14BF944SAwareness.exe"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

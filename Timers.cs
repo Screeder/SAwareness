@@ -10,7 +10,7 @@ using Color = System.Drawing.Color;
 
 namespace SAwareness
 {
-    class ImmuneTimer //TODO: Maybe add Packetcheck
+    internal class ImmuneTimer //TODO: Maybe add Packetcheck
     {
         private static readonly List<Ability> Abilities = new List<Ability>();
 
@@ -125,14 +125,14 @@ namespace SAwareness
         private static readonly List<JungleCamp> JungleCamps = new List<JungleCamp>();
         private static readonly List<Obj_AI_Minion> JungleMobList = new List<Obj_AI_Minion>();
 
-        private readonly Font font;
-        private bool drawActive = true;
+        private readonly Font _font;
+        private bool _drawActive = true;
 
         public Timers()
         {
             try
             {
-                font = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Times New Roman", 8));
+                _font = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Times New Roman", 8));
             }
             catch (Exception)
             {
@@ -185,11 +185,14 @@ namespace SAwareness
                 GamePacket gPacketT;
                 if (Menu.Timers.GetMenuItem("SAwarenessTimersLocalPing").GetValue<bool>())
                 {
-                    gPacketT = Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0, Packet.PingType.NormalSound));
+                    gPacketT =
+                        Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0,
+                            Packet.PingType.NormalSound));
                     gPacketT.Process();
                 }
                 else if (!Menu.Timers.GetMenuItem("SAwarenessTimersLocalPing").GetValue<bool>() &&
-                   Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
+                         Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive")
+                             .GetValue<bool>())
                 {
                     gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos.X, pos.Y));
                     gPacketT.Send();
@@ -200,7 +203,7 @@ namespace SAwareness
                 Game.PrintChat(text);
             }
             else if (Menu.Timers.GetMenuItem("SAwarenessTimersChatChoice").GetValue<StringList>().SelectedIndex == 2 &&
-                        Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
+                     Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
             {
                 Game.Say(text);
             }
@@ -211,19 +214,19 @@ namespace SAwareness
         {
             if (Drawing.Direct3DDevice == null || Drawing.Direct3DDevice.IsDisposed)
                 return;
-            font.OnResetDevice();
-            drawActive = true;
+            _font.OnResetDevice();
+            _drawActive = true;
         }
 
         private void Drawing_OnPreReset(EventArgs args)
         {
-            font.OnLostDevice();
-            drawActive = false;
+            _font.OnLostDevice();
+            _drawActive = false;
         }
 
         private void Drawing_OnEndScene(EventArgs args)
         {
-            if (!IsActive() || !drawActive)
+            if (!IsActive() || !_drawActive)
                 return;
 
             if (Menu.JungleTimer.GetActive())
@@ -233,7 +236,7 @@ namespace SAwareness
                     if (jungleCamp.NextRespawnTime <= 0 || jungleCamp.MapType != GMap._MapType)
                         continue;
                     Vector2 sPos = Drawing.WorldToMinimap(jungleCamp.MinimapPosition);
-                    DirectXDrawer.DrawText(font, (jungleCamp.NextRespawnTime - (int) Game.Time).ToString(),
+                    DirectXDrawer.DrawText(_font, (jungleCamp.NextRespawnTime - (int) Game.Time).ToString(),
                         (int) sPos[0], (int) sPos[1], SharpDX.Color.White);
                     int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
                     if (!jungleCamp.Called && jungleCamp.NextRespawnTime - (int) Game.Time <= time &&
@@ -254,7 +257,7 @@ namespace SAwareness
                         if (altar.NextRespawnTime <= 0 || altar.MapType != GMap._MapType)
                             continue;
                         Vector2 sPos = Drawing.WorldToMinimap(altar.Obj.ServerPosition);
-                        DirectXDrawer.DrawText(font, (altar.NextRespawnTime - (int) Game.Time).ToString(), (int) sPos[0],
+                        DirectXDrawer.DrawText(_font, (altar.NextRespawnTime - (int) Game.Time).ToString(), (int) sPos[0],
                             (int) sPos[1], SharpDX.Color.White);
                         int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
                         if (!altar.Called && altar.NextRespawnTime - (int) Game.Time <= time &&
@@ -276,7 +279,7 @@ namespace SAwareness
                         if (relic.NextRespawnTime <= 0 || relic.MapType != GMap._MapType)
                             continue;
                         Vector2 sPos = Drawing.WorldToMinimap(relic.MinimapPosition);
-                        DirectXDrawer.DrawText(font, (relic.NextRespawnTime - (int) Game.Time).ToString(), (int) sPos[0],
+                        DirectXDrawer.DrawText(_font, (relic.NextRespawnTime - (int) Game.Time).ToString(), (int) sPos[0],
                             (int) sPos[1], SharpDX.Color.White);
                         int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
                         if (!relic.Called && relic.NextRespawnTime - (int) Game.Time <= time &&
@@ -300,7 +303,7 @@ namespace SAwareness
                         if (inhibitor.NextRespawnTime <= 0)
                             continue;
                         Vector2 sPos = Drawing.WorldToMinimap(inhibitor.Obj.Position);
-                        DirectXDrawer.DrawText(font, (inhibitor.NextRespawnTime - (int) Game.Time).ToString(),
+                        DirectXDrawer.DrawText(_font, (inhibitor.NextRespawnTime - (int) Game.Time).ToString(),
                             (int) sPos[0], (int) sPos[1], SharpDX.Color.White);
                         int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
                         if (!inhibitor.Called && inhibitor.NextRespawnTime - (int) Game.Time <= time &&
@@ -319,10 +322,10 @@ namespace SAwareness
                 {
                     if (health.Locked)
                     {
-                        if (health.NextRespawnTime - (int)Game.Time <= 0 || health.MapId != GMap._MapType)
+                        if (health.NextRespawnTime - (int) Game.Time <= 0 || health.MapId != GMap._MapType)
                             continue;
                         Vector2 sPos = Drawing.WorldToMinimap(health.Position);
-                        DirectXDrawer.DrawText(font, (health.NextRespawnTime - (int) Game.Time).ToString(),
+                        DirectXDrawer.DrawText(_font, (health.NextRespawnTime - (int) Game.Time).ToString(),
                             (int) sPos[0], (int) sPos[1], SharpDX.Color.White);
                         int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
                         if (!health.Called && health.NextRespawnTime - (int) Game.Time <= time &&
@@ -781,13 +784,13 @@ namespace SAwareness
                             health.Locked = true;
                             health.NextRespawnTime = health.RespawnTime + (int) Game.Time;
                         }
-                    else
-                    {
-                        if (health.NextRespawnTime < (int) Game.Time)
+                        else
                         {
-                            healthDestroyed = health;
+                            if (health.NextRespawnTime < (int) Game.Time)
+                            {
+                                healthDestroyed = health;
+                            }
                         }
-                    }
                 }
                 if (Healths.Remove(healthDestroyed))
                 {
@@ -887,8 +890,8 @@ namespace SAwareness
             public bool Called;
             public String[] LockNames;
             public bool Locked;
-            public Utility.Map.MapType MapType;
             public Vector3 MapPosition;
+            public Utility.Map.MapType MapType;
             public Vector3 MinimapPosition;
             public String Name;
             public int NextRespawnTime;
@@ -970,8 +973,8 @@ namespace SAwareness
             public bool Called;
             public int CampId;
             public JungleMob[] Creeps;
-            public Utility.Map.MapType MapType;
             public Vector3 MapPosition;
+            public Utility.Map.MapType MapType;
             public Vector3 MinimapPosition;
             public String Name;
             public int NextRespawnTime;
@@ -1005,7 +1008,8 @@ namespace SAwareness
             public Obj_AI_Minion Obj;
             public bool Smite;
 
-            public JungleMob(string name, Obj_AI_Minion obj, bool smite, bool buff, bool boss, Utility.Map.MapType mapType)
+            public JungleMob(string name, Obj_AI_Minion obj, bool smite, bool buff, bool boss,
+                Utility.Map.MapType mapType)
             {
                 Name = name;
                 Obj = obj;
@@ -1020,8 +1024,8 @@ namespace SAwareness
         {
             public bool Called;
             public bool Locked;
-            public Utility.Map.MapType MapType;
             public Vector3 MapPosition;
+            public Utility.Map.MapType MapType;
             public Vector3 MinimapPosition;
             public String Name;
             public int NextRespawnTime;

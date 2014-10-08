@@ -8,22 +8,22 @@ using SharpDX.Direct3D9;
 
 namespace SAwareness
 {
-    class GankPotentialTracker
+    internal class GankPotentialTracker
     {
-        private readonly Dictionary<Obj_AI_Hero, double> Enemies = new Dictionary<Obj_AI_Hero, double>();
-        private Line line;
-        private bool drawActive = true;
+        private readonly Dictionary<Obj_AI_Hero, double> _enemies = new Dictionary<Obj_AI_Hero, double>();
+        private readonly Line _line;
+        private bool _drawActive = true;
 
         public GankPotentialTracker()
         {
-            line = new Line(Drawing.Direct3DDevice);
-            line.Antialias = true;
-            line.Width = 2;
+            _line = new Line(Drawing.Direct3DDevice);
+            _line.Antialias = true;
+            _line.Width = 2;
             foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (hero.IsEnemy)
                 {
-                    Enemies.Add(hero, 0);
+                    _enemies.Add(hero, 0);
                 }
             }
             Game.OnGameUpdate += Game_OnGameUpdate;
@@ -47,24 +47,24 @@ namespace SAwareness
             return Menu.Ganks.GetActive() && Menu.GankTracker.GetActive();
         }
 
-        void Drawing_OnPostReset(EventArgs args)
+        private void Drawing_OnPostReset(EventArgs args)
         {
             if (Drawing.Direct3DDevice == null || Drawing.Direct3DDevice.IsDisposed)
                 return;
-            line.OnResetDevice();
-            drawActive = true;
+            _line.OnResetDevice();
+            _drawActive = true;
         }
 
-        void Drawing_OnPreReset(EventArgs args)
+        private void Drawing_OnPreReset(EventArgs args)
         {
-            line.OnLostDevice();
-            drawActive = false;
+            _line.OnLostDevice();
+            _drawActive = false;
         }
 
         private void Game_OnGameUpdate(EventArgs args)
         {
             Obj_AI_Hero player = ObjectManager.Player;
-            foreach (var enemy in Enemies.ToList())
+            foreach (var enemy in _enemies.ToList())
             {
                 double dmg = 0;
                 try
@@ -102,27 +102,27 @@ namespace SAwareness
                 catch (InvalidOperationException)
                 {
                 }
-                Enemies[enemy.Key] = dmg;
+                _enemies[enemy.Key] = dmg;
             }
         }
 
         private void Drawing_OnEndScene(EventArgs args)
         {
-            if (!IsActive() || !drawActive)
+            if (!IsActive() || !_drawActive)
                 return;
             Vector2 myPos = Drawing.WorldToScreen(ObjectManager.Player.ServerPosition);
-            foreach (var enemy in Enemies)
+            foreach (var enemy in _enemies)
             {
                 if (enemy.Key.IsDead || ObjectManager.Player.IsDead)
                     continue;
                 Vector2 ePos = Drawing.WorldToScreen(enemy.Key.ServerPosition);
-                line.Begin();
+                _line.Begin();
                 if (enemy.Value > enemy.Key.Health)
                 {
                     //Drawing.DrawLine(myPos.X, myPos.Y, ePos.X, ePos.Y, 2.0f, System.Drawing.Color.OrangeRed);
                     //DirectXDrawer.DrawLine(line, ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition,
                     //    Color.OrangeRed);
-                    line.Draw(new[] { myPos, ePos }, Color.OrangeRed);
+                    _line.Draw(new[] {myPos, ePos}, Color.OrangeRed);
                     //DirectXDrawer.DrawLine(ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition,
                     //    System.Drawing.Color.OrangeRed);
                 }
@@ -131,7 +131,7 @@ namespace SAwareness
                     //Drawing.DrawLine(myPos.X, myPos.Y, ePos.X, ePos.Y, 2.0f, System.Drawing.Color.GreenYellow);
                     //DirectXDrawer.DrawLine(line, ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition,
                     //    Color.GreenYellow);
-                    line.Draw(new[] { myPos, ePos }, Color.GreenYellow);
+                    _line.Draw(new[] {myPos, ePos}, Color.GreenYellow);
                     //DirectXDrawer.DrawLine(ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition,
                     //    System.Drawing.Color.GreenYellow);
                 }
@@ -139,16 +139,16 @@ namespace SAwareness
                 {
                     //Drawing.DrawLine(myPos.X, myPos.Y, ePos.X, ePos.Y, 2.0f, System.Drawing.Color.Red);
                     //DirectXDrawer.DrawLine(line, ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition, Color.Red);
-                    line.Draw(new[] { myPos, ePos }, Color.Red);
+                    _line.Draw(new[] {myPos, ePos}, Color.Red);
                     //DirectXDrawer.DrawLine(ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition,
                     //    System.Drawing.Color.Red);
                 }
-               line.End();
+                _line.End();
             }
         }
     }
 
-    class GankDetector
+    internal class GankDetector
     {
         private static readonly Dictionary<Obj_AI_Hero, Time> Enemies = new Dictionary<Obj_AI_Hero, Time>();
 
@@ -189,7 +189,7 @@ namespace SAwareness
             Obj_AI_Hero hero = enemy.Key;
             var pingType = Packet.PingType.Normal;
             var t = Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorPingType").GetValue<StringList>();
-            pingType = (Packet.PingType)t.SelectedIndex + 1;
+            pingType = (Packet.PingType) t.SelectedIndex + 1;
             Vector3 pos = hero.ServerPosition;
             GamePacket gPacketT;
             for (int i = 0;
@@ -202,24 +202,29 @@ namespace SAwareness
                     gPacketT.Process();
                 }
                 else if (!Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorLocalPing").GetValue<bool>() &&
-                    Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
+                         Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive")
+                             .GetValue<bool>())
                 {
                     gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos[0], pos[1], 0, pingType));
                     gPacketT.Send();
                 }
             }
 
-            if (Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorChatChoice").GetValue<StringList>().SelectedIndex == 1)
+            if (
+                Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorChatChoice").GetValue<StringList>().SelectedIndex ==
+                1)
             {
                 Game.PrintChat("Gank: {0}", hero.ChampionName);
             }
-            else if (Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorChatChoice").GetValue<StringList>().SelectedIndex == 2 &&
-                        Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
+            else if (
+                Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorChatChoice")
+                    .GetValue<StringList>()
+                    .SelectedIndex == 2 &&
+                Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
             {
                 Game.Say("Gank: {0}", hero.ChampionName);
             }
             //TODO: Check for Teleport etc.                    
-            
         }
 
         private void HandleGank(KeyValuePair<Obj_AI_Hero, Time> enemy)
@@ -235,7 +240,8 @@ namespace SAwareness
                     enemy.Value.CalledInvisible = true;
                 }
             }
-            if (!enemy.Value.CalledVisible && hero.IsValid && !hero.IsDead && enemy.Key.GetWaypoints().Last().Distance(ObjectManager.Player.ServerPosition) <
+            if (!enemy.Value.CalledVisible && hero.IsValid && !hero.IsDead &&
+                enemy.Key.GetWaypoints().Last().Distance(ObjectManager.Player.ServerPosition) <
                 Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorTrackRange").GetValue<Slider>().Value)
             {
                 ChatAndPing(enemy);

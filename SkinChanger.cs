@@ -8,36 +8,7 @@ namespace SAwareness
     internal class SkinChanger
     {
         public static Dictionary<String, String[]> Skins = new Dictionary<string, string[]>();
-        private int LastSkinId = -1;
-
-        public SkinChanger()
-        {
-            Game.OnGameUpdate += Game_OnGameUpdate;
-        }
-
-        void Game_OnGameUpdate(EventArgs args)
-        {
-            if (!IsActive())
-                return;
-            StringList mode =
-                        Menu.SkinChanger.GetMenuItem("SAwarenessSkinChangerSkinName")
-                            .GetValue<StringList>();
-            if (mode.SelectedIndex != LastSkinId)
-            {
-                LastSkinId = mode.SelectedIndex;
-                GenAndSendModelPacket(ObjectManager.Player.ChampionName, mode.SelectedIndex);
-            }
-        }
-
-        ~SkinChanger()
-        {
-            Game.OnGameUpdate -= Game_OnGameUpdate;
-        }
-
-        public bool IsActive()
-        {
-            return Menu.Misc.GetActive() && Menu.SkinChanger.GetActive();
-        }
+        private int _lastSkinId = -1;
 
         static SkinChanger()
         {
@@ -1175,6 +1146,35 @@ namespace SAwareness
                 "Haunted",
                 "SKT T1"
             });
+        }
+
+        public SkinChanger()
+        {
+            Game.OnGameUpdate += Game_OnGameUpdate;
+        }
+
+        private void Game_OnGameUpdate(EventArgs args)
+        {
+            if (!IsActive())
+                return;
+            var mode =
+                Menu.SkinChanger.GetMenuItem("SAwarenessSkinChangerSkinName")
+                    .GetValue<StringList>();
+            if (mode.SelectedIndex != _lastSkinId)
+            {
+                _lastSkinId = mode.SelectedIndex;
+                GenAndSendModelPacket(ObjectManager.Player.ChampionName, mode.SelectedIndex);
+            }
+        }
+
+        ~SkinChanger()
+        {
+            Game.OnGameUpdate -= Game_OnGameUpdate;
+        }
+
+        public bool IsActive()
+        {
+            return Menu.Misc.GetActive() && Menu.SkinChanger.GetActive();
         }
 
         public static String[] GetSkinList(String championName)

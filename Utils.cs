@@ -12,16 +12,13 @@ using LeagueSharp.Common;
 using SAwareness.Properties;
 using SharpDX;
 using SharpDX.Direct3D9;
-using SharpDX.Toolkit.Graphics;
-using Color = SharpDX.Color;
+using Color = System.Drawing.Color;
 using Font = SharpDX.Direct3D9.Font;
-using PrimitiveType = SharpDX.Direct3D9.PrimitiveType;
 using Rectangle = SharpDX.Rectangle;
-using Texture = SharpDX.Direct3D9.Texture;
 
 namespace SAwareness
 {
-    static class Log
+    internal static class Log
     {
         public static String File = "C:\\SAwareness.log";
         public static String Prefix = "Packet";
@@ -61,7 +58,7 @@ namespace SAwareness
         }
     }
 
-    static class Common
+    internal static class Common
     {
         public static bool IsOnScreen(Vector3 vector)
         {
@@ -92,54 +89,19 @@ namespace SAwareness
         }
     }
 
-    class Downloader
+    internal class Downloader
     {
+        public delegate void DownloadFinished(object sender, DlEventArgs args);
+
         public static String Host = "https://github.com/Screeder/SAwareness/raw/master/Sprites/SAwareness/";
         public static String Path = "CHAMP/";
 
-        public delegate void DownloadFinished(object sender, DlEventArgs args);
-
+        private readonly List<Files> _downloadQueue = new List<Files>();
         public event DownloadFinished DownloadFileFinished;
-
-        private List<Files> downloadQueue = new List<Files>();
-
-        public class DlEventArgs : EventArgs
-        {
-            public Files DlFiles;
-
-            public DlEventArgs(Files files)
-            {
-                DlFiles = files;
-            }
-        }
-
-        public struct Files
-        {
-            public String OnlineFile;
-            public String OfflineFile;
-
-            public Files(String onlineFile, String offlineFile)
-            {
-                OnlineFile = onlineFile;
-                OfflineFile = offlineFile;
-            }
-        }
-
-        private struct DlTask
-        {
-            public Files Files;
-            public Task Task;
-
-            public DlTask(Files files, Task task)
-            {
-                Files = files;
-                Task = task;
-            }
-        }
 
         public void AddDownload(String hostFile, String localFile)
         {
-            downloadQueue.Add(new Files(hostFile, localFile));
+            _downloadQueue.Add(new Files(hostFile, localFile));
         }
 
         public void StartDownload()
@@ -150,13 +112,13 @@ namespace SAwareness
         private async Task StartDownloadInternal()
         {
             var webClient = new WebClient();
-            List<DlTask> tasks = new List<DlTask>();
-            foreach (var files in downloadQueue)
+            var tasks = new List<DlTask>();
+            foreach (Files files in _downloadQueue)
             {
                 Task t = webClient.DownloadFileTaskAsync(new Uri(Host + Path + files.OnlineFile), files.OfflineFile);
                 tasks.Add(new DlTask(files, t));
             }
-            foreach (var task in tasks)
+            foreach (DlTask task in tasks)
             {
                 await task.Task;
                 tasks.Remove(task);
@@ -175,12 +137,53 @@ namespace SAwareness
             var webClient = new WebClient();
             webClient.DownloadFile(Host + Path + hostfile, localfile);
         }
+
+        public class DlEventArgs : EventArgs
+        {
+            public Files DlFiles;
+
+            public DlEventArgs(Files files)
+            {
+                DlFiles = files;
+            }
+        }
+
+        private struct DlTask
+        {
+            public readonly Files Files;
+            public readonly Task Task;
+
+            public DlTask(Files files, Task task)
+            {
+                Files = files;
+                Task = task;
+            }
+        }
+
+        public struct Files
+        {
+            public String OfflineFile;
+            public String OnlineFile;
+
+            public Files(String onlineFile, String offlineFile)
+            {
+                OnlineFile = onlineFile;
+                OfflineFile = offlineFile;
+            }
+        }
     }
 
-    static class SpriteHelper
+    internal static class SpriteHelper
     {
-        static Downloader Downloader = new Downloader();
-        static readonly Dictionary<String, byte[]> MyResources = new Dictionary<String, byte[]>();
+        public enum TextureType
+        {
+            Default,
+            Summoner,
+            Item
+        }
+
+        private static Downloader _downloader = new Downloader();
+        private static readonly Dictionary<String, byte[]> MyResources = new Dictionary<String, byte[]>();
 
         //private static List<SpriteRef> Sprites = new List<SpriteRef>();
 
@@ -189,7 +192,7 @@ namespace SAwareness
             ResourceSet resourceSet = Resources.ResourceManager.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
             foreach (DictionaryEntry entry in resourceSet)
             {
-                MyResources.Add(entry.Key.ToString().ToLower(), (byte[])entry.Value);
+                MyResources.Add(entry.Key.ToString().ToLower(), (byte[]) entry.Value);
             }
         }
 
@@ -246,13 +249,6 @@ namespace SAwareness
         //    }
         //}
 
-        public enum TextureType
-        {
-            Default,
-            Summoner,
-            Item
-        }
-
         public static void LoadTexture(String name, ref Texture texture, TextureType type)
         {
             if ((type == TextureType.Default || type == TextureType.Summoner) && MyResources.ContainsKey(name.ToLower()))
@@ -270,14 +266,15 @@ namespace SAwareness
             {
                 try
                 {
-                    texture = Texture.FromMemory(Drawing.Direct3DDevice, MyResources[name.ToLower().Remove(name.Length - 1)]);
+                    texture = Texture.FromMemory(Drawing.Direct3DDevice,
+                        MyResources[name.ToLower().Remove(name.Length - 1)]);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("SAwarness: Couldn't load texture: " + name + "\n Ex: " + ex);
                 }
             }
-            else if (type == TextureType.Item && MyResources.ContainsKey(name.ToLower().Insert(0,"_")))
+            else if (type == TextureType.Item && MyResources.ContainsKey(name.ToLower().Insert(0, "_")))
             {
                 try
                 {
@@ -314,24 +311,8 @@ namespace SAwareness
         //}
     }
 
-    static class DirectXDrawer
+    internal static class DirectXDrawer
     {
-
-        public struct PositionColored
-        {
-            public static readonly VertexFormat FVF = VertexFormat.Position | VertexFormat.Diffuse;
-            public static readonly int Stride = Vector3.SizeInBytes + sizeof(int);
-
-            public Vector3 Position;
-            public int Color;
-
-            public PositionColored(Vector3 pos, int col)
-            {
-                Position = pos;
-                Color = col;
-            }
-        }
-
         private static void InternalRender(Vector3 target)
         {
             //Drawing.Direct3DDevice.SetTransform(TransformState.World, Matrix.Translation(target));
@@ -348,14 +329,14 @@ namespace SAwareness
             Drawing.Direct3DDevice.SetRenderState(RenderState.ZEnable, true);
             Drawing.Direct3DDevice.SetRenderState(RenderState.AntialiasedLineEnable, true);
             Drawing.Direct3DDevice.SetRenderState(RenderState.Clipping, true);
-            Drawing.Direct3DDevice.SetRenderState(RenderState.EnableAdaptiveTessellation,true);
+            Drawing.Direct3DDevice.SetRenderState(RenderState.EnableAdaptiveTessellation, true);
             Drawing.Direct3DDevice.SetRenderState(RenderState.MultisampleAntialias, true);
             Drawing.Direct3DDevice.SetRenderState(RenderState.ShadeMode, ShadeMode.Gouraud);
             Drawing.Direct3DDevice.SetTexture(0, null);
             Drawing.Direct3DDevice.SetRenderState(RenderState.CullMode, Cull.None);
         }
 
-        public static void DrawLine(Vector3 from, Vector3 to, System.Drawing.Color color)
+        public static void DrawLine(Vector3 from, Vector3 to, Color color)
         {
             var vertices = new PositionColored[2];
             vertices[0] = new PositionColored(Vector3.Zero, color.ToArgb());
@@ -365,31 +346,31 @@ namespace SAwareness
 
             InternalRender(from);
 
-            Drawing.Direct3DDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices.Length / 2, vertices);
+            Drawing.Direct3DDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices.Length/2, vertices);
         }
 
-        public static void DrawLine(Line line, Vector3 from, Vector3 to, ColorBGRA color, Size size = default(Size), float[] scale = null, float rotation = 0.0f)
+        public static void DrawLine(Line line, Vector3 from, Vector3 to, ColorBGRA color, Size size = default(Size),
+            float[] scale = null, float rotation = 0.0f)
         {
             if (line != null)
             {
                 from = from.SwitchYZ();
                 to = to.SwitchYZ();
-                Matrix nMatrix = (scale != null ? Matrix.Scaling(scale[0], scale[1], 0) : Matrix.Scaling(1)) *
-                                 Matrix.RotationZ(rotation) * Matrix.Translation(from);
-                Vector3[] vec = { from, to };
+                Matrix nMatrix = (scale != null ? Matrix.Scaling(scale[0], scale[1], 0) : Matrix.Scaling(1))*
+                                 Matrix.RotationZ(rotation)*Matrix.Translation(from);
+                Vector3[] vec = {from, to};
                 line.DrawTransform(vec, nMatrix, color);
             }
-            
         }
 
-        public static void DrawText(Font font, String text, Size size, Color color)
+        public static void DrawText(Font font, String text, Size size, SharpDX.Color color)
         {
             DrawText(font, text, size.Width, size.Height, color);
         }
 
 
         //TODO: Too many drawtext for shadowtext, need another method fps issues
-        public static void DrawText(Font font, String text, int posX, int posY, Color color)
+        public static void DrawText(Font font, String text, int posX, int posY, SharpDX.Color color)
         {
             if (font == null || font.IsDisposed)
             {
@@ -397,21 +378,22 @@ namespace SAwareness
             }
             Rectangle rec = font.MeasureText(null, text, FontDrawFlags.Center);
             //font.DrawText(null, text, posX + 1 + rec.X, posY, Color.Black);
-            font.DrawText(null, text, posX + 1 + rec.X, posY + 1, Color.Black);
-            font.DrawText(null, text, posX + rec.X, posY + 1, Color.Black);
+            font.DrawText(null, text, posX + 1 + rec.X, posY + 1, SharpDX.Color.Black);
+            font.DrawText(null, text, posX + rec.X, posY + 1, SharpDX.Color.Black);
             //font.DrawText(null, text, posX - 1 + rec.X, posY, Color.Black);
-            font.DrawText(null, text, posX - 1 + rec.X, posY - 1, Color.Black);
-            font.DrawText(null, text, posX + rec.X, posY - 1, Color.Black);
+            font.DrawText(null, text, posX - 1 + rec.X, posY - 1, SharpDX.Color.Black);
+            font.DrawText(null, text, posX + rec.X, posY - 1, SharpDX.Color.Black);
             font.DrawText(null, text, posX + rec.X, posY, color);
         }
 
         public static void DrawSprite(Sprite sprite, Texture texture, Size size, float[] scale = null,
             float rotation = 0.0f)
         {
-            DrawSprite(sprite, texture, size, Color.White, scale, rotation);
+            DrawSprite(sprite, texture, size, SharpDX.Color.White, scale, rotation);
         }
 
-        public static void DrawSprite(Sprite sprite, Texture texture, Size size, Color color, float[] scale = null,
+        public static void DrawSprite(Sprite sprite, Texture texture, Size size, SharpDX.Color color,
+            float[] scale = null,
             float rotation = 0.0f)
         {
             if (sprite != null && !sprite.IsDisposed && texture != null && !texture.IsDisposed)
@@ -429,7 +411,8 @@ namespace SAwareness
             }
         }
 
-        public static void DrawTransformSprite(Sprite sprite, Texture texture, Color color, Size size, float[] scale,
+        public static void DrawTransformSprite(Sprite sprite, Texture texture, SharpDX.Color color, Size size,
+            float[] scale,
             float rotation, Rectangle? spriteResize)
         {
             if (sprite != null && texture != null)
@@ -443,7 +426,8 @@ namespace SAwareness
             }
         }
 
-        public static void DrawTransformedSprite(Sprite sprite, Texture texture, Rectangle spriteResize, Color color)
+        public static void DrawTransformedSprite(Sprite sprite, Texture texture, Rectangle spriteResize,
+            SharpDX.Color color)
         {
             if (sprite != null && texture != null)
             {
@@ -451,7 +435,8 @@ namespace SAwareness
             }
         }
 
-        public static void DrawSprite(Sprite sprite, Texture texture, Size size, Color color, Rectangle? spriteResize)
+        public static void DrawSprite(Sprite sprite, Texture texture, Size size, SharpDX.Color color,
+            Rectangle? spriteResize)
         {
             if (sprite != null && texture != null)
             {
@@ -459,11 +444,25 @@ namespace SAwareness
             }
         }
 
-        public static void DrawSprite(Sprite sprite, Texture texture, Size size, Color color)
+        public static void DrawSprite(Sprite sprite, Texture texture, Size size, SharpDX.Color color)
         {
             if (sprite != null && texture != null)
             {
                 DrawSprite(sprite, texture, size, color, null);
+            }
+        }
+
+        public struct PositionColored
+        {
+            public static readonly int Stride = Vector3.SizeInBytes + sizeof (int);
+
+            public int Color;
+            public Vector3 Position;
+
+            public PositionColored(Vector3 pos, int col)
+            {
+                Position = pos;
+                Color = col;
             }
         }
     }

@@ -6,7 +6,7 @@ using LeagueSharp.Common;
 
 namespace SAwareness
 {
-    class AutoLevler
+    internal class AutoLevler
     {
         private int[] _priority = {0, 0, 0, 0};
         private int[] _sequence;

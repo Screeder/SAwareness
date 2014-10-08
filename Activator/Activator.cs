@@ -1,80 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Evade;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
-using Geometry = LeagueSharp.Common.Geometry;
+using Color = System.Drawing.Color;
 
 namespace SAwareness
 {
     internal class Activator
     {
-        private float LastItemCleanseUse = 0;
-        List<BuffType> buffs = new List<BuffType>();
-        public static Dictionary<Obj_AI_Hero, List<IncomingDamage>> damages = new Dictionary<Obj_AI_Hero, List<IncomingDamage>>();
+        public static Dictionary<Obj_AI_Hero, List<IncomingDamage>> Damages =
+            new Dictionary<Obj_AI_Hero, List<IncomingDamage>>();
 
-        public static List<Skillshot> DetectedSkillshots = new List<Skillshot>(); 
+        public static List<Skillshot> DetectedSkillshots = new List<Skillshot>();
+        private readonly List<BuffType> _buffs = new List<BuffType>();
+        private float _lastItemCleanseUse;
 
-        private bool debug = false;
-
-        public class IncomingDamage
-        {
-            public String SpellName;
-            public Obj_AI_Base Source;
-            public Vector3 StartPos;
-            public Vector3 EndPos;
-            public double Dmg;
-            public double TimeHit;
-            public GameObject Target;
-            public bool Turret;
-            public bool Minion;
-
-            public IncomingDamage(String spellName, Obj_AI_Base source, Vector3 startPos, Vector3 endPos, double dmg, double timeHit, GameObject target = null, bool turret = false, bool minion = false)
-            {
-                SpellName = spellName;
-                Source = source;
-                StartPos = startPos;
-                EndPos = endPos;
-                Dmg = dmg;
-                TimeHit = timeHit;
-                Target = target;
-                Turret = turret;
-                Minion = minion;
-            }
-
-            public static double CalcTimeHit(double extraTimeForCast, Obj_AI_Base sender, Obj_AI_Base hero, Vector3 endPos) //TODO: Fix Time for animations etc
-            {
-                return Game.Time + (extraTimeForCast/1000)*(sender.ServerPosition.Distance(endPos)/1000) +
-                       (hero.ServerPosition.Distance(sender.ServerPosition)/1000);
-            }
-
-            public static double CalcTimeHit(double startTime, double extraTimeForCast, Obj_AI_Base sender, Obj_AI_Base hero, Vector3 endPos) //TODO: Fix Time for animations etc
-            {
-                return startTime + (extraTimeForCast / 1000) * (sender.ServerPosition.Distance(endPos) / 1000) +
-                       (hero.ServerPosition.Distance(sender.ServerPosition) / 1000);
-            }
-        }
+        private const bool Debug = false;
 
         public Activator()
         {
-            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+            foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (!hero.IsEnemy)
                 {
-                    damages.Add(hero, new List<IncomingDamage>());
+                    Damages.Add(hero, new List<IncomingDamage>());
                 }
             }
-            damages.Add(new Obj_AI_Hero(), new List<IncomingDamage>());
+            Damages.Add(new Obj_AI_Hero(), new List<IncomingDamage>());
             Game.OnGameUpdate += Game_OnGameUpdate;
-            Obj_AI_Hero.OnProcessSpellCast += Obj_AI_Hero_OnProcessSpellCast;
-            if (debug)
+            Obj_AI_Base.OnProcessSpellCast += Obj_AI_Hero_OnProcessSpellCast;
+            if (Debug)
                 Drawing.OnDraw += Drawing_OnDraw;
 
             //Evade
@@ -85,7 +43,7 @@ namespace SAwareness
         ~Activator()
         {
             Game.OnGameUpdate -= Game_OnGameUpdate;
-            Obj_AI_Hero.OnProcessSpellCast -= Obj_AI_Hero_OnProcessSpellCast;
+            Obj_AI_Base.OnProcessSpellCast -= Obj_AI_Hero_OnProcessSpellCast;
         }
 
         public bool IsActive()
@@ -93,17 +51,17 @@ namespace SAwareness
             return Menu.Activator.GetActive();
         }
 
-        void Drawing_OnDraw(EventArgs args)
+        private void Drawing_OnDraw(EventArgs args)
         {
-            if (debug)
-                foreach (KeyValuePair<Obj_AI_Hero, List<IncomingDamage>> damage in damages)
+            if (Debug)
+                foreach (var damage in Damages)
                 {
                     Vector2 d2 = Drawing.WorldToScreen(damage.Key.ServerPosition);
-                    Drawing.DrawText(d2.X, d2.Y, System.Drawing.Color.Aquamarine, CalcMaxDamage(damage.Key).ToString());
+                    Drawing.DrawText(d2.X, d2.Y, Color.Aquamarine, CalcMaxDamage(damage.Key).ToString());
                 }
-        }   
+        }
 
-        void Obj_AI_Hero_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        private void Obj_AI_Hero_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (!IsActive())
                 return;
@@ -112,7 +70,7 @@ namespace SAwareness
             UseSummonerSpells_OnProcessSpellCast(sender, args);
         }
 
-        void Game_OnGameUpdate(EventArgs args)
+        private void Game_OnGameUpdate(EventArgs args)
         {
             if (!IsActive())
                 return;
@@ -127,31 +85,55 @@ namespace SAwareness
             if (!Menu.ActivatorDefensive.GetActive())
                 return;
 
-            buffs.Clear();
-            if (Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigStun").GetValue<bool>())
-                buffs.Add(BuffType.Stun);
-            if (Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigSilence").GetValue<bool>())
-                buffs.Add(BuffType.Silence);
-            if (Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigTaunt").GetValue<bool>())
-                buffs.Add(BuffType.Taunt);
-            if (Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigFear").GetValue<bool>())
-                buffs.Add(BuffType.Fear);
-            if (Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigCharm").GetValue<bool>())
-                buffs.Add(BuffType.Charm);
-            if (Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigBlind").GetValue<bool>())
-                buffs.Add(BuffType.Blind);
-            if (Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigDisarm").GetValue<bool>())
-                buffs.Add(BuffType.Disarm);
-            if (Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigSuppress").GetValue<bool>())
-                buffs.Add(BuffType.Suppression);
-            if (Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigSlow").GetValue<bool>())
-                buffs.Add(BuffType.Slow);
-            if (Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigCombatDehancer").GetValue<bool>())
-                buffs.Add(BuffType.CombatDehancer);
-            if (Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigSnare").GetValue<bool>())
-                buffs.Add(BuffType.Snare);
-            if (Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigPoison").GetValue<bool>())
-                buffs.Add(BuffType.Poison);
+            _buffs.Clear();
+            if (
+                Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigStun")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Stun);
+            if (
+                Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigSilence")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Silence);
+            if (
+                Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigTaunt")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Taunt);
+            if (
+                Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigFear")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Fear);
+            if (
+                Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigCharm")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Charm);
+            if (
+                Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigBlind")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Blind);
+            if (
+                Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigDisarm")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Disarm);
+            if (
+                Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigSuppress")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Suppression);
+            if (
+                Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigSlow")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Slow);
+            if (
+                Menu.ActivatorDefensiveCleanseConfig.GetMenuItem(
+                    "SAwarenessActivatorDefensiveCleanseConfigCombatDehancer").GetValue<bool>())
+                _buffs.Add(BuffType.CombatDehancer);
+            if (
+                Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigSnare")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Snare);
+            if (
+                Menu.ActivatorDefensiveCleanseConfig.GetMenuItem("SAwarenessActivatorDefensiveCleanseConfigPoison")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Poison);
 
             UseSelfCleanseItems();
             UseSlowItems();
@@ -161,74 +143,83 @@ namespace SAwareness
 
         private void UseSelfCleanseItems()
         {
-            UseQSS();
-            UseMS();
-            UseDB();
+            UseQss();
+            UseMs();
+            UseDb();
         }
 
-        private void UseQSS()
+        private void UseQss()
         {
             if (!Menu.ActivatorDefensiveCleanseSelf.GetActive())
                 return;
 
-            List<BuffInstance> buffList = GetActiveCCBuffs();
+            List<BuffInstance> buffList = GetActiveCcBuffs();
 
             if (buffList.Count() >=
-                Menu.ActivatorDefensiveCleanseSelf.GetMenuItem("SAwarenessActivatorDefensiveCleanseSelfConfigMinSpells").GetValue<Slider>().Value &&
-                Menu.ActivatorDefensiveCleanseSelf.GetMenuItem("SAwarenessActivatorDefensiveCleanseSelfQSS").GetValue<bool>() &&
-                LastItemCleanseUse + 1 < Game.Time)
+                Menu.ActivatorDefensiveCleanseSelf.GetMenuItem("SAwarenessActivatorDefensiveCleanseSelfConfigMinSpells")
+                    .GetValue<Slider>()
+                    .Value &&
+                Menu.ActivatorDefensiveCleanseSelf.GetMenuItem("SAwarenessActivatorDefensiveCleanseSelfQSS")
+                    .GetValue<bool>() &&
+                _lastItemCleanseUse + 1 < Game.Time)
             {
-                Items.Item qss = new Items.Item(3140, 0);
+                var qss = new Items.Item(3140, 0);
                 if (qss.IsReady())
                 {
                     qss.Cast();
-                    LastItemCleanseUse = Game.Time;
+                    _lastItemCleanseUse = Game.Time;
                 }
             }
         }
 
-        private void UseMS()
+        private void UseMs()
         {
             if (!Menu.ActivatorDefensiveCleanseSelf.GetActive())
                 return;
 
-            List<BuffInstance> buffList = GetActiveCCBuffs();
+            List<BuffInstance> buffList = GetActiveCcBuffs();
 
             if (buffList.Count() >=
-                Menu.ActivatorDefensiveCleanseSelf.GetMenuItem("SAwarenessActivatorDefensiveCleanseSelfConfigMinSpells").GetValue<Slider>().Value &&
-                Menu.ActivatorDefensiveCleanseSelf.GetMenuItem("SAwarenessActivatorDefensiveCleanseSelfMercurialScimitar").GetValue<bool>() &&
-                LastItemCleanseUse + 1 < Game.Time)
+                Menu.ActivatorDefensiveCleanseSelf.GetMenuItem("SAwarenessActivatorDefensiveCleanseSelfConfigMinSpells")
+                    .GetValue<Slider>()
+                    .Value &&
+                Menu.ActivatorDefensiveCleanseSelf.GetMenuItem(
+                    "SAwarenessActivatorDefensiveCleanseSelfMercurialScimitar").GetValue<bool>() &&
+                _lastItemCleanseUse + 1 < Game.Time)
             {
-                Items.Item ms = new Items.Item(3139, 0);
+                var ms = new Items.Item(3139, 0);
                 if (ms.IsReady())
                 {
-                    foreach (var instance in buffList)
+                    foreach (BuffInstance instance in buffList)
                     {
                         Console.WriteLine(instance.Name);
                     }
                     ms.Cast();
-                    LastItemCleanseUse = Game.Time;
+                    _lastItemCleanseUse = Game.Time;
                 }
             }
         }
 
-        private void UseDB()
+        private void UseDb()
         {
             if (!Menu.ActivatorDefensiveCleanseSelf.GetActive())
                 return;
 
-            List<BuffInstance> buffList = GetActiveCCBuffs();
+            List<BuffInstance> buffList = GetActiveCcBuffs();
 
             if (buffList.Count() >=
-                Menu.ActivatorDefensiveCleanseSelf.GetMenuItem("SAwarenessActivatorDefensiveCleanseSelfConfigMinSpells").GetValue<Slider>().Value &&
-                Menu.ActivatorDefensiveCleanseSelf.GetMenuItem("SAwarenessActivatorDefensiveCleanseSelfDervishBlade").GetValue<bool>() &&
-                LastItemCleanseUse + 1 < Game.Time)
+                Menu.ActivatorDefensiveCleanseSelf.GetMenuItem("SAwarenessActivatorDefensiveCleanseSelfConfigMinSpells")
+                    .GetValue<Slider>()
+                    .Value &&
+                Menu.ActivatorDefensiveCleanseSelf.GetMenuItem("SAwarenessActivatorDefensiveCleanseSelfDervishBlade")
+                    .GetValue<bool>() &&
+                _lastItemCleanseUse + 1 < Game.Time)
             {
-                Items.Item db = new Items.Item(3137, 0);
+                var db = new Items.Item(3137, 0);
                 if (db.IsReady())
                 {
                     db.Cast();
-                    LastItemCleanseUse = Game.Time;
+                    _lastItemCleanseUse = Game.Time;
                 }
             }
         }
@@ -249,11 +240,15 @@ namespace SAwareness
             if (hero == null || !hero.IsValid || hero.IsDead)
                 return;
 
-            if (Menu.ActivatorDefensiveDebuffSlow.GetMenuItem("SAwarenessActivatorDefensiveDebuffSlowRanduins").GetValue<bool>() &&
-                Menu.ActivatorDefensiveDebuffSlow.GetMenuItem("SAwarenessActivatorDefensiveDebuffSlowConfigRanduins").GetValue<Slider>().Value >= count &&
+            if (
+                Menu.ActivatorDefensiveDebuffSlow.GetMenuItem("SAwarenessActivatorDefensiveDebuffSlowRanduins")
+                    .GetValue<bool>() &&
+                Menu.ActivatorDefensiveDebuffSlow.GetMenuItem("SAwarenessActivatorDefensiveDebuffSlowConfigRanduins")
+                    .GetValue<Slider>()
+                    .Value >= count &&
                 ImFleeing(hero) || IsFleeing(hero) && !ImFleeing(hero))
             {
-                Items.Item randuins = new Items.Item(3143, 0);
+                var randuins = new Items.Item(3143, 0);
                 if (randuins.IsReady())
                 {
                     randuins.Cast();
@@ -270,13 +265,13 @@ namespace SAwareness
             int count = 0;
             int nCount = 0;
 
-            foreach (var hero1 in ObjectManager.Get<Obj_AI_Hero>())
+            foreach (Obj_AI_Hero hero1 in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (hero1.IsEnemy && hero1.IsVisible)
                 {
                     if (hero1.ServerPosition.Distance(ObjectManager.Player.ServerPosition) < 750)
                     {
-                        foreach (var hero2 in ObjectManager.Get<Obj_AI_Hero>())
+                        foreach (Obj_AI_Hero hero2 in ObjectManager.Get<Obj_AI_Hero>())
                         {
                             if (hero2.IsEnemy && hero2.IsVisible)
                             {
@@ -299,12 +294,16 @@ namespace SAwareness
                 }
             }
 
-            if (enemy == null || !enemy.IsValid || enemy.IsDead || Menu.ActivatorDefensiveDebuffSlow.GetMenuItem("SAwarenessActivatorDefensiveDebuffSlowConfigFrostQueensClaim").GetValue<Slider>().Value > nCount)
+            if (enemy == null || !enemy.IsValid || enemy.IsDead ||
+                Menu.ActivatorDefensiveDebuffSlow.GetMenuItem(
+                    "SAwarenessActivatorDefensiveDebuffSlowConfigFrostQueensClaim").GetValue<Slider>().Value > nCount)
                 return;
 
-            if (Menu.ActivatorDefensiveDebuffSlow.GetMenuItem("SAwarenessActivatorDefensiveDebuffSlowFrostQueensClaim").GetValue<bool>())
+            if (
+                Menu.ActivatorDefensiveDebuffSlow.GetMenuItem("SAwarenessActivatorDefensiveDebuffSlowFrostQueensClaim")
+                    .GetValue<bool>())
             {
-                Items.Item fqc = new Items.Item(3092, 850);
+                var fqc = new Items.Item(3092, 850);
                 if (fqc.IsReady())
                 {
                     fqc.Cast(enemy.ServerPosition);
@@ -325,11 +324,11 @@ namespace SAwareness
 
         private static double CheckForHit(Obj_AI_Hero hero)
         {
-            List<IncomingDamage> damageList = damages[damages.Last().Key];
+            List<IncomingDamage> damageList = Damages[Damages.Last().Key];
             double maxDamage = 0;
-            foreach (var incomingDamage in damageList)
+            foreach (IncomingDamage incomingDamage in damageList)
             {
-                PredictionInput pred = new PredictionInput();
+                var pred = new PredictionInput();
                 pred.Type = SkillshotType.SkillshotLine;
                 pred.Radius = 50;
                 pred.From = incomingDamage.StartPos;
@@ -344,34 +343,36 @@ namespace SAwareness
         }
 
         public static double CalcMaxDamage(Obj_AI_Hero hero, bool turret = true, bool minion = false)
-        {            
-            List<IncomingDamage> damageList = damages[hero];
+        {
+            List<IncomingDamage> damageList = Damages[hero];
             double maxDamage = 0;
-            foreach (var incomingDamage in damageList)
+            foreach (IncomingDamage incomingDamage in damageList)
             {
-                if(!turret && incomingDamage.Turret)
+                if (!turret && incomingDamage.Turret)
                     continue;
-                if(!minion && incomingDamage.Minion)
+                if (!minion && incomingDamage.Minion)
                     continue;
                 maxDamage += incomingDamage.Dmg;
             }
-            return maxDamage/* + CheckForHit(hero)*/;
+            return maxDamage /* + CheckForHit(hero)*/;
         }
 
         private void UseLocketofIronSolari()
         {
-            if (!Menu.ActivatorDefensiveShieldBoost.GetMenuItem("SAwarenessActivatorDefensiveShieldBoostLocketofIronSolari").GetValue<bool>())
+            if (
+                !Menu.ActivatorDefensiveShieldBoost.GetMenuItem(
+                    "SAwarenessActivatorDefensiveShieldBoostLocketofIronSolari").GetValue<bool>())
                 return;
-            foreach (KeyValuePair<Obj_AI_Hero, List<IncomingDamage>> pair in damages)
+            foreach (var pair in Damages)
             {
                 double damage = CalcMaxDamage(pair.Key);
                 Obj_AI_Hero hero = pair.Key;
                 CheckForHit(hero);
-                if(!hero.IsDead)
+                if (!hero.IsDead)
                 {
-                    Items.Item lis = new Items.Item(3190, 700);
+                    var lis = new Items.Item(3190, 700);
                     if (hero.Health < damage && hero.ServerPosition.Distance(ObjectManager.Player.ServerPosition) < 700)
-                    {                        
+                    {
                         if (lis.IsReady())
                         {
                             lis.Cast();
@@ -385,18 +386,20 @@ namespace SAwareness
                         }
                     }
                 }
-            }            
+            }
         }
 
         private void UseTalismanofAscension()
         {
-            if (!Menu.ActivatorDefensiveShieldBoost.GetMenuItem("SAwarenessActivatorDefensiveShieldBoostTalismanofAscension").GetValue<bool>())
+            if (
+                !Menu.ActivatorDefensiveShieldBoost.GetMenuItem(
+                    "SAwarenessActivatorDefensiveShieldBoostTalismanofAscension").GetValue<bool>())
                 return;
-            Items.Item ta = new Items.Item(3069, 0);
+            var ta = new Items.Item(3069, 0);
             Obj_AI_Hero hero = SimpleTs.GetTarget(1000, SimpleTs.DamageType.True);
             if (hero != null && hero.IsValid && !ImFleeing(hero) && IsFleeing(hero))
-            {                
-                if((hero.Health / hero.MaxHealth * 100) <= 50)
+            {
+                if ((hero.Health/hero.MaxHealth*100) <= 50)
                 {
                     if (ta.IsReady())
                     {
@@ -405,12 +408,10 @@ namespace SAwareness
                 }
             }
             else if (Utility.CountEnemysInRange(1000) >
-                     Enumerable.Count(
-                         Enumerable.Where(ObjectManager.Get<Obj_AI_Hero>(), (units => units.IsAlly)),
-                         (units =>
-                             (double)
-                                 Vector2.Distance(Geometry.To2D(ObjectManager.Player.Position),
-                                     Geometry.To2D(units.Position)) <= (double) 1000)) &&
+                     ObjectManager.Get<Obj_AI_Hero>().Where((units => units.IsAlly)).Count((units =>
+                         (double)
+                             Vector2.Distance(ObjectManager.Player.Position.To2D(),
+                                 units.Position.To2D()) <= (double) 1000)) &&
                      ObjectManager.Player.Health != ObjectManager.Player.MaxHealth)
             {
                 if (ta.IsReady())
@@ -422,15 +423,17 @@ namespace SAwareness
 
         private void UseFaceOfTheMountain()
         {
-            if (!Menu.ActivatorDefensiveShieldBoost.GetMenuItem("SAwarenessActivatorDefensiveShieldBoostFaceOfTheMountain").GetValue<bool>())
+            if (
+                !Menu.ActivatorDefensiveShieldBoost.GetMenuItem(
+                    "SAwarenessActivatorDefensiveShieldBoostFaceOfTheMountain").GetValue<bool>())
                 return;
-            foreach (KeyValuePair<Obj_AI_Hero, List<IncomingDamage>> pair in damages)
+            foreach (var pair in Damages)
             {
                 double damage = CalcMaxDamage(pair.Key);
                 Obj_AI_Hero hero = pair.Key;
                 if (!hero.IsDead)
                 {
-                    Items.Item lis = new Items.Item(3401, 700);
+                    var lis = new Items.Item(3401, 700);
                     if (hero.Health < damage && hero.ServerPosition.Distance(ObjectManager.Player.ServerPosition) < 700)
                     {
                         if (lis.IsReady())
@@ -446,19 +449,21 @@ namespace SAwareness
                         }
                     }
                 }
-            }  
+            }
         }
 
         private void UseGuardiansHorn()
         {
-            if (!Menu.ActivatorDefensiveShieldBoost.GetMenuItem("SAwarenessActivatorDefensiveShieldBoostGuardiansHorn").GetValue<bool>())
+            if (
+                !Menu.ActivatorDefensiveShieldBoost.GetMenuItem("SAwarenessActivatorDefensiveShieldBoostGuardiansHorn")
+                    .GetValue<bool>())
                 return;
             if (Utility.Map.GetMap()._MapType != Utility.Map.MapType.HowlingAbyss)
                 return;
             Obj_AI_Hero hero = SimpleTs.GetTarget(1000, SimpleTs.DamageType.True);
             if (hero != null && hero.IsValid && !ImFleeing(hero) && IsFleeing(hero))
             {
-                Items.Item gh = new Items.Item(2051, 0);
+                var gh = new Items.Item(2051, 0);
                 if (gh.IsReady())
                 {
                     gh.Cast();
@@ -468,16 +473,16 @@ namespace SAwareness
 
         private void UseMikaelsCrucible()
         {
-            if (!Menu.ActivatorDefensiveMikaelCleanse.GetActive() && LastItemCleanseUse + 1 > Game.Time)
+            if (!Menu.ActivatorDefensiveMikaelCleanse.GetActive() && _lastItemCleanseUse + 1 > Game.Time)
                 return;
 
-            Items.Item mc = new Items.Item(3222, 750);
+            var mc = new Items.Item(3222, 750);
 
             if (
-                    Menu.ActivatorDefensiveMikaelCleanse.GetMenuItem(
-                        "SAwarenessActivatorDefensiveMikaelCleanseConfigAlly").GetValue<bool>())
+                Menu.ActivatorDefensiveMikaelCleanse.GetMenuItem(
+                    "SAwarenessActivatorDefensiveMikaelCleanseConfigAlly").GetValue<bool>())
             {
-                foreach (var ally in ObjectManager.Get<Obj_AI_Hero>())
+                foreach (Obj_AI_Hero ally in ObjectManager.Get<Obj_AI_Hero>())
                 {
                     if (ally.IsEnemy)
                         return;
@@ -485,16 +490,16 @@ namespace SAwareness
                     if (ally.ServerPosition.Distance(ObjectManager.Player.ServerPosition) < 750 && !ally.IsDead &&
                         !ally.HasBuff("Recall"))
                     {
-                        double health = (ally.Health / ally.MaxHealth) * 100;
-                        List<BuffInstance> activeCC = GetActiveCCBuffs(ally);
-                        if (activeCC.Count >=
+                        double health = (ally.Health/ally.MaxHealth)*100;
+                        List<BuffInstance> activeCc = GetActiveCcBuffs(ally);
+                        if (activeCc.Count >=
                             Menu.ActivatorDefensiveMikaelCleanse.GetMenuItem(
                                 "SAwarenessActivatorDefensiveMikaelCleanseConfigMinSpells").GetValue<Slider>().Value)
                         {
                             if (mc.IsReady())
                             {
                                 mc.Cast(ally);
-                                LastItemCleanseUse = Game.Time;
+                                _lastItemCleanseUse = Game.Time;
                             }
                         }
                         if (health <= Menu.ActivatorDefensiveMikaelCleanse.GetMenuItem(
@@ -503,26 +508,26 @@ namespace SAwareness
                             if (mc.IsReady())
                             {
                                 mc.Cast(ally);
-                                LastItemCleanseUse = Game.Time;
+                                _lastItemCleanseUse = Game.Time;
                             }
                         }
                     }
-                }  
+                }
             }
             else
             {
                 if (!ObjectManager.Player.IsDead && !ObjectManager.Player.HasBuff("Recall"))
                 {
-                    double health = (ObjectManager.Player.Health / ObjectManager.Player.MaxHealth) * 100;
-                    List<BuffInstance> activeCC = GetActiveCCBuffs();
-                    if (activeCC.Count >=
+                    double health = (ObjectManager.Player.Health/ObjectManager.Player.MaxHealth)*100;
+                    List<BuffInstance> activeCc = GetActiveCcBuffs();
+                    if (activeCc.Count >=
                         Menu.ActivatorDefensiveMikaelCleanse.GetMenuItem(
                             "SAwarenessActivatorDefensiveMikaelCleanseConfigMinSpells").GetValue<Slider>().Value)
                     {
                         if (mc.IsReady())
                         {
                             mc.Cast(ObjectManager.Player);
-                            LastItemCleanseUse = Game.Time;
+                            _lastItemCleanseUse = Game.Time;
                         }
                     }
                     if (health <= Menu.ActivatorDefensiveMikaelCleanse.GetMenuItem(
@@ -531,17 +536,16 @@ namespace SAwareness
                         if (mc.IsReady())
                         {
                             mc.Cast(ObjectManager.Player);
-                            LastItemCleanseUse = Game.Time;
+                            _lastItemCleanseUse = Game.Time;
                         }
                     }
                 }
             }
-                          
         }
 
         private BuffInstance GetNegativBuff(Obj_AI_Hero hero)
         {
-            foreach (var buff in hero.Buffs)
+            foreach (BuffInstance buff in hero.Buffs)
             {
                 if (buff.Name.Contains("fallenonetarget") || buff.Name.Contains("SoulShackles") ||
                     buff.Name.Contains("zedulttargetmark") || buff.Name.Contains("fizzmarinerdoombomb") ||
@@ -551,17 +555,17 @@ namespace SAwareness
             return null;
         }
 
-        private List<BuffInstance> GetActiveCCBuffs()
+        private List<BuffInstance> GetActiveCcBuffs()
         {
-            return GetActiveCCBuffs(ObjectManager.Player);
+            return GetActiveCcBuffs(ObjectManager.Player);
         }
 
-        private List<BuffInstance> GetActiveCCBuffs(Obj_AI_Hero hero)
+        private List<BuffInstance> GetActiveCcBuffs(Obj_AI_Hero hero)
         {
-            List<BuffInstance> nBuffs = new List<BuffInstance>();
-            foreach (var buff in hero.Buffs)
+            var nBuffs = new List<BuffInstance>();
+            foreach (BuffInstance buff in hero.Buffs)
             {
-                foreach (var buffType in buffs)
+                foreach (BuffType buffType in _buffs)
                 {
                     if (buff.Type == buffType)
                         nBuffs.Add(buff);
@@ -570,7 +574,7 @@ namespace SAwareness
             return nBuffs;
         }
 
-        void UseOffensiveItems_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        private void UseOffensiveItems_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (!Menu.ActivatorOffensive.GetActive())
                 return;
@@ -581,91 +585,109 @@ namespace SAwareness
 
             if (Menu.ActivatorOffensiveAd.GetActive())
             {
-                var target = SimpleTs.GetTarget(1000, SimpleTs.DamageType.Physical);
+                Obj_AI_Hero target = SimpleTs.GetTarget(1000, SimpleTs.DamageType.Physical);
                 if (target == null || !target.IsValid)
                     return;
-                Items.Item entropy = new Items.Item(3184, 400);
-                Items.Item hydra = new Items.Item(3074, 400);
-                Items.Item botrk = new Items.Item(3153, 450);
-                Items.Item tiamat = new Items.Item(3077, 450);
-                Items.Item devinesword = new Items.Item(3131, 900);
-                Items.Item youmuus = new Items.Item(3142, 900);
+                var entropy = new Items.Item(3184, 400);
+                var hydra = new Items.Item(3074, 400);
+                var botrk = new Items.Item(3153, 450);
+                var tiamat = new Items.Item(3077, 450);
+                var devinesword = new Items.Item(3131, 900);
+                var youmuus = new Items.Item(3142, 900);
 
-                if (entropy.IsReady() && Menu.ActivatorOffensiveAd.GetMenuItem("SAwarenessActivatorOffensiveAdEntropy").GetValue<bool>())
+                if (entropy.IsReady() &&
+                    Menu.ActivatorOffensiveAd.GetMenuItem("SAwarenessActivatorOffensiveAdEntropy").GetValue<bool>())
                 {
                     entropy.Cast(target);
                 }
-                if (hydra.IsReady() && Menu.ActivatorOffensiveAd.GetMenuItem("SAwarenessActivatorOffensiveAdRavenousHydra").GetValue<bool>())
+                if (hydra.IsReady() &&
+                    Menu.ActivatorOffensiveAd.GetMenuItem("SAwarenessActivatorOffensiveAdRavenousHydra")
+                        .GetValue<bool>())
                 {
                     hydra.Cast(target);
                 }
-                if (botrk.IsReady() && Menu.ActivatorOffensiveAd.GetMenuItem("SAwarenessActivatorOffensiveAdBOTRK").GetValue<bool>())
+                if (botrk.IsReady() &&
+                    Menu.ActivatorOffensiveAd.GetMenuItem("SAwarenessActivatorOffensiveAdBOTRK").GetValue<bool>())
                 {
                     botrk.Cast(target);
                 }
-                if (tiamat.IsReady() && Menu.ActivatorOffensiveAd.GetMenuItem("SAwarenessActivatorOffensiveAdTiamat").GetValue<bool>())
+                if (tiamat.IsReady() &&
+                    Menu.ActivatorOffensiveAd.GetMenuItem("SAwarenessActivatorOffensiveAdTiamat").GetValue<bool>())
                 {
                     tiamat.Cast(target);
                 }
-                if (devinesword.IsReady() && Menu.ActivatorOffensiveAd.GetMenuItem("SAwarenessActivatorOffensiveAdSwordOfTheDevine").GetValue<bool>())
+                if (devinesword.IsReady() &&
+                    Menu.ActivatorOffensiveAd.GetMenuItem("SAwarenessActivatorOffensiveAdSwordOfTheDevine")
+                        .GetValue<bool>())
                 {
                     devinesword.Cast(target);
                 }
-                if (youmuus.IsReady() && Menu.ActivatorOffensiveAd.GetMenuItem("SAwarenessActivatorOffensiveAdYoumuusGhostblade").GetValue<bool>())
+                if (youmuus.IsReady() &&
+                    Menu.ActivatorOffensiveAd.GetMenuItem("SAwarenessActivatorOffensiveAdYoumuusGhostblade")
+                        .GetValue<bool>())
                 {
                     youmuus.Cast(target);
                 }
             }
         }
 
-        void UseOffensiveItems_OnGameUpdate()
+        private void UseOffensiveItems_OnGameUpdate()
         {
-            if (!Menu.ActivatorOffensive.GetActive() || !Menu.ActivatorOffensive.GetMenuItem("SAwarenessActivatorOffensiveKey").GetValue<KeyBind>().Active)
+            if (!Menu.ActivatorOffensive.GetActive() ||
+                !Menu.ActivatorOffensive.GetMenuItem("SAwarenessActivatorOffensiveKey").GetValue<KeyBind>().Active)
                 return;
             if (Menu.ActivatorOffensiveAd.GetActive())
             {
-                var target = SimpleTs.GetTarget(1000, SimpleTs.DamageType.Physical);
+                Obj_AI_Hero target = SimpleTs.GetTarget(1000, SimpleTs.DamageType.Physical);
                 if (target == null || !target.IsValid)
                     return;
-                Items.Item botrk = new Items.Item(3153, 450);
-                if (botrk.IsReady() && Menu.ActivatorOffensiveAd.GetMenuItem("SAwarenessActivatorOffensiveAdBOTRK").GetValue<bool>())
+                var botrk = new Items.Item(3153, 450);
+                if (botrk.IsReady() &&
+                    Menu.ActivatorOffensiveAd.GetMenuItem("SAwarenessActivatorOffensiveAdBOTRK").GetValue<bool>())
                 {
                     botrk.Cast(target);
                 }
             }
             if (Menu.ActivatorOffensiveAp.GetActive())
             {
-                var target = SimpleTs.GetTarget(1000, SimpleTs.DamageType.Physical);
+                Obj_AI_Hero target = SimpleTs.GetTarget(1000, SimpleTs.DamageType.Physical);
                 if (target == null || !target.IsValid)
                     return;
-                Items.Item bilgewater = new Items.Item(3144, 450);
-                Items.Item hextech = new Items.Item(3146, 700);
-                Items.Item blackfire = new Items.Item(3188, 750);
-                Items.Item dfg = new Items.Item(3128, 750);
-                Items.Item twinshadows = new Items.Item(3023, 1000);
-                if(Utility.Map.GetMap()._MapType == Utility.Map.MapType.CrystalScar)
+                var bilgewater = new Items.Item(3144, 450);
+                var hextech = new Items.Item(3146, 700);
+                var blackfire = new Items.Item(3188, 750);
+                var dfg = new Items.Item(3128, 750);
+                var twinshadows = new Items.Item(3023, 1000);
+                if (Utility.Map.GetMap()._MapType == Utility.Map.MapType.CrystalScar)
                     twinshadows = new Items.Item(3290, 1000);
-                if (bilgewater.IsReady() && Menu.ActivatorOffensive.GetMenuItem("SAwarenessActivatorOffensiveApBilgewaterCutlass").GetValue<bool>())
+                if (bilgewater.IsReady() &&
+                    Menu.ActivatorOffensive.GetMenuItem("SAwarenessActivatorOffensiveApBilgewaterCutlass")
+                        .GetValue<bool>())
                 {
                     bilgewater.Cast(target);
                 }
-                if (hextech.IsReady() && Menu.ActivatorOffensive.GetMenuItem("SAwarenessActivatorOffensiveApHextechGunblade").GetValue<bool>())
+                if (hextech.IsReady() &&
+                    Menu.ActivatorOffensive.GetMenuItem("SAwarenessActivatorOffensiveApHextechGunblade")
+                        .GetValue<bool>())
                 {
                     hextech.Cast(target);
                 }
-                if (blackfire.IsReady() && Menu.ActivatorOffensive.GetMenuItem("SAwarenessActivatorOffensiveApBlackfireTorch").GetValue<bool>())
+                if (blackfire.IsReady() &&
+                    Menu.ActivatorOffensive.GetMenuItem("SAwarenessActivatorOffensiveApBlackfireTorch").GetValue<bool>())
                 {
                     blackfire.Cast(target);
                 }
-                if (dfg.IsReady() && Menu.ActivatorOffensive.GetMenuItem("SAwarenessActivatorOffensiveApDFG").GetValue<bool>())
+                if (dfg.IsReady() &&
+                    Menu.ActivatorOffensive.GetMenuItem("SAwarenessActivatorOffensiveApDFG").GetValue<bool>())
                 {
                     dfg.Cast(target);
                 }
-                if (twinshadows.IsReady() && Menu.ActivatorOffensive.GetMenuItem("SAwarenessActivatorOffensiveApTwinShadows").GetValue<bool>())
+                if (twinshadows.IsReady() &&
+                    Menu.ActivatorOffensive.GetMenuItem("SAwarenessActivatorOffensiveApTwinShadows").GetValue<bool>())
                 {
                     twinshadows.Cast(target);
                 }
-            }           
+            }
         }
 
         public static bool IsCCd(Obj_AI_Hero hero)
@@ -687,7 +709,7 @@ namespace SAwareness
 
         public static SpellSlot GetIgniteSlot()
         {
-            foreach (var spell in ObjectManager.Player.SummonerSpellbook.Spells)
+            foreach (SpellDataInst spell in ObjectManager.Player.SummonerSpellbook.Spells)
             {
                 if (spell.Name.ToLower().Contains("dot") && spell.State == SpellState.Ready)
                     return spell.Slot;
@@ -697,7 +719,7 @@ namespace SAwareness
 
         public static SpellSlot GetHealSlot()
         {
-            foreach (var spell in ObjectManager.Player.SummonerSpellbook.Spells)
+            foreach (SpellDataInst spell in ObjectManager.Player.SummonerSpellbook.Spells)
             {
                 if (spell.Name.ToLower().Contains("heal") && spell.State == SpellState.Ready)
                     return spell.Slot;
@@ -707,7 +729,7 @@ namespace SAwareness
 
         public static SpellSlot GetBarrierSlot()
         {
-            foreach (var spell in ObjectManager.Player.SummonerSpellbook.Spells)
+            foreach (SpellDataInst spell in ObjectManager.Player.SummonerSpellbook.Spells)
             {
                 if (spell.Name.ToLower().Contains("barrier") && spell.State == SpellState.Ready)
                     return spell.Slot;
@@ -717,7 +739,7 @@ namespace SAwareness
 
         public static SpellSlot GetExhaustSlot()
         {
-            foreach (var spell in ObjectManager.Player.SummonerSpellbook.Spells)
+            foreach (SpellDataInst spell in ObjectManager.Player.SummonerSpellbook.Spells)
             {
                 if (spell.Name.ToLower().Contains("exhaust") && spell.State == SpellState.Ready)
                     return spell.Slot;
@@ -727,7 +749,7 @@ namespace SAwareness
 
         public static SpellSlot GetCleanseSlot()
         {
-            foreach (var spell in ObjectManager.Player.SummonerSpellbook.Spells)
+            foreach (SpellDataInst spell in ObjectManager.Player.SummonerSpellbook.Spells)
             {
                 if (spell.Name.ToLower().Contains("boost") && spell.State == SpellState.Ready)
                     return spell.Slot;
@@ -750,7 +772,7 @@ namespace SAwareness
             return SpellSlot.Unknown;
         }
 
-        void UseSummonerSpells_OnGameUpdate()
+        private void UseSummonerSpells_OnGameUpdate()
         {
             if (!Menu.ActivatorAutoSummonerSpell.GetActive())
                 return;
@@ -771,83 +793,108 @@ namespace SAwareness
         {
             if (!Menu.ActivatorAutoSummonerSpellCleanse.GetActive())
                 return;
-            var sumCleanse = GetCleanseSlot();
-            buffs.Clear();
-            if (Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleanseStun").GetValue<bool>())
-                buffs.Add(BuffType.Stun);
-            if (Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleanseSilence").GetValue<bool>())
-                buffs.Add(BuffType.Silence);
-            if (Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleanseTaunt").GetValue<bool>())
-                buffs.Add(BuffType.Taunt);
-            if (Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleanseFear").GetValue<bool>())
-                buffs.Add(BuffType.Fear);
-            if (Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleanseCharm").GetValue<bool>())
-                buffs.Add(BuffType.Charm);
-            if (Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleanseBlind").GetValue<bool>())
-                buffs.Add(BuffType.Blind);
-            if (Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleanseDisarm").GetValue<bool>())
-                buffs.Add(BuffType.Disarm);
-            if (Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleanseSlow").GetValue<bool>())
-                buffs.Add(BuffType.Slow);
-            if (Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleanseCombatDehancer").GetValue<bool>())
-                buffs.Add(BuffType.CombatDehancer);
-            if (Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleanseSnare").GetValue<bool>())
-                buffs.Add(BuffType.Snare);
-            if (Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleansePoison").GetValue<bool>())
-                buffs.Add(BuffType.Poison);
+            SpellSlot sumCleanse = GetCleanseSlot();
+            _buffs.Clear();
+            if (
+                Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleanseStun")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Stun);
+            if (
+                Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleanseSilence")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Silence);
+            if (
+                Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleanseTaunt")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Taunt);
+            if (
+                Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleanseFear")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Fear);
+            if (
+                Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleanseCharm")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Charm);
+            if (
+                Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleanseBlind")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Blind);
+            if (
+                Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleanseDisarm")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Disarm);
+            if (
+                Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleanseSlow")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Slow);
+            if (
+                Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem(
+                    "SAwarenessActivatorAutoSummonerSpellCleanseCombatDehancer").GetValue<bool>())
+                _buffs.Add(BuffType.CombatDehancer);
+            if (
+                Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleanseSnare")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Snare);
+            if (
+                Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleansePoison")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Poison);
 
-            List<BuffInstance> buffList = GetActiveCCBuffs();
+            List<BuffInstance> buffList = GetActiveCcBuffs();
 
             if (buffList.Count() >=
-                Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleanseMinSpells").GetValue<Slider>().Value &&
-                LastItemCleanseUse + 1 < Game.Time)
+                Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem(
+                    "SAwarenessActivatorAutoSummonerSpellCleanseMinSpells").GetValue<Slider>().Value &&
+                _lastItemCleanseUse + 1 < Game.Time)
             {
                 SpellSlot spellSlot = GetPacketSlot(sumCleanse);
                 if (spellSlot != SpellSlot.Unknown)
                 {
                     GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                     gPacketT.Send();
-                    LastItemCleanseUse = Game.Time;
+                    _lastItemCleanseUse = Game.Time;
                 }
             }
         }
 
-        void UseIgnite()
+        private void UseIgnite()
         {
             if (!Menu.ActivatorAutoSummonerSpellIgnite.GetActive())
                 return;
-            var sumIgnite = GetIgniteSlot();
-            var target = SimpleTs.GetTarget(600, SimpleTs.DamageType.True);            
+            SpellSlot sumIgnite = GetIgniteSlot();
+            Obj_AI_Hero target = SimpleTs.GetTarget(600, SimpleTs.DamageType.True);
             if (target != null && sumIgnite != SpellSlot.Unknown)
             {
-                var igniteDmg = ObjectManager.Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+                double igniteDmg = ObjectManager.Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
                 if (igniteDmg > target.Health)
                 {
                     SpellSlot spellSlot = GetPacketSlot(sumIgnite);
                     if (spellSlot != SpellSlot.Unknown)
                     {
-                        GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(target.NetworkId, spellSlot));
+                        GamePacket gPacketT =
+                            Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(target.NetworkId, spellSlot));
                         gPacketT.Send();
                     }
                 }
             }
         }
 
-        void UseHealth()
+        private void UseHealth()
         {
             if (!Menu.ActivatorAutoSummonerSpellHeal.GetActive())
                 return;
 
-            var sumHeal = GetHealSlot();
+            SpellSlot sumHeal = GetHealSlot();
             if (
                 Menu.ActivatorAutoSummonerSpellHeal.GetMenuItem("SAwarenessActivatorAutoSummonerSpellHealAllyActive")
                     .GetValue<bool>())
             {
-                foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+                foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>())
                 {
-                    if (!hero.IsEnemy && !hero.IsDead && hero.ServerPosition.Distance(ObjectManager.Player.ServerPosition) < 700)
+                    if (!hero.IsEnemy && !hero.IsDead &&
+                        hero.ServerPosition.Distance(ObjectManager.Player.ServerPosition) < 700)
                     {
-                        if (((hero.Health / hero.MaxHealth) * 100) <
+                        if (((hero.Health/hero.MaxHealth)*100) <
                             Menu.ActivatorAutoSummonerSpellHeal.GetMenuItem(
                                 "SAwarenessActivatorAutoSummonerSpellHealPercent").GetValue<Slider>().Value)
                         {
@@ -861,7 +908,10 @@ namespace SAwareness
                     }
                 }
             }
-            if (((ObjectManager.Player.Health / ObjectManager.Player.MaxHealth) * 100) < Menu.ActivatorAutoSummonerSpellHeal.GetMenuItem("SAwarenessActivatorAutoSummonerSpellHealPercent").GetValue<Slider>().Value)
+            if (((ObjectManager.Player.Health/ObjectManager.Player.MaxHealth)*100) <
+                Menu.ActivatorAutoSummonerSpellHeal.GetMenuItem("SAwarenessActivatorAutoSummonerSpellHealPercent")
+                    .GetValue<Slider>()
+                    .Value)
             {
                 SpellSlot spellSlot = GetPacketSlot(sumHeal);
                 if (spellSlot != SpellSlot.Unknown)
@@ -877,8 +927,11 @@ namespace SAwareness
             if (!Menu.ActivatorAutoSummonerSpellBarrier.GetActive())
                 return;
 
-            var sumBarrier = GetBarrierSlot();
-            if (((ObjectManager.Player.Health / ObjectManager.Player.MaxHealth) * 100) < Menu.ActivatorAutoSummonerSpellBarrier.GetMenuItem("SAwarenessActivatorAutoSummonerSpellBarrierPercent").GetValue<Slider>().Value)
+            SpellSlot sumBarrier = GetBarrierSlot();
+            if (((ObjectManager.Player.Health/ObjectManager.Player.MaxHealth)*100) <
+                Menu.ActivatorAutoSummonerSpellBarrier.GetMenuItem("SAwarenessActivatorAutoSummonerSpellBarrierPercent")
+                    .GetValue<Slider>()
+                    .Value)
             {
                 SpellSlot spellSlot = GetPacketSlot(sumBarrier);
                 if (spellSlot != SpellSlot.Unknown)
@@ -894,50 +947,74 @@ namespace SAwareness
             if (!Menu.ActivatorAutoSummonerSpellExhaust.GetActive())
                 return;
 
-            var sumExhaust = GetExhaustSlot();
-            var enemy = GetHighestAdEnemy();
-            if(enemy == null || !enemy.IsValid)
+            SpellSlot sumExhaust = GetExhaustSlot();
+            Obj_AI_Hero enemy = GetHighestAdEnemy();
+            if (enemy == null || !enemy.IsValid)
                 return;
-            var countE = Utility.CountEnemysInRange(750);
-            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+            int countE = Utility.CountEnemysInRange(750);
+            foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>())
             {
-                if (!hero.IsMe && !hero.IsEnemy && hero.IsValid && hero.ServerPosition.Distance(ObjectManager.Player.ServerPosition) <= 900 && countE >= Menu.ActivatorAutoSummonerSpellExhaust.GetMenuItem("SAwarenessActivatorAutoSummonerSpellExhaustMinEnemies").GetValue<Slider>().Value)
+                if (!hero.IsMe && !hero.IsEnemy && hero.IsValid &&
+                    hero.ServerPosition.Distance(ObjectManager.Player.ServerPosition) <= 900 &&
+                    countE >=
+                    Menu.ActivatorAutoSummonerSpellExhaust.GetMenuItem(
+                        "SAwarenessActivatorAutoSummonerSpellExhaustMinEnemies").GetValue<Slider>().Value)
                 {
-                    var countA = ObjectManager.Get<Obj_AI_Hero>().Where(units => !units.IsEnemy).Count(units => Vector2.Distance(ObjectManager.Player.Position.To2D(), units.Position.To2D()) <= 750);
-                    var healthA = hero.Health / hero.MaxHealth * 100;
-                    var healthE = enemy.Health / enemy.MaxHealth * 100;
+                    int countA =
+                        ObjectManager.Get<Obj_AI_Hero>()
+                            .Where(units => !units.IsEnemy)
+                            .Count(
+                                units =>
+                                    Vector2.Distance(ObjectManager.Player.Position.To2D(), units.Position.To2D()) <= 750);
+                    float healthA = hero.Health/hero.MaxHealth*100;
+                    float healthE = enemy.Health/enemy.MaxHealth*100;
                     SpellSlot spellSlot = GetPacketSlot(sumExhaust);
                     if (spellSlot != SpellSlot.Unknown)
                     {
-                        GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(enemy.NetworkId, spellSlot));
-                        if (Menu.ActivatorAutoSummonerSpellExhaust.GetMenuItem("SAwarenessActivatorAutoSummonerSpellExhaustAutoCast").GetValue<KeyBind>().Active && IsFleeing(enemy) && !ImFleeing(enemy) && countA > 0)
+                        GamePacket gPacketT =
+                            Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(enemy.NetworkId, spellSlot));
+                        if (
+                            Menu.ActivatorAutoSummonerSpellExhaust.GetMenuItem(
+                                "SAwarenessActivatorAutoSummonerSpellExhaustAutoCast").GetValue<KeyBind>().Active &&
+                            IsFleeing(enemy) && !ImFleeing(enemy) && countA > 0)
                         {
                             gPacketT.Send();
                         }
-                        else if (Menu.ActivatorAutoSummonerSpellExhaust.GetMenuItem("SAwarenessActivatorAutoSummonerSpellExhaustAutoCast").GetValue<KeyBind>().Active && !IsFleeing(enemy) && healthA < 25)
+                        else if (
+                            Menu.ActivatorAutoSummonerSpellExhaust.GetMenuItem(
+                                "SAwarenessActivatorAutoSummonerSpellExhaustAutoCast").GetValue<KeyBind>().Active &&
+                            !IsFleeing(enemy) && healthA < 25)
                         {
                             gPacketT.Send();
                         }
-                        else
-                        if (!IsFleeing(enemy) && healthA <= Menu.ActivatorAutoSummonerSpellExhaust.GetMenuItem("SAwarenessActivatorAutoSummonerSpellExhaustAllyPercent").GetValue<Slider>().Value)
+                        else if (!IsFleeing(enemy) &&
+                                 healthA <=
+                                 Menu.ActivatorAutoSummonerSpellExhaust.GetMenuItem(
+                                     "SAwarenessActivatorAutoSummonerSpellExhaustAllyPercent")
+                                     .GetValue<Slider>()
+                                     .Value)
                         {
                             gPacketT.Send();
-                        } 
+                        }
                         else if (!ImFleeing(enemy) && countA > 0 && IsFleeing(enemy) && healthE >= 10 &&
                                  healthE <=
                                  Menu.ActivatorAutoSummonerSpellExhaust.GetMenuItem(
-                                     "SAwarenessActivatorAutoSummonerSpellExhaustSelfPercent").GetValue<Slider>().Value)
+                                     "SAwarenessActivatorAutoSummonerSpellExhaustSelfPercent")
+                                     .GetValue<Slider>()
+                                     .Value)
                         {
                             gPacketT.Send();
-                        }                        
-                    } 
+                        }
+                    }
                 }
             }
         }
 
         private void UseExhaust_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (!Menu.ActivatorAutoSummonerSpellExhaust.GetActive() || !Menu.ActivatorAutoSummonerSpellExhaust.GetMenuItem("SAwarenessActivatorAutoSummonerSpellExhaustUseUltSpells").GetValue<bool>())
+            if (!Menu.ActivatorAutoSummonerSpellExhaust.GetActive() ||
+                !Menu.ActivatorAutoSummonerSpellExhaust.GetMenuItem(
+                    "SAwarenessActivatorAutoSummonerSpellExhaustUseUltSpells").GetValue<bool>())
                 return;
 
             if (sender.IsEnemy)
@@ -1010,7 +1087,7 @@ namespace SAwareness
         private Obj_AI_Hero GetHighestAdEnemy()
         {
             Obj_AI_Hero highestAd = null;
-            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+            foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (hero.IsEnemy)
                 {
@@ -1019,8 +1096,9 @@ namespace SAwareness
                         if (highestAd == null)
                         {
                             highestAd = hero;
-                        } else if (highestAd.BaseAttackDamage + highestAd.FlatPhysicalDamageMod <
-                                   hero.BaseAttackDamage + hero.FlatPhysicalDamageMod)
+                        }
+                        else if (highestAd.BaseAttackDamage + highestAd.FlatPhysicalDamageMod <
+                                 hero.BaseAttackDamage + hero.FlatPhysicalDamageMod)
                         {
                             highestAd = hero;
                         }
@@ -1054,9 +1132,9 @@ namespace SAwareness
 
         private static void OnDetectSkillshot(Skillshot skillshot)
         {
-            var alreadyAdded = false;
+            bool alreadyAdded = false;
 
-            foreach (var item in DetectedSkillshots)
+            foreach (Skillshot item in DetectedSkillshots)
             {
                 if (item.SpellData.SpellName == skillshot.SpellData.SpellName &&
                     (item.Unit.NetworkId == skillshot.Unit.NetworkId &&
@@ -1075,7 +1153,7 @@ namespace SAwareness
 
             //Check if the skillshot is too far away.
             if (skillshot.Start.Distance(ObjectManager.Player.ServerPosition.To2D()) >
-                (skillshot.SpellData.Range + skillshot.SpellData.Radius + 1000) * 1.5)
+                (skillshot.SpellData.Range + skillshot.SpellData.Radius + 1000)*1.5)
             {
                 return;
             }
@@ -1090,13 +1168,13 @@ namespace SAwareness
                     {
                         var originalDirection = skillshot.Direction;
 
-                        for (var i = -(skillshot.SpellData.MultipleNumber - 1) / 2;
-                            i <= (skillshot.SpellData.MultipleNumber - 1) / 2;
+                        for (int i = -(skillshot.SpellData.MultipleNumber - 1)/2;
+                            i <= (skillshot.SpellData.MultipleNumber - 1)/2;
                             i++)
                         {
                             var end = skillshot.Start +
-                                      skillshot.SpellData.Range *
-                                      originalDirection.Rotated(skillshot.SpellData.MultipleAngle * i);
+                                      skillshot.SpellData.Range*
+                                      originalDirection.Rotated(skillshot.SpellData.MultipleAngle*i);
                             var skillshotToAdd = new Skillshot(
                                 skillshot.DetectionType, skillshot.SpellData, skillshot.StartTick, skillshot.Start, end,
                                 skillshot.Unit);
@@ -1108,13 +1186,13 @@ namespace SAwareness
 
                     if (skillshot.SpellData.SpellName == "UFSlash")
                     {
-                        skillshot.SpellData.MissileSpeed = 1600 + (int)skillshot.Unit.MoveSpeed;
+                        skillshot.SpellData.MissileSpeed = 1600 + (int) skillshot.Unit.MoveSpeed;
                     }
 
                     if (skillshot.SpellData.Invert)
                     {
                         var newDirection = -(skillshot.End - skillshot.Start).Normalized();
-                        var end = skillshot.Start + newDirection * skillshot.Start.Distance(skillshot.End);
+                        var end = skillshot.Start + newDirection*skillshot.Start.Distance(skillshot.End);
                         var skillshotToAdd = new Skillshot(
                             skillshot.DetectionType, skillshot.SpellData, skillshot.StartTick, skillshot.Start, end,
                             skillshot.Unit);
@@ -1124,8 +1202,8 @@ namespace SAwareness
 
                     if (skillshot.SpellData.Centered)
                     {
-                        var start = skillshot.Start - skillshot.Direction * skillshot.SpellData.Range;
-                        var end = skillshot.Start + skillshot.Direction * skillshot.SpellData.Range;
+                        var start = skillshot.Start - skillshot.Direction*skillshot.SpellData.Range;
+                        var end = skillshot.Start + skillshot.Direction*skillshot.SpellData.Range;
                         var skillshotToAdd = new Skillshot(
                             skillshot.DetectionType, skillshot.SpellData, skillshot.StartTick, start, end,
                             skillshot.Unit);
@@ -1135,20 +1213,20 @@ namespace SAwareness
 
                     if (skillshot.SpellData.SpellName == "SyndraE" || skillshot.SpellData.SpellName == "syndrae5")
                     {
-                        var angle = 60;
+                        int angle = 60;
                         var edge1 =
                             (skillshot.End - skillshot.Unit.ServerPosition.To2D()).Rotated(
-                                -angle / 2 * (float)Math.PI / 180);
-                        var edge2 = edge1.Rotated(angle * (float)Math.PI / 180);
+                                -angle/2*(float) Math.PI/180);
+                        var edge2 = edge1.Rotated(angle*(float) Math.PI/180);
 
-                        foreach (var minion in ObjectManager.Get<Obj_AI_Minion>())
+                        foreach (Obj_AI_Minion minion in ObjectManager.Get<Obj_AI_Minion>())
                         {
-                            var v = minion.ServerPosition.To2D() - skillshot.Unit.ServerPosition.To2D();
+                            Vector2 v = minion.ServerPosition.To2D() - skillshot.Unit.ServerPosition.To2D();
                             if (minion.Name == "Seed" && edge1.CrossProduct(v) > 0 && v.CrossProduct(edge2) > 0 &&
                                 minion.Distance(skillshot.Unit) < 800 &&
                                 (minion.Team != ObjectManager.Player.Team))
                             {
-                                var start = minion.ServerPosition.To2D();
+                                Vector2 start = minion.ServerPosition.To2D();
                                 var end = skillshot.Unit.ServerPosition.To2D()
                                     .Extend(
                                         minion.ServerPosition.To2D(),
@@ -1165,8 +1243,8 @@ namespace SAwareness
 
                     if (skillshot.SpellData.SpellName == "AlZaharCalloftheVoid")
                     {
-                        var start = skillshot.End - skillshot.Direction.Perpendicular() * 400;
-                        var end = skillshot.End + skillshot.Direction.Perpendicular() * 400;
+                        Vector2 start = skillshot.End - skillshot.Direction.Perpendicular()*400;
+                        Vector2 end = skillshot.End + skillshot.Direction.Perpendicular() * 400;
                         var skillshotToAdd = new Skillshot(
                             skillshot.DetectionType, skillshot.SpellData, skillshot.StartTick, start, end,
                             skillshot.Unit);
@@ -1177,20 +1255,20 @@ namespace SAwareness
                     if (skillshot.SpellData.SpellName == "ZiggsQ")
                     {
                         var d1 = skillshot.Start.Distance(skillshot.End);
-                        var d2 = d1 * 0.4f;
-                        var d3 = d2 * 0.69f;
+                        float d2 = d1*0.4f;
+                        float d3 = d2*0.69f;
 
 
                         var bounce1SpellData = SpellDatabase.GetByName("ZiggsQBounce1");
                         var bounce2SpellData = SpellDatabase.GetByName("ZiggsQBounce2");
 
-                        var bounce1Pos = skillshot.End + skillshot.Direction * d2;
-                        var bounce2Pos = bounce1Pos + skillshot.Direction * d3;
+                        Vector2 bounce1Pos = skillshot.End + skillshot.Direction * d2;
+                        Vector2 bounce2Pos = bounce1Pos + skillshot.Direction * d3;
 
                         bounce1SpellData.Delay =
-                            (int)(skillshot.SpellData.Delay + d1 * 1000f / skillshot.SpellData.MissileSpeed + 500);
+                            (int) (skillshot.SpellData.Delay + d1*1000f/skillshot.SpellData.MissileSpeed + 500);
                         bounce2SpellData.Delay =
-                            (int)(bounce1SpellData.Delay + d2 * 1000f / bounce1SpellData.MissileSpeed + 500);
+                            (int) (bounce1SpellData.Delay + d2*1000f/bounce1SpellData.MissileSpeed + 500);
 
                         var bounce1 = new Skillshot(
                             skillshot.DetectionType, bounce1SpellData, skillshot.StartTick, skillshot.End, bounce1Pos,
@@ -1206,14 +1284,14 @@ namespace SAwareness
                     if (skillshot.SpellData.SpellName == "ZiggsR")
                     {
                         skillshot.SpellData.Delay =
-                            (int)(1500 + 1500 * skillshot.End.Distance(skillshot.Start) / skillshot.SpellData.Range);
+                            (int)(1500 + 1500*skillshot.End.Distance(skillshot.Start)/skillshot.SpellData.Range);
                     }
 
                     if (skillshot.SpellData.SpellName == "JarvanIVDragonStrike")
                     {
                         var endPos = new Vector2();
 
-                        foreach (var s in DetectedSkillshots)
+                        foreach (Skillshot s in DetectedSkillshots)
                         {
                             if (s.Unit.NetworkId == skillshot.Unit.NetworkId && s.SpellData.Slot == SpellSlot.E)
                             {
@@ -1221,7 +1299,7 @@ namespace SAwareness
                             }
                         }
 
-                        foreach (var m in ObjectManager.Get<Obj_AI_Minion>())
+                        foreach (Obj_AI_Minion m in ObjectManager.Get<Obj_AI_Minion>())
                         {
                             if (m.BaseSkinName == "jarvanivstandard" && m.Team == skillshot.Unit.Team &&
                                 skillshot.IsDanger(m.Position.To2D()))
@@ -1235,7 +1313,7 @@ namespace SAwareness
                             return;
                         }
 
-                        skillshot.End = endPos + 200 * (endPos - skillshot.Start).Normalized();
+                        skillshot.End = endPos + 200*(endPos - skillshot.Start).Normalized();
                         skillshot.Direction = (skillshot.End - skillshot.Start).Normalized();
                     }
                 }
@@ -1273,11 +1351,11 @@ namespace SAwareness
                 var direction = skillshot.Direction.Perpendicular();
                 if (DetectedSkillshots.Count(s => s.SpellData.SpellName == "VelkozQSplit") == 0)
                 {
-                    for (var i = -1; i <= 1; i = i + 2)
+                    for (int i = -1; i <= 1; i = i + 2)
                     {
                         var skillshotToAdd = new Skillshot(
                             DetectionType.ProcessSpell, spellData, Environment.TickCount, missile.Position.To2D(),
-                            missile.Position.To2D() + i * direction * spellData.Range, skillshot.Unit);
+                            missile.Position.To2D() + i*direction*spellData.Range, skillshot.Unit);
                         DetectedSkillshots.Add(skillshotToAdd);
                     }
                 }
@@ -1286,22 +1364,23 @@ namespace SAwareness
 
         private void GetIncomingDamage_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            foreach (KeyValuePair<Obj_AI_Hero, List<IncomingDamage>> damage in damages)
+            foreach (var damage in Damages)
             {
-                foreach (var incomingDamage in damage.Value.ToArray())
+                foreach (IncomingDamage incomingDamage in damage.Value.ToArray())
                 {
                     if (incomingDamage.TimeHit < Game.Time)
                         damage.Value.Remove(incomingDamage);
                 }
                 if (sender.NetworkId == damage.Key.NetworkId)
                     continue;
-                if (args.Target.Type == GameObjectType.obj_LampBulb || args.Target.Type == GameObjectType.Unknown) //No target, find it later
+                if (args.Target.Type == GameObjectType.obj_LampBulb || args.Target.Type == GameObjectType.Unknown)
+                    //No target, find it later
                 {
                     try
                     {
-                        double spellDamage = sender.GetSpellDamage((Obj_AI_Base)args.Target, args.SData.Name);
+                        double spellDamage = sender.GetSpellDamage((Obj_AI_Base) args.Target, args.SData.Name);
                         if (spellDamage != 0.0f)
-                            damages[damages.Last().Key].Add(new IncomingDamage(args.SData.Name, sender, args.Start,
+                            Damages[Damages.Last().Key].Add(new IncomingDamage(args.SData.Name, sender, args.Start,
                                 args.End, spellDamage,
                                 IncomingDamage.CalcTimeHit(args.TimeCast, sender, damage.Key, args.End)));
                     }
@@ -1317,19 +1396,25 @@ namespace SAwareness
                 }
                 if (args.SData.Name.ToLower().Contains("attack") && args.Target.NetworkId == damage.Key.NetworkId)
                 {
-                    double aaDamage = sender.GetAutoAttackDamage((Obj_AI_Base)args.Target);
+                    double aaDamage = sender.GetAutoAttackDamage((Obj_AI_Base) args.Target);
                     if (aaDamage != 0.0f)
                         if (sender.Type == GameObjectType.obj_AI_Minion)
                         {
-                            damages[damage.Key].Add(new IncomingDamage(args.SData.Name, sender, args.Start, args.End, aaDamage, IncomingDamage.CalcTimeHit(args.TimeCast, sender, damage.Key, args.End), args.Target, false, true));
+                            Damages[damage.Key].Add(new IncomingDamage(args.SData.Name, sender, args.Start, args.End,
+                                aaDamage, IncomingDamage.CalcTimeHit(args.TimeCast, sender, damage.Key, args.End),
+                                args.Target, false, true));
                         }
                         else if (sender.Type == GameObjectType.obj_AI_Turret)
                         {
-                            damages[damage.Key].Add(new IncomingDamage(args.SData.Name, sender, args.Start, args.End, aaDamage, IncomingDamage.CalcTimeHit(args.TimeCast, sender, damage.Key, args.End), args.Target, true));
+                            Damages[damage.Key].Add(new IncomingDamage(args.SData.Name, sender, args.Start, args.End,
+                                aaDamage, IncomingDamage.CalcTimeHit(args.TimeCast, sender, damage.Key, args.End),
+                                args.Target, true));
                         }
                         else
                         {
-                            damages[damage.Key].Add(new IncomingDamage(args.SData.Name, sender, args.Start, args.End, aaDamage, IncomingDamage.CalcTimeHit(args.TimeCast, sender, damage.Key, args.End), args.Target));
+                            Damages[damage.Key].Add(new IncomingDamage(args.SData.Name, sender, args.Start, args.End,
+                                aaDamage, IncomingDamage.CalcTimeHit(args.TimeCast, sender, damage.Key, args.End),
+                                args.Target));
                         }
                     continue;
                 }
@@ -1337,9 +1422,11 @@ namespace SAwareness
                 {
                     try
                     {
-                        double spellDamage = sender.GetSpellDamage((Obj_AI_Base)args.Target, args.SData.Name);
+                        double spellDamage = sender.GetSpellDamage((Obj_AI_Base) args.Target, args.SData.Name);
                         if (spellDamage != 0.0f)
-                            damages[damage.Key].Add(new IncomingDamage(args.SData.Name, sender, args.Start, args.End, spellDamage, IncomingDamage.CalcTimeHit(args.TimeCast, sender, damage.Key, args.End), args.Target));
+                            Damages[damage.Key].Add(new IncomingDamage(args.SData.Name, sender, args.Start, args.End,
+                                spellDamage, IncomingDamage.CalcTimeHit(args.TimeCast, sender, damage.Key, args.End),
+                                args.Target));
                     }
                     catch (InvalidOperationException)
                     {
@@ -1347,28 +1434,30 @@ namespace SAwareness
                     }
                 }
                 if (sender.Type == GameObjectType.obj_AI_Turret && args.Target.NetworkId == damage.Key.NetworkId)
-                    damages[damage.Key].Add(new IncomingDamage(args.SData.Name, sender, args.Start, args.End, 300, IncomingDamage.CalcTimeHit(args.TimeCast, sender, damage.Key, args.End), args.Target, true));
+                    Damages[damage.Key].Add(new IncomingDamage(args.SData.Name, sender, args.Start, args.End, 300,
+                        IncomingDamage.CalcTimeHit(args.TimeCast, sender, damage.Key, args.End), args.Target, true));
             }
         }
 
         private void GetIncomingDamage_OnGameUpdate()
         {
             DetectedSkillshots.RemoveAll(skillshot => !skillshot.IsActive());
-            Dictionary<Obj_AI_Hero, List<Activator.IncomingDamage>> tempDamages =
-                new Dictionary<Obj_AI_Hero, List<Activator.IncomingDamage>>(Activator.damages);
-            foreach (KeyValuePair<Obj_AI_Hero, List<Activator.IncomingDamage>> damage in Activator.damages)
+            var tempDamages =
+                new Dictionary<Obj_AI_Hero, List<IncomingDamage>>(Damages);
+            foreach (var damage in Damages)
             {
                 Obj_AI_Hero hero = damage.Key;
 
-                foreach (var skillshot in Activator.DetectedSkillshots)
+                foreach (Skillshot skillshot in DetectedSkillshots)
                 {
                     if (skillshot.IsAboutToHit(50, hero))
                     {
                         try
                         {
-                            double spellDamage = skillshot.Unit.GetSpellDamage((Obj_AI_Base)hero, skillshot.SpellData.SpellName);
+                            double spellDamage = skillshot.Unit.GetSpellDamage((Obj_AI_Base) hero,
+                                skillshot.SpellData.SpellName);
                             bool exists = false;
-                            foreach (var incomingDamage in tempDamages[hero])
+                            foreach (IncomingDamage incomingDamage in tempDamages[hero])
                             {
                                 if (incomingDamage.SpellName.Contains(skillshot.SpellData.SpellName))
                                 {
@@ -1377,7 +1466,8 @@ namespace SAwareness
                                 }
                             }
                             if (spellDamage != 0.0f && !exists)
-                                tempDamages[hero].Add(new Activator.IncomingDamage(skillshot.SpellData.SpellName, skillshot.Unit, skillshot.Start.To3D(), skillshot.End.To3D(), spellDamage, Game.Time + 0.05, hero));
+                                tempDamages[hero].Add(new IncomingDamage(skillshot.SpellData.SpellName, skillshot.Unit,
+                                    skillshot.Start.To3D(), skillshot.End.To3D(), spellDamage, Game.Time + 0.05, hero));
                         }
                         catch (InvalidOperationException)
                         {
@@ -1387,16 +1477,17 @@ namespace SAwareness
                 }
                 tempDamages = BuffDamage(hero, tempDamages);
             }
-            damages = tempDamages;
+            Damages = tempDamages;
         }
 
-        private static Dictionary<Obj_AI_Hero, List<Activator.IncomingDamage>> BuffDamage(Obj_AI_Hero hero, Dictionary<Obj_AI_Hero, List<Activator.IncomingDamage>> tempDamages)
+        private static Dictionary<Obj_AI_Hero, List<IncomingDamage>> BuffDamage(Obj_AI_Hero hero,
+            Dictionary<Obj_AI_Hero, List<IncomingDamage>> tempDamages)
         {
-            foreach (var buff in hero.Buffs)
+            foreach (BuffInstance buff in hero.Buffs)
             {
                 if (buff.Type == BuffType.Poison || buff.Type == BuffType.Damage)
                 {
-                    foreach (var spell in Database.GetSpellList())
+                    foreach (Database.Spell spell in Database.GetSpellList())
                     {
                         if (string.Equals(spell.Name, buff.DisplayName, StringComparison.InvariantCultureIgnoreCase))
                         {
@@ -1404,7 +1495,7 @@ namespace SAwareness
                             {
                                 DamageSpell damageSpell = null;
                                 Obj_AI_Hero enemy = null;
-                                foreach (var champ in ObjectManager.Get<Obj_AI_Hero>())
+                                foreach (Obj_AI_Hero champ in ObjectManager.Get<Obj_AI_Hero>())
                                 {
                                     if (champ.IsEnemy)
                                     {
@@ -1413,13 +1504,14 @@ namespace SAwareness
                                             if (string.Equals(spellDataInst.Name, spell.Name,
                                                 StringComparison.InvariantCultureIgnoreCase))
                                             {
-                                                damageSpell = Enumerable.FirstOrDefault<DamageSpell>((IEnumerable<DamageSpell>)Damage.Spells[champ.ChampionName], (Func<DamageSpell, bool>)(s =>
+                                                damageSpell = Damage.Spells[champ.ChampionName].FirstOrDefault(s =>
                                                 {
                                                     if (s.Slot == spellDataInst.Slot)
                                                         return 0 == s.Stage;
-                                                    else
-                                                        return false;
-                                                })) ?? Enumerable.FirstOrDefault<DamageSpell>((IEnumerable<DamageSpell>)Damage.Spells[champ.ChampionName], (Func<DamageSpell, bool>)(s => s.Slot == spellDataInst.Slot));
+                                                    return false;
+                                                }) ??
+                                                              Damage.Spells[champ.ChampionName].FirstOrDefault(
+                                                                  s => s.Slot == spellDataInst.Slot);
                                                 if (damageSpell != null)
                                                 {
                                                     enemy = champ;
@@ -1430,9 +1522,9 @@ namespace SAwareness
                                     }
                                 }
 
-                                double spellDamage = enemy.GetSpellDamage((Obj_AI_Base)hero, spell.Name);
+                                double spellDamage = enemy.GetSpellDamage(hero, spell.Name);
                                 bool exists = false;
-                                foreach (var incomingDamage in tempDamages[hero])
+                                foreach (IncomingDamage incomingDamage in tempDamages[hero])
                                 {
                                     if (incomingDamage.SpellName.Contains(spell.Name))
                                     {
@@ -1441,7 +1533,8 @@ namespace SAwareness
                                     }
                                 }
                                 if (spellDamage != 0.0f && !exists)
-                                    tempDamages[hero].Add(new Activator.IncomingDamage(spell.Name, enemy, new Vector3(), new Vector3(), spellDamage, buff.EndTime, hero));
+                                    tempDamages[hero].Add(new IncomingDamage(spell.Name, enemy, new Vector3(),
+                                        new Vector3(), spellDamage, buff.EndTime, hero));
                             }
                             catch (InvalidOperationException)
                             {
@@ -1452,6 +1545,47 @@ namespace SAwareness
                 }
             }
             return tempDamages;
+        }
+
+        public class IncomingDamage
+        {
+            public double Dmg;
+            public Vector3 EndPos;
+            public bool Minion;
+            public Obj_AI_Base Source;
+            public String SpellName;
+            public Vector3 StartPos;
+            public GameObject Target;
+            public double TimeHit;
+            public bool Turret;
+
+            public IncomingDamage(String spellName, Obj_AI_Base source, Vector3 startPos, Vector3 endPos, double dmg,
+                double timeHit, GameObject target = null, bool turret = false, bool minion = false)
+            {
+                SpellName = spellName;
+                Source = source;
+                StartPos = startPos;
+                EndPos = endPos;
+                Dmg = dmg;
+                TimeHit = timeHit;
+                Target = target;
+                Turret = turret;
+                Minion = minion;
+            }
+
+            public static double CalcTimeHit(double extraTimeForCast, Obj_AI_Base sender, Obj_AI_Base hero,
+                Vector3 endPos) //TODO: Fix Time for animations etc
+            {
+                return Game.Time + (extraTimeForCast/1000)*(sender.ServerPosition.Distance(endPos)/1000) +
+                       (hero.ServerPosition.Distance(sender.ServerPosition)/1000);
+            }
+
+            public static double CalcTimeHit(double startTime, double extraTimeForCast, Obj_AI_Base sender,
+                Obj_AI_Base hero, Vector3 endPos) //TODO: Fix Time for animations etc
+            {
+                return startTime + (extraTimeForCast/1000)*(sender.ServerPosition.Distance(endPos)/1000) +
+                       (hero.ServerPosition.Distance(sender.ServerPosition)/1000);
+            }
         }
     }
 }

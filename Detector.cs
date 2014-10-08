@@ -1,39 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
+using SharpDX;
 
 namespace SAwareness
 {
-
-    class RecallDetector
+    internal class RecallDetector
     {
-        public List<RecallInfo> _recalls = new List<RecallInfo>();
-
-        public class RecallInfo
-        {
-            public int NetworkId;
-            public Packet.S2C.Recall.Struct Recall;
-            public Packet.S2C.Recall.Struct Recall2;
-            public int StartTime;
-
-            public RecallInfo(int networkId)
-            {
-                NetworkId = networkId;
-            }
-        }
+        public readonly List<RecallInfo> Recalls = new List<RecallInfo>();
 
         public RecallDetector()
         {
-            foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>())
+            foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (enemy.IsEnemy)
                 {
-                    _recalls.Add(new RecallInfo(enemy.NetworkId));
+                    Recalls.Add(new RecallInfo(enemy.NetworkId));
                 }
             }
             Game.OnGameProcessPacket += Game_OnGameProcessPacket;
@@ -49,32 +33,30 @@ namespace SAwareness
             return Menu.Detector.GetActive() && Menu.RecallDetector.GetActive();
         }
 
-        void Game_OnGameProcessPacket(GamePacketEventArgs args)
+        private void Game_OnGameProcessPacket(GamePacketEventArgs args)
         {
             if (!IsActive())
                 return;
             try
             {
                 var reader = new BinaryReader(new MemoryStream(args.PacketData));
-                byte PacketId = reader.ReadByte(); //PacketId
-                if (PacketId != Packet.S2C.Recall.Header) //OLD 215
+                byte packetId = reader.ReadByte(); //PacketId
+                if (packetId != Packet.S2C.Recall.Header) //OLD 215
                     return;
                 Packet.S2C.Recall.Struct recall = Packet.S2C.Recall.Decoded(args.PacketData);
                 HandleRecall(recall);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("RecallProcess: " + ex.ToString());
-                return;
+                Console.WriteLine("RecallProcess: " + ex);
             }
-
         }
 
-        void HandleRecall(Packet.S2C.Recall.Struct recallEx)
+        private void HandleRecall(Packet.S2C.Recall.Struct recallEx)
         {
             int time = Environment.TickCount - Game.Ping;
 
-            foreach (RecallInfo recall in _recalls)
+            foreach (RecallInfo recall in Recalls)
             {
                 if (recall == null) continue;
 
@@ -88,77 +70,133 @@ namespace SAwareness
                     {
                         recall.Recall = recallEx;
                         recall.Recall2 = new Packet.S2C.Recall.Struct();
-                        StringList t = Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorMode").GetValue<StringList>();
+                        var t = Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorMode").GetValue<StringList>();
                         if (t.SelectedIndex == 0 || t.SelectedIndex == 2)
                         {
-                            int percentHealth = (int)((obj.Health / obj.MaxHealth) * 100);
+                            var percentHealth = (int) ((obj.Health/obj.MaxHealth)*100);
                             String sColor = "<font color='#FFFFFF'>";
-                            String color = (percentHealth > 50 ? "<font color='#00FF00'>" : (percentHealth > 30 ? "<font color='#FFFF00'>" : "<font color='#FF0000'>"));
-                            if (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportStart || recallEx.Status == Packet.S2C.Recall.RecallStatus.RecallStarted)
+                            String color = (percentHealth > 50
+                                ? "<font color='#00FF00'>"
+                                : (percentHealth > 30 ? "<font color='#FFFF00'>" : "<font color='#FF0000'>"));
+                            if (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportStart ||
+                                recallEx.Status == Packet.S2C.Recall.RecallStatus.RecallStarted)
                             {
-                                String text = (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportStart ? "porting" : "recalling");                                
-                                recall.StartTime = (int)Game.Time;
-                                if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorChatChoice").GetValue<StringList>().SelectedIndex == 1)
+                                String text = (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportStart
+                                    ? "porting"
+                                    : "recalling");
+                                recall.StartTime = (int) Game.Time;
+                                if (
+                                    Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorChatChoice")
+                                        .GetValue<StringList>()
+                                        .SelectedIndex == 1)
                                 {
-                                    Game.PrintChat(obj.ChampionName + " {0} with {1} hp {2}({3})", text, (int)obj.Health, color, percentHealth);
+                                    Game.PrintChat(obj.ChampionName + " {0} with {1} hp {2}({3})", text,
+                                        (int) obj.Health, color, percentHealth);
                                 }
-                                else if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorChatChoice").GetValue<StringList>().SelectedIndex == 2 &&
-                                            Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
+                                else if (
+                                    Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorChatChoice")
+                                        .GetValue<StringList>()
+                                        .SelectedIndex == 2 &&
+                                    Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive")
+                                        .GetValue<bool>())
                                 {
-                                    Game.Say(obj.ChampionName + " {0} with {1} hp {2}({3})", text, (int)obj.Health, color, percentHealth);
+                                    Game.Say(obj.ChampionName + " {0} with {1} hp {2}({3})", text, (int) obj.Health,
+                                        color, percentHealth);
                                 }
                             }
-                            else if (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd || recallEx.Status == Packet.S2C.Recall.RecallStatus.RecallFinished)
+                            else if (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd ||
+                                     recallEx.Status == Packet.S2C.Recall.RecallStatus.RecallFinished)
                             {
-                                String text = (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportStart ? "ported" : "recalled");
-                                if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorChatChoice").GetValue<StringList>().SelectedIndex == 1)
+                                String text = (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportStart
+                                    ? "ported"
+                                    : "recalled");
+                                if (
+                                    Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorChatChoice")
+                                        .GetValue<StringList>()
+                                        .SelectedIndex == 1)
                                 {
-                                    Game.PrintChat(obj.ChampionName + " {0} with {1} hp {2}({3})", text, (int)obj.Health, color, percentHealth);
+                                    Game.PrintChat(obj.ChampionName + " {0} with {1} hp {2}({3})", text,
+                                        (int) obj.Health, color, percentHealth);
                                 }
-                                else if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorChatChoice").GetValue<StringList>().SelectedIndex == 2 &&
-                                            Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
+                                else if (
+                                    Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorChatChoice")
+                                        .GetValue<StringList>()
+                                        .SelectedIndex == 2 &&
+                                    Menu.GlobalSettings.GetMenuItem(
+                                        "SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
                                 {
-                                    Game.Say(obj.ChampionName + " {0} with {1} hp {2}({3})", text, (int)obj.Health, color, percentHealth);
+                                    Game.Say(obj.ChampionName + " {0} with {1} hp {2}({3})", text,
+                                        (int) obj.Health, color, percentHealth);
                                 }
                             }
                             else
                             {
-                                if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorChatChoice").GetValue<StringList>().SelectedIndex == 1)
+                                if (
+                                    Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorChatChoice")
+                                        .GetValue<StringList>()
+                                        .SelectedIndex == 1)
                                 {
-                                    Game.PrintChat(obj.ChampionName + " canceled with {0} hp", (int)obj.Health);
+                                    Game.PrintChat(obj.ChampionName + " canceled with {0} hp", (int) obj.Health);
                                 }
-                                else if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorChatChoice").GetValue<StringList>().SelectedIndex == 2 &&
-                                            Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
+                                else if (
+                                    Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorChatChoice")
+                                        .GetValue<StringList>()
+                                        .SelectedIndex == 2 &&
+                                    Menu.GlobalSettings.GetMenuItem(
+                                        "SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
                                 {
-                                    Game.Say(obj.ChampionName + " canceled with {0} hp", (int)obj.Health);
+                                    Game.Say(obj.ChampionName + " canceled with {0} hp", (int) obj.Health);
                                 }
                             }
                         }
                         return;
                     }
                 }
-                else if (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportStart || recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd)
+                else if (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportStart ||
+                         recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd)
                 {
                     if (recall.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportStart)
                         recall.Recall2 = recallEx;
 
                     var obj = ObjectManager.GetUnitByNetworkId<GameObject>(recallEx.UnitNetworkId);
-                    var pos = obj.Position;
-                    for (int i = 0; i < Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorPingTimes").GetValue<Slider>().Value; i++)
+                    Vector3 pos = obj.Position;
+                    for (int i = 0;
+                        i <
+                        Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorPingTimes")
+                            .GetValue<Slider>()
+                            .Value;
+                        i++)
                     {
                         GamePacket gPacketT;
                         if (Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorLocalPing").GetValue<bool>())
                         {
-                            gPacketT = Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0, Packet.PingType.DangerSound));
+                            gPacketT =
+                                Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0,
+                                    Packet.PingType.DangerSound));
                             gPacketT.Process();
                         }
                         else
                         {
-                            gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos.X, pos.Y, 0, Packet.PingType.Danger));
+                            gPacketT =
+                                Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos.X, pos.Y, 0,
+                                    Packet.PingType.Danger));
                             //gPacketT.Send();
                         }
                     }
                 }
+            }
+        }
+
+        public class RecallInfo
+        {
+            public int NetworkId;
+            public Packet.S2C.Recall.Struct Recall;
+            public Packet.S2C.Recall.Struct Recall2;
+            public int StartTime;
+
+            public RecallInfo(int networkId)
+            {
+                NetworkId = networkId;
             }
         }
     }

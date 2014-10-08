@@ -1,27 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using System.Reflection;
+using System.Security.Cryptography;
 
 namespace SAwareness
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Reflection;
-    using System.Security.Cryptography;
-
     public class EmbeddedAssembly
     {
         // Version 1.3
 
-        static Dictionary<string, Assembly> dic = null;
+        private static Dictionary<string, Assembly> _dic;
 
         public static void Load(string embeddedResource, string fileName)
         {
-            if (dic == null)
-                dic = new Dictionary<string, Assembly>();
+            if (_dic == null)
+                _dic = new Dictionary<string, Assembly>();
 
             byte[] ba = null;
             Assembly asm = null;
@@ -34,14 +28,14 @@ namespace SAwareness
                     throw new Exception(embeddedResource + " is not found in Embedded Resources.");
 
                 // Get byte[] from the file from embedded resource
-                ba = new byte[(int)stm.Length];
-                stm.Read(ba, 0, (int)stm.Length);
+                ba = new byte[(int) stm.Length];
+                stm.Read(ba, 0, (int) stm.Length);
                 try
                 {
                     asm = Assembly.Load(ba);
 
                     // Add the assembly/dll into dictionary
-                    dic.Add(asm.FullName, asm);
+                    _dic.Add(asm.FullName, asm);
                     return;
                 }
                 catch
@@ -55,9 +49,10 @@ namespace SAwareness
             bool fileOk = false;
             string tempFile = "";
 
-            using (SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider())
+            using (var sha1 = new SHA1CryptoServiceProvider())
             {
-                string fileHash = BitConverter.ToString(sha1.ComputeHash(ba)).Replace("-", string.Empty); ;
+                string fileHash = BitConverter.ToString(sha1.ComputeHash(ba)).Replace("-", string.Empty);
+                ;
 
                 tempFile = Path.GetTempPath() + fileName;
 
@@ -83,21 +78,21 @@ namespace SAwareness
 
             if (!fileOk)
             {
-                System.IO.File.WriteAllBytes(tempFile, ba);
+                File.WriteAllBytes(tempFile, ba);
             }
 
             asm = Assembly.LoadFile(tempFile);
 
-            dic.Add(asm.FullName, asm);
+            _dic.Add(asm.FullName, asm);
         }
 
         public static Assembly Get(string assemblyFullName)
         {
-            if (dic == null || dic.Count == 0)
+            if (_dic == null || _dic.Count == 0)
                 return null;
 
-            if (dic.ContainsKey(assemblyFullName))
-                return dic[assemblyFullName];
+            if (_dic.ContainsKey(assemblyFullName))
+                return _dic[assemblyFullName];
 
             return null;
         }
