@@ -75,7 +75,7 @@ namespace SAwareness
                 Color.Green));
             Objects.Add(new Object(ObjectType.Sight, "Warding Totem (Trinket)", "YellowTrinket", "TrinketTotemLvl1", 60.0f,
                 56, 263796881, Color.Green));
-            Objects.Add(new Object(ObjectType.Sight, "Warding Totem (Trinket)", "YellowTrinketUpgrade", "trinkettotemlvl2", 120.0f,
+            Objects.Add(new Object(ObjectType.Sight, "Warding Totem (Trinket)", "YellowTrinketUpgrade", "TrinketTotemLvl2", 120.0f,
                 56, 263796882, Color.Green));
             Objects.Add(new Object(ObjectType.Sight, "Greater Stealth Totem (Trinket)", "SightWard", "TrinketTotemLvl3",
                 180.0f, 56, 263796882, Color.Green));
