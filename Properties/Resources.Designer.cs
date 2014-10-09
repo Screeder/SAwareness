@@ -2603,6 +2603,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Aatrox_MM {
+            get {
+                object obj = ResourceManager.GetObject("Aatrox_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Aatrox_Passive {
             get {
                 object obj = ResourceManager.GetObject("Aatrox_Passive", resourceCulture);
@@ -2673,6 +2683,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Ahri_MM {
+            get {
+                object obj = ResourceManager.GetObject("Ahri_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Ahri_SoulEater {
             get {
                 object obj = ResourceManager.GetObject("Ahri_SoulEater", resourceCulture);
@@ -2733,6 +2753,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Akali_MM {
+            get {
+                object obj = ResourceManager.GetObject("Akali_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] AkaliMota {
             get {
                 object obj = ResourceManager.GetObject("AkaliMota", resourceCulture);
@@ -2786,6 +2816,16 @@ namespace SAwareness.Properties {
         internal static byte[] Alistar {
             get {
                 object obj = ResourceManager.GetObject("Alistar", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Alistar_MM {
+            get {
+                object obj = ResourceManager.GetObject("Alistar_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -2863,6 +2903,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Amumu_MM {
+            get {
+                object obj = ResourceManager.GetObject("Amumu_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Anivia {
             get {
                 object obj = ResourceManager.GetObject("Anivia", resourceCulture);
@@ -2873,9 +2923,29 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Anivia_MM {
+            get {
+                object obj = ResourceManager.GetObject("Anivia_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Annie {
             get {
                 object obj = ResourceManager.GetObject("Annie", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Annie_MM {
+            get {
+                object obj = ResourceManager.GetObject("Annie_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -2916,6 +2986,16 @@ namespace SAwareness.Properties {
         internal static byte[] Ashe {
             get {
                 object obj = ResourceManager.GetObject("Ashe", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Ashe_MM {
+            get {
+                object obj = ResourceManager.GetObject("Ashe_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -2986,6 +3066,16 @@ namespace SAwareness.Properties {
         internal static byte[] Azir {
             get {
                 object obj = ResourceManager.GetObject("Azir", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Azir_MM {
+            get {
+                object obj = ResourceManager.GetObject("Azir_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -3173,6 +3263,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Blitzcrank_MM {
+            get {
+                object obj = ResourceManager.GetObject("Blitzcrank_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] BloodBoil {
             get {
                 object obj = ResourceManager.GetObject("BloodBoil", resourceCulture);
@@ -3206,6 +3306,16 @@ namespace SAwareness.Properties {
         internal static byte[] Brand {
             get {
                 object obj = ResourceManager.GetObject("Brand", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Brand_MM {
+            get {
+                object obj = ResourceManager.GetObject("Brand_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -3266,6 +3376,16 @@ namespace SAwareness.Properties {
         internal static byte[] Braum {
             get {
                 object obj = ResourceManager.GetObject("Braum", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Braum_MM {
+            get {
+                object obj = ResourceManager.GetObject("Braum_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -3383,6 +3503,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Caitlyn_MM {
+            get {
+                object obj = ResourceManager.GetObject("Caitlyn_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] CaitlynAceintheHole {
             get {
                 object obj = ResourceManager.GetObject("CaitlynAceintheHole", resourceCulture);
@@ -3493,6 +3623,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Cassiopeia_MM {
+            get {
+                object obj = ResourceManager.GetObject("Cassiopeia_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] CassiopeiaMiasma {
             get {
                 object obj = ResourceManager.GetObject("CassiopeiaMiasma", resourceCulture);
@@ -3553,6 +3693,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Chogath_MM {
+            get {
+                object obj = ResourceManager.GetObject("Chogath_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Chronokeeper_Slow {
             get {
                 object obj = ResourceManager.GetObject("Chronokeeper_Slow", resourceCulture);
@@ -3586,6 +3736,16 @@ namespace SAwareness.Properties {
         internal static byte[] Corki {
             get {
                 object obj = ResourceManager.GetObject("Corki", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Corki_MM {
+            get {
+                object obj = ResourceManager.GetObject("Corki_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -3666,6 +3826,16 @@ namespace SAwareness.Properties {
         internal static byte[] Darius_Icon_Hemorrhage {
             get {
                 object obj = ResourceManager.GetObject("Darius_Icon_Hemorrhage", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Darius_MM {
+            get {
+                object obj = ResourceManager.GetObject("Darius_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -3823,6 +3993,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Diana_MM {
+            get {
+                object obj = ResourceManager.GetObject("Diana_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Diana_Passive_LunarBlade {
             get {
                 object obj = ResourceManager.GetObject("Diana_Passive_LunarBlade", resourceCulture);
@@ -3903,6 +4083,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Draven_MM {
+            get {
+                object obj = ResourceManager.GetObject("Draven_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Draven_passive {
             get {
                 object obj = ResourceManager.GetObject("Draven_passive", resourceCulture);
@@ -3973,9 +4163,29 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] DrMundo_MM {
+            get {
+                object obj = ResourceManager.GetObject("DrMundo_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Elise {
             get {
                 object obj = ResourceManager.GetObject("Elise", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Elise_MM {
+            get {
+                object obj = ResourceManager.GetObject("Elise_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -4093,6 +4303,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Evelynn_MM {
+            get {
+                object obj = ResourceManager.GetObject("Evelynn_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Evelynn_ShadowWalk {
             get {
                 object obj = ResourceManager.GetObject("Evelynn_ShadowWalk", resourceCulture);
@@ -4156,6 +4376,16 @@ namespace SAwareness.Properties {
         internal static byte[] Ezreal {
             get {
                 object obj = ResourceManager.GetObject("Ezreal", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Ezreal_MM {
+            get {
+                object obj = ResourceManager.GetObject("Ezreal_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -4273,6 +4503,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] FiddleSticks_MM {
+            get {
+                object obj = ResourceManager.GetObject("FiddleSticks_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Fiddlesticks_Paranoia {
             get {
                 object obj = ResourceManager.GetObject("Fiddlesticks_Paranoia", resourceCulture);
@@ -4306,6 +4546,16 @@ namespace SAwareness.Properties {
         internal static byte[] Fiora_Duelist {
             get {
                 object obj = ResourceManager.GetObject("Fiora_Duelist", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Fiora_MM {
+            get {
+                object obj = ResourceManager.GetObject("Fiora_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -4356,6 +4606,16 @@ namespace SAwareness.Properties {
         internal static byte[] Fizz {
             get {
                 object obj = ResourceManager.GetObject("Fizz", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Fizz_MM {
+            get {
+                object obj = ResourceManager.GetObject("Fizz_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -4473,6 +4733,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Galio_MM {
+            get {
+                object obj = ResourceManager.GetObject("Galio_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Galio_RunicSkin {
             get {
                 object obj = ResourceManager.GetObject("Galio_RunicSkin", resourceCulture);
@@ -4533,9 +4803,29 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Gangplank_MM {
+            get {
+                object obj = ResourceManager.GetObject("Gangplank_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Garen {
             get {
                 object obj = ResourceManager.GetObject("Garen", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Garen_MM {
+            get {
+                object obj = ResourceManager.GetObject("Garen_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -4643,6 +4933,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Gnar_MM {
+            get {
+                object obj = ResourceManager.GetObject("Gnar_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Gnar_Passive {
             get {
                 object obj = ResourceManager.GetObject("Gnar_Passive", resourceCulture);
@@ -4703,6 +5003,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Gragas_MM {
+            get {
+                object obj = ResourceManager.GetObject("Gragas_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] GragasE {
             get {
                 object obj = ResourceManager.GetObject("GragasE", resourceCulture);
@@ -4756,6 +5066,16 @@ namespace SAwareness.Properties {
         internal static byte[] Graves {
             get {
                 object obj = ResourceManager.GetObject("Graves", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Graves_MM {
+            get {
+                object obj = ResourceManager.GetObject("Graves_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -4863,6 +5183,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Hecarim_MM {
+            get {
+                object obj = ResourceManager.GetObject("Hecarim_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Hecarim_Passive {
             get {
                 object obj = ResourceManager.GetObject("Hecarim_Passive", resourceCulture);
@@ -4916,6 +5246,16 @@ namespace SAwareness.Properties {
         internal static byte[] Heimerdinger {
             get {
                 object obj = ResourceManager.GetObject("Heimerdinger", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Heimerdinger_MM {
+            get {
+                object obj = ResourceManager.GetObject("Heimerdinger_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -5123,6 +5463,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Irelia_MM {
+            get {
+                object obj = ResourceManager.GetObject("Irelia_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] IreliaEquilibriumStrike {
             get {
                 object obj = ResourceManager.GetObject("IreliaEquilibriumStrike", resourceCulture);
@@ -5193,6 +5543,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Janna_MM {
+            get {
+                object obj = ResourceManager.GetObject("Janna_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Janna_Tailwind {
             get {
                 object obj = ResourceManager.GetObject("Janna_Tailwind", resourceCulture);
@@ -5216,6 +5576,16 @@ namespace SAwareness.Properties {
         internal static byte[] JarvanIV_MartialCadence {
             get {
                 object obj = ResourceManager.GetObject("JarvanIV_MartialCadence", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] JarvanIV_MM {
+            get {
+                object obj = ResourceManager.GetObject("JarvanIV_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -5293,6 +5663,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Jax_MM {
+            get {
+                object obj = ResourceManager.GetObject("Jax_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] JaxCounterStrike {
             get {
                 object obj = ResourceManager.GetObject("JaxCounterStrike", resourceCulture);
@@ -5336,6 +5716,16 @@ namespace SAwareness.Properties {
         internal static byte[] Jayce {
             get {
                 object obj = ResourceManager.GetObject("Jayce", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Jayce_MM {
+            get {
+                object obj = ResourceManager.GetObject("Jayce_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -5406,6 +5796,16 @@ namespace SAwareness.Properties {
         internal static byte[] Jinx {
             get {
                 object obj = ResourceManager.GetObject("Jinx", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Jinx_MM {
+            get {
+                object obj = ResourceManager.GetObject("Jinx_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -5523,6 +5923,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Karma_MM {
+            get {
+                object obj = ResourceManager.GetObject("Karma_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Karma_Passive {
             get {
                 object obj = ResourceManager.GetObject("Karma_Passive", resourceCulture);
@@ -5576,6 +5986,16 @@ namespace SAwareness.Properties {
         internal static byte[] Karthus {
             get {
                 object obj = ResourceManager.GetObject("Karthus", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Karthus_MM {
+            get {
+                object obj = ResourceManager.GetObject("Karthus_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -5663,9 +6083,29 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Kassadin_MM {
+            get {
+                object obj = ResourceManager.GetObject("Kassadin_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Katarina {
             get {
                 object obj = ResourceManager.GetObject("Katarina", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Katarina_MM {
+            get {
+                object obj = ResourceManager.GetObject("Katarina_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -5733,6 +6173,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Kayle_MM {
+            get {
+                object obj = ResourceManager.GetObject("Kayle_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Kayle_Passive {
             get {
                 object obj = ResourceManager.GetObject("Kayle_Passive", resourceCulture);
@@ -5756,6 +6206,16 @@ namespace SAwareness.Properties {
         internal static byte[] Kennen_MarkOfStorm {
             get {
                 object obj = ResourceManager.GetObject("Kennen_MarkOfStorm", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Kennen_MM {
+            get {
+                object obj = ResourceManager.GetObject("Kennen_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -5806,6 +6266,16 @@ namespace SAwareness.Properties {
         internal static byte[] Khazix {
             get {
                 object obj = ResourceManager.GetObject("Khazix", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Khazix_MM {
+            get {
+                object obj = ResourceManager.GetObject("Khazix_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -5923,6 +6393,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] KogMaw_MM {
+            get {
+                object obj = ResourceManager.GetObject("KogMaw_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] KogMawBioArcaneBarrage {
             get {
                 object obj = ResourceManager.GetObject("KogMawBioArcaneBarrage", resourceCulture);
@@ -5986,6 +6466,16 @@ namespace SAwareness.Properties {
         internal static byte[] Leblanc {
             get {
                 object obj = ResourceManager.GetObject("Leblanc", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Leblanc_MM {
+            get {
+                object obj = ResourceManager.GetObject("Leblanc_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -6083,6 +6573,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] LeeSin_MM {
+            get {
+                object obj = ResourceManager.GetObject("LeeSin_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] LeeSinPassive {
             get {
                 object obj = ResourceManager.GetObject("LeeSinPassive", resourceCulture);
@@ -6096,6 +6596,16 @@ namespace SAwareness.Properties {
         internal static byte[] Leona {
             get {
                 object obj = ResourceManager.GetObject("Leona", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Leona_MM {
+            get {
+                object obj = ResourceManager.GetObject("Leona_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -6173,6 +6683,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Lissandra_MM {
+            get {
+                object obj = ResourceManager.GetObject("Lissandra_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Lissandra_Passive {
             get {
                 object obj = ResourceManager.GetObject("Lissandra_Passive", resourceCulture);
@@ -6226,6 +6746,16 @@ namespace SAwareness.Properties {
         internal static byte[] Lucian {
             get {
                 object obj = ResourceManager.GetObject("Lucian", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Lucian_MM {
+            get {
+                object obj = ResourceManager.GetObject("Lucian_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -6293,6 +6823,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Lulu_MM {
+            get {
+                object obj = ResourceManager.GetObject("Lulu_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Lulu_PixFaerieCompanion {
             get {
                 object obj = ResourceManager.GetObject("Lulu_PixFaerieCompanion", resourceCulture);
@@ -6346,6 +6886,16 @@ namespace SAwareness.Properties {
         internal static byte[] Lux {
             get {
                 object obj = ResourceManager.GetObject("Lux", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Lux_MM {
+            get {
+                object obj = ResourceManager.GetObject("Lux_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -6423,9 +6973,29 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Malphite_MM {
+            get {
+                object obj = ResourceManager.GetObject("Malphite_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Malzahar {
             get {
                 object obj = ResourceManager.GetObject("Malzahar", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Malzahar_MM {
+            get {
+                object obj = ResourceManager.GetObject("Malzahar_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -6446,6 +7016,16 @@ namespace SAwareness.Properties {
         internal static byte[] Maokai {
             get {
                 object obj = ResourceManager.GetObject("Maokai", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Maokai_MM {
+            get {
+                object obj = ResourceManager.GetObject("Maokai_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -6523,6 +7103,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] MasterYi_MM {
+            get {
+                object obj = ResourceManager.GetObject("MasterYi_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] MasterYi_Passive1 {
             get {
                 object obj = ResourceManager.GetObject("MasterYi_Passive1", resourceCulture);
@@ -6566,6 +7156,16 @@ namespace SAwareness.Properties {
         internal static byte[] MissFortune {
             get {
                 object obj = ResourceManager.GetObject("MissFortune", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] MissFortune_MM {
+            get {
+                object obj = ResourceManager.GetObject("MissFortune_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -6663,6 +7263,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] MonkeyKing_MM {
+            get {
+                object obj = ResourceManager.GetObject("MonkeyKing_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] MonkeyKingDecoy {
             get {
                 object obj = ResourceManager.GetObject("MonkeyKingDecoy", resourceCulture);
@@ -6733,6 +7343,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Mordekaiser_MM {
+            get {
+                object obj = ResourceManager.GetObject("Mordekaiser_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] MordekaiserChildrenOfTheGrave {
             get {
                 object obj = ResourceManager.GetObject("MordekaiserChildrenOfTheGrave", resourceCulture);
@@ -6783,6 +7403,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Morgana_MM {
+            get {
+                object obj = ResourceManager.GetObject("Morgana_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] MoveQuick {
             get {
                 object obj = ResourceManager.GetObject("MoveQuick", resourceCulture);
@@ -6796,6 +7426,16 @@ namespace SAwareness.Properties {
         internal static byte[] Nami {
             get {
                 object obj = ResourceManager.GetObject("Nami", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Nami_MM {
+            get {
+                object obj = ResourceManager.GetObject("Nami_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -6863,6 +7503,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Nasus_MM {
+            get {
+                object obj = ResourceManager.GetObject("Nasus_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Nasus_Passive {
             get {
                 object obj = ResourceManager.GetObject("Nasus_Passive", resourceCulture);
@@ -6916,6 +7566,16 @@ namespace SAwareness.Properties {
         internal static byte[] Nautilus {
             get {
                 object obj = ResourceManager.GetObject("Nautilus", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Nautilus_MM {
+            get {
+                object obj = ResourceManager.GetObject("Nautilus_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -6993,6 +7653,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Nidalee_MM {
+            get {
+                object obj = ResourceManager.GetObject("Nidalee_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Nidalee_OnTheProwl {
             get {
                 object obj = ResourceManager.GetObject("Nidalee_OnTheProwl", resourceCulture);
@@ -7016,6 +7686,16 @@ namespace SAwareness.Properties {
         internal static byte[] Nocturne {
             get {
                 object obj = ResourceManager.GetObject("Nocturne", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Nocturne_MM {
+            get {
+                object obj = ResourceManager.GetObject("Nocturne_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -7093,6 +7773,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Nunu_MM {
+            get {
+                object obj = ResourceManager.GetObject("Nunu_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Obduracy {
             get {
                 object obj = ResourceManager.GetObject("Obduracy", resourceCulture);
@@ -7106,6 +7796,16 @@ namespace SAwareness.Properties {
         internal static byte[] Olaf {
             get {
                 object obj = ResourceManager.GetObject("Olaf", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Olaf_MM {
+            get {
+                object obj = ResourceManager.GetObject("Olaf_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -7213,6 +7913,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Orianna_MM {
+            get {
+                object obj = ResourceManager.GetObject("Orianna_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] OriannaPassive {
             get {
                 object obj = ResourceManager.GetObject("OriannaPassive", resourceCulture);
@@ -7256,6 +7966,16 @@ namespace SAwareness.Properties {
         internal static byte[] Pantheon_AOZ {
             get {
                 object obj = ResourceManager.GetObject("Pantheon_AOZ", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Pantheon_MM {
+            get {
+                object obj = ResourceManager.GetObject("Pantheon_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -7356,6 +8076,16 @@ namespace SAwareness.Properties {
         internal static byte[] Poppy {
             get {
                 object obj = ResourceManager.GetObject("Poppy", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Poppy_MM {
+            get {
+                object obj = ResourceManager.GetObject("Poppy_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -7493,6 +8223,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Quinn_MM {
+            get {
+                object obj = ResourceManager.GetObject("Quinn_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Quinn_Passive {
             get {
                 object obj = ResourceManager.GetObject("Quinn_Passive", resourceCulture);
@@ -7563,6 +8303,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Rammus_MM {
+            get {
+                object obj = ResourceManager.GetObject("Rammus_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] RapidFire {
             get {
                 object obj = ResourceManager.GetObject("RapidFire", resourceCulture);
@@ -7606,6 +8356,16 @@ namespace SAwareness.Properties {
         internal static byte[] Renekton {
             get {
                 object obj = ResourceManager.GetObject("Renekton", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Renekton_MM {
+            get {
+                object obj = ResourceManager.GetObject("Renekton_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -7666,6 +8426,16 @@ namespace SAwareness.Properties {
         internal static byte[] Rengar {
             get {
                 object obj = ResourceManager.GetObject("Rengar", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Rengar_MM {
+            get {
+                object obj = ResourceManager.GetObject("Rengar_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -7746,6 +8516,16 @@ namespace SAwareness.Properties {
         internal static byte[] Riven {
             get {
                 object obj = ResourceManager.GetObject("Riven", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Riven_MM {
+            get {
+                object obj = ResourceManager.GetObject("Riven_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -7843,6 +8623,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Rumble_MM {
+            get {
+                object obj = ResourceManager.GetObject("Rumble_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] RumbleCarpetBomb {
             get {
                 object obj = ResourceManager.GetObject("RumbleCarpetBomb", resourceCulture);
@@ -7913,6 +8703,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Ryze_MM {
+            get {
+                object obj = ResourceManager.GetObject("Ryze_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Ryze_SpellStrike {
             get {
                 object obj = ResourceManager.GetObject("Ryze_SpellStrike", resourceCulture);
@@ -7956,6 +8756,16 @@ namespace SAwareness.Properties {
         internal static byte[] Sejuani {
             get {
                 object obj = ResourceManager.GetObject("Sejuani", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Sejuani_MM {
+            get {
+                object obj = ResourceManager.GetObject("Sejuani_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -8023,6 +8833,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Shaco_MM {
+            get {
+                object obj = ResourceManager.GetObject("Shaco_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] shadowninja_P {
             get {
                 object obj = ResourceManager.GetObject("shadowninja_P", resourceCulture);
@@ -8056,6 +8876,16 @@ namespace SAwareness.Properties {
         internal static byte[] Shen_KiStrike {
             get {
                 object obj = ResourceManager.GetObject("Shen_KiStrike", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Shen_MM {
+            get {
+                object obj = ResourceManager.GetObject("Shen_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -8106,6 +8936,16 @@ namespace SAwareness.Properties {
         internal static byte[] Shyvana {
             get {
                 object obj = ResourceManager.GetObject("Shyvana", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Shyvana_MM {
+            get {
+                object obj = ResourceManager.GetObject("Shyvana_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -8203,6 +9043,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Singed_MM {
+            get {
+                object obj = ResourceManager.GetObject("Singed_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Sion {
             get {
                 object obj = ResourceManager.GetObject("Sion", resourceCulture);
@@ -8223,9 +9073,29 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Sion_MM {
+            get {
+                object obj = ResourceManager.GetObject("Sion_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Sivir {
             get {
                 object obj = ResourceManager.GetObject("Sivir", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Sivir_MM {
+            get {
+                object obj = ResourceManager.GetObject("Sivir_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -8286,6 +9156,16 @@ namespace SAwareness.Properties {
         internal static byte[] Skarner {
             get {
                 object obj = ResourceManager.GetObject("Skarner", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Skarner_MM {
+            get {
+                object obj = ResourceManager.GetObject("Skarner_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -8366,6 +9246,16 @@ namespace SAwareness.Properties {
         internal static byte[] Sona {
             get {
                 object obj = ResourceManager.GetObject("Sona", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Sona_MM {
+            get {
+                object obj = ResourceManager.GetObject("Sona_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -8483,6 +9373,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Soraka_MM {
+            get {
+                object obj = ResourceManager.GetObject("Soraka_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Soraka_Passive {
             get {
                 object obj = ResourceManager.GetObject("Soraka_Passive", resourceCulture);
@@ -8566,6 +9466,26 @@ namespace SAwareness.Properties {
         internal static byte[] SpellTint {
             get {
                 object obj = ResourceManager.GetObject("SpellTint", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] SpellTintGreen {
+            get {
+                object obj = ResourceManager.GetObject("SpellTintGreen", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] SpellTintRed {
+            get {
+                object obj = ResourceManager.GetObject("SpellTintRed", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -8753,6 +9673,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Swain_MM {
+            get {
+                object obj = ResourceManager.GetObject("Swain_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] SwainCarrionRenewal {
             get {
                 object obj = ResourceManager.GetObject("SwainCarrionRenewal", resourceCulture);
@@ -8816,6 +9746,16 @@ namespace SAwareness.Properties {
         internal static byte[] Syndra {
             get {
                 object obj = ResourceManager.GetObject("Syndra", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Syndra_MM {
+            get {
+                object obj = ResourceManager.GetObject("Syndra_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -8893,6 +9833,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Talon_MM {
+            get {
+                object obj = ResourceManager.GetObject("Talon_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] TalonCutthroat {
             get {
                 object obj = ResourceManager.GetObject("TalonCutthroat", resourceCulture);
@@ -8963,6 +9913,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Taric_MM {
+            get {
+                object obj = ResourceManager.GetObject("Taric_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] TaricHammerSmash {
             get {
                 object obj = ResourceManager.GetObject("TaricHammerSmash", resourceCulture);
@@ -8993,6 +9953,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Teemo_MM {
+            get {
+                object obj = ResourceManager.GetObject("Teemo_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Terrify {
             get {
                 object obj = ResourceManager.GetObject("Terrify", resourceCulture);
@@ -9006,6 +9976,16 @@ namespace SAwareness.Properties {
         internal static byte[] Thresh {
             get {
                 object obj = ResourceManager.GetObject("Thresh", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Thresh_MM {
+            get {
+                object obj = ResourceManager.GetObject("Thresh_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -9133,6 +10113,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Tristana_MM {
+            get {
+                object obj = ResourceManager.GetObject("Tristana_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] TriumphantRoar {
             get {
                 object obj = ResourceManager.GetObject("TriumphantRoar", resourceCulture);
@@ -9146,6 +10136,16 @@ namespace SAwareness.Properties {
         internal static byte[] Trundle {
             get {
                 object obj = ResourceManager.GetObject("Trundle", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Trundle_MM {
+            get {
+                object obj = ResourceManager.GetObject("Trundle_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -9213,6 +10213,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Tryndamere_MM {
+            get {
+                object obj = ResourceManager.GetObject("Tryndamere_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Tryndamere_Passive {
             get {
                 object obj = ResourceManager.GetObject("Tryndamere_Passive", resourceCulture);
@@ -9233,9 +10243,29 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] TwistedFate_MM {
+            get {
+                object obj = ResourceManager.GetObject("TwistedFate_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Twitch {
             get {
                 object obj = ResourceManager.GetObject("Twitch", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Twitch_MM {
+            get {
+                object obj = ResourceManager.GetObject("Twitch_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -9306,6 +10336,16 @@ namespace SAwareness.Properties {
         internal static byte[] Udyr {
             get {
                 object obj = ResourceManager.GetObject("Udyr", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Udyr_MM {
+            get {
+                object obj = ResourceManager.GetObject("Udyr_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -9393,6 +10433,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Urgot_MM {
+            get {
+                object obj = ResourceManager.GetObject("Urgot_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Urgot_Passive {
             get {
                 object obj = ResourceManager.GetObject("Urgot_Passive", resourceCulture);
@@ -9453,6 +10503,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Varus_MM {
+            get {
+                object obj = ResourceManager.GetObject("Varus_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] VarusE {
             get {
                 object obj = ResourceManager.GetObject("VarusE", resourceCulture);
@@ -9506,6 +10566,16 @@ namespace SAwareness.Properties {
         internal static byte[] Vayne {
             get {
                 object obj = ResourceManager.GetObject("Vayne", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Vayne_MM {
+            get {
+                object obj = ResourceManager.GetObject("Vayne_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -9583,6 +10653,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Veigar_MM {
+            get {
+                object obj = ResourceManager.GetObject("Veigar_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] VeigarBalefulStrike {
             get {
                 object obj = ResourceManager.GetObject("VeigarBalefulStrike", resourceCulture);
@@ -9626,6 +10706,16 @@ namespace SAwareness.Properties {
         internal static byte[] Velkoz {
             get {
                 object obj = ResourceManager.GetObject("Velkoz", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Velkoz_MM {
+            get {
+                object obj = ResourceManager.GetObject("Velkoz_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -9693,6 +10783,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Vi_MM {
+            get {
+                object obj = ResourceManager.GetObject("Vi_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] ViE {
             get {
                 object obj = ResourceManager.GetObject("ViE", resourceCulture);
@@ -9706,6 +10806,16 @@ namespace SAwareness.Properties {
         internal static byte[] Viktor {
             get {
                 object obj = ResourceManager.GetObject("Viktor", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Viktor_MM {
+            get {
+                object obj = ResourceManager.GetObject("Viktor_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -9833,6 +10943,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Vladimir_MM {
+            get {
+                object obj = ResourceManager.GetObject("Vladimir_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] VladimirHemoplague {
             get {
                 object obj = ResourceManager.GetObject("VladimirHemoplague", resourceCulture);
@@ -9886,6 +11006,16 @@ namespace SAwareness.Properties {
         internal static byte[] Volibear {
             get {
                 object obj = ResourceManager.GetObject("Volibear", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Volibear_MM {
+            get {
+                object obj = ResourceManager.GetObject("Volibear_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -9993,6 +11123,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Warwick_MM {
+            get {
+                object obj = ResourceManager.GetObject("Warwick_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] WildCards {
             get {
                 object obj = ResourceManager.GetObject("WildCards", resourceCulture);
@@ -10073,6 +11213,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Xerath_MM {
+            get {
+                object obj = ResourceManager.GetObject("Xerath_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Xerath_Passive1 {
             get {
                 object obj = ResourceManager.GetObject("Xerath_Passive1", resourceCulture);
@@ -10133,6 +11283,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] XinZhao_MM {
+            get {
+                object obj = ResourceManager.GetObject("XinZhao_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] XinZhao_TirelessWarrior {
             get {
                 object obj = ResourceManager.GetObject("XinZhao_TirelessWarrior", resourceCulture);
@@ -10146,6 +11306,16 @@ namespace SAwareness.Properties {
         internal static byte[] Yasuo {
             get {
                 object obj = ResourceManager.GetObject("Yasuo", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Yasuo_MM {
+            get {
+                object obj = ResourceManager.GetObject("Yasuo_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -10223,6 +11393,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Yorick_MM {
+            get {
+                object obj = ResourceManager.GetObject("Yorick_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] YorickDecayed {
             get {
                 object obj = ResourceManager.GetObject("YorickDecayed", resourceCulture);
@@ -10276,6 +11456,16 @@ namespace SAwareness.Properties {
         internal static byte[] Zac {
             get {
                 object obj = ResourceManager.GetObject("Zac", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Zac_MM {
+            get {
+                object obj = ResourceManager.GetObject("Zac_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -10343,6 +11533,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Zed_MM {
+            get {
+                object obj = ResourceManager.GetObject("Zed_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] ZedPBAOEDummy {
             get {
                 object obj = ResourceManager.GetObject("ZedPBAOEDummy", resourceCulture);
@@ -10386,6 +11586,16 @@ namespace SAwareness.Properties {
         internal static byte[] Ziggs {
             get {
                 object obj = ResourceManager.GetObject("Ziggs", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Ziggs_MM {
+            get {
+                object obj = ResourceManager.GetObject("Ziggs_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -10453,9 +11663,29 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] Zilean_MM {
+            get {
+                object obj = ResourceManager.GetObject("Zilean_MM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Zyra {
             get {
                 object obj = ResourceManager.GetObject("Zyra", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] Zyra_MM {
+            get {
+                object obj = ResourceManager.GetObject("Zyra_MM", resourceCulture);
                 return ((byte[])(obj));
             }
         }

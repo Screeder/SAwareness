@@ -378,11 +378,15 @@ namespace SAwareness
                             new StringList(new[] {"Side", "Unit", "Both"}))));
                 tempSettings.MenuItems.Add(
                     tempSettings.Menu.AddItem(
+                        new MenuItem("SAwarenessUITrackerEnemyTrackerSideDisplayMode", "Side Display").SetValue(
+                            new StringList(new[] { "Default", "Simple", "League" }))));
+                tempSettings.MenuItems.Add(
+                    tempSettings.Menu.AddItem(
                         new MenuItem("SAwarenessUITrackerEnemyTrackerHeadMode", "Head Mode").SetValue(
                             new StringList(new[] {"Small", "Big"}))));
                 tempSettings.MenuItems.Add(
                     tempSettings.Menu.AddItem(
-                        new MenuItem("SAwarenessUITrackerEnemyTrackerHeadDisplayMode", "Head Display Mode").SetValue(
+                        new MenuItem("SAwarenessUITrackerEnemyTrackerHeadDisplayMode", "Head Display").SetValue(
                             new StringList(new[] {"Default", "Simple"}))));
                 tempSettings.MenuItems.Add(
                     tempSettings.Menu.AddItem(
@@ -403,11 +407,15 @@ namespace SAwareness
                             new StringList(new[] {"Side", "Unit", "Both"}))));
                 tempSettings.MenuItems.Add(
                     tempSettings.Menu.AddItem(
+                        new MenuItem("SAwarenessUITrackerAllyTrackerSideDisplayMode", "Side Display").SetValue(
+                            new StringList(new[] { "Default", "Simple", "League" }))));
+                tempSettings.MenuItems.Add(
+                    tempSettings.Menu.AddItem(
                         new MenuItem("SAwarenessUITrackerAllyTrackerHeadMode", "Over Head Mode").SetValue(
                             new StringList(new[] {"Small", "Big"}))));
                 tempSettings.MenuItems.Add(
                     tempSettings.Menu.AddItem(
-                        new MenuItem("SAwarenessUITrackerAllyTrackerHeadDisplayMode", "Over Head Display Mode").SetValue
+                        new MenuItem("SAwarenessUITrackerAllyTrackerHeadDisplayMode", "Over Head Display").SetValue
                             (new StringList(new[] {"Default", "Simple"}))));
                 tempSettings.MenuItems.Add(
                     tempSettings.Menu.AddItem(
@@ -458,6 +466,9 @@ namespace SAwareness
                 Menu.VisionDetector.Menu =
                     Menu.Detector.Menu.AddSubMenu(new LeagueSharp.Common.Menu("VisionDetector",
                         "SAwarenessVisionDetector"));
+                Menu.VisionDetector.MenuItems.Add(
+                    Menu.VisionDetector.Menu.AddItem(
+                        new MenuItem("SAwarenessVisionDetectorDrawRange", "Draw Range").SetValue(false)));
                 Menu.VisionDetector.MenuItems.Add(
                     Menu.VisionDetector.Menu.AddItem(
                         new MenuItem("SAwarenessVisionDetectorActive", "Active").SetValue(false)));
