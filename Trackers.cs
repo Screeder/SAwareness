@@ -150,7 +150,7 @@ namespace SAwareness
             {
                 if(!sender.IsValid)
                     return;
-                if (sender is Obj_AI_Base && ObjectManager.Player.Team == sender.Team)
+                if (sender is Obj_AI_Base && ObjectManager.Player.Team != sender.Team)
                 {   
                     foreach (Object obj in Objects)
                     {
@@ -163,7 +163,7 @@ namespace SAwareness
                     }
                 }
                 
-                if (sender is Obj_SpellLineMissile && ObjectManager.Player.Team == ((Obj_SpellMissile)sender).SpellCaster.Team)
+                if (sender is Obj_SpellLineMissile && ObjectManager.Player.Team != ((Obj_SpellMissile)sender).SpellCaster.Team)
                 {
                     if (((Obj_SpellMissile)sender).SData.Name.Contains("itemplacementmissile"))
                     {
