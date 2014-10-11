@@ -1882,6 +1882,8 @@ namespace SAwareness
 
             UpdateCds(_enemies);
             UpdateCds(_allies);
+            CalculateSizes(true);
+            CalculateSizes(false);
         }
 
         private float CalcHpBar(Obj_AI_Hero hero)
@@ -2274,8 +2276,6 @@ namespace SAwareness
 
         private void DrawSideBar(Dictionary<Obj_AI_Hero, ChampInfos> heroes, float percentScale, StringList modeSideDisplayChoice)
         {
-            CalculateSizes(true);
-            CalculateSizes(false);
             if (modeSideDisplayChoice.SelectedIndex == 0)
             {
                 DrawSideBarDefault(heroes, percentScale);
@@ -2783,9 +2783,7 @@ namespace SAwareness
         }
 
         private void DrawOverHead(Dictionary<Obj_AI_Hero, ChampInfos> heroes, float percentScale, StringList modeHeadChoice, StringList modeHeadDisplayChoice)
-        {
-            CalculateSizes(true);
-            CalculateSizes(false);
+        {           
             if (modeHeadDisplayChoice.SelectedIndex == 0)
             {
                 DrawOverHeadDefault(heroes, percentScale, modeHeadChoice);
@@ -2882,7 +2880,7 @@ namespace SAwareness
                 if (_s == null || _s.IsDisposed)
                 {
                     return;
-                }
+                }                
                 if (mode.SelectedIndex == 0 || mode.SelectedIndex == 2)
                 {
                     DrawSideBar(heroes, percentScale, modeSideDisplayChoice);                    
@@ -3206,9 +3204,18 @@ namespace SAwareness
     {
         private readonly Render.Text _textF = new Render.Text("", 0, 0, 24, SharpDX.Color.Goldenrod);
         private bool _drawActive = true;
+        Dictionary<Obj_AI_Hero, Combo> _enemies = new Dictionary<Obj_AI_Hero, Combo>();
 
         public Killable()
         {
+            foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+            {
+                if (enemy.IsEnemy)
+                {
+                    _enemies.Add(enemy, CalculateKillable(enemy));
+                }
+            }
+            Game.OnGameUpdate += Game_OnGameUpdate;
             Drawing.OnEndScene += Drawing_OnEndScene;
             Drawing.OnPreReset += Drawing_OnPreReset;
             Drawing.OnPostReset += Drawing_OnPostReset;
@@ -3228,16 +3235,11 @@ namespace SAwareness
 
         private Dictionary<Obj_AI_Hero, Combo> CalculateKillable()
         {
-            var enemies = new Dictionary<Obj_AI_Hero, Combo>();
-
-            foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+            foreach (var enemy in _enemies.ToArray())
             {
-                if (enemy.IsEnemy)
-                {
-                    enemies.Add(enemy, CalculateKillable(enemy));
-                }
+                _enemies[enemy.Key] = (CalculateKillable(enemy.Key));
             }
-            return enemies;
+            return _enemies;
         }
 
         private Combo CalculateKillable(Obj_AI_Hero enemy)
@@ -3318,6 +3320,11 @@ namespace SAwareness
             return new Combo();
         }
 
+        void Game_OnGameUpdate(EventArgs args)
+        {
+            CalculateKillable();
+        }
+
         private void Drawing_OnPostReset(EventArgs args)
         {
             _textF.OnPostReset();
@@ -3336,7 +3343,7 @@ namespace SAwareness
                 return;
 
             int index = 0;
-            foreach (var enemy in CalculateKillable())
+            foreach (var enemy in _enemies)
             {
                 if (enemy.Value.Killable && enemy.Key.IsVisible && !enemy.Key.IsDead)
                 {

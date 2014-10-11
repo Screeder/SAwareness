@@ -139,6 +139,7 @@ namespace SAwareness
             UseSlowItems();
             UseShieldItems();
             UseMikaelsCrucible();
+            UseZhonyaWooglet();
         }
 
         private void UseSelfCleanseItems()
@@ -661,29 +662,29 @@ namespace SAwareness
                 if (Utility.Map.GetMap()._MapType == Utility.Map.MapType.CrystalScar)
                     twinshadows = new Items.Item(3290, 1000);
                 if (bilgewater.IsReady() &&
-                    Menu.ActivatorOffensive.GetMenuItem("SAwarenessActivatorOffensiveApBilgewaterCutlass")
+                    Menu.ActivatorOffensiveAp.GetMenuItem("SAwarenessActivatorOffensiveApBilgewaterCutlass")
                         .GetValue<bool>())
                 {
                     bilgewater.Cast(target);
                 }
                 if (hextech.IsReady() &&
-                    Menu.ActivatorOffensive.GetMenuItem("SAwarenessActivatorOffensiveApHextechGunblade")
+                    Menu.ActivatorOffensiveAp.GetMenuItem("SAwarenessActivatorOffensiveApHextechGunblade")
                         .GetValue<bool>())
                 {
                     hextech.Cast(target);
                 }
                 if (blackfire.IsReady() &&
-                    Menu.ActivatorOffensive.GetMenuItem("SAwarenessActivatorOffensiveApBlackfireTorch").GetValue<bool>())
+                    Menu.ActivatorOffensiveAp.GetMenuItem("SAwarenessActivatorOffensiveApBlackfireTorch").GetValue<bool>())
                 {
                     blackfire.Cast(target);
                 }
                 if (dfg.IsReady() &&
-                    Menu.ActivatorOffensive.GetMenuItem("SAwarenessActivatorOffensiveApDFG").GetValue<bool>())
+                    Menu.ActivatorOffensiveAp.GetMenuItem("SAwarenessActivatorOffensiveApDFG").GetValue<bool>())
                 {
                     dfg.Cast(target);
                 }
                 if (twinshadows.IsReady() &&
-                    Menu.ActivatorOffensive.GetMenuItem("SAwarenessActivatorOffensiveApTwinShadows").GetValue<bool>())
+                    Menu.ActivatorOffensiveAp.GetMenuItem("SAwarenessActivatorOffensiveApTwinShadows").GetValue<bool>())
                 {
                     twinshadows.Cast(target);
                 }
@@ -907,6 +908,21 @@ namespace SAwareness
                                 gPacketT.Send();
                             }
                         }
+                        foreach (var damage in Damages)
+                        {
+                            if (damage.Key.NetworkId != ObjectManager.Player.NetworkId)
+                                return;
+
+                            if (CalcMaxDamage(damage.Key) > damage.Key.Health)
+                            {
+                                SpellSlot spellSlot = GetPacketSlot(sumHeal);
+                                if (spellSlot != SpellSlot.Unknown)
+                                {
+                                    GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
+                                    gPacketT.Send();
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -920,6 +936,21 @@ namespace SAwareness
                 {
                     GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                     gPacketT.Send();
+                }
+            }
+            foreach (var damage in Damages)
+            {
+                if (damage.Key.NetworkId != ObjectManager.Player.NetworkId)
+                    return;
+
+                if (CalcMaxDamage(damage.Key) > damage.Key.Health)
+                {
+                    SpellSlot spellSlot = GetPacketSlot(sumHeal);
+                    if (spellSlot != SpellSlot.Unknown)
+                    {
+                        GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
+                        gPacketT.Send();
+                    }
                 }
             }
         }
@@ -940,6 +971,21 @@ namespace SAwareness
                 {
                     GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                     gPacketT.Send();
+                }
+            }
+            foreach (var damage in Damages)
+            {
+                if (damage.Key.NetworkId != ObjectManager.Player.NetworkId)
+                    return;
+
+                if (CalcMaxDamage(damage.Key) > damage.Key.Health)
+                {
+                    SpellSlot spellSlot = GetPacketSlot(sumBarrier);
+                    if (spellSlot != SpellSlot.Unknown)
+                    {
+                        GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
+                        gPacketT.Send();
+                    }
                 }
             }
         }
@@ -1130,6 +1176,38 @@ namespace SAwareness
                 return true;
             }
             return false;
+        }
+
+        private void UseZhonyaWooglet()
+        {
+            if (!Menu.ActivatorDefensiveWoogletZhonya.GetActive())
+                return;
+
+            Items.Item item = null;
+
+            if (Menu.ActivatorDefensiveWoogletZhonya.GetMenuItem(
+                    "SAwarenessActivatorDefensiveWoogletZhonyaWooglet").GetValue<bool>())
+                item = new Items.Item(3090, 0);
+            if (Menu.ActivatorDefensiveWoogletZhonya.GetMenuItem(
+                    "SAwarenessActivatorDefensiveWoogletZhonyaZhonya").GetValue<bool>())
+                item = new Items.Item(3157, 0);
+
+            if(item == null)
+                return;
+
+            foreach (var damage in Damages)
+            {
+                if(damage.Key.NetworkId != ObjectManager.Player.NetworkId)
+                    return;
+
+                if (CalcMaxDamage(damage.Key) > damage.Key.Health)
+                {
+                    if (item.IsReady())
+                    {
+                        item.Cast();
+                    }
+                }
+            }
         }
 
         private static void OnDetectSkillshot(Skillshot skillshot)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -39,6 +40,8 @@ namespace SAwareness
 
         private void Drawing_OnDraw(EventArgs args)
         {
+            if (!IsActive())
+                return;
             foreach (Obj_AI_Minion minion in ObjectManager.Get<Obj_AI_Minion>())
             {
                 int smiteDamage = GetSmiteDamage();

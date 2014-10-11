@@ -823,10 +823,10 @@ namespace SAwareness
                             "SAwarenessActivatorDefensiveWoogletZhonya"));
                 Menu.ActivatorDefensiveWoogletZhonya.MenuItems.Add(
                     Menu.ActivatorDefensiveWoogletZhonya.Menu.AddItem(
-                        new MenuItem("SAwarenessActivatorDefensiveWoogletWooglet", "Wooglet").SetValue(false)));
+                        new MenuItem("SAwarenessActivatorDefensiveWoogletZhonyaWooglet", "Wooglet").SetValue(false)));
                 Menu.ActivatorDefensiveWoogletZhonya.MenuItems.Add(
                     Menu.ActivatorDefensiveWoogletZhonya.Menu.AddItem(
-                        new MenuItem("SAwarenessActivatorDefensiveWoogletZhonya", "Zhonya").SetValue(false)));
+                        new MenuItem("SAwarenessActivatorDefensiveWoogletZhonyaZhonya", "Zhonya").SetValue(false)));
                 Menu.ActivatorDefensiveWoogletZhonya.MenuItems.Add(
                     Menu.ActivatorDefensiveWoogletZhonya.Menu.AddItem(
                         new MenuItem("SAwarenessActivatorDefensiveWoogletZhonyaActive", "Active").SetValue(false)));
