@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -43,7 +44,8 @@ namespace SAwareness
                 byte packetId = reader.ReadByte(); //PacketId
                 if (packetId != Packet.S2C.Recall.Header) //OLD 215
                     return;
-                Packet.S2C.Recall.Struct recall = Packet.S2C.Recall.Decoded(args.PacketData);
+                Log.LogPacket(args.PacketData);
+                Packet.S2C.Recall.Struct recall = RecallDecode(args.PacketData);//Packet.S2C.Recall.Decoded(args.PacketData);
                 HandleRecall(recall);
             }
             catch (Exception ex)
@@ -185,6 +187,79 @@ namespace SAwareness
                     }
                 }
             }
+        }
+
+        //By Lexxes
+        public static Dictionary<int, int> RecallT = new Dictionary<int, int>();
+
+        public static Packet.S2C.Recall.Struct RecallDecode(byte[] data)
+        {
+            var reader = new BinaryReader(new MemoryStream(data));
+            var recall = new Packet.S2C.Recall.Struct();
+
+            reader.ReadByte(); //PacketId
+            reader.ReadInt32();
+            recall.UnitNetworkId = reader.ReadInt32();
+            reader.ReadBytes(66);
+
+            recall.Status = Packet.S2C.Recall.RecallStatus.Unknown;
+
+            var teleport = false;
+
+            if (BitConverter.ToString(reader.ReadBytes(6)) != "00-00-00-00-00-00")
+            {
+                if (BitConverter.ToString(reader.ReadBytes(3)) != "00-00-00")
+                {
+                    recall.Status = Packet.S2C.Recall.RecallStatus.TeleportStart;
+                    teleport = true;
+                }
+                else
+                    recall.Status = Packet.S2C.Recall.RecallStatus.RecallStarted;
+            }
+
+            reader.Close();
+
+            var champ = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(recall.UnitNetworkId);
+
+            if (champ == null)
+                return recall;
+            if (teleport)
+                recall.Duration = 3500;
+            else
+            //use masteries to detect recall duration, because spelldata is not initialized yet when enemy has not been seen
+            {
+                recall.Duration = Utility.Map.GetMap()._MapType == Utility.Map.MapType.CrystalScar ? 4500 : 8000;
+
+                if (champ.Masteries.Any(x => x.Page == MasteryPage.Utility && x.Id == 65 && x.Points == 1))
+                    recall.Duration -= Utility.Map.GetMap()._MapType == Utility.Map.MapType.CrystalScar ? 500 : 1000;
+                //phasewalker mastery
+            }
+
+            var time = Environment.TickCount - Game.Ping;
+
+            if (!RecallT.ContainsKey(recall.UnitNetworkId))
+                RecallT.Add(recall.UnitNetworkId, time);
+            //will result in status RecallStarted, which would be wrong if the assembly was to be loaded while somebody recalls
+            else
+            {
+                if (RecallT[recall.UnitNetworkId] == 0)
+                    RecallT[recall.UnitNetworkId] = time;
+                else
+                {
+                    if (time - RecallT[recall.UnitNetworkId] > recall.Duration - 175)
+                        recall.Status = teleport
+                            ? Packet.S2C.Recall.RecallStatus.TeleportEnd
+                            : Packet.S2C.Recall.RecallStatus.RecallFinished;
+                    else
+                        recall.Status = teleport
+                            ? Packet.S2C.Recall.RecallStatus.TeleportAbort
+                            : Packet.S2C.Recall.RecallStatus.RecallAborted;
+
+                    RecallT[recall.UnitNetworkId] = 0; //recall aborted or finished, reset status
+                }
+            }
+
+            return recall;
         }
 
         public class RecallInfo
