@@ -302,6 +302,9 @@ namespace SAwareness
                         new MenuItem("SAwarenessTowerRangeMode", "Mode").SetValue(
                             new StringList(new[] {"Me", "Enemy", "Both"}))));
                 Menu.TowerRange.MenuItems.Add(
+                    Menu.TowerRange.Menu.AddItem(new MenuItem("SAwarenessTowerRangeRange", "Range").SetValue(new Slider(2000, 10000,
+                            0))));
+                Menu.TowerRange.MenuItems.Add(
                     Menu.TowerRange.Menu.AddItem(new MenuItem("SAwarenessTowerRangeActive", "Active").SetValue(false)));
                 Menu.SpellQRange.Menu =
                     Menu.Range.Menu.AddSubMenu(new LeagueSharp.Common.Menu("SpellQRange", "SAwarenessSpellQRange"));
@@ -819,7 +822,7 @@ namespace SAwareness
 
                 Menu.ActivatorDefensiveWoogletZhonya.Menu =
                     Menu.ActivatorDefensive.Menu.AddSubMenu(
-                        new LeagueSharp.Common.Menu("Wooglet/Zhonya | Not implemented",
+                        new LeagueSharp.Common.Menu("Wooglet/Zhonya",
                             "SAwarenessActivatorDefensiveWoogletZhonya"));
                 Menu.ActivatorDefensiveWoogletZhonya.MenuItems.Add(
                     Menu.ActivatorDefensiveWoogletZhonya.Menu.AddItem(
