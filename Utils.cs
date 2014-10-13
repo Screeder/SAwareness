@@ -38,6 +38,19 @@ namespace SAwareness
             LogWrite(text, file, prefix);
         }
 
+        private static void LogGamePacket(GamePacket result, String file = null, String prefix = null)
+        {
+            byte[] b = new byte[result.Size()];
+            long size = result.Size();
+            int cur = 0;
+            while (cur < size - 1)
+            {
+                b[cur] = result.ReadByte(cur);
+                cur++;
+            }
+            LogPacket(b, file, prefix);
+        }
+
         public static void LogPacket(byte[] data, String file = null, String prefix = null)
         {
             LogWrite(BitConverter.ToString(data), file, prefix);

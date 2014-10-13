@@ -44,7 +44,7 @@ namespace SAwareness
                 byte packetId = reader.ReadByte(); //PacketId
                 if (packetId != Packet.S2C.Recall.Header) //OLD 215
                     return;
-                Log.LogPacket(args.PacketData);
+                //Log.LogPacket(args.PacketData);
                 Packet.S2C.Recall.Struct recall = RecallDecode(args.PacketData);//Packet.S2C.Recall.Decoded(args.PacketData);
                 HandleRecall(recall);
             }

@@ -851,7 +851,7 @@ namespace SAwareness
                 SpellSlot spellSlot = GetPacketSlot(sumCleanse);
                 if (spellSlot != SpellSlot.Unknown)
                 {
-                    GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
+                    GamePacket gPacketT = FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                     gPacketT.Send();
                     _lastItemCleanseUse = Game.Time;
                 }
@@ -875,7 +875,7 @@ namespace SAwareness
                     if (spellSlot != SpellSlot.Unknown)
                     {
                         GamePacket gPacketT =
-                            Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(target.NetworkId, spellSlot));
+                            FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(target.NetworkId, spellSlot));
                         gPacketT.Send();
                     }
                 }
@@ -904,7 +904,7 @@ namespace SAwareness
                             SpellSlot spellSlot = GetPacketSlot(sumHeal);
                             if (spellSlot != SpellSlot.Unknown)
                             {
-                                GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
+                                GamePacket gPacketT = FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                                 gPacketT.Send();
                             }
                         }
@@ -918,7 +918,7 @@ namespace SAwareness
                                 SpellSlot spellSlot = GetPacketSlot(sumHeal);
                                 if (spellSlot != SpellSlot.Unknown)
                                 {
-                                    GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
+                                    GamePacket gPacketT = FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                                     gPacketT.Send();
                                 }
                             }
@@ -934,7 +934,7 @@ namespace SAwareness
                 SpellSlot spellSlot = GetPacketSlot(sumHeal);
                 if (spellSlot != SpellSlot.Unknown)
                 {
-                    GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
+                    GamePacket gPacketT = FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                     gPacketT.Send();
                 }
             }
@@ -948,7 +948,7 @@ namespace SAwareness
                     SpellSlot spellSlot = GetPacketSlot(sumHeal);
                     if (spellSlot != SpellSlot.Unknown)
                     {
-                        GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
+                        GamePacket gPacketT = FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                         gPacketT.Send();
                     }
                 }
@@ -969,7 +969,7 @@ namespace SAwareness
                 SpellSlot spellSlot = GetPacketSlot(sumBarrier);
                 if (spellSlot != SpellSlot.Unknown)
                 {
-                    GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
+                    GamePacket gPacketT = FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                     gPacketT.Send();
                 }
             }
@@ -983,7 +983,7 @@ namespace SAwareness
                     SpellSlot spellSlot = GetPacketSlot(sumBarrier);
                     if (spellSlot != SpellSlot.Unknown)
                     {
-                        GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
+                        GamePacket gPacketT = FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                         gPacketT.Send();
                     }
                 }
@@ -1020,7 +1020,7 @@ namespace SAwareness
                     if (spellSlot != SpellSlot.Unknown)
                     {
                         GamePacket gPacketT =
-                            Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(enemy.NetworkId, spellSlot));
+                            FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(enemy.NetworkId, spellSlot));
                         if (
                             Menu.ActivatorAutoSummonerSpellExhaust.GetMenuItem(
                                 "SAwarenessActivatorAutoSummonerSpellExhaustAutoCast").GetValue<KeyBind>().Active &&
@@ -1104,7 +1104,7 @@ namespace SAwareness
                     {
                         if (sender.ServerPosition.Distance(ObjectManager.Player.ServerPosition) <= 750)
                         {
-                            Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(sender.NetworkId, spellSlot)).Send();
+                            FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(sender.NetworkId, spellSlot)).Send();
                         }
                     }
 
@@ -1115,7 +1115,7 @@ namespace SAwareness
                         Utility.DelayAction.Add(2500, () =>
                         {
                             if (sender.ServerPosition.Distance(ObjectManager.Player.ServerPosition) <= 750)
-                                Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(sender.NetworkId, spellSlot)).Send();
+                                FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(sender.NetworkId, spellSlot)).Send();
                         });
                     }
 
@@ -1125,7 +1125,7 @@ namespace SAwareness
                         Utility.DelayAction.Add(500, () =>
                         {
                             if (sender.ServerPosition.Distance(ObjectManager.Player.ServerPosition) <= 750)
-                                Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(sender.NetworkId, spellSlot)).Send();
+                                FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(sender.NetworkId, spellSlot)).Send();
                         });
                     }
                 }
@@ -1667,5 +1667,77 @@ namespace SAwareness
                        (hero.ServerPosition.Distance(sender.ServerPosition)/1000);
             }
         }
+
+        public class FixedSummonerCast
+        {
+            public static GamePacket Encoded(Packet.C2S.Cast.Struct packetStruct)
+            {
+                var result = new GamePacket(Packet.C2S.Cast.Header);
+                result.WriteInteger(packetStruct.SourceNetworkId);
+                result.WriteByte(GetSpellByte(packetStruct.Slot));
+                result.WriteByte(GetFixedByte(packetStruct.Slot));
+                result.WriteFloat(packetStruct.FromX);
+                result.WriteFloat(packetStruct.FromY);
+                result.WriteFloat(packetStruct.ToX);
+                result.WriteFloat(packetStruct.ToY);
+                result.WriteInteger(packetStruct.TargetNetworkId);
+                return result;
+            }
+
+            private static byte GetFixedByte(SpellSlot spell)
+            {
+                switch (spell)
+                {
+                    case (SpellSlot)64:
+                        return 0x00;
+                    case (SpellSlot)65:
+                        return 0x01;
+                    default:
+                        return (byte)spell;
+                }
+            }
+
+            private static byte GetSpellByte(SpellSlot spell)
+            {
+                switch (spell)
+                {
+                    case SpellSlot.Q:
+                        return 0xE8;
+                    case SpellSlot.W:
+                        return 0xE8;
+                    case SpellSlot.E:
+                        return 0xE8;
+                    case SpellSlot.R:
+                        return 0xE8;
+                    case SpellSlot.Item1:
+                        return 0;
+                    case SpellSlot.Item2:
+                        return 0;
+                    case SpellSlot.Item3:
+                        return 0;
+                    case SpellSlot.Item4:
+                        return 0;
+                    case SpellSlot.Item5:
+                        return 0;
+                    case SpellSlot.Item6:
+                        return 0;
+                    case SpellSlot.Trinket:
+                        return 0;
+                    case SpellSlot.Recall:
+                        return 0;
+                    case (SpellSlot)64:
+                        return 0xEF;
+                    case (SpellSlot)65:
+                        return 0xEF;
+                    case SpellSlot.Unknown:
+                        return 0;
+                    default:
+                        return 0;
+                }
+            }
+        }
+
+        
+
     }
 }
