@@ -235,6 +235,7 @@ namespace SAwareness
                 Menu.MenuItemSettings tempSettings;
                 var menu = new LeagueSharp.Common.Menu("SAwareness", "SAwareness", true);
 
+                //Not crashing
                 Menu.Timers.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Timers", "SAwarenessTimers"));
                 Menu.Timers.MenuItems.Add(
                     Menu.Timers.Menu.AddItem(
@@ -276,6 +277,7 @@ namespace SAwareness
                 Menu.Timers.MenuItems.Add(
                     Menu.Timers.Menu.AddItem(new MenuItem("SAwarenessTimersActive", "Active").SetValue(false)));
 
+                //Not crashing
                 Menu.Range.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Ranges", "SAwarenessRanges"));
                 Menu.ExperienceRange.Menu =
                     Menu.Range.Menu.AddSubMenu(new LeagueSharp.Common.Menu("ExperienceRange",
@@ -283,7 +285,7 @@ namespace SAwareness
                 Menu.ExperienceRange.MenuItems.Add(
                     Menu.ExperienceRange.Menu.AddItem(
                         new MenuItem("SAwarenessExperienceRangeMode", "Mode").SetValue(
-                            new StringList(new[] {"Me", "Enemy", "Both"}))));
+                            new StringList(new[] { "Me", "Enemy", "Both" }))));
                 Menu.ExperienceRange.MenuItems.Add(
                     Menu.ExperienceRange.Menu.AddItem(
                         new MenuItem("SAwarenessExperienceRangeActive", "Active").SetValue(false)));
@@ -292,7 +294,7 @@ namespace SAwareness
                 Menu.AttackRange.MenuItems.Add(
                     Menu.AttackRange.Menu.AddItem(
                         new MenuItem("SAwarenessAttackRangeMode", "Mode").SetValue(
-                            new StringList(new[] {"Me", "Enemy", "Both"}))));
+                            new StringList(new[] { "Me", "Enemy", "Both" }))));
                 Menu.AttackRange.MenuItems.Add(
                     Menu.AttackRange.Menu.AddItem(new MenuItem("SAwarenessAttackRangeActive", "Active").SetValue(false)));
                 Menu.TowerRange.Menu =
@@ -300,7 +302,7 @@ namespace SAwareness
                 Menu.TowerRange.MenuItems.Add(
                     Menu.TowerRange.Menu.AddItem(
                         new MenuItem("SAwarenessTowerRangeMode", "Mode").SetValue(
-                            new StringList(new[] {"Me", "Enemy", "Both"}))));
+                            new StringList(new[] { "Me", "Enemy", "Both" }))));
                 Menu.TowerRange.MenuItems.Add(
                     Menu.TowerRange.Menu.AddItem(new MenuItem("SAwarenessTowerRangeRange", "Range").SetValue(new Slider(2000, 10000,
                             0))));
@@ -311,7 +313,7 @@ namespace SAwareness
                 Menu.SpellQRange.MenuItems.Add(
                     Menu.SpellQRange.Menu.AddItem(
                         new MenuItem("SAwarenessSpellQRangeMode", "Mode").SetValue(
-                            new StringList(new[] {"Me", "Enemy", "Both"}))));
+                            new StringList(new[] { "Me", "Enemy", "Both" }))));
                 Menu.SpellQRange.MenuItems.Add(
                     Menu.SpellQRange.Menu.AddItem(new MenuItem("SAwarenessSpellQRangeActive", "Active").SetValue(false)));
                 Menu.SpellWRange.Menu =
@@ -319,7 +321,7 @@ namespace SAwareness
                 Menu.SpellWRange.MenuItems.Add(
                     Menu.SpellWRange.Menu.AddItem(
                         new MenuItem("SAwarenessSpellWRangeMode", "Mode").SetValue(
-                            new StringList(new[] {"Me", "Enemy", "Both"}))));
+                            new StringList(new[] { "Me", "Enemy", "Both" }))));
                 Menu.SpellWRange.MenuItems.Add(
                     Menu.SpellWRange.Menu.AddItem(new MenuItem("SAwarenessSpellWRangeActive", "Active").SetValue(false)));
                 Menu.SpellERange.Menu =
@@ -327,7 +329,7 @@ namespace SAwareness
                 Menu.SpellERange.MenuItems.Add(
                     Menu.SpellERange.Menu.AddItem(
                         new MenuItem("SAwarenessSpellERangeMode", "Mode").SetValue(
-                            new StringList(new[] {"Me", "Enemy", "Both"}))));
+                            new StringList(new[] { "Me", "Enemy", "Both" }))));
                 Menu.SpellERange.MenuItems.Add(
                     Menu.SpellERange.Menu.AddItem(new MenuItem("SAwarenessSpellERangeActive", "Active").SetValue(false)));
                 Menu.SpellRRange.Menu =
@@ -335,12 +337,13 @@ namespace SAwareness
                 Menu.SpellRRange.MenuItems.Add(
                     Menu.SpellRRange.Menu.AddItem(
                         new MenuItem("SAwarenessSpellRRangeMode", "Mode").SetValue(
-                            new StringList(new[] {"Me", "Enemy", "Both"}))));
+                            new StringList(new[] { "Me", "Enemy", "Both" }))));
                 Menu.SpellRRange.MenuItems.Add(
                     Menu.SpellRRange.Menu.AddItem(new MenuItem("SAwarenessSpellRRangeActive", "Active").SetValue(false)));
                 Menu.Range.MenuItems.Add(
                     Menu.Range.Menu.AddItem(new MenuItem("SAwarenessRangesActive", "Active").SetValue(false)));
 
+                //Not crashing
                 Menu.Tracker.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Tracker", "SAwarenessTracker"));
                 Menu.WaypointTracker.Menu =
                     Menu.Tracker.Menu.AddSubMenu(new LeagueSharp.Common.Menu("WaypointTracker",
@@ -378,7 +381,7 @@ namespace SAwareness
                 tempSettings.MenuItems.Add(
                     tempSettings.Menu.AddItem(
                         new MenuItem("SAwarenessUITrackerEnemyTrackerMode", "Mode").SetValue(
-                            new StringList(new[] {"Side", "Unit", "Both"}))));
+                            new StringList(new[] { "Side", "Unit", "Both" }))));
                 tempSettings.MenuItems.Add(
                     tempSettings.Menu.AddItem(
                         new MenuItem("SAwarenessUITrackerEnemyTrackerSideDisplayMode", "Side Display").SetValue(
@@ -386,11 +389,11 @@ namespace SAwareness
                 tempSettings.MenuItems.Add(
                     tempSettings.Menu.AddItem(
                         new MenuItem("SAwarenessUITrackerEnemyTrackerHeadMode", "Head Mode").SetValue(
-                            new StringList(new[] {"Small", "Big"}))));
+                            new StringList(new[] { "Small", "Big" }))));
                 tempSettings.MenuItems.Add(
                     tempSettings.Menu.AddItem(
                         new MenuItem("SAwarenessUITrackerEnemyTrackerHeadDisplayMode", "Head Display").SetValue(
-                            new StringList(new[] {"Default", "Simple"}))));
+                            new StringList(new[] { "Default", "Simple" }))));
                 tempSettings.MenuItems.Add(
                     tempSettings.Menu.AddItem(
                         new MenuItem("SAwarenessUITrackerEnemyTrackerActive", "Active").SetValue(false)));
@@ -407,7 +410,7 @@ namespace SAwareness
                 tempSettings.MenuItems.Add(
                     tempSettings.Menu.AddItem(
                         new MenuItem("SAwarenessUITrackerAllyTrackerMode", "Mode").SetValue(
-                            new StringList(new[] {"Side", "Unit", "Both"}))));
+                            new StringList(new[] { "Side", "Unit", "Both" }))));
                 tempSettings.MenuItems.Add(
                     tempSettings.Menu.AddItem(
                         new MenuItem("SAwarenessUITrackerAllyTrackerSideDisplayMode", "Side Display").SetValue(
@@ -415,11 +418,11 @@ namespace SAwareness
                 tempSettings.MenuItems.Add(
                     tempSettings.Menu.AddItem(
                         new MenuItem("SAwarenessUITrackerAllyTrackerHeadMode", "Over Head Mode").SetValue(
-                            new StringList(new[] {"Small", "Big"}))));
+                            new StringList(new[] { "Small", "Big" }))));
                 tempSettings.MenuItems.Add(
                     tempSettings.Menu.AddItem(
                         new MenuItem("SAwarenessUITrackerAllyTrackerHeadDisplayMode", "Over Head Display").SetValue
-                            (new StringList(new[] {"Default", "Simple"}))));
+                            (new StringList(new[] { "Default", "Simple" }))));
                 tempSettings.MenuItems.Add(
                     tempSettings.Menu.AddItem(
                         new MenuItem("SAwarenessUITrackerAllyTrackerActive", "Active").SetValue(false)));
@@ -446,13 +449,13 @@ namespace SAwareness
                 Menu.SsCaller.MenuItems.Add(
                     Menu.SsCaller.Menu.AddItem(
                         new MenuItem("SAwarenessSSCallerPingType", "Ping Type").SetValue(
-                            new StringList(new[] {"Normal", "Danger", "EnemyMissing", "OnMyWay", "Fallback", "AssistMe"}))));
+                            new StringList(new[] { "Normal", "Danger", "EnemyMissing", "OnMyWay", "Fallback", "AssistMe" }))));
                 Menu.SsCaller.MenuItems.Add(
                     Menu.SsCaller.Menu.AddItem(new MenuItem("SAwarenessSSCallerLocalPing", "Local Ping").SetValue(false)));
                 Menu.SsCaller.MenuItems.Add(
                     Menu.SsCaller.Menu.AddItem(
                         new MenuItem("SAwarenessSSCallerChatChoice", "Chat Choice").SetValue(
-                            new StringList(new[] {"None", "Local", "Server"}))));
+                            new StringList(new[] { "None", "Local", "Server" }))));
                 Menu.SsCaller.MenuItems.Add(
                     Menu.SsCaller.Menu.AddItem(
                         new MenuItem("SAwarenessSSCallerDisableTime", "Disable Time").SetValue(new Slider(20, 180, 1))));
@@ -465,6 +468,7 @@ namespace SAwareness
                 Menu.Tracker.MenuItems.Add(
                     Menu.Tracker.Menu.AddItem(new MenuItem("SAwarenessTrackerActive", "Active").SetValue(false)));
 
+                //Not crashing
                 Menu.Detector.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Detector", "SAwarenessDetector"));
                 Menu.VisionDetector.Menu =
                     Menu.Detector.Menu.AddSubMenu(new LeagueSharp.Common.Menu("VisionDetector",
@@ -487,17 +491,18 @@ namespace SAwareness
                 Menu.RecallDetector.MenuItems.Add(
                     Menu.RecallDetector.Menu.AddItem(
                         new MenuItem("SAwarenessRecallDetectorChatChoice", "Chat Choice").SetValue(
-                            new StringList(new[] {"None", "Local", "Server"}))));
+                            new StringList(new[] { "None", "Local", "Server" }))));
                 Menu.RecallDetector.MenuItems.Add(
                     Menu.RecallDetector.Menu.AddItem(
                         new MenuItem("SAwarenessRecallDetectorMode", "Mode").SetValue(
-                            new StringList(new[] {"Chat", "CDTracker", "Both"}))));
+                            new StringList(new[] { "Chat", "CDTracker", "Both" }))));
                 Menu.RecallDetector.MenuItems.Add(
                     Menu.RecallDetector.Menu.AddItem(
                         new MenuItem("SAwarenessRecallDetectorActive", "Active").SetValue(false)));
                 Menu.Detector.MenuItems.Add(
                     Menu.Detector.Menu.AddItem(new MenuItem("SAwarenessDetectorActive", "Active").SetValue(false)));
 
+                //Not crashing
                 Menu.Ganks.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Ganks", "SAwarenessGanks"));
                 Menu.GankTracker.Menu =
                     Menu.Ganks.Menu.AddSubMenu(new LeagueSharp.Common.Menu("GankTracker", "SAwarenessGankTracker"));
@@ -511,14 +516,14 @@ namespace SAwareness
                 Menu.GankDetector.MenuItems.Add(
                     Menu.GankDetector.Menu.AddItem(
                         new MenuItem("SAwarenessGankDetectorPingType", "Ping Type").SetValue(
-                            new StringList(new[] {"Normal", "Danger", "EnemyMissing", "OnMyWay", "Fallback", "AssistMe"}))));
+                            new StringList(new[] { "Normal", "Danger", "EnemyMissing", "OnMyWay", "Fallback", "AssistMe" }))));
                 Menu.GankDetector.MenuItems.Add(
                     Menu.GankDetector.Menu.AddItem(
                         new MenuItem("SAwarenessGankDetectorLocalPing", "Local Ping").SetValue(true)));
                 Menu.GankDetector.MenuItems.Add(
                     Menu.GankDetector.Menu.AddItem(
                         new MenuItem("SAwarenessGankDetectorChatChoice", "Chat Choice").SetValue(
-                            new StringList(new[] {"None", "Local", "Server"}))));
+                            new StringList(new[] { "None", "Local", "Server" }))));
                 Menu.GankDetector.MenuItems.Add(
                     Menu.GankDetector.Menu.AddItem(
                         new MenuItem("SAwarenessGankDetectorTrackRange", "Track Range").SetValue(new Slider(1, 10000, 1))));
@@ -542,7 +547,7 @@ namespace SAwareness
                         new MenuItem("SAwarenessInhibitorHealthActive", "Active").SetValue(false)));
                 Menu.Health.MenuItems.Add(
                     Menu.Health.Menu.AddItem(
-                        new MenuItem("SAwarenessHealthMode", "Mode").SetValue(new StringList(new[] {"Percent", "Normal"}))));
+                        new MenuItem("SAwarenessHealthMode", "Mode").SetValue(new StringList(new[] { "Percent", "Normal" }))));
                 Menu.Health.MenuItems.Add(
                     Menu.Health.Menu.AddItem(new MenuItem("SAwarenessHealthActive", "Active").SetValue(false)));
 
@@ -568,7 +573,7 @@ namespace SAwareness
                 Menu.InvisibleRevealer.MenuItems.Add(
                     Menu.InvisibleRevealer.Menu.AddItem(
                         new MenuItem("SAwarenessInvisibleRevealerMode", "Mode").SetValue(
-                            new StringList(new[] {"Manual", "Automatic"}))));
+                            new StringList(new[] { "Manual", "Automatic" }))));
                 Menu.InvisibleRevealer.MenuItems.Add(
                     Menu.InvisibleRevealer.Menu.AddItem(
                         new MenuItem("SAwarenessInvisibleRevealerKey", "Key").SetValue(new KeyBind(32, KeyBindType.Press))));
@@ -1017,7 +1022,7 @@ namespace SAwareness
                 Menu.AutoLevler.MenuItems.Add(
                     Menu.AutoLevler.Menu.AddItem(
                         new MenuItem("SAwarenessAutoLevlerMode", "Mode").SetValue(
-                            new StringList(new[] {"Sequence", "Priority"}))));
+                            new StringList(new[] { "Sequence", "Priority" }))));
                 Menu.AutoLevler.MenuItems.Add(
                     Menu.AutoLevler.Menu.AddItem(new MenuItem("SAwarenessAutoLevlerActive", "Active").SetValue(false)));
                 Menu.MoveToMouse.Menu =
@@ -1032,7 +1037,7 @@ namespace SAwareness
                 Menu.SurrenderVote.MenuItems.Add(
                     Menu.SurrenderVote.Menu.AddItem(
                         new MenuItem("SAwarenessSurrenderVoteChatChoice", "Chat Choice").SetValue(
-                            new StringList(new[] {"None", "Local", "Server"}))));
+                            new StringList(new[] { "None", "Local", "Server" }))));
                 Menu.SurrenderVote.MenuItems.Add(
                     Menu.SurrenderVote.Menu.AddItem(
                         new MenuItem("SAwarenessSurrenderVoteActive", "Active").SetValue(false)));
@@ -1056,7 +1061,7 @@ namespace SAwareness
                 Menu.DisconnectDetector.MenuItems.Add(
                     Menu.DisconnectDetector.Menu.AddItem(
                         new MenuItem("SAwarenessDisconnectDetectorChatChoice", "Chat Choice").SetValue(
-                            new StringList(new[] {"None", "Local", "Server"}))));
+                            new StringList(new[] { "None", "Local", "Server" }))));
                 Menu.DisconnectDetector.MenuItems.Add(
                     Menu.DisconnectDetector.Menu.AddItem(
                         new MenuItem("SAwarenessDisconnectDetectorActive", "Active").SetValue(false)));
@@ -1111,7 +1116,7 @@ namespace SAwareness
                 var item = (Menu.MenuItemSettings) p.GetValue(null);
                 if (item.GetActive() == false && item.Item != null)
                 {
-                    item.Item = null;
+                    //item.Item = null;
                 }
                 else if (item.GetActive() && item.Item == null && !item.ForceDisable && item.Type != null)
                 {
