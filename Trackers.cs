@@ -37,7 +37,7 @@ namespace SAwareness
                 return;
             foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>())
             {
-                if (hero.IsEnemy && !hero.IsDead)
+                if (hero.IsEnemy && !hero.IsDead && hero.IsVisible)
                 {
                     if (hero.ChampionName.Contains("Shaco") ||
                         hero.ChampionName.Contains("LeBlanc") ||
@@ -47,6 +47,7 @@ namespace SAwareness
                         Utility.DrawCircle(hero.ServerPosition, 100, Color.Red);
                         Utility.DrawCircle(hero.ServerPosition, 110, Color.Red);
                     }
+                    
                 }
             }
         }
