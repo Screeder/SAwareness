@@ -118,7 +118,6 @@ namespace SAwareness
                     foreach (Obj_AI_Turret turret in ObjectManager.Get<Obj_AI_Turret>())
                     {
                         if (turret.IsVisible && !turret.IsDead && !turret.IsEnemy && turret.IsValid &&
-                            Common.IsOnScreen(turret.ServerPosition) &&
                             ObjectManager.Player.ServerPosition.Distance(turret.ServerPosition) < Menu.TowerRange.GetMenuItem("SAwarenessTowerRangeRange").GetValue<Slider>().Value)
                         {
                             Utility.DrawCircle(turret.Position, 900f, Color.LawnGreen);
@@ -129,7 +128,6 @@ namespace SAwareness
                     foreach (Obj_AI_Turret turret in ObjectManager.Get<Obj_AI_Turret>())
                     {
                         if (turret.IsVisible && !turret.IsDead && turret.IsEnemy && turret.IsValid &&
-                            Common.IsOnScreen(turret.ServerPosition) &&
                             ObjectManager.Player.ServerPosition.Distance(turret.ServerPosition) < Menu.TowerRange.GetMenuItem("SAwarenessTowerRangeRange").GetValue<Slider>().Value)
                         {
                             Utility.DrawCircle(turret.Position, 900f, Color.DarkRed);
@@ -140,7 +138,6 @@ namespace SAwareness
                     foreach (Obj_AI_Turret turret in ObjectManager.Get<Obj_AI_Turret>())
                     {
                         if (turret.IsVisible && !turret.IsDead && !turret.IsEnemy && turret.IsValid &&
-                            Common.IsOnScreen(turret.ServerPosition) &&
                             ObjectManager.Player.ServerPosition.Distance(turret.ServerPosition) < Menu.TowerRange.GetMenuItem("SAwarenessTowerRangeRange").GetValue<Slider>().Value)
                         {
                             Utility.DrawCircle(turret.Position, 900f, Color.LawnGreen);
@@ -149,7 +146,6 @@ namespace SAwareness
                     foreach (Obj_AI_Turret turret in ObjectManager.Get<Obj_AI_Turret>())
                     {
                         if (turret.IsVisible && !turret.IsDead && turret.IsEnemy && turret.IsValid &&
-                            Common.IsOnScreen(turret.ServerPosition) &&
                             ObjectManager.Player.ServerPosition.Distance(turret.ServerPosition) < Menu.TowerRange.GetMenuItem("SAwarenessTowerRangeRange").GetValue<Slider>().Value)
                         {
                             Utility.DrawCircle(turret.Position, 900f, Color.DarkRed);

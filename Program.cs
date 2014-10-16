@@ -28,6 +28,7 @@ namespace SAwareness
         public static MenuItemSettings RelictTimer = new MenuItemSettings(); //Works
         public static MenuItemSettings HealthTimer = new MenuItemSettings(); //Works
         public static MenuItemSettings InhibitorTimer = new MenuItemSettings(); //Works
+        public static MenuItemSettings SummonerTimer = new MenuItemSettings(); //Works
         public static MenuItemSettings Health = new MenuItemSettings(typeof (Health));
         public static MenuItemSettings TowerHealth = new MenuItemSettings(); //Missing HPBarPos
         public static MenuItemSettings InhibitorHealth = new MenuItemSettings(); //Works
@@ -274,9 +275,13 @@ namespace SAwareness
                     Menu.Timers.Menu.AddSubMenu(new LeagueSharp.Common.Menu("ImmuneTimer", "SAwarenessImmuneTimer"));
                 Menu.ImmuneTimer.MenuItems.Add(
                     Menu.ImmuneTimer.Menu.AddItem(new MenuItem("SAwarenessImmuneTimersActive", "Active").SetValue(false)));
+                Menu.SummonerTimer.Menu =
+                    Menu.Timers.Menu.AddSubMenu(new LeagueSharp.Common.Menu("SummonerTimer", "SAwarenessSummonerTimer"));
+                Menu.SummonerTimer.MenuItems.Add(
+                    Menu.SummonerTimer.Menu.AddItem(new MenuItem("SAwarenessSummonerTimersActive", "Active").SetValue(false)));                
                 Menu.Timers.MenuItems.Add(
                     Menu.Timers.Menu.AddItem(new MenuItem("SAwarenessTimersActive", "Active").SetValue(false)));
-
+                
                 //Not crashing
                 Menu.Range.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Ranges", "SAwarenessRanges"));
                 Menu.ExperienceRange.Menu =

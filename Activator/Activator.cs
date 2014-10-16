@@ -35,9 +35,9 @@ namespace SAwareness
             //if (Debug)
             //    Drawing.OnDraw += Drawing_OnDraw;
 
-            ////Evade
-            //SkillshotDetector.OnDetectSkillshot += OnDetectSkillshot;
-            //SkillshotDetector.OnDeleteMissile += OnDeleteMissile;
+            //Evade
+            SkillshotDetector.OnDetectSkillshot += OnDetectSkillshot;
+            SkillshotDetector.OnDeleteMissile += OnDeleteMissile;
         }
 
         ~Activator()
@@ -1521,47 +1521,47 @@ namespace SAwareness
 
         private void GetIncomingDamage_OnGameUpdate()
         {
-            //DetectedSkillshots.RemoveAll(skillshot => !skillshot.IsActive());
-            //var tempDamages =
-            //    new Dictionary<Obj_AI_Hero, List<IncomingDamage>>(Damages);
-            //foreach (var damage in Damages)
-            //{
-            //    Obj_AI_Hero hero = damage.Key;
+            DetectedSkillshots.RemoveAll(skillshot => !skillshot.IsActive());
+            var tempDamages =
+                new Dictionary<Obj_AI_Hero, List<IncomingDamage>>(Damages);
+            foreach (var damage in Damages)
+            {
+                Obj_AI_Hero hero = damage.Key;
 
-            //    if(hero == null || !hero.IsValid)
-            //        continue;
+                if (hero == null || !hero.IsValid)
+                    continue;
 
-            //    foreach (Skillshot skillshot in DetectedSkillshots)
-            //    {
-            //        if (skillshot.IsAboutToHit(50, hero))
-            //        {
-            //            try
-            //            {
-            //                double spellDamage = skillshot.Unit.GetSpellDamage((Obj_AI_Base)hero,
-            //                    skillshot.SpellData.SpellName);
-            //                bool exists = false;
-            //                foreach (IncomingDamage incomingDamage in tempDamages[hero])
-            //                {
-            //                    if (incomingDamage.SpellName.Contains(skillshot.SpellData.SpellName))
-            //                    {
-            //                        exists = true;
-            //                        break;
-            //                    }
-            //                }
-            //                if (spellDamage != 0.0f && !exists)
-            //                    continue;
-            //                tempDamages[hero].Add(new IncomingDamage(skillshot.SpellData.SpellName, skillshot.Unit,
-            //                    skillshot.Start.To3D(), skillshot.End.To3D(), spellDamage, Game.Time + 0.05, hero));
-            //            }
-            //            catch (InvalidOperationException)
-            //            {
-            //                //Cannot find spell
-            //            }
-            //        }
-            //    }
-            //    tempDamages = BuffDamage(hero, tempDamages);
-            //}
-            //Damages = tempDamages;
+                foreach (Skillshot skillshot in DetectedSkillshots)
+                {
+                    if (skillshot.IsAboutToHit(50, hero))
+                    {
+                        try
+                        {
+                            double spellDamage = skillshot.Unit.GetSpellDamage((Obj_AI_Base)hero,
+                                skillshot.SpellData.SpellName);
+                            bool exists = false;
+                            foreach (IncomingDamage incomingDamage in tempDamages[hero])
+                            {
+                                if (incomingDamage.SpellName.Contains(skillshot.SpellData.SpellName))
+                                {
+                                    exists = true;
+                                    break;
+                                }
+                            }
+                            if (spellDamage != 0.0f && !exists)
+                                continue;
+                            tempDamages[hero].Add(new IncomingDamage(skillshot.SpellData.SpellName, skillshot.Unit,
+                                skillshot.Start.To3D(), skillshot.End.To3D(), spellDamage, Game.Time + 0.05, hero));
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            //Cannot find spell
+                        }
+                    }
+                }
+                tempDamages = BuffDamage(hero, tempDamages);
+            }
+            Damages = tempDamages;
         }
 
         private static Dictionary<Obj_AI_Hero, List<IncomingDamage>> BuffDamage(Obj_AI_Hero hero,

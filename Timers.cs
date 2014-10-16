@@ -124,6 +124,7 @@ namespace SAwareness
         private static readonly List<JungleMob> JungleMobs = new List<JungleMob>();
         private static readonly List<JungleCamp> JungleCamps = new List<JungleCamp>();
         private static readonly List<Obj_AI_Minion> JungleMobList = new List<Obj_AI_Minion>();
+        private static readonly Dictionary<Obj_AI_Hero, Summoner> Summoners = new Dictionary<Obj_AI_Hero, Summoner>();
 
         private readonly Font _font;
         private bool _drawActive = true;
@@ -178,34 +179,40 @@ namespace SAwareness
             return "";
         }
 
-        private bool PingAndCall(String text, Vector3 pos)
+        private bool PingAndCall(String text, Vector3 pos, bool call = true, bool ping = true)
         {
-            for (int i = 0; i < Menu.Timers.GetMenuItem("SAwarenessTimersPingTimes").GetValue<Slider>().Value; i++)
+            if(ping)
             {
-                GamePacket gPacketT;
-                if (Menu.Timers.GetMenuItem("SAwarenessTimersLocalPing").GetValue<bool>())
+                for (int i = 0; i < Menu.Timers.GetMenuItem("SAwarenessTimersPingTimes").GetValue<Slider>().Value; i++)
                 {
-                    gPacketT =
-                        Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0,
-                            Packet.PingType.NormalSound));
-                    gPacketT.Process();
-                }
-                else if (!Menu.Timers.GetMenuItem("SAwarenessTimersLocalPing").GetValue<bool>() &&
-                         Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive")
-                             .GetValue<bool>())
-                {
-                    gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos.X, pos.Y));
-                    gPacketT.Send();
+                    GamePacket gPacketT;
+                    if (Menu.Timers.GetMenuItem("SAwarenessTimersLocalPing").GetValue<bool>())
+                    {
+                        gPacketT =
+                            Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0,
+                                Packet.PingType.NormalSound));
+                        gPacketT.Process();
+                    }
+                    else if (!Menu.Timers.GetMenuItem("SAwarenessTimersLocalPing").GetValue<bool>() &&
+                             Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive")
+                                 .GetValue<bool>())
+                    {
+                        gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos.X, pos.Y));
+                        gPacketT.Send();
+                    }
                 }
             }
-            if (Menu.Timers.GetMenuItem("SAwarenessTimersChatChoice").GetValue<StringList>().SelectedIndex == 1)
+            if(call)
             {
-                Game.PrintChat(text);
-            }
-            else if (Menu.Timers.GetMenuItem("SAwarenessTimersChatChoice").GetValue<StringList>().SelectedIndex == 2 &&
-                     Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
-            {
-                Game.Say(text);
+                if (Menu.Timers.GetMenuItem("SAwarenessTimersChatChoice").GetValue<StringList>().SelectedIndex == 1)
+                {
+                    Game.PrintChat(text);
+                }
+                else if (Menu.Timers.GetMenuItem("SAwarenessTimersChatChoice").GetValue<StringList>().SelectedIndex == 2 &&
+                         Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
+                {
+                    Game.Say(text);
+                }
             }
             return true;
         }
@@ -334,6 +341,102 @@ namespace SAwareness
                             health.Called = true;
                             PingAndCall("Heal respawns in " + time + " seconds!", health.Position);
                         }
+                    }
+                }
+            }
+
+            if (Menu.SummonerTimer.GetActive())
+            {
+                foreach (var hero in Summoners)
+                {
+                    Obj_AI_Hero enemy = hero.Key;
+                    for (int i = 0; i < enemy.SummonerSpellbook.Spells.Count(); i++)
+                    {
+                        SpellDataInst spellData = enemy.SummonerSpellbook.Spells[i];
+                        if (hero.Value.Called[i])
+                        {
+                            if (Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value < spellData.CooldownExpires - Game.Time)
+                            {
+                                hero.Value.Called[i] = false;
+                            }
+                        }
+                        if (!hero.Value.Called[i] && Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value > spellData.CooldownExpires - Game.Time)
+                        {
+                            hero.Value.Called[i] = true;
+                            String text = enemy.ChampionName + " ";
+                            switch (spellData.Name.ToLower())
+                            {
+                                case "summonerbarrier":
+                                    text = text + "Barrier";
+                                    break;
+
+                                case "summonerboost":
+                                    text = text + "Cleanse";
+                                    break;
+
+                                case "summonerclairvoyance":
+                                    text = text + "Clairvoyance";
+                                    break;
+
+                                case "summonerdot":
+                                    text = text + "Ignite";
+                                    break;
+
+                                case "summonerexhaust":
+                                    text = text + "Exhaust";
+                                    break;
+
+                                case "summonerflash":
+                                    text = text + "Flash";
+                                    break;
+
+                                case "summonerhaste":
+                                    text = text + "Ghost";
+                                    break;
+
+                                case "summonerheal":
+                                    text = text + "Heal";
+                                    break;
+
+                                case "summonermana":
+                                    text = text + "Clarity";
+                                    break;
+
+                                case "summonerodingarrison":
+                                    text = text + "Garrison";
+                                    break;
+
+                                case "summonerrevive":
+                                    text = text + "Revive";
+                                    break;
+
+                                case "summonersmite":
+                                    text = text + "Smite";
+                                    break;
+
+                                case "summonerteleport":
+                                    text = text + "Teleport";
+                                    break;
+                            }
+                            Game.PrintChat(spellData.Name);
+                            text = text + " " + Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value + " sec";
+                            PingAndCall(text, new Vector3(), true, false);
+                        }   
+                    }
+                }
+                foreach (JungleCamp jungleCamp in JungleCamps)
+                {
+                    if (jungleCamp.NextRespawnTime <= 0 || jungleCamp.MapType != GMap._MapType)
+                        continue;
+                    Vector2 sPos = Drawing.WorldToMinimap(jungleCamp.MinimapPosition);
+                    DirectXDrawer.DrawText(_font, (jungleCamp.NextRespawnTime - (int)Game.Time).ToString(),
+                        (int)sPos[0], (int)sPos[1], SharpDX.Color.White);
+                    int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
+                    if (!jungleCamp.Called && jungleCamp.NextRespawnTime - (int)Game.Time <= time &&
+                        jungleCamp.NextRespawnTime - (int)Game.Time >= time - 1)
+                    {
+                        jungleCamp.Called = true;
+                        PingAndCall(jungleCamp.Name + " respawns in " + time + " seconds!", jungleCamp.MinimapPosition);
                     }
                 }
             }
@@ -640,6 +743,14 @@ namespace SAwareness
                 }
             }
 
+            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+            {
+                if (hero.IsEnemy)
+                {
+                    Summoners.Add(hero, new Summoner());
+                }
+            }
+
             //foreach (JungleCamp jungleCamp in JungleCamps) //GAME.TIME BUGGED
             //{
             //    if (Game.Time > 30) //TODO: Reduce when game.time got fixed
@@ -883,6 +994,12 @@ namespace SAwareness
             catch (EndOfStreamException)
             {
             }
+        }
+
+        public class Summoner
+        {
+            public bool[] Called = new bool[] {true,true};
+            public int LastTimeCalled;
         }
 
         public class Altar
