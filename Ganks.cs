@@ -69,28 +69,32 @@ namespace SAwareness
                 double dmg = 0;
                 try
                 {
-                    dmg += player.GetSpellDamage(enemy.Key, SpellSlot.Q);
+                    if (player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready)
+                        dmg += player.GetSpellDamage(enemy.Key, SpellSlot.Q);
                 }
                 catch (InvalidOperationException)
                 {
                 }
                 try
                 {
-                    dmg += player.GetSpellDamage(enemy.Key, SpellSlot.W);
+                    if (player.Spellbook.CanUseSpell(SpellSlot.W) == SpellState.Ready)
+                        dmg += player.GetSpellDamage(enemy.Key, SpellSlot.W);
                 }
                 catch (InvalidOperationException)
                 {
                 }
                 try
                 {
-                    dmg += player.GetSpellDamage(enemy.Key, SpellSlot.E);
+                    if (player.Spellbook.CanUseSpell(SpellSlot.E) == SpellState.Ready)
+                        dmg += player.GetSpellDamage(enemy.Key, SpellSlot.E);
                 }
                 catch (InvalidOperationException)
                 {
                 }
                 try
                 {
-                    dmg += player.GetSpellDamage(enemy.Key, SpellSlot.R);
+                    if (player.Spellbook.CanUseSpell(SpellSlot.R) == SpellState.Ready)
+                        dmg += player.GetSpellDamage(enemy.Key, SpellSlot.R);
                 }
                 catch (InvalidOperationException)
                 {
@@ -115,6 +119,9 @@ namespace SAwareness
             {
                 if (enemy.Key.IsDead || ObjectManager.Player.IsDead)
                     continue;
+                if(Vector3.Distance(ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition) >
+                    Menu.GankTracker.GetMenuItem("SAwarenessGankTrackerTrackRange").GetValue<Slider>().Value)
+                    continue;
                 Vector2 ePos = Drawing.WorldToScreen(enemy.Key.ServerPosition);
                 _line.Begin();
                 if (enemy.Value > enemy.Key.Health)
@@ -126,7 +133,7 @@ namespace SAwareness
                     //DirectXDrawer.DrawLine(ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition,
                     //    System.Drawing.Color.OrangeRed);
                 }
-                if (enemy.Value < enemy.Key.Health)
+                if (enemy.Value < enemy.Key.Health && !Menu.GankTracker.GetMenuItem("SAwarenessGankTrackerKillable").GetValue<bool>())
                 {
                     //Drawing.DrawLine(myPos.X, myPos.Y, ePos.X, ePos.Y, 2.0f, System.Drawing.Color.GreenYellow);
                     //DirectXDrawer.DrawLine(line, ObjectManager.Player.ServerPosition, enemy.Key.ServerPosition,

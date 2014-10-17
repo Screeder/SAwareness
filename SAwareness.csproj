@@ -85,6 +85,8 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -114,6 +116,11 @@
     <Compile Include="Ranges.cs" />
     <Compile Include="SafeMovement.cs" />
     <Compile Include="SkinChanger.cs" />
+    <Compile Include="Spectator\Blowfish.cs" />
+    <Compile Include="Spectator\Packet.cs" />
+    <Compile Include="Spectator\SpectatorDecoder.cs" />
+    <Compile Include="Spectator\SpectatorDownloader.cs" />
+    <Compile Include="Spectator\SpecUtils.cs" />
     <Compile Include="SurrenderVote.cs" />
     <Compile Include="Timers.cs" />
     <Compile Include="Trackers.cs" />

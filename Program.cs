@@ -512,6 +512,11 @@ namespace SAwareness
                 Menu.GankTracker.Menu =
                     Menu.Ganks.Menu.AddSubMenu(new LeagueSharp.Common.Menu("GankTracker", "SAwarenessGankTracker"));
                 Menu.GankTracker.MenuItems.Add(
+                    Menu.GankTracker.Menu.AddItem(
+                        new MenuItem("SAwarenessGankTrackerTrackRange", "Track Range").SetValue(new Slider(1, 20000, 1))));
+                Menu.GankTracker.MenuItems.Add(
+                   Menu.GankTracker.Menu.AddItem(new MenuItem("SAwarenessGankTrackerKillable", "Only Killable").SetValue(false)));
+                Menu.GankTracker.MenuItems.Add(
                     Menu.GankTracker.Menu.AddItem(new MenuItem("SAwarenessGankTrackerActive", "Active").SetValue(false)));
                 Menu.GankDetector.Menu =
                     Menu.Ganks.Menu.AddSubMenu(new LeagueSharp.Common.Menu("GankDetector", "SAwarenessGankDetector"));

@@ -7,10 +7,12 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using LeagueSharp;
 using LeagueSharp.Common;
+using SAwareness.Spectator;
 using SharpDX;
 using SharpDX.Direct3D9;
 using Color = System.Drawing.Color;
 using Font = SharpDX.Direct3D9.Font;
+using Packet = LeagueSharp.Common.Packet;
 
 namespace SAwareness
 {
@@ -1010,8 +1012,12 @@ namespace SAwareness
                 }
                 Thread.Sleep(10);
             }
+            new System.Threading.Thread(() =>
+            {
+                SpecUtils.GetInfo();
+            }).Start();
             Game.OnGameUpdate += Game_OnGameUpdate;
-
+            //Game.OnGameProcessPacket += Game_OnGameProcessPacket; TODO:Enable for Gold View currently bugged packet id never received
             Drawing.OnPreReset += Drawing_OnPreReset;
             Drawing.OnPostReset += Drawing_OnPostReset;
             Drawing.OnEndScene += Drawing_OnEndScene;
@@ -1182,6 +1188,7 @@ namespace SAwareness
         ~UiTracker()
         {
             Game.OnGameUpdate -= Game_OnGameUpdate;
+            Game.OnGameProcessPacket -= Game_OnGameProcessPacket;
             Drawing.OnPreReset -= Drawing_OnPreReset;
             Drawing.OnPostReset -= Drawing_OnPostReset;
             Drawing.OnEndScene -= Drawing_OnEndScene;
@@ -1873,6 +1880,52 @@ namespace SAwareness
             {
                 Console.WriteLine("UITrackerUpdate: " + ex);
                 throw;
+            }
+        }
+
+        void Game_OnGameProcessPacket(GamePacketEventArgs args)
+        {
+            if (args.PacketData[0] == 0xC1 || args.PacketData[0] == 0xC2)
+            {
+                new System.Threading.Thread(() =>
+                {
+                    GetGold();
+                }).Start();
+            }
+        }
+
+        private void GetGold()
+        {
+            List<Spectator.Packet> packets = new List<Spectator.Packet>();
+            if(SpecUtils.GameId == null)
+                return;
+            List<Byte[]> fullGameBytes = SpectatorDownloader.DownloadGameFiles(SpecUtils.GameId, SpecUtils.PlatformId, SpecUtils.Key, "Chunk");
+            foreach (Byte[] chunkBytes in fullGameBytes)
+            {
+                packets.AddRange(SpectatorDecoder.DecodeBytes(chunkBytes));
+            }
+            foreach (Spectator.Packet p in packets)
+            {
+                if (p.header == (Byte)Spectator.HeaderId.PlayerStats)
+                {
+                    Spectator.PlayerStats playerStats = new Spectator.PlayerStats(p);
+                    if (playerStats.GoldEarned < 0)
+                        continue;
+                    foreach (var ally in _allies)
+                    {
+                        if (ally.Key.NetworkId == playerStats.NetId)
+                        {
+                            ally.Value.SGui.Gold = playerStats.GoldEarned;
+                        }
+                    }
+                    foreach (var enemy in _enemies)
+                    {
+                        if (enemy.Key.NetworkId == playerStats.NetId)
+                        {
+                            enemy.Value.SGui.Gold = playerStats.GoldEarned;
+                        }
+                    }
+                }
             }
         }
 
@@ -2912,6 +2965,16 @@ namespace SAwareness
                 DrawInterface(true);
             if (Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerAllyTracker").GetActive())
                 DrawInterface(false);
+            float teamGold = 0;
+            foreach (var enemy in _enemies)
+            {
+                teamGold += enemy.Value.SGui.Gold;
+            }
+            Drawing.DrawText(Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker")
+                            .GetMenuItem("SAwarenessUITrackerEnemyTrackerXPos")
+                            .GetValue<Slider>().Value, Menu.UiTracker.GetMenuSettings("SAwarenessUITrackerEnemyTracker")
+                            .GetMenuItem("SAwarenessUITrackerEnemyTrackerYPos")
+                            .GetValue<Slider>().Value, Color.Green, teamGold.ToString());
         }
 
         private class ChampInfos
@@ -2942,6 +3005,7 @@ namespace SAwareness
                 public String SHealth;
                 public String SMana;
                 public int VisibleTime;
+                public float Gold;
 
                 public class SpriteInfos
                 {
@@ -3224,6 +3288,7 @@ namespace SAwareness
 
         ~Killable()
         {
+            Game.OnGameUpdate -= Game_OnGameUpdate;
             Drawing.OnEndScene -= Drawing_OnEndScene;
             Drawing.OnPreReset -= Drawing_OnPreReset;
             Drawing.OnPostReset -= Drawing_OnPostReset;

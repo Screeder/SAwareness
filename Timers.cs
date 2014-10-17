@@ -13,27 +13,35 @@ namespace SAwareness
     internal class ImmuneTimer //TODO: Maybe add Packetcheck
     {
         private static readonly List<Ability> Abilities = new List<Ability>();
+        private readonly Render.Text _textF = new Render.Text("", 0, 0, 24, SharpDX.Color.Goldenrod);
+        private bool _drawActive = true;
 
         public ImmuneTimer()
         {
-            Abilities.Add(new Ability("zhonyas_ring_activate.troy", 2.5f)); //Zhonya
-            Abilities.Add(new Ability("Aatrox_Passive_Death_Activate.troy", 3f)); //Aatrox Passive
-            Abilities.Add(new Ability("LifeAura.troy", 4f)); //Zil und GA
-            Abilities.Add(new Ability("nickoftime_tar.troy", 7f)); //Zil before death
-            Abilities.Add(new Ability("eyeforaneye_self.troy", 2f)); // Kayle
-            Abilities.Add(new Ability("UndyingRage_buf.troy", 5f)); //Tryn
-            Abilities.Add(new Ability("EggTimer.troy", 6f)); //Anivia
+            Abilities.Add(new Ability("zhonyas_ring_activate", 2.5f)); //Zhonya
+            Abilities.Add(new Ability("Aatrox_Passive_Death_Activate", 3f)); //Aatrox Passive
+            Abilities.Add(new Ability("LifeAura", 4f)); //Zil und GA
+            Abilities.Add(new Ability("nickoftime_tar", 7f)); //Zil before death
+            Abilities.Add(new Ability("eyeforaneye", 2f)); // Kayle
+            Abilities.Add(new Ability("UndyingRage_buf", 5f)); //Tryn
+            Abilities.Add(new Ability("EggTimer", 6f)); //Anivia
 
             GameObject.OnCreate += Obj_AI_Base_OnCreate;
             Game.OnGameUpdate += Game_OnGameUpdate;
-            Drawing.OnDraw += Drawing_OnDraw;
+            //Drawing.OnDraw += Drawing_OnDraw;
+            Drawing.OnEndScene += Drawing_OnEndScene;
+            Drawing.OnPreReset += Drawing_OnPreReset;
+            Drawing.OnPostReset += Drawing_OnPostReset;
         }
 
         ~ImmuneTimer()
         {
             GameObject.OnCreate -= Obj_AI_Base_OnCreate;
             Game.OnGameUpdate -= Game_OnGameUpdate;
-            Drawing.OnDraw -= Drawing_OnDraw;
+            //Drawing.OnDraw -= Drawing_OnDraw;
+            Drawing.OnEndScene -= Drawing_OnEndScene;
+            Drawing.OnPreReset -= Drawing_OnPreReset;
+            Drawing.OnPostReset -= Drawing_OnPostReset;
         }
 
         public bool IsActive()
@@ -55,20 +63,31 @@ namespace SAwareness
             }
         }
 
-        private void Drawing_OnDraw(EventArgs args)
+        private void Drawing_OnEndScene(EventArgs args)
         {
-            if (!IsActive())
+            if (!IsActive() || !_drawActive)
                 return;
+
             foreach (Ability ability in Abilities)
             {
                 if (ability.Casted)
                 {
-                    Vector2 mPos = Drawing.WorldToScreen(ability.Owner.ServerPosition);
-                    float endTime = ability.TimeCasted - (int) Game.Time + ability.Delay;
-                    var m = (float) Math.Floor(endTime/60);
-                    var s = (float) Math.Ceiling(endTime%60);
+                    Vector2 hpPos = new Vector2();
+                    if(ability.Target != null && ability.Target.IsValid)
+                        hpPos = ability.Target.HPBarPosition;
+                    else if(ability.Owner != null && ability.Owner.IsValid)
+                        hpPos = ability.Owner.HPBarPosition;
+                    float endTime = ability.TimeCasted - (int)Game.Time + ability.Delay;
+                    var m = (float)Math.Floor(endTime / 60);
+                    var s = (float)Math.Ceiling(endTime % 60);
                     String ms = (s < 10 ? m + ":0" + s : m + ":" + s);
-                    Drawing.DrawText(mPos[0], mPos[1], Color.Red, ms);
+
+                    _textF.Centered = true;
+                    _textF.text = ms;
+                    _textF.X = (int)hpPos.X + 80;
+                    _textF.Y = (int)hpPos.Y;
+                    _textF.OutLined = true;
+                    _textF.OnEndScene();
                 }
             }
         }
@@ -83,17 +102,30 @@ namespace SAwareness
                 {
                     foreach (Ability ability in Abilities)
                     {
-                        if (ability.SpellName == sender.Name &&
-                            Vector3.Distance(sender.Position, hero.ServerPosition) <= 100 &&
+                        if (sender.Name.Contains(ability.SpellName) &&                            
                             /*variable*/ Vector3.Distance(sender.Position, ObjectManager.Player.ServerPosition) <= 4000)
                         {
                             ability.Owner = hero;
                             ability.Casted = true;
                             ability.TimeCasted = (int) Game.Time;
+                            if (Vector3.Distance(sender.Position, hero.ServerPosition) <= 100)
+                                ability.Target = hero;
                         }
                     }
                 }
             }
+        }
+
+        private void Drawing_OnPostReset(EventArgs args)
+        {
+            _textF.OnPostReset();
+            _drawActive = true;
+        }
+
+        private void Drawing_OnPreReset(EventArgs args)
+        {
+            _textF.OnPreReset();
+            _drawActive = false;
         }
 
         public class Ability
