@@ -66,7 +66,7 @@ namespace SAwareness
                 prefix = Prefix;
             using (var stream = new StreamWriter(file, true))
             {
-                stream.WriteLine(prefix + "@" + Environment.TickCount + ": " + text);
+                stream.WriteLine(prefix + "@" + Game.ClockTime + ": " + text);
             }
         }
     }

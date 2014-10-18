@@ -105,7 +105,7 @@ namespace SAwareness
             Drawing.OnDraw += Drawing_OnDraw;
             GameObject.OnCreate += GameObject_OnCreate;
             Game.OnGameUpdate += Game_OnGameUpdate;
-            foreach (var obj in ObjectManager.Get<Obj_AI_Base>())
+            foreach (var obj in ObjectManager.Get<GameObject>())
             {
                 GameObject_OnCreate(obj, new EventArgs());
             }
@@ -1017,7 +1017,7 @@ namespace SAwareness
                 SpecUtils.GetInfo();
             }).Start();
             Game.OnGameUpdate += Game_OnGameUpdate;
-            Game.OnGameProcessPacket += Game_OnGameProcessPacket; //TODO:Enable for Gold View currently bugged packet id never received
+            //Game.OnGameProcessPacket += Game_OnGameProcessPacket; //TODO:Enable for Gold View currently bugged packet id never received
             Drawing.OnPreReset += Drawing_OnPreReset;
             Drawing.OnPostReset += Drawing_OnPostReset;
             Drawing.OnEndScene += Drawing_OnEndScene;
