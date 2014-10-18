@@ -450,7 +450,6 @@ namespace SAwareness
                                     text = text + "Teleport";
                                     break;
                             }
-                            Game.PrintChat(spellData.Name);
                             text = text + " " + Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value + " sec";
                             PingAndCall(text, new Vector3(), true, false);
                         }   

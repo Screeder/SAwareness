@@ -1017,7 +1017,7 @@ namespace SAwareness
                 SpecUtils.GetInfo();
             }).Start();
             Game.OnGameUpdate += Game_OnGameUpdate;
-            //Game.OnGameProcessPacket += Game_OnGameProcessPacket; TODO:Enable for Gold View currently bugged packet id never received
+            Game.OnGameProcessPacket += Game_OnGameProcessPacket; //TODO:Enable for Gold View currently bugged packet id never received
             Drawing.OnPreReset += Drawing_OnPreReset;
             Drawing.OnPostReset += Drawing_OnPostReset;
             Drawing.OnEndScene += Drawing_OnEndScene;
@@ -1517,6 +1517,20 @@ namespace SAwareness
                                 hero.Value.SGui.ManaBar.SizeSideBar.Height -
                                 (int)(_healthManaBarSize.Height * percentScale) / 2);
 
+                        if (hero.Value.SGui.Item[0] == null)
+                            hero.Value.SGui.Item[0] = new ChampInfos.Gui.SpriteInfos();
+                        hero.Value.SGui.Item[0].CoordsSideBar = new Size(hero.Value.SGui.SpellR.CoordsSideBar.Width,
+                            hero.Value.SGui.SpellR.CoordsSideBar.Height + (int)(_spellSize.Height * percentScale));
+                        for (int i = 1; i < hero.Value.SGui.Item.Length; i++)
+                        {
+                            if (hero.Value.SGui.Item[i] == null)
+                                hero.Value.SGui.Item[i] = new ChampInfos.Gui.SpriteInfos();
+                            hero.Value.SGui.Item[i].CoordsSideBar =
+                                new Size(
+                                    hero.Value.SGui.Item[0].CoordsSideBar.Width + (int)(_spellSize.Width * percentScale) * i,
+                                    hero.Value.SGui.Item[0].CoordsSideBar.Height);
+                        }
+
                         hero.Value.SGui.RecallBar.SizeSideBar = new Size(hero.Value.SGui.Champ.SizeSideBar.Width,
                             hero.Value.SGui.BackBar.SizeSideBar.Height - (int)(_champSize.Height * percentScale) / 4);
                         hero.Value.SGui.RecallBar.CoordsSideBar =
@@ -1771,7 +1785,86 @@ namespace SAwareness
                         enemy.Value.SGui.SMana = ((int) enemy.Key.Mana) + "/" + ((int) enemy.Key.MaxMana);
                         if (enemy.Key.NetworkId == hero.NetworkId)
                         {
-                            //InventorySlot[] i1 = hero.InventoryItems; TODO: Add Item Cooldowns
+                            foreach (var spell in hero.Spellbook.Spells)
+                            {
+                                if (spell.Slot == SpellSlot.Item1)
+                                {
+                                    if (spell.CooldownExpires - Game.Time > 0.0f)
+                                    {
+                                        enemy.Value.SGui.Item[0].Cd = (int)(spell.CooldownExpires - Game.Time);
+                                    }
+                                    else if (spell.CooldownExpires - Game.Time <= 0.0f && enemy.Value.SGui.Item[0].Cd != 0)
+                                    {
+                                        enemy.Value.SGui.Item[0].Cd = 0;
+                                    }
+                                }
+                                else if (spell.Slot == SpellSlot.Item2)
+                                {
+                                    if (spell.CooldownExpires - Game.Time > 0.0f)
+                                    {
+                                        enemy.Value.SGui.Item[1].Cd = (int)(spell.CooldownExpires - Game.Time);
+                                    }
+                                    else if (spell.CooldownExpires - Game.Time <= 0.0f && enemy.Value.SGui.Item[1].Cd != 0)
+                                    {
+                                        enemy.Value.SGui.Item[1].Cd = 0;
+                                    }
+                                }
+                                else if (spell.Slot == SpellSlot.Item3)
+                                {
+                                    if (spell.CooldownExpires - Game.Time > 0.0f)
+                                    {
+                                        enemy.Value.SGui.Item[2].Cd = (int)(spell.CooldownExpires - Game.Time);
+                                    }
+                                    else if (spell.CooldownExpires - Game.Time <= 0.0f && enemy.Value.SGui.Item[2].Cd != 0)
+                                    {
+                                        enemy.Value.SGui.Item[2].Cd = 0;
+                                    }
+                                }
+                                else if (spell.Slot == SpellSlot.Item4)
+                                {
+                                    if (spell.CooldownExpires - Game.Time > 0.0f)
+                                    {
+                                        enemy.Value.SGui.Item[3].Cd = (int)(spell.CooldownExpires - Game.Time);
+                                    }
+                                    else if (spell.CooldownExpires - Game.Time <= 0.0f && enemy.Value.SGui.Item[3].Cd != 0)
+                                    {
+                                        enemy.Value.SGui.Item[3].Cd = 0;
+                                    }
+                                }
+                                else if (spell.Slot == SpellSlot.Item5)
+                                {
+                                    if (spell.CooldownExpires - Game.Time > 0.0f)
+                                    {
+                                        enemy.Value.SGui.Item[4].Cd = (int)(spell.CooldownExpires - Game.Time);
+                                    }
+                                    else if (spell.CooldownExpires - Game.Time <= 0.0f && enemy.Value.SGui.Item[4].Cd != 0)
+                                    {
+                                        enemy.Value.SGui.Item[4].Cd = 0;
+                                    }
+                                }
+                                else if (spell.Slot == SpellSlot.Item6)
+                                {
+                                    if (spell.CooldownExpires - Game.Time > 0.0f)
+                                    {
+                                        enemy.Value.SGui.Item[5].Cd = (int)(spell.CooldownExpires - Game.Time);
+                                    }
+                                    else if (spell.CooldownExpires - Game.Time <= 0.0f && enemy.Value.SGui.Item[5].Cd != 0)
+                                    {
+                                        enemy.Value.SGui.Item[5].Cd = 0;
+                                    }
+                                }
+                                else if (spell.Slot == SpellSlot.Trinket)
+                                {
+                                    if (spell.CooldownExpires - Game.Time > 0.0f)
+                                    {
+                                        enemy.Value.SGui.Item[6].Cd = (int)(spell.CooldownExpires - Game.Time);
+                                    }
+                                    else if (spell.CooldownExpires - Game.Time <= 0.0f && enemy.Value.SGui.Item[6].Cd != 0)
+                                    {
+                                        enemy.Value.SGui.Item[6].Cd = 0;
+                                    }
+                                }
+                            }
 
                             SpellDataInst[] s1 = hero.Spellbook.Spells;
                             if (s1[0].CooldownExpires - Game.Time > 0.0f)
@@ -1899,7 +1992,7 @@ namespace SAwareness
             List<Spectator.Packet> packets = new List<Spectator.Packet>();
             if(SpecUtils.GameId == null)
                 return;
-            List<Byte[]> fullGameBytes = SpectatorDownloader.DownloadGameFiles(SpecUtils.GameId, SpecUtils.PlatformId, SpecUtils.Key, "Chunk");
+            List<Byte[]> fullGameBytes = SpectatorDownloader.DownloadGameFiles(SpecUtils.GameId, SpecUtils.PlatformId, SpecUtils.Key, "KeyFrame");
             foreach (Byte[] chunkBytes in fullGameBytes)
             {
                 packets.AddRange(SpectatorDecoder.DecodeBytes(chunkBytes));
@@ -1909,7 +2002,7 @@ namespace SAwareness
                 if (p.header == (Byte)Spectator.HeaderId.PlayerStats)
                 {
                     Spectator.PlayerStats playerStats = new Spectator.PlayerStats(p);
-                    if (playerStats.GoldEarned < 0)
+                    if (playerStats.GoldEarned <= 0.0f)
                         continue;
                     foreach (var ally in _allies)
                     {
@@ -2205,6 +2298,18 @@ namespace SAwareness
                         hero.Value.SGui.SpellSum2.SizeSideBar,
                         new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
                 }
+                if (Menu.UiTracker.GetMenuItem("SAwarenessItemPanelActive").GetValue<bool>())
+                {
+                    foreach (ChampInfos.Gui.SpriteInfos spriteInfo in hero.Value.SGui.Item)
+                    {
+                        if (spriteInfo.Cd > 0.0f)
+                        {
+                            DirectXDrawer.DrawSprite(_s, _overlaySpellItem,
+                                spriteInfo.SizeSideBar,
+                                new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
+                        }
+                    }
+                }
                 if (Menu.RecallDetector.GetActive())
                 {
                     RecallDetector.RecallInfo info = GetRecall(hero.Key.NetworkId);
@@ -2292,6 +2397,17 @@ namespace SAwareness
                 {
                     DirectXDrawer.DrawText(_sumF, hero.Value.SGui.SpellSum2.Cd.ToString(),
                         hero.Value.SGui.SpellSum2.CoordsSideBar, SharpDX.Color.Orange);
+                }
+                if (Menu.UiTracker.GetMenuItem("SAwarenessItemPanelActive").GetValue<bool>())
+                {
+                    foreach (ChampInfos.Gui.SpriteInfos spriteInfo in hero.Value.SGui.Item)
+                    {
+                        if (spriteInfo.Cd > 0.0f)
+                        {
+                            DirectXDrawer.DrawText(_spellF, spriteInfo.Cd.ToString(),
+                                spriteInfo.CoordsSideBar, SharpDX.Color.Orange);
+                        }
+                    }
                 }
                 if (Menu.RecallDetector.GetActive())
                 {

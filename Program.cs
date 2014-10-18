@@ -74,7 +74,8 @@ namespace SAwareness
         public static MenuItemSettings DisconnectDetector = new MenuItemSettings(typeof (DisconnectDetector));
         public static MenuItemSettings AutoJump = new MenuItemSettings(typeof (AutoJump));
         public static MenuItemSettings TurnAround = new MenuItemSettings(typeof (TurnAround));
-        public static MenuItemSettings MinionBars = new MenuItemSettings(typeof(MinionBars));        
+        public static MenuItemSettings MinionBars = new MenuItemSettings(typeof(MinionBars));
+        public static MenuItemSettings MinionLocation = new MenuItemSettings(typeof(MinionLocation));
         public static MenuItemSettings Activator = new MenuItemSettings(typeof (Activator));
         public static MenuItemSettings ActivatorAutoSummonerSpell = new MenuItemSettings();
         public static MenuItemSettings ActivatorAutoSummonerSpellIgnite = new MenuItemSettings();
@@ -1085,6 +1086,10 @@ namespace SAwareness
                     Menu.MinionBars.Menu.AddItem(new MenuItem("SAwarenessMinionBarsGlowActive", "Glow Killable").SetValue(false)));
                 Menu.MinionBars.MenuItems.Add(
                     Menu.MinionBars.Menu.AddItem(new MenuItem("SAwarenessMinionBarsActive", "Active").SetValue(false)));
+                //Menu.MinionLocation.Menu =
+                //    Menu.Misc.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Minion Location", "SAwarenessMinionLocation"));
+                //Menu.MinionLocation.MenuItems.Add(
+                //    Menu.MinionLocation.Menu.AddItem(new MenuItem("SAwarenessMinionLocationActive", "Active").SetValue(false)));
 
                 Menu.GlobalSettings.Menu =
                     menu.AddSubMenu(new LeagueSharp.Common.Menu("Global Settings", "SAwarenessGlobalSettings"));
