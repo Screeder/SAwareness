@@ -67,6 +67,7 @@ namespace SAwareness
         public static MenuItemSettings AutoPot = new MenuItemSettings(typeof (AutoPot));
         public static MenuItemSettings SafeMovement = new MenuItemSettings(typeof (SafeMovement));
         public static MenuItemSettings AutoShield = new MenuItemSettings(typeof (AutoShield));
+        public static MenuItemSettings AutoShieldBlockableSpells = new MenuItemSettings();
         public static MenuItemSettings Misc = new MenuItemSettings();
         public static MenuItemSettings MoveToMouse = new MenuItemSettings(typeof (MoveToMouse));
         public static MenuItemSettings SurrenderVote = new MenuItemSettings(typeof (SurrenderVote));
@@ -958,6 +959,16 @@ namespace SAwareness
                     Menu.AutoShield.Menu.AddItem(
                         new MenuItem("SAwarenessAutoShieldBlockDamageAmount", "Block Damage").SetValue(
                             new StringList(new[] { "Medium", "High", "Extreme" }))));
+                Menu.AutoShieldBlockableSpells.Menu =
+                    Menu.AutoShield.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Blockable Spells",
+                        "SAwarenessAutoShieldBlockableSpells"));
+                foreach (var spell in AutoShield.GetBlockableSpells())
+                {
+                    Menu.AutoShieldBlockableSpells.MenuItems.Add(
+                        Menu.AutoShieldBlockableSpells.Menu.AddItem(new MenuItem("SAwarenessAutoShieldBlockableSpells" + spell, spell).SetValue(false)));
+                }
+                Menu.AutoShield.MenuItems.Add(
+                    Menu.AutoShield.Menu.AddItem(new MenuItem("SAwarenessAutoShieldAlly", "Active").SetValue(false)));
                 Menu.AutoShield.MenuItems.Add(
                     Menu.AutoShield.Menu.AddItem(new MenuItem("SAwarenessAutoShieldActive", "Active").SetValue(false)));
                 Menu.AutoPot.Menu =

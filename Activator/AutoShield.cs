@@ -8,9 +8,28 @@ namespace SAwareness
 {
     internal class AutoShield
     {
-        private readonly Shield _shield;
+        private static Shield _shield;
 
         public AutoShield()
+        {
+            if (_shield == null)
+            {
+                Init();
+            }
+            Game.OnGameUpdate += Game_OnGameUpdate;
+        }
+
+        ~AutoShield()
+        {
+            Game.OnGameUpdate -= Game_OnGameUpdate;
+        }
+
+        public bool IsActive()
+        {
+            return Menu.Activator.GetActive() && Menu.AutoShield.GetActive();
+        }
+
+        private static void Init()
         {
             switch (ObjectManager.Player.ChampionName)
             {
@@ -46,7 +65,7 @@ namespace SAwareness
                     _shield = new Shield(new Spell(SpellSlot.W, 1050, 0, 0, 0));
                     break;
 
-                    //Self
+                //Self
 
                 case "JarvanIV":
                     _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
@@ -99,17 +118,6 @@ namespace SAwareness
                 default:
                     return;
             }
-            Game.OnGameUpdate += Game_OnGameUpdate;
-        }
-
-        ~AutoShield()
-        {
-            Game.OnGameUpdate -= Game_OnGameUpdate;
-        }
-
-        public bool IsActive()
-        {
-            return Menu.Activator.GetActive() && Menu.AutoShield.GetActive();
         }
 
         private void Game_OnGameUpdate(EventArgs args)
@@ -122,6 +130,10 @@ namespace SAwareness
             foreach (var damage in Activator.Damages)
             {
                 Obj_AI_Hero hero = damage.Key;
+
+                if (!Menu.AutoShield.GetMenuItem("SAwarenessAutoShieldAlly").GetValue<bool>())
+                    if(hero.NetworkId != ObjectManager.Player.NetworkId)
+                        continue;
 
                 foreach (Activator.IncomingDamage tDamage in tempDamages[hero].ToArray())
                 {
@@ -157,7 +169,18 @@ namespace SAwareness
                             .GetValue<bool>() && IsAutoAttack(tDamage.SpellName))
                         {
                             tempDamages[hero].Remove(tDamage);
+                            continue;
                         }
+                        foreach (var blockableSpell in GetBlockableSpells())
+                        {
+                            if (Menu.AutoShieldBlockableSpells.GetMenuItem("SAwarenessAutoShieldBlockableSpells" + spell) == null ||
+                                !Menu.AutoShieldBlockableSpells.GetMenuItem("SAwarenessAutoShieldBlockableSpells" + spell)
+                                .GetValue<bool>())
+                            {
+                                tempDamages[hero].Remove(tDamage);
+                                continue;
+                            }
+                        }                        
                     }
                 }
             }
@@ -270,6 +293,41 @@ namespace SAwareness
             if (damageSpell == null || damageSpell.DamageType != damageType)
                 return false;
             return true;
+        }
+
+        public static List<String> GetBlockableSpells()
+        {
+            if (_shield == null)
+            {
+                Init();
+            }
+            List<String> enemySpells = new List<string>();
+            foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>())
+            {
+                if (enemy.IsEnemy)
+                {
+                    foreach (var spell in enemy.Spellbook.Spells)
+                    {
+                        if (_shield.OnlyMagic)
+                        {   
+                            if (IsDamageType(enemy, spell.SData.Name, Damage.DamageType.Magical))
+                            {
+                                enemySpells.Add(spell.SData.Name);
+                            }
+                        }
+                        else
+                        {
+                            double spellDamage = enemy.GetSpellDamage(ObjectManager.Player, spell.SData.Name);
+                            if (spellDamage != 0.0f)
+                            {
+                                enemySpells.Add(spell.SData.Name);
+                            }
+                        }
+                    }
+                    
+                }
+            }
+            return enemySpells;
         }
 
         private class Shield

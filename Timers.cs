@@ -70,7 +70,7 @@ namespace SAwareness
 
             foreach (Ability ability in Abilities)
             {
-                if (ability.Casted)
+                if (ability.Casted && ability.TimeCasted > 0)
                 {
                     Vector2 hpPos = new Vector2();
                     if(ability.Target != null && ability.Target.IsValid)

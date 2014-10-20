@@ -439,20 +439,21 @@ namespace SAwareness
             {
                 int mNetworkId = BitConverter.ToInt32(reader.ReadBytes(4), 0);
                 byte spellId = reader.ReadByte();
+                byte unknown = reader.ReadByte();
                 float fromX = BitConverter.ToSingle(reader.ReadBytes(4), 0);
                 float fromY = BitConverter.ToSingle(reader.ReadBytes(4), 0);
                 float toX = BitConverter.ToSingle(reader.ReadBytes(4), 0);
                 float toY = BitConverter.ToSingle(reader.ReadBytes(4), 0);
                 int tNetworkId = BitConverter.ToInt32(reader.ReadBytes(4), 0);
                 PacketSpellId nSpellId = PacketSpellId.ConvertPacketCastToId(spellId);
-                if (_latestSpellSlot == nSpellId.SSpellSlot && _latestSpellSlot != SpellSlot.Unknown)
+                if (/*_latestSpellSlot == nSpellId.SSpellSlot && */_latestSpellSlot != SpellSlot.Unknown)
                 {
                     _drawSpots = false;
                     foreach (WardSpot wardSpot in WardSpots)
                     {
                         if (!wardSpot.SafeWard &&
                             Vector3.Distance(wardSpot.Pos,
-                                new Vector3(fromX, fromY, ObjectManager.Player.ServerPosition.Z)) <= 350 &&
+                                new Vector3(fromX, fromY, ObjectManager.Player.ServerPosition.Z)) <= 250 &&
                             !_wardAlreadyCorrected)
                         {
                             args.Process = false;
@@ -463,6 +464,7 @@ namespace SAwareness
                             writer.Write((byte) 0x9A);
                             writer.Write(mNetworkId);
                             writer.Write(spellId);
+                            writer.Write(unknown);
                             writer.Write(wardSpot.Pos.X);
                             writer.Write(wardSpot.Pos.Y);
                             writer.Write(wardSpot.Pos.X);
@@ -476,7 +478,7 @@ namespace SAwareness
                         if (wardSpot.SafeWard &&
                             Vector3.Distance(wardSpot.MagneticPos,
                                 new Vector3(fromX, fromY, ObjectManager.Player.ServerPosition.Z)) <=
-                            100 &&
+                            250 &&
                             !_wardAlreadyCorrected)
                         {
                             args.Process = false;
@@ -571,6 +573,10 @@ namespace SAwareness
                                 _drawSpots = true;
                             }
                         }
+                        if (_drawSpots == false)
+                        {
+                            _latestSpellSlot = SpellSlot.Unknown;
+                        }
                     }
                 }
             }
@@ -592,7 +598,7 @@ namespace SAwareness
         {
             if (!IsActive())
                 return;
-            if (_latestWardSpot != null)
+            if (_latestWardSpot != null && _latestSpellSlot != SpellSlot.Unknown)
             {
                 if (Vector3.Distance(ObjectManager.Player.ServerPosition, _latestWardSpot.ClickPos) <= 650)
                 {
