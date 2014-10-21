@@ -171,14 +171,18 @@ namespace SAwareness
                             tempDamages[hero].Remove(tDamage);
                             continue;
                         }
-                        foreach (var blockableSpell in GetBlockableSpells())
-                        {
-                            if (Menu.AutoShieldBlockableSpells.GetMenuItem("SAwarenessAutoShieldBlockableSpells" + spell) == null ||
-                                !Menu.AutoShieldBlockableSpells.GetMenuItem("SAwarenessAutoShieldBlockableSpells" + spell)
+                        if (Menu.AutoShieldBlockableSpells.GetMenuItem("SAwarenessAutoShieldBlockableSpellsActive")
                                 .GetValue<bool>())
+                        {
+                            foreach (var blockableSpell in GetBlockableSpells())
                             {
-                                tempDamages[hero].Remove(tDamage);
-                                continue;
+                                if (Menu.AutoShieldBlockableSpells.GetMenuItem("SAwarenessAutoShieldBlockableSpells" + spell) == null ||
+                                    !Menu.AutoShieldBlockableSpells.GetMenuItem("SAwarenessAutoShieldBlockableSpells" + spell)
+                                    .GetValue<bool>())
+                                {
+                                    tempDamages[hero].Remove(tDamage);
+                                    continue;
+                                }
                             }
                         }                        
                     }
@@ -190,7 +194,8 @@ namespace SAwareness
                 //Vector2 d2 = Drawing.WorldToScreen(damage.Key.ServerPosition);
                 //Drawing.DrawText(d2.X, d2.Y, System.Drawing.Color.Aquamarine, Activator.CalcMaxDamage(damage.Key).ToString());
 
-                if (Activator.CalcMaxDamage(damage.Key) > 0 &&
+                if (Activator.CalcMaxDamage(damage.Key) > Menu.AutoShieldBlockableSpells.GetMenuItem("SAwarenessAutoShieldBlockMinDamageAmount")
+                                    .GetValue<Slider>().Value &&
                     (_shield.OnlySelf || damage.Key.Distance(ObjectManager.Player.ServerPosition) < _shield.Spell.Range))
                 {
                     if (_shield.Skillshot)
@@ -297,11 +302,15 @@ namespace SAwareness
 
         public static List<String> GetBlockableSpells()
         {
+            List<String> enemySpells = new List<string>();
             if (_shield == null)
             {
                 Init();
             }
-            List<String> enemySpells = new List<string>();
+            if (_shield == null)
+            {
+                return enemySpells;
+            }            
             foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (enemy.IsEnemy)

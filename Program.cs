@@ -959,6 +959,12 @@ namespace SAwareness
                     Menu.AutoShield.Menu.AddItem(
                         new MenuItem("SAwarenessAutoShieldBlockDamageAmount", "Block Damage").SetValue(
                             new StringList(new[] { "Medium", "High", "Extreme" }))));
+                Menu.AutoShield.MenuItems.Add(
+                    Menu.AutoShield.Menu.AddItem(
+                        new MenuItem("SAwarenessAutoShieldBlockMinDamageAmount", "Block min Damage").SetValue(
+                            new Slider(50, 2000, 1))));
+                Menu.AutoShield.MenuItems.Add(
+                    Menu.AutoShield.Menu.AddItem(new MenuItem("SAwarenessAutoShieldBlockableSpellsActive", "Block specified Spells").SetValue(false)));
                 Menu.AutoShieldBlockableSpells.Menu =
                     Menu.AutoShield.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Blockable Spells",
                         "SAwarenessAutoShieldBlockableSpells"));
@@ -968,7 +974,7 @@ namespace SAwareness
                         Menu.AutoShieldBlockableSpells.Menu.AddItem(new MenuItem("SAwarenessAutoShieldBlockableSpells" + spell, spell).SetValue(false)));
                 }
                 Menu.AutoShield.MenuItems.Add(
-                    Menu.AutoShield.Menu.AddItem(new MenuItem("SAwarenessAutoShieldAlly", "Active").SetValue(false)));
+                    Menu.AutoShield.Menu.AddItem(new MenuItem("SAwarenessAutoShieldAlly", "Shield Ally").SetValue(false)));
                 Menu.AutoShield.MenuItems.Add(
                     Menu.AutoShield.Menu.AddItem(new MenuItem("SAwarenessAutoShieldActive", "Active").SetValue(false)));
                 Menu.AutoPot.Menu =
