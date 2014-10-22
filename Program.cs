@@ -77,6 +77,7 @@ namespace SAwareness
         public static MenuItemSettings TurnAround = new MenuItemSettings(typeof (TurnAround));
         public static MenuItemSettings MinionBars = new MenuItemSettings(typeof(MinionBars));
         public static MenuItemSettings MinionLocation = new MenuItemSettings(typeof(MinionLocation));
+        public static MenuItemSettings FlashJuke = new MenuItemSettings(typeof(FlashJuke));
         public static MenuItemSettings Activator = new MenuItemSettings(typeof (Activator));
         public static MenuItemSettings ActivatorAutoSummonerSpell = new MenuItemSettings();
         public static MenuItemSettings ActivatorAutoSummonerSpellIgnite = new MenuItemSettings();
@@ -1107,6 +1108,14 @@ namespace SAwareness
                 //    Menu.Misc.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Minion Location", "SAwarenessMinionLocation"));
                 //Menu.MinionLocation.MenuItems.Add(
                 //    Menu.MinionLocation.Menu.AddItem(new MenuItem("SAwarenessMinionLocationActive", "Active").SetValue(false)));
+                Menu.FlashJuke.Menu =
+                    Menu.Misc.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Flash Juke", "SAwarenessFlashJuke"));
+                Menu.FlashJuke.MenuItems.Add(
+                    Menu.FlashJuke.Menu.AddItem(new MenuItem("SAwarenessFlashJukeKeyActive", "Active Key").SetValue(new KeyBind(90, KeyBindType.Press))));
+                Menu.FlashJuke.MenuItems.Add(
+                    Menu.FlashJuke.Menu.AddItem(new MenuItem("SAwarenessFlashJukeRecall", "Recall").SetValue(false)));
+                Menu.FlashJuke.MenuItems.Add(
+                    Menu.FlashJuke.Menu.AddItem(new MenuItem("SAwarenessFlashJukeActive", "Active").SetValue(false)));
 
                 Menu.GlobalSettings.Menu =
                     menu.AddSubMenu(new LeagueSharp.Common.Menu("Global Settings", "SAwarenessGlobalSettings"));

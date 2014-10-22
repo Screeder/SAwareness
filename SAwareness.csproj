@@ -102,6 +102,7 @@
     <Compile Include="Database.cs" />
     <Compile Include="Detector.cs" />
     <Compile Include="Activator\EmbeddedAssembly.cs" />
+    <Compile Include="FlashJuke.cs" />
     <Compile Include="Ganks.cs" />
     <Compile Include="Health.cs" />
     <Compile Include="Misc.cs" />
