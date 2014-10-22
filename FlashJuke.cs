@@ -129,7 +129,8 @@ namespace SAwareness
                 ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, nearestPosStart);
             }
 
-            if (nearestPosStart.X != 0 && ObjectManager.Player.Distance(nearestPosStart) < 50 && !NavMesh.IsWallOfGrass(ObjectManager.Player.ServerPosition) && Game.Time > flashedTime + 5)
+            if (nearestPosStart.X != 0 && ObjectManager.Player.Distance(nearestPosStart) < 50 && !NavMesh.IsWallOfGrass(ObjectManager.Player.ServerPosition) && Game.Time > flashedTime + 5 &&
+                !AnyEnemyInBush())
             {
                 Vector3 nearestPosEnd = GetNearestPos(spotsEnd);
                 if (nearestPosEnd.X != 0)
@@ -143,6 +144,22 @@ namespace SAwareness
                     }
                 }                
             }
+        }
+
+        bool AnyEnemyInBush()
+        {
+            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+            {
+                if (hero.IsValid && hero.IsEnemy && hero.IsVisible && !hero.IsDead)
+                {
+                    if (NavMesh.IsWallOfGrass(hero.ServerPosition) &&
+                        ObjectManager.Player.ServerPosition.Distance(hero.ServerPosition) < 650)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         Vector3 GetNearestPos(List<Vector3> vecs)
