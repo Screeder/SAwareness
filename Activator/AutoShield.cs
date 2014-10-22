@@ -122,7 +122,7 @@ namespace SAwareness
 
         private void Game_OnGameUpdate(EventArgs args)
         {
-            if (!IsActive())
+            if (!IsActive() || _shield == null)
                 return;
 
             var tempDamages =

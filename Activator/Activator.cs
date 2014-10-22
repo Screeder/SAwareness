@@ -758,7 +758,17 @@ namespace SAwareness
             return SpellSlot.Unknown;
         }
 
-        private SpellSlot GetPacketSlot(SpellSlot nSpellSlot)
+        public static SpellSlot GetFlashSlot()
+        {
+            foreach (SpellDataInst spell in ObjectManager.Player.SummonerSpellbook.Spells)
+            {
+                if (spell.Name.ToLower().Contains("flash") && spell.State == SpellState.Ready)
+                    return spell.Slot;
+            }
+            return SpellSlot.Unknown;
+        }
+
+        public static SpellSlot GetPacketSlot(SpellSlot nSpellSlot)
         {
             SpellSlot spellSlot = nSpellSlot;
             int slot = -1;
