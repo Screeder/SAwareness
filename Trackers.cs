@@ -3473,7 +3473,7 @@ namespace SAwareness
             {
                 if (spell.IsReady())
                 {
-                    double spellDamage = spell.GetDamage(enemy, 1);
+                    double spellDamage = spell.GetDamage(enemy, 0);
                     if (spellDamage > 0)
                     {
                         enoughDmg += spellDamage;

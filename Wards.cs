@@ -568,7 +568,8 @@ namespace SAwareness
                         foreach (Wards.WardItem wardItem in Wards.WardItems)
                         {
                             if ((int) inventoryItem.Id == wardItem.Id &&
-                                ObjectManager.Player.Spellbook.CanUseSpell(_latestSpellSlot) == SpellState.Ready)
+                                ObjectManager.Player.Spellbook.CanUseSpell(_latestSpellSlot) == SpellState.Ready ||
+                                ObjectManager.Player.Spellbook.CanUseSpell(_latestSpellSlot) == (SpellState)1)
                             {
                                 _drawSpots = true;
                             }
