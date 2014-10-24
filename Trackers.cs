@@ -888,7 +888,7 @@ namespace SAwareness
                     if (Menu.SsCaller.GetMenuItem("SAwarenessSSCallerLocalPing").GetValue<bool>())
                     {
                         gPacketT =
-                            Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0, pingType + 176));
+                            Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0, pingType));
                         gPacketT.Process();
                     }
                     else if (!Menu.SsCaller.GetMenuItem("SAwarenessSSCallerLocalPing").GetValue<bool>() &&

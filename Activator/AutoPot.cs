@@ -15,6 +15,7 @@ namespace SAwareness
             _pots.Add(new Pot(2039, "PotionOfBrilliance", Pot.PotType.Mana)); //elixirOfBrilliance            
             _pots.Add(new Pot(2041, "ItemCrystalFlask", Pot.PotType.Both)); //crystalFlask
             _pots.Add(new Pot(2009, "ItemMiniRegenPotion", Pot.PotType.Both)); //biscuit
+            _pots.Add(new Pot(2010, "ItemMiniRegenPotion", Pot.PotType.Both)); //biscuit
             _pots.Add(new Pot(2003, "RegenerationPotion", Pot.PotType.Health)); //healthPotion
             _pots.Add(new Pot(2004, "FlaskOfCrystalWater", Pot.PotType.Mana)); //manaPotion
             Game.OnGameUpdate += Game_OnGameUpdate;
