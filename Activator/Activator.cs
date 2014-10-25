@@ -599,13 +599,13 @@ namespace SAwareness
                 if (entropy.IsReady() &&
                     Menu.ActivatorOffensiveAd.GetMenuItem("SAwarenessActivatorOffensiveAdEntropy").GetValue<bool>())
                 {
-                    entropy.Cast(target);
+                    entropy.Cast();
                 }
                 if (hydra.IsReady() &&
                     Menu.ActivatorOffensiveAd.GetMenuItem("SAwarenessActivatorOffensiveAdRavenousHydra")
                         .GetValue<bool>())
                 {
-                    hydra.Cast(target);
+                    hydra.Cast();
                 }
                 if (botrk.IsReady() &&
                     Menu.ActivatorOffensiveAd.GetMenuItem("SAwarenessActivatorOffensiveAdBOTRK").GetValue<bool>())
@@ -615,19 +615,19 @@ namespace SAwareness
                 if (tiamat.IsReady() &&
                     Menu.ActivatorOffensiveAd.GetMenuItem("SAwarenessActivatorOffensiveAdTiamat").GetValue<bool>())
                 {
-                    tiamat.Cast(target);
+                    tiamat.Cast();
                 }
                 if (devinesword.IsReady() &&
                     Menu.ActivatorOffensiveAd.GetMenuItem("SAwarenessActivatorOffensiveAdSwordOfTheDevine")
                         .GetValue<bool>())
                 {
-                    devinesword.Cast(target);
+                    devinesword.Cast();
                 }
                 if (youmuus.IsReady() &&
                     Menu.ActivatorOffensiveAd.GetMenuItem("SAwarenessActivatorOffensiveAdYoumuusGhostblade")
                         .GetValue<bool>())
                 {
-                    youmuus.Cast(target);
+                    youmuus.Cast();
                 }
             }
         }
@@ -686,7 +686,7 @@ namespace SAwareness
                 if (twinshadows.IsReady() &&
                     Menu.ActivatorOffensiveAp.GetMenuItem("SAwarenessActivatorOffensiveApTwinShadows").GetValue<bool>())
                 {
-                    twinshadows.Cast(target);
+                    twinshadows.Cast();
                 }
             }
         }

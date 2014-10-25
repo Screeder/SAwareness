@@ -137,10 +137,13 @@ namespace SAwareness
                 {
                     Activator.FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(0, spell, -1, nearestPosEnd.X, nearestPosEnd.Y, nearestPosEnd.X, nearestPosEnd.Y)).Send();
                     flashedTime = Game.Time;
-                    ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, nearestPosEnd);
                     if (Menu.FlashJuke.GetMenuItem("SAwarenessFlashJukeRecall").GetValue<bool>())
                     {
-                        Utility.DelayAction.Add(200, () => Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, SpellSlot.Recall)).Send());
+                        Utility.DelayAction.Add(200, () =>
+                        {
+                            ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, nearestPosEnd);
+                            Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, SpellSlot.Recall)).Send();
+                        });
                     }
                 }                
             }
