@@ -873,20 +873,25 @@ namespace SAwareness
             if (!Menu.ActivatorAutoSummonerSpellIgnite.GetActive())
                 return;
             SpellSlot sumIgnite = GetIgniteSlot();
-            Obj_AI_Hero target = SimpleTs.GetTarget(600, SimpleTs.DamageType.True);
-            if (target != null && sumIgnite != SpellSlot.Unknown)
+            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
             {
-                double igniteDmg = ObjectManager.Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
-                double regenpersec = (target.FlatHPRegenMod + (target.HPRegenRate * target.Level));
-                double dmgafter = (igniteDmg - ((regenpersec * 5) / 2));
-                if (dmgafter > target.Health)
+                if (hero != null && hero.IsEnemy)
                 {
-                    SpellSlot spellSlot = GetPacketSlot(sumIgnite);
-                    if (spellSlot != SpellSlot.Unknown)
+                    if (sumIgnite != SpellSlot.Unknown)
                     {
-                        GamePacket gPacketT =
-                            FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(target.NetworkId, spellSlot));
-                        gPacketT.Send();
+                        double igniteDmg = ObjectManager.Player.GetSummonerSpellDamage(hero, Damage.SummonerSpell.Ignite);
+                        double regenpersec = (hero.FlatHPRegenMod + (hero.HPRegenRate * hero.Level));
+                        double dmgafter = (igniteDmg - ((regenpersec * 5) / 2));
+                        if (dmgafter > hero.Health)
+                        {
+                            SpellSlot spellSlot = GetPacketSlot(sumIgnite);
+                            if (spellSlot != SpellSlot.Unknown)
+                            {
+                                GamePacket gPacketT =
+                                    FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(hero.NetworkId, spellSlot));
+                                gPacketT.Send();
+                            }
+                        }
                     }
                 }
             }

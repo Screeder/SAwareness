@@ -206,6 +206,10 @@ namespace SAwareness
                     return player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready
                         ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.Q), 325, SpellType.Target, SpellSlot.Q)
                         : null;
+                case "LeeSin":
+                    return player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready && minion.HasBuff("BlindMonkQOne", true)
+                        ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.R, 1) > 400 ? 400 : player.GetSpellDamage(minion, SpellSlot.R, 1), 
+                        1200, SpellType.Skillshot, SpellSlot.Q) : null;
                 case "Lux":
                     return player.Spellbook.CanUseSpell(SpellSlot.R) == SpellState.Ready
                         ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.R), 3340, SpellType.Skillshot,
@@ -239,6 +243,10 @@ namespace SAwareness
                     return player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready
                         ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.Q), 100, SpellType.Active, SpellSlot.Q)
                         : null;
+                case "Rengar":
+                    return player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready
+                        ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.Q), 100, SpellType.Active, SpellSlot.Q)
+                        : null;
                 case "Shaco":
                     return player.Spellbook.CanUseSpell(SpellSlot.E) == SpellState.Ready
                         ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.E), 625, SpellType.Target, SpellSlot.E)
@@ -246,8 +254,7 @@ namespace SAwareness
                 case "Twitch":
                     return player.Spellbook.CanUseSpell(SpellSlot.E) == SpellState.Ready
                         ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.E), 1200, SpellType.Active,
-                            SpellSlot.E)
-                        : null;
+                            SpellSlot.E) : null;
                 case "Vi":
                     return player.Spellbook.CanUseSpell(SpellSlot.E) == SpellState.Ready
                         ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.E), 600, SpellType.Target, SpellSlot.E)
@@ -259,6 +266,10 @@ namespace SAwareness
                 case "Warwick":
                     return player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready
                         ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.Q), 400, SpellType.Target, SpellSlot.Q)
+                        : null;
+                case "Xerath":
+                    return player.Spellbook.CanUseSpell(SpellSlot.R) == SpellState.Ready
+                        ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.R), 3200 + 1200 * player.Spellbook.GetSpell(SpellSlot.R).Level, SpellType.Target, SpellSlot.R)
                         : null;
                 default:
                     return null;
