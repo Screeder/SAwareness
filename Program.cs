@@ -252,7 +252,7 @@ namespace SAwareness
                 Menu.Timers.MenuItems.Add(
                     Menu.Timers.Menu.AddItem(
                         new MenuItem("SAwarenessTimersChatChoice", "Chat Choice").SetValue(
-                            new StringList(new[] {"None", "Local", "Server"}))));
+                            new StringList(new[] { "None", "Local", "Server" }))));
                 Menu.JungleTimer.Menu =
                     Menu.Timers.Menu.AddSubMenu(new LeagueSharp.Common.Menu("JungleTimer", "SAwarenessJungleTimer"));
                 Menu.JungleTimer.MenuItems.Add(
@@ -281,7 +281,7 @@ namespace SAwareness
                 Menu.SummonerTimer.Menu =
                     Menu.Timers.Menu.AddSubMenu(new LeagueSharp.Common.Menu("SummonerTimer", "SAwarenessSummonerTimer"));
                 Menu.SummonerTimer.MenuItems.Add(
-                    Menu.SummonerTimer.Menu.AddItem(new MenuItem("SAwarenessSummonerTimersActive", "Active").SetValue(false)));                
+                    Menu.SummonerTimer.Menu.AddItem(new MenuItem("SAwarenessSummonerTimersActive", "Active").SetValue(false)));
                 Menu.Timers.MenuItems.Add(
                     Menu.Timers.Menu.AddItem(new MenuItem("SAwarenessTimersActive", "Active").SetValue(false)));
                 
@@ -568,6 +568,9 @@ namespace SAwareness
                 Menu.Wards.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Wards", "SAwarenessWards"));
                 Menu.WardCorrector.Menu =
                     Menu.Wards.Menu.AddSubMenu(new LeagueSharp.Common.Menu("WardCorrector", "SAwarenessWardCorrector"));
+                Menu.WardCorrector.MenuItems.Add(
+                    Menu.WardCorrector.Menu.AddItem(
+                        new MenuItem("SAwarenessWardCorrectorKey", "Trinket Key").SetValue(new KeyBind(52, KeyBindType.Press))));
                 Menu.WardCorrector.MenuItems.Add(
                     Menu.WardCorrector.Menu.AddItem(
                         new MenuItem("SAwarenessWardCorrectorActive", "Active").SetValue(false)));
@@ -1000,7 +1003,7 @@ namespace SAwareness
                 Menu.Activator.MenuItems.Add(
                     Menu.Activator.Menu.AddItem(new MenuItem("SAwarenessActivatorActive", "Active").SetValue(false)));
 
-                //Not crashing
+                ////Not crashing
                 Menu.Misc.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Misc", "SAwarenessMisc"));
                 Menu.Misc.MenuItems.Add(
                     Menu.Misc.Menu.AddItem(new MenuItem("SAwarenessMiscActive", "Active").SetValue(false)));

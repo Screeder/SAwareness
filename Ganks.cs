@@ -158,6 +158,8 @@ namespace SAwareness
     internal class GankDetector
     {
         private static readonly Dictionary<Obj_AI_Hero, Time> Enemies = new Dictionary<Obj_AI_Hero, Time>();
+        private readonly Render.Text _textF = new Render.Text("", 0, 0, 24, SharpDX.Color.Red);
+        private bool _drawActive = true;
 
         public GankDetector()
         {
@@ -169,11 +171,17 @@ namespace SAwareness
                 }
             }
             Game.OnGameUpdate += Game_OnGameUpdate;
+            Drawing.OnEndScene += Drawing_OnEndScene;
+            Drawing.OnPreReset += Drawing_OnPreReset;
+            Drawing.OnPostReset += Drawing_OnPostReset;
         }
 
         ~GankDetector()
         {
             Game.OnGameUpdate -= Game_OnGameUpdate;
+            Drawing.OnEndScene -= Drawing_OnEndScene;
+            Drawing.OnPreReset -= Drawing_OnPreReset;
+            Drawing.OnPostReset -= Drawing_OnPostReset;
         }
 
         public bool IsActive()
@@ -188,6 +196,53 @@ namespace SAwareness
             foreach (var enemy in Enemies)
             {
                 UpdateTime(enemy);
+            }
+        }
+
+        private void Drawing_OnPostReset(EventArgs args)
+        {
+            _textF.OnPostReset();
+            _drawActive = true;
+        }
+
+        private void Drawing_OnPreReset(EventArgs args)
+        {
+            _textF.OnPreReset();
+            _drawActive = false;
+        }
+
+        private void Drawing_OnEndScene(EventArgs args)
+        {
+            if (!IsActive() || !_drawActive)
+                return;
+
+            foreach (var enemy in Enemies)
+            {
+                Obj_AI_Hero hero = enemy.Key;
+                if(!hero.IsValid)
+                    continue;
+                bool hasSmite = false;
+                foreach (SpellDataInst spell in hero.SummonerSpellbook.Spells)
+                {
+                    if (spell.Name.ToLower().Contains("smite"))
+                    {
+                        hasSmite = true;
+                        break;
+                    }
+                }
+                if (enemy.Value.InvisibleTime > 5 && enemy.Key.IsVisible && !enemy.Key.IsDead &&
+                    Vector3.Distance(ObjectManager.Player.ServerPosition, hero.ServerPosition) <
+                    Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorTrackRange").GetValue<Slider>().Value &&
+                    hasSmite)
+                {
+                    String killText = "Enemy jungler approaching";
+                    _textF.Centered = true;
+                    _textF.text = killText;
+                    _textF.X = (int)Drawing.WorldToScreen(ObjectManager.Player.ServerPosition).X;
+                    _textF.Y = (int)Drawing.WorldToScreen(ObjectManager.Player.ServerPosition).Y;
+                    _textF.OutLined = true;
+                    _textF.OnEndScene();
+                }
             }
         }
 
@@ -231,6 +286,7 @@ namespace SAwareness
             {
                 Game.Say("Gank: {0}", hero.ChampionName);
             }
+
             //TODO: Check for Teleport etc.                    
         }
 

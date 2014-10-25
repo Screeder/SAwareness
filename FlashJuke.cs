@@ -19,6 +19,8 @@ namespace SAwareness
 
          public FlashJuke()
         {
+             if(Game.MapId != GameMapId.SummonersRift)
+                 return;
             spotsStart.Add(new Vector3(5976, 12584, 40));
             spotsStart.Add(new Vector3(8145, 1915, 54));
             spotsStart.Add(new Vector3(5815, 11397, 53));

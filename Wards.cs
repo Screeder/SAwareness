@@ -505,51 +505,65 @@ namespace SAwareness
                 return;
             if (MenuGUI.IsChatOpen)
                 return;
+            uint trinketKey =
+                Menu.WardCorrector.GetMenuItem("SAwarenessWardCorrectorKey").GetValue<KeyBind>().Key;
             if (args.Msg == WM_KEYDOWN)
             {
                 InventorySlot inventoryItem = null;
                 int inventoryItemId = -1;
-                switch (args.WParam)
+                if (trinketKey == args.WParam)
                 {
-                    case '1':
-                        _latestSpellSlot = SpellSlot.Item1;
-                        inventoryItemId = 0;
-                        break;
+                    _latestSpellSlot = SpellSlot.Trinket;
+                    inventoryItemId = 6;
+                }
+                else
+                {
+                    _latestSpellSlot = SpellSlot.Unknown;
+                }
+                if(_latestSpellSlot == SpellSlot.Unknown)
+                {
+                    switch (args.WParam)
+                    {
+                        case '1':
+                            _latestSpellSlot = SpellSlot.Item1;
+                            inventoryItemId = 0;
+                            break;
 
-                    case '2':
-                        _latestSpellSlot = SpellSlot.Item2;
-                        inventoryItemId = 1;
-                        break;
+                        case '2':
+                            _latestSpellSlot = SpellSlot.Item2;
+                            inventoryItemId = 1;
+                            break;
 
-                    case '3':
-                        _latestSpellSlot = SpellSlot.Item3;
-                        inventoryItemId = 2;
-                        break;
+                        case '3':
+                            _latestSpellSlot = SpellSlot.Item3;
+                            inventoryItemId = 2;
+                            break;
 
-                    case '4':
-                        _latestSpellSlot = SpellSlot.Trinket;
-                        inventoryItemId = 6;
-                        break;
+                        //case trinketKey:
+                        //    _latestSpellSlot = SpellSlot.Trinket;
+                        //    inventoryItemId = 6;
+                        //    break;
 
-                    case '5':
-                        _latestSpellSlot = SpellSlot.Item5;
-                        inventoryItemId = 3;
-                        break;
+                        case '5':
+                            _latestSpellSlot = SpellSlot.Item5;
+                            inventoryItemId = 3;
+                            break;
 
-                    case '6':
-                        _latestSpellSlot = SpellSlot.Item6;
-                        inventoryItemId = 4;
-                        break;
+                        case '6':
+                            _latestSpellSlot = SpellSlot.Item6;
+                            inventoryItemId = 4;
+                            break;
 
-                    case '7':
-                        _latestSpellSlot = SpellSlot.Item4;
-                        inventoryItemId = 5;
-                        break;
+                        case '7':
+                            _latestSpellSlot = SpellSlot.Item4;
+                            inventoryItemId = 5;
+                            break;
 
-                    default:
-                        _drawSpots = false;
-                        _latestSpellSlot = SpellSlot.Unknown;
-                        break;
+                        default:
+                            _drawSpots = false;
+                            _latestSpellSlot = SpellSlot.Unknown;
+                            break;
+                    }
                 }
 
                 foreach (InventorySlot inventorySlot in ObjectManager.Player.InventoryItems)
