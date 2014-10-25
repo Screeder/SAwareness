@@ -213,7 +213,7 @@ namespace SAwareness
 
         private void Drawing_OnEndScene(EventArgs args)
         {
-            if (!IsActive() || !_drawActive)
+            if (!IsActive() || !_drawActive || !Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorShowJungler").GetValue<bool>())
                 return;
 
             foreach (var enemy in Enemies)
@@ -230,7 +230,7 @@ namespace SAwareness
                         break;
                     }
                 }
-                if (enemy.Value.InvisibleTime > 5 && enemy.Key.IsVisible && !enemy.Key.IsDead &&
+                if (enemy.Key.IsVisible && !enemy.Key.IsDead &&
                     Vector3.Distance(ObjectManager.Player.ServerPosition, hero.ServerPosition) <
                     Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorTrackRange").GetValue<Slider>().Value &&
                     hasSmite)

@@ -541,6 +541,8 @@ namespace SAwareness
                     Menu.GankDetector.Menu.AddItem(
                         new MenuItem("SAwarenessGankDetectorTrackRange", "Track Range").SetValue(new Slider(1, 10000, 1))));
                 Menu.GankDetector.MenuItems.Add(
+                    Menu.GankDetector.Menu.AddItem(new MenuItem("SAwarenessGankDetectorShowJungler", "Show Jungler").SetValue(false)));
+                Menu.GankDetector.MenuItems.Add(
                     Menu.GankDetector.Menu.AddItem(new MenuItem("SAwarenessGankDetectorActive", "Active").SetValue(false)));
                 Menu.Ganks.MenuItems.Add(
                     Menu.Ganks.Menu.AddItem(new MenuItem("SAwarenessGanksActive", "Active").SetValue(false)));
