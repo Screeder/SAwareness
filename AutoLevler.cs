@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using LeagueSharp;
@@ -10,7 +11,7 @@ namespace SAwareness
     {
         private int[] _priority = {0, 0, 0, 0};
         private int[] _sequence;
-        private bool _usePriority;
+        private int _useMode;
 
         public AutoLevler()
         {
@@ -33,10 +34,10 @@ namespace SAwareness
             if (!IsActive())
                 return;
 
-            var stringList = Menu.AutoLevler.GetMenuItem("SAwarenessAutoLevlerMode").GetValue<StringList>();
+            var stringList = Menu.AutoLevler.GetMenuItem("SAwarenessAutoLevlerSMode").GetValue<StringList>();
             if (stringList.SelectedIndex == 1)
             {
-                _usePriority = true;
+                _useMode = 0;
                 _priority = new[]
                 {
                     Menu.AutoLevler.GetMenuSettings("SAwarenessAutoLevlerPriority")
@@ -49,9 +50,13 @@ namespace SAwareness
                         .GetMenuItem("SAwarenessAutoLevlerPrioritySliderR").GetValue<Slider>().Value
                 };
             }
+            else if (stringList.SelectedIndex == 2)
+            {
+                _useMode = 1;
+            }
             else
             {
-                _usePriority = false;
+                _useMode = 2;
             }
 
             Obj_AI_Hero player = ObjectManager.Player;
@@ -59,9 +64,15 @@ namespace SAwareness
             if (player.SpellTrainingPoints > 0)
             {
                 //TODO: Add level logic// try levelup spell, if fails level another up etc.
-                if (_usePriority && Menu.AutoLevler.GetMenuSettings("SAwarenessAutoLevlerPriority")
+                if (_useMode == 0 && Menu.AutoLevler.GetMenuSettings("SAwarenessAutoLevlerPriority")
                     .GetMenuItem("SAwarenessAutoLevlerPriorityActive").GetValue<bool>())
                 {
+                    if (Menu.AutoLevler.GetMenuSettings("SAwarenessAutoLevlerPriority")
+                        .GetMenuItem("SAwarenessAutoLevlerPriorityFirstSpellsActive").GetValue<bool>())
+                    {
+                        player.Spellbook.LevelUpSpell(GetCurrentSpell());
+                        return;
+                    }
                     SpellSlot[] spellSlots = GetSortedPriotitySlots();
                     for (int slotId = 0; slotId <= 3; slotId++)
                     {
@@ -71,13 +82,25 @@ namespace SAwareness
                             break;
                     }
                 }
-                else
+                else if (_useMode == 1)
                 {
                     if (Menu.AutoLevler.GetMenuSettings("SAwarenessAutoLevlerSequence")
                         .GetMenuItem("SAwarenessAutoLevlerSequenceActive").GetValue<bool>())
                     {
                         SpellSlot spellSlot = GetSpellSlot(_sequence[player.Level - 1]);
                         player.Spellbook.LevelUpSpell(spellSlot);
+                    }
+                }
+                else
+                {
+                    if (Menu.AutoLevler.GetMenuItem("SAwarenessAutoLevlerSMode").GetValue<StringList>().SelectedIndex == 2)
+                    {
+                        if (ObjectManager.Player.Level == 6 ||
+                            ObjectManager.Player.Level == 11 ||
+                            ObjectManager.Player.Level == 16)
+                        {
+                            player.Spellbook.LevelUpSpell(SpellSlot.R);
+                        }
                     }
                 }
             }
@@ -89,11 +112,6 @@ namespace SAwareness
             _sequence[1] = priorityW;
             _sequence[2] = priorityE;
             _sequence[3] = priorityR;
-        }
-
-        public void SetMode(bool usePriority)
-        {
-            _usePriority = usePriority;
         }
 
         private void LoadLevelFile()
@@ -114,7 +132,7 @@ namespace SAwareness
             catch (Exception)
             {
                 Console.WriteLine("Couldn't load autolevel.conf. Using priority mode.");
-                _usePriority = true;
+                _useMode = 0;
             }
         }
 
@@ -204,6 +222,34 @@ namespace SAwareness
                 }
             }
             return listNew;
+        }
+
+        private SpellSlot GetCurrentSpell()
+        {
+            SpellSlot[] spellSlot = null;
+            switch (Menu.AutoLevler.GetMenuSettings("SAwarenessAutoLevlerPriority")
+                .GetMenuItem("SAwarenessAutoLevlerPriorityFirstSpells").GetValue<StringList>().SelectedIndex)
+            {
+                case 0:
+                    spellSlot = new[] {SpellSlot.Q, SpellSlot.W, SpellSlot.E};
+                    break;
+                case 1:
+                    spellSlot = new[] { SpellSlot.Q, SpellSlot.E, SpellSlot.W };
+                    break;
+                case 2:
+                    spellSlot = new[] { SpellSlot.W, SpellSlot.Q, SpellSlot.E };
+                    break;
+                case 3:
+                    spellSlot = new[] { SpellSlot.W, SpellSlot.E, SpellSlot.Q };
+                    break;
+                case 4:
+                    spellSlot = new[] { SpellSlot.E, SpellSlot.Q, SpellSlot.W };
+                    break;
+                case 5:
+                    spellSlot = new[] { SpellSlot.E, SpellSlot.W, SpellSlot.Q };
+                    break;
+            }
+            return spellSlot[ObjectManager.Player.Level - 1];
         }
 
         //private List<SpellSlot> SortAlgo(List<int> listOld, List<SpellSlot> listNew)

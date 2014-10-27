@@ -1043,6 +1043,13 @@ namespace SAwareness
                         new MenuItem("SAwarenessAutoLevlerPrioritySliderR", "R").SetValue(new Slider(0, 3, 0))));
                 tempSettings.MenuItems.Add(
                     tempSettings.Menu.AddItem(
+                        new MenuItem("SAwarenessAutoLevlerPriorityFirstSpells", "Mode").SetValue(
+                            new StringList(new[] { "Q W E", "Q E W", "W Q E", "W E Q", "E Q W", "E W Q" }))));
+                tempSettings.MenuItems.Add(
+                    tempSettings.Menu.AddItem(
+                        new MenuItem("SAwarenessAutoLevlerPriorityFirstSpellsActive", "Mode Active").SetValue(false)));
+                tempSettings.MenuItems.Add(
+                    tempSettings.Menu.AddItem(
                         new MenuItem("SAwarenessAutoLevlerPriorityActive", "Active").SetValue(false).DontSave()));
                 tempSettings = Menu.AutoLevler.AddMenuItemSettings("Sequence | not implemented",
                     "SAwarenessAutoLevlerSequence");
@@ -1055,8 +1062,8 @@ namespace SAwareness
                         new MenuItem("SAwarenessAutoLevlerSequenceActive", "Active").SetValue(false).DontSave()));
                 Menu.AutoLevler.MenuItems.Add(
                     Menu.AutoLevler.Menu.AddItem(
-                        new MenuItem("SAwarenessAutoLevlerMode", "Mode").SetValue(
-                            new StringList(new[] { "Sequence", "Priority" }))));
+                        new MenuItem("SAwarenessAutoLevlerSMode", "Mode").SetValue(
+                            new StringList(new[] { "Sequence", "Priority", "Only R" }))));
                 Menu.AutoLevler.MenuItems.Add(
                     Menu.AutoLevler.Menu.AddItem(new MenuItem("SAwarenessAutoLevlerActive", "Active").SetValue(false)));
                 Menu.MoveToMouse.Menu =
