@@ -222,7 +222,7 @@ namespace SAwareness
                     {
                         gPacketT =
                             Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0,
-                                Packet.PingType.NormalSound));
+                                Packet.PingType.Normal));
                         gPacketT.Process();
                     }
                     else if (!Menu.Timers.GetMenuItem("SAwarenessTimersLocalPing").GetValue<bool>() &&

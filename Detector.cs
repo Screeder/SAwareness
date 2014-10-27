@@ -174,7 +174,7 @@ namespace SAwareness
                         {
                             gPacketT =
                                 Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0,
-                                    Packet.PingType.DangerSound));
+                                    Packet.PingType.Danger));
                             gPacketT.Process();
                         }
                         else

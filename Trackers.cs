@@ -1150,7 +1150,7 @@ namespace SAwareness
                         if (Menu.UiTracker.GetMenuItem("SAwarenessUITrackerPingActive").GetValue<bool>())
                         {
                             Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(enemy.Key.ServerPosition.X,
-                                enemy.Key.ServerPosition.Y, 0, 0, Packet.PingType.NormalSound)).Process();
+                                enemy.Key.ServerPosition.Y, 0, 0, Packet.PingType.Normal)).Process();
                         }
                     }
                 }
