@@ -875,7 +875,7 @@ namespace SAwareness
             SpellSlot sumIgnite = GetIgniteSlot();
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
             {
-                if (hero != null && hero.IsEnemy)
+                if (hero != null && hero.IsEnemy && hero.ServerPosition.Distance(ObjectManager.Player.ServerPosition) < 700)
                 {
                     if (sumIgnite != SpellSlot.Unknown)
                     {
