@@ -1203,7 +1203,7 @@ namespace SAwareness
             if (Menu.ActivatorDefensiveWoogletZhonya.GetMenuItem(
                     "SAwarenessActivatorDefensiveWoogletZhonyaWooglet").GetValue<bool>())
                 item = new Items.Item(3090, 0);
-            if (Menu.ActivatorDefensiveWoogletZhonya.GetMenuItem(
+            if (item == null && Menu.ActivatorDefensiveWoogletZhonya.GetMenuItem(
                     "SAwarenessActivatorDefensiveWoogletZhonyaZhonya").GetValue<bool>())
                 item = new Items.Item(3157, 0);
 
