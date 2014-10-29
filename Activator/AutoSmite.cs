@@ -198,6 +198,10 @@ namespace SAwareness
                     return player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready
                         ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.Q), 475, SpellType.Target, SpellSlot.Q)
                         : null;
+                case "Fizz":
+                    return player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready
+                        ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.Q), 550, SpellType.Target, SpellSlot.Q)
+                        : null;
                 case "Kayle":
                     return player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready
                         ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.Q), 650, SpellType.Target, SpellSlot.Q)
@@ -255,6 +259,14 @@ namespace SAwareness
                     return player.Spellbook.CanUseSpell(SpellSlot.E) == SpellState.Ready
                         ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.E), 1200, SpellType.Active,
                             SpellSlot.E) : null;
+                case "Udyr":
+                    return player.Spellbook.CanUseSpell(SpellSlot.R) == SpellState.Ready
+                        ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.R), 100, SpellType.Active,
+                            SpellSlot.R) : null;
+                case "Veigar":
+                    return player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready
+                        ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.Q), 650, SpellType.Active,
+                            SpellSlot.Q) : null;
                 case "Vi":
                     return player.Spellbook.CanUseSpell(SpellSlot.E) == SpellState.Ready
                         ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.E), 600, SpellType.Target, SpellSlot.E)
