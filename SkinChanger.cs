@@ -945,7 +945,7 @@ namespace SAwareness
                 "Warring Kingdoms"
             });
 
-            Skins.Add("Twistedfate", new[]
+            Skins.Add("TwistedFate", new[]
             {
                 "Classic",
                 "PAX",
