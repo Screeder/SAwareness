@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using LeagueSharp;
 using LeagueSharp.Common;
 
@@ -1281,7 +1282,8 @@ namespace SAwareness
             {
                 CreateMenu();
                 Game.PrintChat("SAwareness loaded!");
-                Game.OnGameUpdate += GameOnOnGameUpdate;
+                //Game.OnGameUpdate += GameOnOnGameUpdate;
+                new Thread(GameOnOnGameUpdate).Start();
                 AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
             }
             catch (Exception e)
@@ -1290,28 +1292,32 @@ namespace SAwareness
             }
         }
 
-        private static void GameOnOnGameUpdate(EventArgs args)
+        private static void GameOnOnGameUpdate(/*EventArgs args*/)
         {
-            Type classType = typeof (Menu);
-            BindingFlags flags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
-            FieldInfo[] fields = classType.GetFields(flags);
-            foreach (FieldInfo p in fields)
+            while (true)
             {
-                var item = (Menu.MenuItemSettings) p.GetValue(null);
-                if (item.GetActive() == false && item.Item != null)
+                Thread.Sleep(10);
+                Type classType = typeof (Menu);
+                BindingFlags flags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
+                FieldInfo[] fields = classType.GetFields(flags);
+                foreach (FieldInfo p in fields)
                 {
-                    //item.Item = null;
-                }
-                else if (item.GetActive() && item.Item == null && !item.ForceDisable && item.Type != null)
-                {
-                    try
+                    var item = (Menu.MenuItemSettings) p.GetValue(null);
+                    if (item.GetActive() == false && item.Item != null)
                     {
-                        item.Item = System.Activator.CreateInstance(item.Type);
+                        //item.Item = null;
                     }
-                    catch (Exception e)
+                    else if (item.GetActive() && item.Item == null && !item.ForceDisable && item.Type != null)
                     {
-                        Console.WriteLine(e);
-                        throw;
+                        try
+                        {
+                            item.Item = System.Activator.CreateInstance(item.Type);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                            throw;
+                        }
                     }
                 }
             }
