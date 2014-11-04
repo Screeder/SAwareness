@@ -34,7 +34,7 @@ namespace SAwareness
         private void Game_OnGameUpdate(EventArgs args)
         {
             if (!IsActive() || ObjectManager.Player.IsDead || Utility.InFountain() ||
-                ObjectManager.Player.HasBuff("Recall"))
+                ObjectManager.Player.HasBuff("Recall") || Utility.CountEnemysInRange(1500) > 0)
                 return;
             Pot myPot = null;
             if (

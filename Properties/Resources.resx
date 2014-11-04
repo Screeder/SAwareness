@@ -3622,4 +3622,10 @@
   <data name="Zyra_MM" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\CHAMP_MM\Zyra_MM.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="GoldCsLvlBar" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EXT\GoldCsLvlBar.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="luxlightstriketoggle" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SPELLS\luxlightstriketoggle.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

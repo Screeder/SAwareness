@@ -14,7 +14,8 @@ namespace SAwareness
         public enum WardType
         {
             Stealth,
-            Vision
+            Vision,
+            Temp
         }
 
         public static readonly List<WardItem> WardItems = new List<WardItem>();
@@ -39,6 +40,10 @@ namespace SAwareness
             WardItems.Add(new WardItem(3375, "Head of Kha'Zix", "", 600, 180, WardType.Stealth));
             WardItems.Add(new WardItem(3205, "Quill Coat", "", 600, 180, WardType.Stealth));
             WardItems.Add(new WardItem(3207, "Spirit of the Ancient Golem", "", 600, 180, WardType.Stealth));
+            WardItems.Add(new WardItem(3342, "Scrying Orb", "", 2500, 2, WardType.Temp));
+            WardItems.Add(new WardItem(3363, "Farsight Orb", "", 4000, 2, WardType.Temp));
+            WardItems.Add(new WardItem(3187, "Hextech Sweeper", "", 800, 5, WardType.Temp));
+            WardItems.Add(new WardItem(3159, "Grez's Spectral Lantern", "", 800, 5, WardType.Temp));
         }
 
         public static WardItem GetWardItem()
@@ -582,6 +587,7 @@ namespace SAwareness
                         foreach (Wards.WardItem wardItem in Wards.WardItems)
                         {
                             if ((int) inventoryItem.Id == wardItem.Id &&
+                                wardItem.Type != Wards.WardType.Temp &&
                                 ObjectManager.Player.Spellbook.CanUseSpell(_latestSpellSlot) == SpellState.Ready ||
                                 ObjectManager.Player.Spellbook.CanUseSpell(_latestSpellSlot) == (SpellState)1)
                             {

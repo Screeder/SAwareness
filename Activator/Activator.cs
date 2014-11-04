@@ -75,6 +75,7 @@ namespace SAwareness
             if (!IsActive())
                 return;
             UseOffensiveItems_OnGameUpdate();
+            UseMiscItems_OnGameUpdate();
             UseDefensiveItems_OnGameUpdate();
             GetIncomingDamage_OnGameUpdate();
             UseSummonerSpells_OnGameUpdate();
@@ -154,7 +155,7 @@ namespace SAwareness
             if (!Menu.ActivatorDefensiveCleanseSelf.GetActive())
                 return;
 
-            List<BuffInstance> buffList = GetActiveCcBuffs();
+            List<BuffInstance> buffList = GetActiveCcBuffs(_buffs);
 
             if (buffList.Count() >=
                 Menu.ActivatorDefensiveCleanseSelf.GetMenuItem("SAwarenessActivatorDefensiveCleanseSelfConfigMinSpells")
@@ -178,7 +179,7 @@ namespace SAwareness
             if (!Menu.ActivatorDefensiveCleanseSelf.GetActive())
                 return;
 
-            List<BuffInstance> buffList = GetActiveCcBuffs();
+            List<BuffInstance> buffList = GetActiveCcBuffs(_buffs);
 
             if (buffList.Count() >=
                 Menu.ActivatorDefensiveCleanseSelf.GetMenuItem("SAwarenessActivatorDefensiveCleanseSelfConfigMinSpells")
@@ -206,7 +207,7 @@ namespace SAwareness
             if (!Menu.ActivatorDefensiveCleanseSelf.GetActive())
                 return;
 
-            List<BuffInstance> buffList = GetActiveCcBuffs();
+            List<BuffInstance> buffList = GetActiveCcBuffs(_buffs);
 
             if (buffList.Count() >=
                 Menu.ActivatorDefensiveCleanseSelf.GetMenuItem("SAwarenessActivatorDefensiveCleanseSelfConfigMinSpells")
@@ -492,7 +493,7 @@ namespace SAwareness
                         !ally.HasBuff("Recall"))
                     {
                         double health = (ally.Health/ally.MaxHealth)*100;
-                        List<BuffInstance> activeCc = GetActiveCcBuffs(ally);
+                        List<BuffInstance> activeCc = GetActiveCcBuffs(ally, _buffs);
                         if (activeCc.Count >=
                             Menu.ActivatorDefensiveMikaelCleanse.GetMenuItem(
                                 "SAwarenessActivatorDefensiveMikaelCleanseConfigMinSpells").GetValue<Slider>().Value)
@@ -520,7 +521,7 @@ namespace SAwareness
                 if (!ObjectManager.Player.IsDead && !ObjectManager.Player.HasBuff("Recall"))
                 {
                     double health = (ObjectManager.Player.Health/ObjectManager.Player.MaxHealth)*100;
-                    List<BuffInstance> activeCc = GetActiveCcBuffs();
+                    List<BuffInstance> activeCc = GetActiveCcBuffs(_buffs);
                     if (activeCc.Count >=
                         Menu.ActivatorDefensiveMikaelCleanse.GetMenuItem(
                             "SAwarenessActivatorDefensiveMikaelCleanseConfigMinSpells").GetValue<Slider>().Value)
@@ -556,17 +557,17 @@ namespace SAwareness
             return null;
         }
 
-        private List<BuffInstance> GetActiveCcBuffs()
+        public static List<BuffInstance> GetActiveCcBuffs(List<BuffType> buffs)
         {
-            return GetActiveCcBuffs(ObjectManager.Player);
+            return GetActiveCcBuffs(ObjectManager.Player, buffs);
         }
 
-        private List<BuffInstance> GetActiveCcBuffs(Obj_AI_Hero hero)
+        private static List<BuffInstance> GetActiveCcBuffs(Obj_AI_Hero hero, List<BuffType> buffs)
         {
             var nBuffs = new List<BuffInstance>();
             foreach (BuffInstance buff in hero.Buffs)
             {
-                foreach (BuffType buffType in _buffs)
+                foreach (BuffType buffType in buffs)
                 {
                     if (buff.Type == buffType)
                         nBuffs.Add(buff);
@@ -689,6 +690,11 @@ namespace SAwareness
                     twinshadows.Cast();
                 }
             }
+        }
+
+        private void UseMiscItems_OnGameUpdate()
+        {
+
         }
 
         public static bool IsCCd(Obj_AI_Hero hero)
@@ -851,7 +857,7 @@ namespace SAwareness
                     .GetValue<bool>())
                 _buffs.Add(BuffType.Poison);
 
-            List<BuffInstance> buffList = GetActiveCcBuffs();
+            List<BuffInstance> buffList = GetActiveCcBuffs(_buffs);
 
             if (buffList.Count() >=
                 Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem(
@@ -928,7 +934,7 @@ namespace SAwareness
                             if (damage.Key.NetworkId != ObjectManager.Player.NetworkId)
                                 return;
 
-                            if (CalcMaxDamage(damage.Key) > damage.Key.Health)
+                            if (CalcMaxDamage(damage.Key) >= damage.Key.Health)
                             {
                                 SpellSlot spellSlot = GetPacketSlot(sumHeal);
                                 if (spellSlot != SpellSlot.Unknown)
@@ -958,7 +964,7 @@ namespace SAwareness
                 if (damage.Key.NetworkId != ObjectManager.Player.NetworkId)
                     return;
 
-                if (CalcMaxDamage(damage.Key) > damage.Key.Health)
+                if (CalcMaxDamage(damage.Key) >= damage.Key.Health)
                 {
                     SpellSlot spellSlot = GetPacketSlot(sumHeal);
                     if (spellSlot != SpellSlot.Unknown)
@@ -993,7 +999,7 @@ namespace SAwareness
                 if (damage.Key.NetworkId != ObjectManager.Player.NetworkId)
                     return;
 
-                if (CalcMaxDamage(damage.Key) > damage.Key.Health)
+                if (CalcMaxDamage(damage.Key) >= damage.Key.Health)
                 {
                     SpellSlot spellSlot = GetPacketSlot(sumBarrier);
                     if (spellSlot != SpellSlot.Unknown)

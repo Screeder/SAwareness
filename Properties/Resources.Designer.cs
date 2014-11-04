@@ -4993,6 +4993,16 @@ namespace SAwareness.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
+        internal static byte[] GoldCsLvlBar {
+            get {
+                object obj = ResourceManager.GetObject("GoldCsLvlBar", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
         internal static byte[] Gragas {
             get {
                 object obj = ResourceManager.GetObject("Gragas", resourceCulture);
@@ -6926,6 +6936,16 @@ namespace SAwareness.Properties {
         internal static byte[] LuxLightStrikeKugel {
             get {
                 object obj = ResourceManager.GetObject("LuxLightStrikeKugel", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] luxlightstriketoggle {
+            get {
+                object obj = ResourceManager.GetObject("luxlightstriketoggle", resourceCulture);
                 return ((byte[])(obj));
             }
         }

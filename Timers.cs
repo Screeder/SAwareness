@@ -169,7 +169,7 @@ namespace SAwareness
             }
             catch (Exception)
             {
-                Menu.Health.ForceDisable = true;
+                Menu.Timers.ForceDisable = true;
                 Console.WriteLine("Timer: Cannot create Font");
                 return;
             }

@@ -96,6 +96,11 @@ namespace SAwareness
         public static MenuItemSettings ActivatorDefensiveCleanseSelf = new MenuItemSettings();
         public static MenuItemSettings ActivatorDefensiveShieldBoost = new MenuItemSettings();
         public static MenuItemSettings ActivatorDefensiveMikaelCleanse = new MenuItemSettings();
+        public static MenuItemSettings ActivatorMisc = new MenuItemSettings();
+        public static MenuItemSettings ActivatorAutoHeal = new MenuItemSettings(typeof(AutoHeal));
+        public static MenuItemSettings ActivatorAutoUlt = new MenuItemSettings(typeof(AutoUlt));
+        public static MenuItemSettings ActivatorAutoQss = new MenuItemSettings(typeof(AutoQSS));
+        public static MenuItemSettings ActivatorAutoQssConfig = new MenuItemSettings(typeof(AutoQSS));
         public static MenuItemSettings Killable = new MenuItemSettings(typeof (Killable));
 
         public static MenuItemSettings GlobalSettings = new MenuItemSettings();
@@ -216,6 +221,8 @@ namespace SAwareness
 
     internal class Program
     {
+        private static float lastDebugTime = 0;
+
         private static void Main(string[] args)
         {
             try
@@ -284,7 +291,7 @@ namespace SAwareness
                     Menu.SummonerTimer.Menu.AddItem(new MenuItem("SAwarenessSummonerTimersActive", "Active").SetValue(false)));
                 Menu.Timers.MenuItems.Add(
                     Menu.Timers.Menu.AddItem(new MenuItem("SAwarenessTimersActive", "Active").SetValue(false)));
-                
+
                 //Not crashing
                 Menu.Range.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Ranges", "SAwarenessRanges"));
                 Menu.ExperienceRange.Menu =
@@ -953,6 +960,65 @@ namespace SAwareness
                     Menu.ActivatorDefensive.Menu.AddItem(
                         new MenuItem("SAwarenessActivatorDefensiveActive", "Active").SetValue(false)));
 
+                //Menu.ActivatorMisc.Menu =
+                //    Menu.Activator.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Misc Items",
+                //        "SAwarenessActivatorMisc"));
+                //Menu.ActivatorMisc.MenuItems.Add(
+                //    Menu.ActivatorMisc.Menu.AddItem(
+                //        new MenuItem("SAwarenessActivatorMisc", "Banner of Command").SetValue(false)));
+                //Menu.ActivatorMisc.MenuItems.Add(
+                //    Menu.ActivatorMisc.Menu.AddItem(
+                //        new MenuItem("SAwarenessActivatorMisc", "Entropy").SetValue(false)));
+                //Menu.ActivatorMisc.MenuItems.Add(
+                //    Menu.ActivatorMisc.Menu.AddItem(
+                //        new MenuItem("SAwarenessActivatorMisc", "Ravenous Hydra").SetValue(false)));
+                //Menu.ActivatorOffensiveAd.MenuItems.Add(
+                //    Menu.ActivatorOffensiveAd.Menu.AddItem(
+                //        new MenuItem("SAwarenessActivatorOffensiveAdSwordOfTheDevine", "Sword Of The Devine").SetValue(
+                //            false)));
+                //Menu.ActivatorOffensiveAd.MenuItems.Add(
+                //    Menu.ActivatorOffensiveAd.Menu.AddItem(
+                //        new MenuItem("SAwarenessActivatorOffensiveAdTiamat", "Tiamat").SetValue(false)));
+                //Menu.ActivatorOffensiveAd.MenuItems.Add(
+                //    Menu.ActivatorOffensiveAd.Menu.AddItem(
+                //        new MenuItem("SAwarenessActivatorOffensiveAdYoumuusGhostblade", "Youmuu's Ghostblade").SetValue(
+                //            false)));
+                ////Menu.ActivatorOffensiveAd.MenuItems.Add(Menu.ActivatorOffensiveAd.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorOffensiveAdMuramana", "Muramana").SetValue(false)));
+                //Menu.ActivatorOffensiveAd.MenuItems.Add(
+                //    Menu.ActivatorOffensiveAd.Menu.AddItem(
+                //        new MenuItem("SAwarenessActivatorOffensiveAdActive", "Active").SetValue(false)));
+
+                //Menu.ActivatorOffensiveAp.Menu =
+                //    Menu.ActivatorOffensive.Menu.AddSubMenu(new LeagueSharp.Common.Menu("AP",
+                //        "SAwarenessActivatorOffensiveAp"));
+                //Menu.ActivatorOffensiveAp.MenuItems.Add(
+                //    Menu.ActivatorOffensiveAp.Menu.AddItem(
+                //        new MenuItem("SAwarenessActivatorOffensiveApBilgewaterCutlass", "Bilgewater Cutlass").SetValue(
+                //            false)));
+                //Menu.ActivatorOffensiveAp.MenuItems.Add(
+                //    Menu.ActivatorOffensiveAp.Menu.AddItem(
+                //        new MenuItem("SAwarenessActivatorOffensiveApBlackfireTorch", "Blackfire Torch").SetValue(false)));
+                //Menu.ActivatorOffensiveAp.MenuItems.Add(
+                //    Menu.ActivatorOffensiveAp.Menu.AddItem(
+                //        new MenuItem("SAwarenessActivatorOffensiveApDFG", "Deathfire Grasp").SetValue(false)));
+                //Menu.ActivatorOffensiveAp.MenuItems.Add(
+                //    Menu.ActivatorOffensiveAp.Menu.AddItem(
+                //        new MenuItem("SAwarenessActivatorOffensiveApHextechGunblade", "Hextech Gunblade").SetValue(false)));
+                //Menu.ActivatorOffensiveAp.MenuItems.Add(
+                //    Menu.ActivatorOffensiveAp.Menu.AddItem(
+                //        new MenuItem("SAwarenessActivatorOffensiveApTwinShadows", "Twin Shadows").SetValue(false)));
+                ////Menu.ActivatorOffensiveAp.MenuItems.Add(Menu.ActivatorOffensiveAp.Menu.AddItem(new LeagueSharp.Common.MenuItem("SAwarenessActivatorOffensiveApOdynsVeil", "Odyn's Veil").SetValue(false)));
+                //Menu.ActivatorOffensiveAp.MenuItems.Add(
+                //    Menu.ActivatorOffensiveAp.Menu.AddItem(
+                //        new MenuItem("SAwarenessActivatorOffensiveApActive", "Active").SetValue(false)));
+                //Menu.ActivatorOffensive.MenuItems.Add(
+                //    Menu.ActivatorOffensive.Menu.AddItem(
+                //        new MenuItem("SAwarenessActivatorOffensiveKey", "Key").SetValue(new KeyBind(32,
+                //            KeyBindType.Press))));
+                //Menu.ActivatorOffensive.MenuItems.Add(
+                //    Menu.ActivatorOffensive.Menu.AddItem(
+                //        new MenuItem("SAwarenessActivatorOffensiveActive", "Active").SetValue(false)));
+
                 Menu.AutoShield.Menu =
                     Menu.Activator.Menu.AddSubMenu(new LeagueSharp.Common.Menu("AutoShield | Beta",
                         "SAwarenessAutoShield"));
@@ -1002,8 +1068,73 @@ namespace SAwareness
                     tempSettings.Menu.AddItem(new MenuItem("SAwarenessAutoPotManaPotActive", "Active").SetValue(false)));
                 Menu.AutoPot.MenuItems.Add(
                     Menu.AutoPot.Menu.AddItem(new MenuItem("SAwarenessAutoPotActive", "Active").SetValue(false)));
+                Menu.ActivatorAutoHeal.Menu =
+                    Menu.Activator.Menu.AddSubMenu(new LeagueSharp.Common.Menu("AutoHeal | Beta",
+                        "SAwarenessActivatorAutoHeal"));
+                Menu.ActivatorAutoHeal.MenuItems.Add(
+                    Menu.ActivatorAutoHeal.Menu.AddItem(new MenuItem("SAwarenessActivatorAutoHealPercent", "Percent").SetValue(new Slider(20, 99, 0))));
+                Menu.ActivatorAutoHeal.MenuItems.Add(
+                    Menu.ActivatorAutoHeal.Menu.AddItem(new MenuItem("SAwarenessActivatorAutoHealActive", "Active").SetValue(false)));
+                Menu.ActivatorAutoUlt.Menu =
+                    Menu.Activator.Menu.AddSubMenu(new LeagueSharp.Common.Menu("AutoUlt | Beta",
+                        "SAwarenessActivatorAutoUlt"));
+                Menu.ActivatorAutoUlt.MenuItems.Add(
+                    Menu.ActivatorAutoUlt.Menu.AddItem(new MenuItem("SAwarenessActivatorAutoUltAlly", "Ally").SetValue(false)));
+                Menu.ActivatorAutoUlt.MenuItems.Add(
+                    Menu.ActivatorAutoUlt.Menu.AddItem(new MenuItem("SAwarenessActivatorAutoUltActive", "Active").SetValue(false)));
                 Menu.Activator.MenuItems.Add(
                     Menu.Activator.Menu.AddItem(new MenuItem("SAwarenessActivatorActive", "Active").SetValue(false)));
+
+                Menu.ActivatorAutoQss.Menu =
+                   Menu.Activator.Menu.AddSubMenu(new LeagueSharp.Common.Menu("QSS | Beta",
+                       "SAwarenessActivatorAutoQssConfig"));
+                Menu.ActivatorAutoQss.MenuItems.Add(
+                    Menu.ActivatorAutoQss.Menu.AddItem(
+                        new MenuItem("SAwarenessActivatorAutoQssMinSpells", "Min Spells").SetValue(
+                            new Slider(2, 10, 1))));
+                Menu.ActivatorAutoQss.MenuItems.Add(
+                    Menu.ActivatorAutoQss.Menu.AddItem(new MenuItem("SAwarenessActivatorAutoQssActive", "Active").SetValue(false)));
+
+                Menu.ActivatorAutoQssConfig.Menu =
+                    Menu.ActivatorAutoQss.Menu.AddSubMenu(new LeagueSharp.Common.Menu("QSS Config",
+                        "SAwarenessActivatorAutoQssConfig"));
+                Menu.ActivatorAutoQssConfig.MenuItems.Add(
+                    Menu.ActivatorAutoQssConfig.Menu.AddItem(
+                        new MenuItem("SAwarenessActivatorAutoQssConfigStun", "Stun").SetValue(false)));
+                Menu.ActivatorAutoQssConfig.MenuItems.Add(
+                    Menu.ActivatorAutoQssConfig.Menu.AddItem(
+                        new MenuItem("SAwarenessActivatorAutoQssConfigSilence", "Silence").SetValue(false)));
+                Menu.ActivatorAutoQssConfig.MenuItems.Add(
+                    Menu.ActivatorAutoQssConfig.Menu.AddItem(
+                        new MenuItem("SAwarenessActivatorAutoQssConfigTaunt", "Taunt").SetValue(false)));
+                Menu.ActivatorAutoQssConfig.MenuItems.Add(
+                    Menu.ActivatorAutoQssConfig.Menu.AddItem(
+                        new MenuItem("SAwarenessActivatorAutoQssConfigFear", "Fear").SetValue(false)));
+                Menu.ActivatorAutoQssConfig.MenuItems.Add(
+                    Menu.ActivatorAutoQssConfig.Menu.AddItem(
+                        new MenuItem("SAwarenessActivatorAutoQssConfigCharm", "Charm").SetValue(false)));
+                Menu.ActivatorAutoQssConfig.MenuItems.Add(
+                    Menu.ActivatorAutoQssConfig.Menu.AddItem(
+                        new MenuItem("SAwarenessActivatorAutoQssConfigBlind", "Blind").SetValue(false)));
+                Menu.ActivatorAutoQssConfig.MenuItems.Add(
+                    Menu.ActivatorAutoQssConfig.Menu.AddItem(
+                        new MenuItem("SAwarenessActivatorAutoQssConfigDisarm", "Disarm").SetValue(false)));
+                Menu.ActivatorAutoQssConfig.MenuItems.Add(
+                    Menu.ActivatorAutoQssConfig.Menu.AddItem(
+                        new MenuItem("SAwarenessActivatorAutoQssConfigSuppress", "Suppress").SetValue(false)));
+                Menu.ActivatorAutoQssConfig.MenuItems.Add(
+                    Menu.ActivatorAutoQssConfig.Menu.AddItem(
+                        new MenuItem("SAwarenessActivatorAutoQssConfigSlow", "Slow").SetValue(false)));
+                Menu.ActivatorAutoQssConfig.MenuItems.Add(
+                    Menu.ActivatorAutoQssConfig.Menu.AddItem(
+                        new MenuItem("SAwarenessActivatorAutoQssConfigCombatDehancer", "Combat Dehancer")
+                            .SetValue(false)));
+                Menu.ActivatorAutoQssConfig.MenuItems.Add(
+                    Menu.ActivatorAutoQssConfig.Menu.AddItem(
+                        new MenuItem("SAwarenessActivatorAutoQssConfigSnare", "Snare").SetValue(false)));
+                Menu.ActivatorAutoQssConfig.MenuItems.Add(
+                    Menu.ActivatorAutoQssConfig.Menu.AddItem(
+                        new MenuItem("SAwarenessActivatorAutoQssConfigPoison", "Posion").SetValue(false)));  
 
                 ////Not crashing
                 Menu.Misc.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Misc", "SAwarenessMisc"));
@@ -1184,6 +1315,7 @@ namespace SAwareness
                     }
                 }
             }
+            //CreateDebugInfos();
         }
 
         public static PropertyInfo[] GetPublicProperties(Type type)
@@ -1240,6 +1372,103 @@ namespace SAwareness
                 stm.Read(ba, 0, (int) stm.Length);
                 return Assembly.Load(ba);
             }
+        }
+
+        private static void CreateDebugInfos()
+        {
+            if (lastDebugTime + 60 > Game.ClockTime)
+                return;
+            StreamWriter writer = null;
+            try
+            {
+                writer = new StreamWriter("C:\\SAwarenessDebug.log");
+                if(writer == null)
+                    return;
+                writer.WriteLine("Debug Infos of game: " + Game.Id);
+                writer.WriteLine("MapId: " + Game.MapId);
+                writer.WriteLine("Mode: " + Game.Mode);
+                writer.WriteLine("Region: " + Game.Region);
+                writer.WriteLine("Type: " + Game.Type);
+                writer.WriteLine("Time: " + Game.ClockTime);
+
+                foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+                {
+                    if (hero.IsMe)
+                    {
+                        writer.WriteLine("Player: ");
+                    }
+                    else if (hero.IsAlly)
+                    {
+                        writer.WriteLine("Ally: ");
+                    }
+                    else if (hero.IsEnemy)
+                    {
+                        writer.WriteLine("Enemy: ");
+                    }
+                    writer.WriteLine("Character: " + hero.ChampionName);
+                    writer.Write("Summoners: ");
+                    foreach (var spell in hero.SummonerSpellbook.Spells)
+                    {
+                        writer.Write(spell.SData.Name + ", ");
+                    }
+                    writer.WriteLine("");
+                    writer.Write("Items: ");
+                    foreach (var item in hero.InventoryItems)
+                    {
+                        writer.Write(item.Name + ", ");
+                    }
+                    writer.WriteLine("");
+                }
+                Type classType = typeof(Menu);
+                BindingFlags flags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
+                FieldInfo[] fields = classType.GetFields(flags);
+                writer.WriteLine("Activated Options: ");
+                foreach (FieldInfo p in fields)
+                {
+                    var item = (Menu.MenuItemSettings)p.GetValue(null);
+                    if (item.GetActive() == false && item.Item != null)
+                    {
+                        //item.Item = null;
+                    }
+                    else if (item.GetActive() && !item.ForceDisable)
+                    {
+                        try
+                        {
+                            writer.WriteLine("- " + item.Menu.Name);
+                            foreach (var menuItem in item.MenuItems)
+                            {
+                                try{ writer.WriteLine("  - " + menuItem.Name + " | " + menuItem.GetValue<Boolean>()); }
+                                catch (Exception e){ if (e is InvalidCastException || e is NullReferenceException) { } }
+                                try { writer.WriteLine("  - " + menuItem.Name + " | " + menuItem.GetValue<Slider>().Value); }
+                                catch (Exception e) { if (e is InvalidCastException || e is NullReferenceException) { } }
+                                try { writer.WriteLine("  - " + menuItem.Name + " | " + menuItem.GetValue<KeyBind>().Active); }
+                                catch (Exception e) { if (e is InvalidCastException || e is NullReferenceException) { } }
+                                try { writer.WriteLine("  - " + menuItem.Name + " | " + menuItem.GetValue<StringList>().SelectedIndex); }
+                                catch (Exception e) { if (e is InvalidCastException || e is NullReferenceException) { } }
+                            }
+                            //item.Item = System.Activator.CreateInstance(item.Type);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                            throw;
+                        }
+                    }
+                }
+                lastDebugTime = Game.ClockTime;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("SAwareness: " + e);
+            }
+            finally
+            {
+                if (writer != null)
+                {
+                    writer.Flush();
+                    writer.Close();
+                }               
+            }            
         }
     }
 }

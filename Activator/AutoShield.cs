@@ -33,32 +33,36 @@ namespace SAwareness
         {
             switch (ObjectManager.Player.ChampionName)
             {
+                case "Galio":
+                    _shield = new Shield(new Spell(SpellSlot.W, 800, 0, 0, 0));
+                    break; 
+
                 case "Janna":
                     _shield = new Shield(new Spell(SpellSlot.E, 900, 0, 0, 0));
-                    break;
-
-                case "Morgana":
-                    _shield = new Shield(new Spell(SpellSlot.E, 850, 0, 0, 0), true, false, true);
-                    break;
-
-                case "Lux":
-                    _shield = new Shield(new Spell(SpellSlot.W, 1175, 0.5f, 150, 1200), false, true);
-                    break;
-
-                case "Orianna":
-                    _shield = new Shield(new Spell(SpellSlot.E, 1295, 0.5f, 0, 1200), false);
-                    break;
+                    break; 
 
                 case "Karma":
                     _shield = new Shield(new Spell(SpellSlot.E, 900, 0, 0, 0));
+                    break;
+
+                case "LeeSin":
+                    _shield = new Shield(new Spell(SpellSlot.W, 800, 0, 0, 1500), false);
                     break;
 
                 case "Lulu":
                     _shield = new Shield(new Spell(SpellSlot.E, 750, 0, 0, 0));
                     break;
 
-                case "LeeSin":
-                    _shield = new Shield(new Spell(SpellSlot.W, 800, 0, 0, 1500), false);
+                case "Lux":
+                    _shield = new Shield(new Spell(SpellSlot.W, 1175, 0.5f, 150, 1200), false, true);
+                    break;
+
+                case "Morgana":
+                    _shield = new Shield(new Spell(SpellSlot.E, 850, 0, 0, 0), true, false, true);
+                    break;
+
+                case "Orianna":
+                    _shield = new Shield(new Spell(SpellSlot.E, 1295, 0.5f, 0, 1200), false);
                     break;
 
                 case "Thresh":
@@ -66,6 +70,18 @@ namespace SAwareness
                     break;
 
                 //Self
+
+                case "Diana":
+                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
+                    break;
+
+                case "Fizz":
+                    _shield = new Shield(new Spell(SpellSlot.E, 0, 0, 0, 0), true);
+                    break;
+
+                case "Garen":
+                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
+                    break;
 
                 case "JarvanIV":
                     _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
@@ -75,11 +91,15 @@ namespace SAwareness
                     _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
                     break;
 
-                case "Rumble":
-                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
+                case "Nocturne":
+                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true, false, true, true);
                     break;
 
-                case "Sion":
+                case "Riven":
+                    _shield = new Shield(new Spell(SpellSlot.E, 0, 0, 0, 0), true);
+                    break;
+
+                case "Rumble":
                     _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
                     break;
 
@@ -87,15 +107,15 @@ namespace SAwareness
                     _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
                     break;
 
+                case "Sion":
+                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
+                    break;
+
+                case "Sivir":
+                    _shield = new Shield(new Spell(SpellSlot.E, 0, 0, 0, 0), true, false, true, true);
+                    break;
+
                 case "Skarner":
-                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
-                    break;
-
-                case "Urgot":
-                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
-                    break;
-
-                case "Diana":
                     _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
                     break;
 
@@ -103,16 +123,22 @@ namespace SAwareness
                     _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
                     break;
 
-                case "Riven":
-                    _shield = new Shield(new Spell(SpellSlot.E, 0, 0, 0, 0), true);
+                case "Urgot":
+                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true);
                     break;
 
-                case "Sivir":
-                    _shield = new Shield(new Spell(SpellSlot.E, 0, 0, 0, 0), true, false, true, true);
+                //Self && AA
+
+                case "Annie":
+                    _shield = new Shield(new Spell(SpellSlot.E, 0, 0, 0, 0), true, true);
                     break;
 
-                case "Nocturne":
-                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true, false, true, true);
+                case "Fiora":
+                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true, true);
+                    break;
+
+                case "Rammus":
+                    _shield = new Shield(new Spell(SpellSlot.W, 0, 0, 0, 0), true, true);
                     break;
 
                 default:
@@ -139,6 +165,11 @@ namespace SAwareness
                 {
                     foreach (Database.Spell spell in Database.GetSpellList())
                     {
+                        if (_shield.OnlyAA && !IsAutoAttack(tDamage.SpellName))
+                        {
+                            tempDamages[hero].Remove(tDamage);
+                            continue;
+                        }
                         if (spell.Name.Contains(tDamage.SpellName))
                         {
                             if (_shield.OnlyMagic)
@@ -171,7 +202,7 @@ namespace SAwareness
                             tempDamages[hero].Remove(tDamage);
                             continue;
                         }
-                        if (Menu.AutoShieldBlockableSpells.GetMenuItem("SAwarenessAutoShieldBlockableSpellsActive")
+                        if (Menu.AutoShield.GetMenuItem("SAwarenessAutoShieldBlockableSpellsActive")
                                 .GetValue<bool>())
                         {
                             foreach (var blockableSpell in GetBlockableSpells())
@@ -194,7 +225,7 @@ namespace SAwareness
                 //Vector2 d2 = Drawing.WorldToScreen(damage.Key.ServerPosition);
                 //Drawing.DrawText(d2.X, d2.Y, System.Drawing.Color.Aquamarine, Activator.CalcMaxDamage(damage.Key).ToString());
 
-                if (Activator.CalcMaxDamage(damage.Key) > Menu.AutoShieldBlockableSpells.GetMenuItem("SAwarenessAutoShieldBlockMinDamageAmount")
+                if (Activator.CalcMaxDamage(damage.Key) > Menu.AutoShield.GetMenuItem("SAwarenessAutoShieldBlockMinDamageAmount")
                                     .GetValue<Slider>().Value &&
                     (_shield.OnlySelf || damage.Key.Distance(ObjectManager.Player.ServerPosition) < _shield.Spell.Range))
                 {
@@ -202,17 +233,18 @@ namespace SAwareness
                     {
                         PredictionOutput predOutput = _shield.Spell.GetPrediction(damage.Key);
                         if (predOutput.Hitchance > HitChance.Medium)
+                            Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, _shield.Spell.Slot, -1, predOutput.CastPosition.X, predOutput.CastPosition.Y, predOutput.CastPosition.X, predOutput.CastPosition.Y)).Send();
                             ObjectManager.Player.Spellbook.CastSpell(_shield.Spell.Slot, predOutput.CastPosition);
                         break;
                     }
                     if (_shield.OnlySelf && damage.Key.NetworkId == ObjectManager.Player.NetworkId)
                     {
-                        ObjectManager.Player.Spellbook.CastSpell(_shield.Spell.Slot);
+                        Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(damage.Key.NetworkId, _shield.Spell.Slot)).Send();
                         break;
                     }
                     if (_shield.Instant)
                     {
-                        ObjectManager.Player.Spellbook.CastSpell(_shield.Spell.Slot, damage.Key);
+                        Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(damage.Key.NetworkId, _shield.Spell.Slot)).Send();
                         break;
                     }
                 }
@@ -344,6 +376,7 @@ namespace SAwareness
             public readonly bool Instant;
             public readonly bool OnlyMagic;
             public readonly bool OnlySelf;
+            public readonly bool OnlyAA;
             public readonly bool Skillshot;
             public readonly Spell Spell;
 
@@ -355,6 +388,17 @@ namespace SAwareness
                 Skillshot = skillshot;
                 OnlyMagic = onlyMagic;
                 OnlySelf = onlySelf;
+                OnlyAA = false;
+            }
+
+            public Shield(Spell spell, bool onlySelf = false, bool onlyAA = false)
+            {
+                Spell = spell;
+                Instant = true;
+                Skillshot = false;
+                OnlyMagic = false;
+                OnlySelf = onlySelf;
+                OnlyAA = onlyAA;
             }
 
             public Shield(Spell spell, bool onlySelf = false)
@@ -364,6 +408,7 @@ namespace SAwareness
                 Skillshot = false;
                 OnlyMagic = false;
                 OnlySelf = onlySelf;
+                OnlyAA = false;
             }
 
             public Shield(Spell spell)
@@ -373,6 +418,7 @@ namespace SAwareness
                 Skillshot = false;
                 OnlyMagic = false;
                 OnlySelf = false;
+                OnlyAA = false;
             }
         }
 

@@ -59,8 +59,7 @@
     <Reference Include="Evade.1.0.0.1.Fakes">
       <HintPath>H:\Programme\LeagueSharp\\System\Evade.1.0.0.1.Fakes.dll</HintPath>
     </Reference>
-    <Reference Include="LeagueSharp, Version=1.0.0.25, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="LeagueSharp">
       <HintPath>H:\Programme\LeagueSharp\\System\LeagueSharp.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp.Common, Version=1.0.0.2, Culture=neutral, processorArchitecture=x86">
@@ -95,6 +94,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activator\Activator.cs" />
+    <Compile Include="Activator\AutoAntiSlow.cs" />
+    <Compile Include="Activator\AutoHeal.cs" />
+    <Compile Include="Activator\AutoQSS.cs" />
+    <Compile Include="Activator\AutoUlt.cs" />
     <Compile Include="AutoLevler.cs" />
     <Compile Include="Activator\AutoPot.cs" />
     <Compile Include="Activator\AutoShield.cs" />
@@ -3701,6 +3704,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\SUMMONERS\SpellTintRed.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EXT\GoldCsLvlBar.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\luxlightstriketoggle.dds" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
