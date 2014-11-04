@@ -208,7 +208,10 @@ namespace SAwareness
                         : null;
                 case "KhaZix":
                     return player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready
-                        ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.Q), 325, SpellType.Target, SpellSlot.Q)
+                        ? new ExtraDamage(player.GetSpellDamage(minion, SpellSlot.Q, 
+                            (MinionManager.GetMinions(minion.ServerPosition, 500f, MinionTypes.All, MinionTeam.Neutral)).Count > 0 
+                            ? ObjectManager.Player.HasBuff("khazixqevo", true) ? 2 : 0
+                            : ObjectManager.Player.HasBuff("khazixqevo", true) ? 3 : 1), 325, SpellType.Target, SpellSlot.Q)
                         : null;
                 case "LeeSin":
                     return player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready && minion.HasBuff("BlindMonkQOne", true)
