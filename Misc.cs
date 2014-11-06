@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Security.AccessControl;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -505,6 +506,43 @@ namespace SAwareness
                     Drawing.DrawLine(Drawing.WorldToMinimap(new Vector3(1546 + first, 1314, 100)), Drawing.WorldToMinimap(new Vector3(1546 + last, 1314, 100)), 2, System.Drawing.Color.White);
                 }
             }
+        }
+    }
+
+    internal class EasyRangedJungle
+    {
+        public EasyRangedJungle()
+        {
+            Drawing.OnEndScene += Drawing_OnEndScene;
+        }
+
+        ~EasyRangedJungle()
+        {
+            Drawing.OnEndScene -= Drawing_OnEndScene;
+        }
+
+        public bool IsActive()
+        {
+            return Menu.Misc.GetActive() && Menu.EasyRangedJungle.GetActive();
+        }
+
+        private void Drawing_OnEndScene(EventArgs args)
+        {
+            if (!IsActive())
+                return;
+
+            Utility.DrawCircle(new Vector3(7440f, 2980f, 60f), 50, System.Drawing.Color.Fuchsia);
+            Utility.DrawCircle(new Vector3(7230f, 4670f, 60f), 50, System.Drawing.Color.Fuchsia);
+            Utility.DrawCircle(new Vector3(7230f, 4670f, 60f), 50, System.Drawing.Color.Fuchsia);
+            Utility.DrawCircle(new Vector3(3400f, 8430f, 60f), 50, System.Drawing.Color.Fuchsia);
+            Utility.DrawCircle(new Vector3(6860f, 11500f, 60f), 50, System.Drawing.Color.Fuchsia);
+            Utility.DrawCircle(new Vector3(7010f, 10020f, 60f), 50, System.Drawing.Color.Fuchsia);
+            Utility.DrawCircle(new Vector3(9850f, 8780f, 60f), 50, System.Drawing.Color.Fuchsia);
+            Utility.DrawCircle(new Vector3(11130f, 6230f, 60f), 50, System.Drawing.Color.Fuchsia);
+            Utility.DrawCircle(new Vector3(10270f, 4970f, 60f), 50, System.Drawing.Color.Fuchsia);
+            Utility.DrawCircle(new Vector3(7210f, 2100f, 60f), 50, System.Drawing.Color.Fuchsia);
+            Utility.DrawCircle(new Vector3(4140f, 5700f, 60f), 50, System.Drawing.Color.Fuchsia);
+            Utility.DrawCircle(new Vector3(6900f, 12400f, 60f), 50, System.Drawing.Color.Fuchsia);
         }
     }
 }

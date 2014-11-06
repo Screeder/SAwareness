@@ -645,7 +645,7 @@ namespace SAwareness
             {
                 if (enemy.Key.ChampionName == "Shaco")
                 {
-                    if (sender.Name == "JackintheboxPoof2.troy" && !enemy.Value[0].Casted)
+                    if (sender.Type != GameObjectType.obj_LampBulb && sender.Name == "JackintheboxPoof2.troy" && !enemy.Value[0].Casted)
                     {
                         enemy.Value[0].StartPos = sender.Position;
                         enemy.Value[0].EndPos = sender.Position;

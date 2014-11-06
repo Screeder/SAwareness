@@ -60,6 +60,13 @@ namespace SAwareness
                                     ? health + " Disabled"
                                     : health;
                             Drawing.DrawText(pos[0], pos[1], Color.SkyBlue, health);
+                            Vector2 hpBarPos = minion.HPBarPosition;
+                            hpBarPos.X += 45;
+                            hpBarPos.Y += 18;
+                            float hpXPos = hpBarPos.X + (63 * ((float)(GetSmiteDamage() + (GetExtraDamage(minion) != null 
+                                ? GetExtraDamage(minion).Damage 
+                                : 0)) / minion.MaxHealth));
+                            Drawing.DrawLine(hpXPos, hpBarPos.Y, hpXPos, hpBarPos.Y + 5, 2, System.Drawing.Color.SkyBlue);
                         }
                     }
                 }

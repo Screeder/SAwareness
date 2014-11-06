@@ -867,7 +867,7 @@ namespace SAwareness
                 SpellSlot spellSlot = GetPacketSlot(sumCleanse);
                 if (spellSlot != SpellSlot.Unknown)
                 {
-                    GamePacket gPacketT = FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
+                    GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                     gPacketT.Send();
                     _lastItemCleanseUse = Game.Time;
                 }
@@ -890,11 +890,11 @@ namespace SAwareness
                         double dmgafter = (igniteDmg - ((regenpersec * 5) / 2));
                         if (dmgafter > hero.Health)
                         {
-                            SpellSlot spellSlot = GetPacketSlot(sumIgnite);
+                            SpellSlot spellSlot = sumIgnite;
                             if (spellSlot != SpellSlot.Unknown)
                             {
                                 GamePacket gPacketT =
-                                    FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(hero.NetworkId, spellSlot));
+                                    Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(hero.NetworkId, spellSlot));
                                 gPacketT.Send();
                             }
                         }
@@ -925,7 +925,7 @@ namespace SAwareness
                             SpellSlot spellSlot = GetPacketSlot(sumHeal);
                             if (spellSlot != SpellSlot.Unknown)
                             {
-                                GamePacket gPacketT = FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
+                                GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                                 gPacketT.Send();
                             }
                         }
@@ -939,7 +939,7 @@ namespace SAwareness
                                 SpellSlot spellSlot = GetPacketSlot(sumHeal);
                                 if (spellSlot != SpellSlot.Unknown)
                                 {
-                                    GamePacket gPacketT = FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
+                                    GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                                     gPacketT.Send();
                                 }
                             }
@@ -955,7 +955,7 @@ namespace SAwareness
                 SpellSlot spellSlot = GetPacketSlot(sumHeal);
                 if (spellSlot != SpellSlot.Unknown)
                 {
-                    GamePacket gPacketT = FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
+                    GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                     gPacketT.Send();
                 }
             }
@@ -969,7 +969,7 @@ namespace SAwareness
                     SpellSlot spellSlot = GetPacketSlot(sumHeal);
                     if (spellSlot != SpellSlot.Unknown)
                     {
-                        GamePacket gPacketT = FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
+                        GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                         gPacketT.Send();
                     }
                 }
@@ -990,7 +990,7 @@ namespace SAwareness
                 SpellSlot spellSlot = GetPacketSlot(sumBarrier);
                 if (spellSlot != SpellSlot.Unknown)
                 {
-                    GamePacket gPacketT = FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
+                    GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                     gPacketT.Send();
                 }
             }
@@ -1004,7 +1004,7 @@ namespace SAwareness
                     SpellSlot spellSlot = GetPacketSlot(sumBarrier);
                     if (spellSlot != SpellSlot.Unknown)
                     {
-                        GamePacket gPacketT = FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
+                        GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                         gPacketT.Send();
                     }
                 }
@@ -1041,7 +1041,7 @@ namespace SAwareness
                     if (spellSlot != SpellSlot.Unknown)
                     {
                         GamePacket gPacketT =
-                            FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(enemy.NetworkId, spellSlot));
+                            Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(enemy.NetworkId, spellSlot));
                         if (
                             Menu.ActivatorAutoSummonerSpellExhaust.GetMenuItem(
                                 "SAwarenessActivatorAutoSummonerSpellExhaustAutoCast").GetValue<KeyBind>().Active &&
@@ -1125,7 +1125,7 @@ namespace SAwareness
                     {
                         if (sender.ServerPosition.Distance(ObjectManager.Player.ServerPosition) <= 750)
                         {
-                            FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(sender.NetworkId, spellSlot)).Send();
+                            Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(sender.NetworkId, spellSlot)).Send();
                         }
                     }
 
@@ -1136,7 +1136,7 @@ namespace SAwareness
                         Utility.DelayAction.Add(2500, () =>
                         {
                             if (sender.ServerPosition.Distance(ObjectManager.Player.ServerPosition) <= 750)
-                                FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(sender.NetworkId, spellSlot)).Send();
+                                Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(sender.NetworkId, spellSlot)).Send();
                         });
                     }
 
@@ -1146,7 +1146,7 @@ namespace SAwareness
                         Utility.DelayAction.Add(500, () =>
                         {
                             if (sender.ServerPosition.Distance(ObjectManager.Player.ServerPosition) <= 750)
-                                FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(sender.NetworkId, spellSlot)).Send();
+                                Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(sender.NetworkId, spellSlot)).Send();
                         });
                     }
                 }
