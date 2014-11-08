@@ -60,6 +60,8 @@ namespace SAwareness
                                     ? health + " Disabled"
                                     : health;
                             Drawing.DrawText(pos[0], pos[1], Color.SkyBlue, health);
+                            if(minion.IsDead)
+                                continue;
                             Vector2 hpBarPos = minion.HPBarPosition;
                             hpBarPos.X += 45;
                             hpBarPos.Y += 18;
@@ -141,17 +143,12 @@ namespace SAwareness
         private void SmiteIt(Obj_AI_Base minion, ExtraDamage extraDamageInfo = null)
         {
             SpellSlot smiteSlot = GetSmiteSlot();
-            int slot = -1;
-            if (smiteSlot == SpellSlot.Q)
-                slot = 64;
-            else if (smiteSlot == SpellSlot.W)
-                slot = 65;
-            if (slot != -1)
+            if (smiteSlot != SpellSlot.Unknown)
             {
                 if (extraDamageInfo == null)
                 {
                     GamePacket gPacketT =
-                        Activator.FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(minion.NetworkId, (SpellSlot)slot));
+                        Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(minion.NetworkId, smiteSlot));
                     gPacketT.Send();
                 }
                 else
@@ -184,7 +181,7 @@ namespace SAwareness
                         (int) (Game.Time /*+ (extraTimeForCast/1000)*(sender.ServerPosition.Distance(endPos)/1000)*/+
                                (ObjectManager.Player.ServerPosition.Distance(minion.ServerPosition)/1000)),
                         () =>
-                            Activator.FixedSummonerCast.Encoded(new Packet.C2S.Cast.Struct(minion.NetworkId, (SpellSlot)slot))
+                            Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(minion.NetworkId, smiteSlot))
                                 .Send());
                     //gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(minion.NetworkId, (SpellSlot)slot));
                     //gPacketT.Send();

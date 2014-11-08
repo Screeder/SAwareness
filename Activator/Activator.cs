@@ -864,7 +864,7 @@ namespace SAwareness
                     "SAwarenessActivatorAutoSummonerSpellCleanseMinSpells").GetValue<Slider>().Value &&
                 _lastItemCleanseUse + 1 < Game.Time)
             {
-                SpellSlot spellSlot = GetPacketSlot(sumCleanse);
+                SpellSlot spellSlot = sumCleanse;
                 if (spellSlot != SpellSlot.Unknown)
                 {
                     GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
@@ -922,7 +922,7 @@ namespace SAwareness
                             Menu.ActivatorAutoSummonerSpellHeal.GetMenuItem(
                                 "SAwarenessActivatorAutoSummonerSpellHealPercent").GetValue<Slider>().Value)
                         {
-                            SpellSlot spellSlot = GetPacketSlot(sumHeal);
+                            SpellSlot spellSlot = sumHeal;
                             if (spellSlot != SpellSlot.Unknown)
                             {
                                 GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
@@ -936,7 +936,7 @@ namespace SAwareness
 
                             if (CalcMaxDamage(damage.Key) >= damage.Key.Health)
                             {
-                                SpellSlot spellSlot = GetPacketSlot(sumHeal);
+                                SpellSlot spellSlot = sumHeal;
                                 if (spellSlot != SpellSlot.Unknown)
                                 {
                                     GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
@@ -952,7 +952,7 @@ namespace SAwareness
                     .GetValue<Slider>()
                     .Value)
             {
-                SpellSlot spellSlot = GetPacketSlot(sumHeal);
+                SpellSlot spellSlot = sumHeal;
                 if (spellSlot != SpellSlot.Unknown)
                 {
                     GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
@@ -966,7 +966,7 @@ namespace SAwareness
 
                 if (CalcMaxDamage(damage.Key) >= damage.Key.Health)
                 {
-                    SpellSlot spellSlot = GetPacketSlot(sumHeal);
+                    SpellSlot spellSlot = sumHeal;
                     if (spellSlot != SpellSlot.Unknown)
                     {
                         GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
@@ -987,7 +987,7 @@ namespace SAwareness
                     .GetValue<Slider>()
                     .Value)
             {
-                SpellSlot spellSlot = GetPacketSlot(sumBarrier);
+                SpellSlot spellSlot = sumBarrier;
                 if (spellSlot != SpellSlot.Unknown)
                 {
                     GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
@@ -1001,7 +1001,7 @@ namespace SAwareness
 
                 if (CalcMaxDamage(damage.Key) >= damage.Key.Health)
                 {
-                    SpellSlot spellSlot = GetPacketSlot(sumBarrier);
+                    SpellSlot spellSlot = sumBarrier;
                     if (spellSlot != SpellSlot.Unknown)
                     {
                         GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
@@ -1037,7 +1037,7 @@ namespace SAwareness
                                     Vector2.Distance(ObjectManager.Player.Position.To2D(), units.Position.To2D()) <= 750);
                     float healthA = hero.Health/hero.MaxHealth*100;
                     float healthE = enemy.Health/enemy.MaxHealth*100;
-                    SpellSlot spellSlot = GetPacketSlot(sumExhaust);
+                    SpellSlot spellSlot = sumExhaust;
                     if (spellSlot != SpellSlot.Unknown)
                     {
                         GamePacket gPacketT =
@@ -1088,7 +1088,7 @@ namespace SAwareness
 
             if (sender.IsEnemy)
             {
-                SpellSlot spellSlot = GetPacketSlot(GetExhaustSlot());
+                SpellSlot spellSlot = GetExhaustSlot();
                 if (spellSlot != SpellSlot.Unknown)
                 {
                     if (args.SData.Name.Contains("InfernalGuardian") || //Annie

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Security.AccessControl;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -543,6 +544,156 @@ namespace SAwareness
             Utility.DrawCircle(new Vector3(7210f, 2100f, 60f), 50, System.Drawing.Color.Fuchsia);
             Utility.DrawCircle(new Vector3(4140f, 5700f, 60f), 50, System.Drawing.Color.Fuchsia);
             Utility.DrawCircle(new Vector3(6900f, 12400f, 60f), 50, System.Drawing.Color.Fuchsia);
+        }
+    }
+
+    internal class FowWardPlacement
+    {
+        Dictionary<Obj_AI_Hero, List<ExpandedWardItem>> enemiesUsed = new Dictionary<Obj_AI_Hero, List<ExpandedWardItem>>();
+        Dictionary<Obj_AI_Hero, List<ExpandedWardItem>> enemiesRefilled = new Dictionary<Obj_AI_Hero, List<ExpandedWardItem>>();
+
+        public class ExpandedWardItem : Wards.WardItem
+        {
+            public int Stacks;
+            public int Charges;
+            public bool Cd;
+
+            public ExpandedWardItem(int id, string name, string spellName, int range, int duration, Wards.WardType type, int stacks, int charges) 
+                : base (id, name, spellName, range, duration, type)
+            {
+                Stacks = stacks;
+                Charges = charges;
+            }
+
+            public ExpandedWardItem(Wards.WardItem ward, int stacks, int charges)
+                : base(ward.Id, ward.Name, ward.SpellName, ward.Range, ward.Duration, ward.Type)
+            {
+                Stacks = stacks;
+                Charges = charges;
+            }
+        }
+
+        public FowWardPlacement()
+        {
+            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+            {
+                if (hero.IsEnemy)
+                {
+                    List<ExpandedWardItem> wards = GetWardItemsUsed(hero);
+                    enemiesUsed.Add(hero, wards);
+                    wards = GetWardItemsRefilled(hero);
+                    enemiesRefilled.Add(hero, wards);
+                }
+            }
+            Game.OnGameUpdate += Game_OnGameUpdate;
+        }
+
+        ~FowWardPlacement()
+        {
+            Game.OnGameUpdate += Game_OnGameUpdate;
+        }
+
+        public bool IsActive()
+        {
+            return Menu.Misc.GetActive() && Menu.FowWardPlacement.GetActive();
+        }
+
+        private void Game_OnGameUpdate(EventArgs args)
+        {
+            if (!IsActive())
+                return;
+
+            foreach (var enemy in enemiesUsed.ToArray())
+            {
+                Obj_AI_Hero hero = enemy.Key;
+                List<ExpandedWardItem> wards = new List<ExpandedWardItem>(enemy.Value.ToArray());
+                foreach (var item in hero.InventoryItems)
+                {
+                    foreach (var wardItem in enemy.Value.ToArray())
+                    {
+                        if ((int)item.Id == wardItem.Id && wardItem.Type != Wards.WardType.Temp && hero.Spellbook.CanUseSpell(item.SpellSlot) == SpellState.Ready)
+                        {
+                            if (item.Charges < wardItem.Charges || item.Stacks < wardItem.Stacks)
+                                Console.Write("");
+                            if (item.Charges > 0 ? item.Charges >= wardItem.Charges : false || item.Stacks >= wardItem.Stacks) //Check for StackItems etc fail
+                            {
+                                enemy.Value.Remove(wardItem);
+                            }
+                        }
+                    }
+                }
+                foreach (var wardItem in enemy.Value)
+                {
+                    Game.PrintChat("{0} has used {1}", enemy.Key.ChampionName, wardItem.Name);
+                }
+                enemiesUsed[enemy.Key] = GetWardItemsUsed(hero);
+            }
+
+            foreach (var enemy in enemiesRefilled.ToArray())
+            {
+                Obj_AI_Hero hero = enemy.Key;
+
+                //Refill
+                List<ExpandedWardItem> wards = new List<ExpandedWardItem>();
+                foreach (var item in hero.InventoryItems)
+                {
+                    List<int> checkedWards = new List<int>();
+                    foreach (var wardItem in enemy.Value.ToArray())
+                    {
+                        if ((int)item.Id == wardItem.Id && (item.Charges > wardItem.Charges || item.Stacks > wardItem.Stacks) &&
+                            wardItem.Type != Wards.WardType.Temp && hero.Spellbook.CanUseSpell(item.SpellSlot) == SpellState.Ready)
+                        {
+                            wards.Add(wardItem);
+                        }
+                        checkedWards.Add(wardItem.Id);
+                    }
+                    foreach (var ward in Wards.WardItems)
+                    {
+                        if ((int)item.Id == ward.Id && ward.Type != Wards.WardType.Temp && hero.Spellbook.CanUseSpell(item.SpellSlot) == SpellState.Ready &&
+                            (enemy.Value.Find(wardItem => wardItem.Id == ward.Id) == null))
+                        {
+                            wards.Add(new ExpandedWardItem(ward, item.Stacks, item.Charges));
+                        }
+                    }
+                }
+                foreach (var wardItem in wards)
+                {
+                    Game.PrintChat("{0} got {1}", enemy.Key.ChampionName, wardItem.Name);
+                }
+                enemiesRefilled[enemy.Key] = GetWardItemsRefilled(hero);
+            }
+        }
+
+        private List<ExpandedWardItem> GetWardItemsRefilled(Obj_AI_Hero hero)
+        {
+            List<ExpandedWardItem> wards = new List<ExpandedWardItem>();
+            foreach (var item in hero.InventoryItems)
+            {
+                foreach (var wardItem in Wards.WardItems)
+                {
+                    if ((int)item.Id == wardItem.Id && wardItem.Type != Wards.WardType.Temp)
+                    {
+                        wards.Add(new ExpandedWardItem(wardItem, item.Stacks, item.Charges));
+                    }
+                }
+            }
+            return wards;
+        }
+
+        private List<ExpandedWardItem> GetWardItemsUsed(Obj_AI_Hero hero)
+        {
+            List<ExpandedWardItem> wards = new List<ExpandedWardItem>();
+            foreach (var item in hero.InventoryItems)
+            {
+                foreach (var wardItem in Wards.WardItems)
+                {
+                    if ((int)item.Id == wardItem.Id && wardItem.Type != Wards.WardType.Temp && hero.Spellbook.CanUseSpell(item.SpellSlot) == SpellState.Ready)
+                    {
+                        wards.Add(new ExpandedWardItem(wardItem, item.Stacks, item.Charges));
+                    }
+                }
+            }
+            return wards;
         }
     }
 }

@@ -103,7 +103,8 @@ namespace SAwareness
         public static MenuItemSettings ActivatorAutoQss = new MenuItemSettings(typeof(AutoQSS));
         public static MenuItemSettings ActivatorAutoQssConfig = new MenuItemSettings(typeof(AutoQSS));
         public static MenuItemSettings Killable = new MenuItemSettings(typeof (Killable));
-        public static MenuItemSettings EasyRangedJungle = new MenuItemSettings(typeof(EasyRangedJungle));        
+        public static MenuItemSettings EasyRangedJungle = new MenuItemSettings(typeof(EasyRangedJungle));
+        public static MenuItemSettings FowWardPlacement = new MenuItemSettings(typeof(FowWardPlacement));
 
         public static MenuItemSettings GlobalSettings = new MenuItemSettings();
 
@@ -1265,6 +1266,10 @@ namespace SAwareness
                     Menu.Misc.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Ranged Jungle Spots", "SAwarenessEasyRangedJungle"));
                 Menu.EasyRangedJungle.MenuItems.Add(
                     Menu.EasyRangedJungle.Menu.AddItem(new MenuItem("SAwarenessEasyRangedJungleActive", "Active").SetValue(false)));
+                Menu.FowWardPlacement.Menu =
+                    Menu.Misc.Menu.AddSubMenu(new LeagueSharp.Common.Menu("Fow Ward Placement", "SAwarenessFowWardPlacement"));
+                Menu.FowWardPlacement.MenuItems.Add(
+                    Menu.FowWardPlacement.Menu.AddItem(new MenuItem("SAwarenessFowWardPlacementActive", "Active").SetValue(false)));
 
                 Menu.GlobalSettings.Menu =
                     menu.AddSubMenu(new LeagueSharp.Common.Menu("Global Settings", "SAwarenessGlobalSettings"));
