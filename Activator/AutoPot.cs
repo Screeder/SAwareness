@@ -11,14 +11,23 @@ namespace SAwareness
 
         public AutoPot()
         {
-            _pots.Add(new Pot(2037, "PotionOfGiantStrengt", Pot.PotType.Health)); //elixirOfFortitude
-            _pots.Add(new Pot(2039, "PotionOfBrilliance", Pot.PotType.Mana)); //elixirOfBrilliance            
-            _pots.Add(new Pot(2041, "ItemCrystalFlask", Pot.PotType.Both)); //crystalFlask
-            _pots.Add(new Pot(2009, "ItemMiniRegenPotion", Pot.PotType.Both)); //biscuit
-            _pots.Add(new Pot(2010, "ItemMiniRegenPotion", Pot.PotType.Both)); //biscuit
-            _pots.Add(new Pot(2003, "RegenerationPotion", Pot.PotType.Health)); //healthPotion
-            _pots.Add(new Pot(2004, "FlaskOfCrystalWater", Pot.PotType.Mana)); //manaPotion
-            Game.OnGameUpdate += Game_OnGameUpdate;
+            try
+            {
+                _pots.Add(new Pot(2037, "PotionOfGiantStrengt", Pot.PotType.Health)); //elixirOfFortitude
+                _pots.Add(new Pot(2039, "PotionOfBrilliance", Pot.PotType.Mana)); //elixirOfBrilliance            
+                _pots.Add(new Pot(2041, "ItemCrystalFlask", Pot.PotType.Both)); //crystalFlask
+                _pots.Add(new Pot(2009, "ItemMiniRegenPotion", Pot.PotType.Both)); //biscuit
+                _pots.Add(new Pot(2010, "ItemMiniRegenPotion", Pot.PotType.Both)); //biscuit
+                _pots.Add(new Pot(2003, "RegenerationPotion", Pot.PotType.Health)); //healthPotion
+                _pots.Add(new Pot(2004, "FlaskOfCrystalWater", Pot.PotType.Mana)); //manaPotion
+                Game.OnGameUpdate += Game_OnGameUpdate;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("AutoPot_AutoPot: " + ex);
+                Log.LogString("AutoPot_AutoPot: " + ex);
+                throw;
+            }
         }
 
         ~AutoPot()
@@ -33,82 +42,100 @@ namespace SAwareness
 
         private void Game_OnGameUpdate(EventArgs args)
         {
-            if (!IsActive() || ObjectManager.Player.IsDead || Utility.InFountain() ||
+            try
+            {
+                if (!IsActive() || ObjectManager.Player.IsDead || Utility.InFountain() ||
                 ObjectManager.Player.HasBuff("Recall") || Utility.CountEnemysInRange(1500) > 0)
-                return;
-            Pot myPot = null;
-            if (
-                Menu.AutoPot.GetMenuSettings("SAwarenessAutoPotHealthPot")
-                    .GetMenuItem("SAwarenessAutoPotHealthPotActive")
-                    .GetValue<bool>())
-            {
-                foreach (Pot pot in _pots)
+                    return;
+                Pot myPot = null;
+                if (
+                    Menu.AutoPot.GetMenuSettings("SAwarenessAutoPotHealthPot")
+                        .GetMenuItem("SAwarenessAutoPotHealthPotActive")
+                        .GetValue<bool>())
                 {
-                    if (pot.Type == Pot.PotType.Health || pot.Type == Pot.PotType.Both)
+                    foreach (Pot pot in _pots)
                     {
-                        if (ObjectManager.Player.Health/ObjectManager.Player.MaxHealth*100 <=
-                            Menu.AutoPot.GetMenuSettings("SAwarenessAutoPotHealthPot")
-                                .GetMenuItem("SAwarenessAutoPotHealthPotPercent")
-                                .GetValue<Slider>().Value)
+                        if (pot.Type == Pot.PotType.Health || pot.Type == Pot.PotType.Both)
                         {
-                            if (!Items.HasItem(pot.Id))
-                                continue;
-                            if (!Items.CanUseItem(pot.Id))
-                                continue;
-                            myPot = pot;
-                            break;
+                            if (ObjectManager.Player.Health / ObjectManager.Player.MaxHealth * 100 <=
+                                Menu.AutoPot.GetMenuSettings("SAwarenessAutoPotHealthPot")
+                                    .GetMenuItem("SAwarenessAutoPotHealthPotPercent")
+                                    .GetValue<Slider>().Value)
+                            {
+                                if (!Items.HasItem(pot.Id))
+                                    continue;
+                                if (!Items.CanUseItem(pot.Id))
+                                    continue;
+                                myPot = pot;
+                                break;
+                            }
                         }
                     }
                 }
-            }
-            if (myPot != null)
-                UsePot(myPot);
-            if (
-                Menu.AutoPot.GetMenuSettings("SAwarenessAutoPotManaPot")
-                    .GetMenuItem("SAwarenessAutoPotManaPotActive")
-                    .GetValue<bool>())
-            {
-                foreach (Pot pot in _pots)
+                if (myPot != null)
+                    UsePot(myPot);
+                if (
+                    Menu.AutoPot.GetMenuSettings("SAwarenessAutoPotManaPot")
+                        .GetMenuItem("SAwarenessAutoPotManaPotActive")
+                        .GetValue<bool>())
                 {
-                    if (pot.Type == Pot.PotType.Mana || pot.Type == Pot.PotType.Both)
+                    foreach (Pot pot in _pots)
                     {
-                        if (ObjectManager.Player.Mana/ObjectManager.Player.MaxMana*100 <=
-                            Menu.AutoPot.GetMenuSettings("SAwarenessAutoPotManaPot")
-                                .GetMenuItem("SAwarenessAutoPotManaPotPercent")
-                                .GetValue<Slider>().Value)
+                        if (pot.Type == Pot.PotType.Mana || pot.Type == Pot.PotType.Both)
                         {
-                            if (!Items.HasItem(pot.Id))
-                                continue;
-                            if (!Items.CanUseItem(pot.Id))
-                                continue;
-                            myPot = pot;
-                            break;
+                            if (ObjectManager.Player.Mana / ObjectManager.Player.MaxMana * 100 <=
+                                Menu.AutoPot.GetMenuSettings("SAwarenessAutoPotManaPot")
+                                    .GetMenuItem("SAwarenessAutoPotManaPotPercent")
+                                    .GetValue<Slider>().Value)
+                            {
+                                if (!Items.HasItem(pot.Id))
+                                    continue;
+                                if (!Items.CanUseItem(pot.Id))
+                                    continue;
+                                myPot = pot;
+                                break;
+                            }
                         }
                     }
                 }
+                if (myPot != null)
+                    UsePot(myPot);
             }
-            if (myPot != null)
-                UsePot(myPot);
+            catch (Exception ex)
+            {
+                Console.WriteLine("AutoPot_OnGameUpdate: " + ex);
+                Log.LogString("AutoPot_OnGameUpdate: " + ex);
+                throw;
+            }
         }
 
         private void UsePot(Pot pot)
         {
-            foreach (BuffInstance buff in ObjectManager.Player.Buffs)
+            try
             {
-                Console.WriteLine(buff.Name);
-                if (buff.Name.Contains(pot.Buff))
+                foreach (BuffInstance buff in ObjectManager.Player.Buffs)
                 {
-                    return;
+                    Console.WriteLine(buff.Name);
+                    if (buff.Name.Contains(pot.Buff))
+                    {
+                        return;
+                    }
                 }
+                if (pot.LastTime + 5 > Game.Time)
+                    return;
+                if (!Items.HasItem(pot.Id))
+                    return;
+                if (!Items.CanUseItem(pot.Id))
+                    return;
+                Items.UseItem(pot.Id);
+                pot.LastTime = Game.Time;
             }
-            if (pot.LastTime + 5 > Game.Time)
-                return;
-            if (!Items.HasItem(pot.Id))
-                return;
-            if (!Items.CanUseItem(pot.Id))
-                return;
-            Items.UseItem(pot.Id);
-            pot.LastTime = Game.Time;
+            catch (Exception ex)
+            {
+                Console.WriteLine("AutoPot_UsePot: " + ex);
+                Log.LogString("AutoPot_UsePot: " + ex);
+                throw;
+            }
         }
 
         public class Pot

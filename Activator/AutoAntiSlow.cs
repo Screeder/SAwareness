@@ -33,33 +33,51 @@ namespace SAwareness
 
         private static void Init()
         {
-            switch (ObjectManager.Player.ChampionName)
+            try
             {
-                case "Evelynn":
-                    _antiSlow = new AntiSlow(SpellSlot.W);
-                    break;
+                switch (ObjectManager.Player.ChampionName)
+                {
+                    case "Evelynn":
+                        _antiSlow = new AntiSlow(SpellSlot.W);
+                        break;
 
-                case "Garen":
-                    _antiSlow = new AntiSlow(SpellSlot.Q);
-                    break;
+                    case "Garen":
+                        _antiSlow = new AntiSlow(SpellSlot.Q);
+                        break;
 
-                case "MasterYi":
-                    _antiSlow = new AntiSlow(SpellSlot.R);
-                    break;
+                    case "MasterYi":
+                        _antiSlow = new AntiSlow(SpellSlot.R);
+                        break;
 
-                default:
-                    return;
+                    default:
+                        return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("AutoAntiSlow_Init: " + ex);
+                Log.LogString("AutoAntiSlow_Init: " + ex);
+                throw;
             }
         }
 
         private void Game_OnGameUpdate(EventArgs args)
         {
-            if (!IsActive() || _antiSlow == null || ObjectManager.Player.Spellbook.GetSpell(_antiSlow.SpellSlot).State != SpellState.Ready)
-                return;
-
-            if (ObjectManager.Player.HasBuffOfType(BuffType.Slow))
+            try
             {
-                Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(ObjectManager.Player.NetworkId, _antiSlow.SpellSlot)).Send();              
+                if (!IsActive() || _antiSlow == null || ObjectManager.Player.Spellbook.GetSpell(_antiSlow.SpellSlot).State != SpellState.Ready)
+                    return;
+
+                if (ObjectManager.Player.HasBuffOfType(BuffType.Slow))
+                {
+                    Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(ObjectManager.Player.NetworkId, _antiSlow.SpellSlot)).Send();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("AutoAntiSlow_OnGameUpdate: " + ex);
+                Log.LogString("AutoAntiSlow_OnGameUpdate: " + ex);
+                throw;
             }
         }
 

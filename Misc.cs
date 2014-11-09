@@ -35,10 +35,10 @@ namespace SAwareness
 
         private void Game_OnGameProcessPacket(GamePacketEventArgs args)
         {
-            if (!IsActive())
-                return;
             try
             {
+                if (!IsActive())
+                    return;
                 var reader = new BinaryReader(new MemoryStream(args.PacketData));
                 byte packetId = reader.ReadByte(); //PacketId
                 if (packetId != Packet.S2C.PlayerDisconnect.Header)
@@ -72,8 +72,10 @@ namespace SAwareness
             }
             catch (Exception ex)
             {
-                Console.WriteLine("DisconnectProcess: " + ex);
-            }
+                Console.WriteLine("DisconnectDetector_OnGameProcessPacket: " + ex);
+                Log.LogString("DisconnectDetector_OnGameProcessPacket: " + ex);
+                throw;
+            } 
         }
     }
 
@@ -96,21 +98,30 @@ namespace SAwareness
 
         private void Game_OnGameUpdate(EventArgs args)
         {
-            if (!IsActive() || !Menu.AutoLatern.GetMenuItem("SAwarenessAutoLaternKey").GetValue<KeyBind>().Active)
-                return;
-
-            foreach (GameObject gObject in ObjectManager.Get<GameObject>())
+            try
             {
-                if (gObject.Name.Contains("ThreshLantern") && gObject.IsAlly &&
-                    gObject.Position.Distance(ObjectManager.Player.ServerPosition) < 400 &&
-                    !ObjectManager.Player.ChampionName.Contains("Thresh"))
+                if (!IsActive() || !Menu.AutoLatern.GetMenuItem("SAwarenessAutoLaternKey").GetValue<KeyBind>().Active)
+                    return;
+
+                foreach (GameObject gObject in ObjectManager.Get<GameObject>())
                 {
-                    GamePacket gPacket =
-                        Packet.C2S.InteractObject.Encoded(
-                            new Packet.C2S.InteractObject.Struct(ObjectManager.Player.NetworkId,
-                                gObject.NetworkId));
-                    gPacket.Send();
+                    if (gObject.Name.Contains("ThreshLantern") && gObject.IsAlly &&
+                        gObject.Position.Distance(ObjectManager.Player.ServerPosition) < 400 &&
+                        !ObjectManager.Player.ChampionName.Contains("Thresh"))
+                    {
+                        GamePacket gPacket =
+                            Packet.C2S.InteractObject.Encoded(
+                                new Packet.C2S.InteractObject.Struct(ObjectManager.Player.NetworkId,
+                                    gObject.NetworkId));
+                        gPacket.Send();
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("AutoLatern_OnGameUpdate: " + ex);
+                Log.LogString("AutoLatern_OnGameUpdate: " + ex);
+                throw;
             }
         }
     }
@@ -122,14 +133,12 @@ namespace SAwareness
 
         public TurnAround()
         {
-            Game.OnGameUpdate += Game_OnGameUpdate;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Hero_OnProcessSpellCast;
             Game.OnGameSendPacket += Game_OnGameSendPacket;
         }
 
         ~TurnAround()
         {
-            Game.OnGameUpdate -= Game_OnGameUpdate;
             Obj_AI_Base.OnProcessSpellCast -= Obj_AI_Hero_OnProcessSpellCast;
             Game.OnGameSendPacket -= Game_OnGameSendPacket;
         }
@@ -141,58 +150,66 @@ namespace SAwareness
 
         private void Obj_AI_Hero_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (!IsActive())
-                return;
-            if (!sender.IsEnemy)
-                return;
-            if (args.SData.Name.Contains("CassiopeiaPetrifyingGaze"))
+            try
             {
-                if (ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition) <= 750)
+                if (!IsActive())
+                    return;
+                if (!sender.IsEnemy)
+                    return;
+                if (args.SData.Name.Contains("CassiopeiaPetrifyingGaze"))
                 {
-                    var pos =
-                        new Vector2(
-                            ObjectManager.Player.ServerPosition.X +
-                            ((sender.ServerPosition.X - ObjectManager.Player.ServerPosition.X)*(-100)/
-                             ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition)),
-                            ObjectManager.Player.ServerPosition.
-                                Y +
-                            ((sender.ServerPosition.Y - ObjectManager.Player.ServerPosition.Y)*(-100)/
-                             ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition)));
-                    Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(pos.X, pos.Y)).Send();
-                    _lastTime = Game.Time;
-                    Utility.DelayAction.Add(750,
-                        () => Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(_lastMove.X, _lastMove.Y)).Send());
+                    if (ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition) <= 750)
+                    {
+                        var pos =
+                            new Vector2(
+                                ObjectManager.Player.ServerPosition.X +
+                                ((sender.ServerPosition.X - ObjectManager.Player.ServerPosition.X) * (-100) /
+                                 ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition)),
+                                ObjectManager.Player.ServerPosition.
+                                    Y +
+                                ((sender.ServerPosition.Y - ObjectManager.Player.ServerPosition.Y) * (-100) /
+                                 ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition)));
+                        Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(pos.X, pos.Y)).Send();
+                        _lastTime = Game.Time;
+                        Utility.DelayAction.Add(750,
+                            () => Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(_lastMove.X, _lastMove.Y)).Send());
+                    }
+                }
+                else if (args.SData.Name.Contains("MockingShout"))
+                {
+                    if (ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition) <= 850)
+                    {
+                        var pos =
+                            new Vector2(
+                                ObjectManager.Player.ServerPosition.X +
+                                ((sender.ServerPosition.X - ObjectManager.Player.ServerPosition.X) * (100) /
+                                 ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition)),
+                                ObjectManager.Player.ServerPosition.
+                                    Y +
+                                ((sender.ServerPosition.Y - ObjectManager.Player.ServerPosition.Y) * (100) /
+                                 ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition)));
+                        Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(pos.X, pos.Y)).Send();
+                        _lastTime = Game.Time;
+                        Utility.DelayAction.Add(750,
+                            () => Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(_lastMove.X, _lastMove.Y)).Send());
+                    }
                 }
             }
-            else if (args.SData.Name.Contains("MockingShout"))
+            catch (Exception ex)
             {
-                if (ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition) <= 850)
-                {
-                    var pos =
-                        new Vector2(
-                            ObjectManager.Player.ServerPosition.X +
-                            ((sender.ServerPosition.X - ObjectManager.Player.ServerPosition.X)*(100)/
-                             ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition)),
-                            ObjectManager.Player.ServerPosition.
-                                Y +
-                            ((sender.ServerPosition.Y - ObjectManager.Player.ServerPosition.Y)*(100)/
-                             ObjectManager.Player.ServerPosition.Distance(sender.ServerPosition)));
-                    Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(pos.X, pos.Y)).Send();
-                    _lastTime = Game.Time;
-                    Utility.DelayAction.Add(750,
-                        () => Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(_lastMove.X, _lastMove.Y)).Send());
-                }
+                Console.WriteLine("TurnAround_OnProcessSpellCast: " + ex);
+                Log.LogString("TurnAround_OnProcessSpellCast: " + ex);
+                throw;
             }
         }
 
         private void Game_OnGameSendPacket(GamePacketEventArgs args)
         {
-            if (!IsActive())
-                return;
-
             try
             {
-                decimal milli = DateTime.Now.Ticks/(decimal) TimeSpan.TicksPerMillisecond;
+                if (!IsActive())
+                    return;
+                decimal milli = DateTime.Now.Ticks / (decimal)TimeSpan.TicksPerMillisecond;
                 var reader = new BinaryReader(new MemoryStream(args.PacketData));
                 byte packetId = reader.ReadByte();
                 if (packetId != Packet.C2S.Move.Header)
@@ -210,14 +227,10 @@ namespace SAwareness
             }
             catch (Exception ex)
             {
-                Console.WriteLine("MovementSend: " + ex);
+                Console.WriteLine("TurnAround_OnGameSendPacket: " + ex);
+                Log.LogString("TurnAround_OnGameSendPacket: " + ex);
+                throw;
             }
-        }
-
-        private void Game_OnGameUpdate(EventArgs args)
-        {
-            if (!IsActive())
-                return;
         }
     }
 
@@ -231,32 +244,41 @@ namespace SAwareness
 
         public AutoJump()
         {
-            switch (ObjectManager.Player.ChampionName)
+            try
             {
-                case "Katarina":
-                    _jumpSpell = new Spell(SpellSlot.E, 790);
-                    break;
+                switch (ObjectManager.Player.ChampionName)
+                {
+                    case "Katarina":
+                        _jumpSpell = new Spell(SpellSlot.E, 790);
+                        break;
 
-                case "Jax":
-                    _jumpSpell = new Spell(SpellSlot.Q, 790);
-                    break;
+                    case "Jax":
+                        _jumpSpell = new Spell(SpellSlot.Q, 790);
+                        break;
 
-                case "LeeSin":
-                    _jumpSpell = new Spell(SpellSlot.W, 790);
-                    _onlyAlly = true;
-                    break;
+                    case "LeeSin":
+                        _jumpSpell = new Spell(SpellSlot.W, 790);
+                        _onlyAlly = true;
+                        break;
 
-                case "Talon":
-                    _jumpSpell = new Spell(SpellSlot.E, 790);
-                    _onlyEnemy = true;
-                    _useWard = false;
-                    break;
+                    case "Talon":
+                        _jumpSpell = new Spell(SpellSlot.E, 790);
+                        _onlyEnemy = true;
+                        _useWard = false;
+                        break;
 
-                default:
-                    return;
+                    default:
+                        return;
+                }
+                Game.OnGameUpdate += Game_OnGameUpdate;
+                GameObject.OnCreate += Obj_AI_Base_OnCreate;
             }
-            Game.OnGameUpdate += Game_OnGameUpdate;
-            GameObject.OnCreate += Obj_AI_Base_OnCreate;
+            catch (Exception ex)
+            {
+                Console.WriteLine("AutoJump_AutoJump: " + ex);
+                Log.LogString("AutoJump_AutoJump: " + ex);
+                throw;
+            }
         }
 
         ~AutoJump()
@@ -271,55 +293,73 @@ namespace SAwareness
 
         private void Game_OnGameUpdate(EventArgs args)
         {
-            if (!IsActive() || !Menu.AutoJump.GetMenuItem("SAwarenessAutoJumpKey").GetValue<KeyBind>().Active ||
-                !_jumpSpell.IsReady())
-                return;
-
-            foreach (GameObject gObject in ObjectManager.Get<GameObject>())
+            try
             {
-                if ((_useWard && (gObject.Name.Contains("SightWard") || gObject.Name.Contains("VisionWard"))) ||
-                    gObject.Type == GameObjectType.obj_AI_Minion)
+                if (!IsActive() || !Menu.AutoJump.GetMenuItem("SAwarenessAutoJumpKey").GetValue<KeyBind>().Active ||
+                !_jumpSpell.IsReady())
+                    return;
+
+                foreach (GameObject gObject in ObjectManager.Get<GameObject>())
                 {
-                    if (!_onlyAlly && !_onlyEnemy || (_onlyAlly && gObject.IsAlly) || (_onlyEnemy && gObject.IsEnemy))
+                    if ((_useWard && (gObject.Name.Contains("SightWard") || gObject.Name.Contains("VisionWard"))) ||
+                        gObject.Type == GameObjectType.obj_AI_Minion)
                     {
-                        if (!gObject.IsValid || ((Obj_AI_Base) gObject).Health < 1)
-                            continue;
-                        if (Game.CursorPos.Distance(gObject.Position) > 150)
-                            continue;
-                        if (_lastCast + 1 > Game.Time)
-                            continue;
-                        Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(gObject.Position.X, gObject.Position.Y))
-                            .Send();
-                        _jumpSpell.Cast((Obj_AI_Base) gObject, true);
-                        _lastCast = Game.Time;
-                        return;
+                        if (!_onlyAlly && !_onlyEnemy || (_onlyAlly && gObject.IsAlly) || (_onlyEnemy && gObject.IsEnemy))
+                        {
+                            if (!gObject.IsValid || ((Obj_AI_Base)gObject).Health < 1)
+                                continue;
+                            if (Game.CursorPos.Distance(gObject.Position) > 150)
+                                continue;
+                            if (_lastCast + 1 > Game.Time)
+                                continue;
+                            Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(gObject.Position.X, gObject.Position.Y))
+                                .Send();
+                            _jumpSpell.Cast((Obj_AI_Base)gObject, true);
+                            _lastCast = Game.Time;
+                            return;
+                        }
                     }
                 }
+                if (_jumpSpell.IsReady() && _useWard)
+                {
+                    if (_lastCast + 1 > Game.Time)
+                        return;
+                    InventorySlot slot = Wards.GetWardSlot();
+                    slot.UseItem(Game.CursorPos);
+                    _jumpSpell.Cast(Game.CursorPos, true);
+                    _lastCast = Game.Time;
+                }
             }
-            if (_jumpSpell.IsReady() && _useWard)
+            catch (Exception ex)
             {
-                if (_lastCast + 1 > Game.Time)
-                    return;
-                InventorySlot slot = Wards.GetWardSlot();
-                slot.UseItem(Game.CursorPos);
-                _jumpSpell.Cast(Game.CursorPos, true);
-                _lastCast = Game.Time;
-            }
+                Console.WriteLine("AutoJump_OnGameUpdate: " + ex);
+                Log.LogString("AutoJump_OnGameUpdate: " + ex);
+                throw;
+            }            
         }
 
         private void Obj_AI_Base_OnCreate(GameObject sender, EventArgs args)
         {
-            if (!IsActive() || !Menu.AutoJump.GetMenuItem("SAwarenessAutoJumpKey").GetValue<KeyBind>().Active ||
-                !_jumpSpell.IsReady())
-                return;
-            if (sender.Name.Contains("SightWard") || sender.Name.Contains("VisionWard"))
+            try
             {
-                if (Game.CursorPos.Distance(sender.Position) > 150)
+                if (!IsActive() || !Menu.AutoJump.GetMenuItem("SAwarenessAutoJumpKey").GetValue<KeyBind>().Active ||
+                                !_jumpSpell.IsReady())
                     return;
-                Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(sender.Position.X, sender.Position.Y)).Send();
-                _jumpSpell.Cast((Obj_AI_Base) sender, true);
-                _lastCast = Game.Time;
+                if (sender.Name.Contains("SightWard") || sender.Name.Contains("VisionWard"))
+                {
+                    if (Game.CursorPos.Distance(sender.Position) > 150)
+                        return;
+                    Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(sender.Position.X, sender.Position.Y)).Send();
+                    _jumpSpell.Cast((Obj_AI_Base)sender, true);
+                    _lastCast = Game.Time;
+                }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("AutoJump_OnCreate: " + ex);
+                Log.LogString("AutoJump_OnCreate: " + ex);
+                throw;
+            }             
         }
     }
 
@@ -342,119 +382,146 @@ namespace SAwareness
 
         private void Drawing_OnDraw(EventArgs args)
         {
-            if (!IsActive())
-                return;
-
-            foreach (var minion in ObjectManager.Get<Obj_AI_Minion>())
+            try
             {
-                if(!minion.IsVisible || minion.IsDead || minion.IsAlly)
-                    continue;
-                Vector2 hpPos = minion.HPBarPosition;
-                //hpPos.Y -= 3;
-                double damageMinion = ObjectManager.Player.GetAutoAttackDamage(minion);
-                double hitsToKill = Math.Ceiling(minion.MaxHealth/damageMinion);
-                double barsToDraw = Math.Floor(minion.MaxHealth / 100.0);
-                double barDistance = 100.0 / (minion.MaxHealth / 62.0);
-                double myDamageDistance = damageMinion / (minion.MaxHealth / 62.0);
-	            double barsDrawn = 0;
-	            int heightOffset = 1;
-	            int barSize = 2;
-                int barWidth = 1;
-                //hpPos.X = hpPos.X - 32;
-                hpPos.Y = hpPos.Y + heightOffset;
-                if (minion.BaseSkinName == "Dragon" || minion.BaseSkinName == "Worm" ||
-                    minion.BaseSkinName == "TT_Spiderboss")
-                {
-                    double healthDraw = 500.0;
-                    if (minion.BaseSkinName == "Dragon")
-                    {
-                        hpPos.X -= 31;
-                        hpPos.Y -= 7;
-                    }
-                    else if (minion.BaseSkinName == "Worm")
-                    {
-                        hpPos.X -= 31;
-                        healthDraw = 1000.0;
-                    }
-                    else if (minion.BaseSkinName == "TT_Spiderboss")
-                        hpPos.X -= 3;
-                    barsToDraw = Math.Floor(minion.MaxHealth/healthDraw);
-                    barDistance = healthDraw/(minion.MaxHealth/124.0);
-                    double drawDistance = 0;
-                    while (barsDrawn != barsToDraw && barsToDraw != 0 && barsToDraw < 200)
-                    {
-                        drawDistance = drawDistance + barDistance;
-                        if (barsDrawn%2 == 1)
-                        {
-                            DrawRectangleAL(hpPos.X + 43 + drawDistance, hpPos.Y + 19, barWidth + 1, barSize,
-                                System.Drawing.Color.Black);
-                        }
-                        else
-                            DrawRectangleAL(hpPos.X + 43 + drawDistance, hpPos.Y + 19, barWidth, barSize,
-                                System.Drawing.Color.Black);
-                        barsDrawn = barsDrawn + 1;
-                    }
-                    DrawRectangleAL(hpPos.X + 43 + myDamageDistance, hpPos.Y + 19, barWidth, barSize, System.Drawing.Color.GreenYellow);
-                    if (damageMinion > minion.Health)
-                    {
-                        OutLineBar(hpPos.X + 43, hpPos.Y + 20, System.Drawing.Color.GreenYellow);
-                    }
-                }
-                else
-                {
-                    double drawDistance = 0;
-                    while (barsDrawn != barsToDraw && barsToDraw != 0 && barsToDraw < 50)
-                    {
-                        drawDistance = drawDistance + barDistance;
-                        if (barsToDraw > 20)
-                        {
-                            if (barsDrawn % 5 == 4)
-                                if (barsDrawn % 10 == 9)
-                                    DrawRectangleAL(hpPos.X + 43 + drawDistance, hpPos.Y + 19, barWidth + 1, barSize,
-                                        System.Drawing.Color.Black);
-                                else
-                                    DrawRectangleAL(hpPos.X + 43 + drawDistance, hpPos.Y + 19, barWidth, barSize,
-                                        System.Drawing.Color.Black);
-                        }
-                        else
-                            DrawRectangleAL(hpPos.X + 43 + drawDistance, hpPos.Y + 19, barWidth, barSize,
-                                System.Drawing.Color.Black);
-                        barsDrawn = barsDrawn + 1;
+                if (!IsActive())
+                    return;
 
-                    }
-                    DrawRectangleAL(hpPos.X + 43 + myDamageDistance, hpPos.Y + 19, barWidth, barSize, System.Drawing.Color.GreenYellow);
-                    if (damageMinion > minion.Health && Menu.MinionBars.GetMenuItem("SAwarenessMinionBarsGlowActive").GetValue<bool>())
+                foreach (var minion in ObjectManager.Get<Obj_AI_Minion>())
+                {
+                    if (!minion.IsVisible || minion.IsDead || minion.IsAlly)
+                        continue;
+                    Vector2 hpPos = minion.HPBarPosition;
+                    //hpPos.Y -= 3;
+                    double damageMinion = ObjectManager.Player.GetAutoAttackDamage(minion);
+                    double hitsToKill = Math.Ceiling(minion.MaxHealth / damageMinion);
+                    double barsToDraw = Math.Floor(minion.MaxHealth / 100.0);
+                    double barDistance = 100.0 / (minion.MaxHealth / 62.0);
+                    double myDamageDistance = damageMinion / (minion.MaxHealth / 62.0);
+                    double barsDrawn = 0;
+                    int heightOffset = 1;
+                    int barSize = 2;
+                    int barWidth = 1;
+                    //hpPos.X = hpPos.X - 32;
+                    hpPos.Y = hpPos.Y + heightOffset;
+                    if (minion.BaseSkinName == "Dragon" || minion.BaseSkinName == "Worm" ||
+                        minion.BaseSkinName == "TT_Spiderboss")
                     {
-                        OutLineBar(hpPos.X + 43, hpPos.Y + 20, System.Drawing.Color.GreenYellow);
-                    }			
+                        double healthDraw = 500.0;
+                        if (minion.BaseSkinName == "Dragon")
+                        {
+                            hpPos.X -= 31;
+                            hpPos.Y -= 7;
+                        }
+                        else if (minion.BaseSkinName == "Worm")
+                        {
+                            hpPos.X -= 31;
+                            healthDraw = 1000.0;
+                        }
+                        else if (minion.BaseSkinName == "TT_Spiderboss")
+                            hpPos.X -= 3;
+                        barsToDraw = Math.Floor(minion.MaxHealth / healthDraw);
+                        barDistance = healthDraw / (minion.MaxHealth / 124.0);
+                        double drawDistance = 0;
+                        while (barsDrawn != barsToDraw && barsToDraw != 0 && barsToDraw < 200)
+                        {
+                            drawDistance = drawDistance + barDistance;
+                            if (barsDrawn % 2 == 1)
+                            {
+                                DrawRectangleAL(hpPos.X + 43 + drawDistance, hpPos.Y + 19, barWidth + 1, barSize,
+                                    System.Drawing.Color.Black);
+                            }
+                            else
+                                DrawRectangleAL(hpPos.X + 43 + drawDistance, hpPos.Y + 19, barWidth, barSize,
+                                    System.Drawing.Color.Black);
+                            barsDrawn = barsDrawn + 1;
+                        }
+                        DrawRectangleAL(hpPos.X + 43 + myDamageDistance, hpPos.Y + 19, barWidth, barSize, System.Drawing.Color.GreenYellow);
+                        if (damageMinion > minion.Health)
+                        {
+                            OutLineBar(hpPos.X + 43, hpPos.Y + 20, System.Drawing.Color.GreenYellow);
+                        }
+                    }
+                    else
+                    {
+                        double drawDistance = 0;
+                        while (barsDrawn != barsToDraw && barsToDraw != 0 && barsToDraw < 50)
+                        {
+                            drawDistance = drawDistance + barDistance;
+                            if (barsToDraw > 20)
+                            {
+                                if (barsDrawn % 5 == 4)
+                                    if (barsDrawn % 10 == 9)
+                                        DrawRectangleAL(hpPos.X + 43 + drawDistance, hpPos.Y + 19, barWidth + 1, barSize,
+                                            System.Drawing.Color.Black);
+                                    else
+                                        DrawRectangleAL(hpPos.X + 43 + drawDistance, hpPos.Y + 19, barWidth, barSize,
+                                            System.Drawing.Color.Black);
+                            }
+                            else
+                                DrawRectangleAL(hpPos.X + 43 + drawDistance, hpPos.Y + 19, barWidth, barSize,
+                                    System.Drawing.Color.Black);
+                            barsDrawn = barsDrawn + 1;
+
+                        }
+                        DrawRectangleAL(hpPos.X + 43 + myDamageDistance, hpPos.Y + 19, barWidth, barSize, System.Drawing.Color.GreenYellow);
+                        if (damageMinion > minion.Health && Menu.MinionBars.GetMenuItem("SAwarenessMinionBarsGlowActive").GetValue<bool>())
+                        {
+                            OutLineBar(hpPos.X + 43, hpPos.Y + 20, System.Drawing.Color.GreenYellow);
+                        }
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("MinionBars_OnDraw: " + ex);
+                Log.LogString("MinionBars_OnDraw: " + ex);
+                throw;
+            } 
         }
 
         private void DrawRectangleAL(double x, double y, double w, double h, System.Drawing.Color color)
         {
-            Vector2[] points = new Vector2[4];
-            points[0] = new Vector2((float)Math.Floor(x), (float)Math.Floor(y));
-            points[1] = new Vector2((float) Math.Floor(x + w), (float) Math.Floor(y));
-            points[2] = new Vector2((float)Math.Floor(x), (float)Math.Floor(y + h));
-            points[3] = new Vector2((float)Math.Floor(x + w), (float)Math.Floor(y + h));
-            if (Common.IsOnScreen(points[0]) && Common.IsOnScreen(points[1]))
-                Drawing.DrawLine(points[0], points[1], 1, color);
-            if (Common.IsOnScreen(points[0]) && Common.IsOnScreen(points[2]))
-                Drawing.DrawLine(points[0], points[2], 1, color);
-            if (Common.IsOnScreen(points[1]) && Common.IsOnScreen(points[3]))
-                Drawing.DrawLine(points[1], points[3], 1, color);
-            if (Common.IsOnScreen(points[2]) && Common.IsOnScreen(points[3]))
-                Drawing.DrawLine(points[2], points[3], 1, color);
+            try
+            {
+                Vector2[] points = new Vector2[4];
+                points[0] = new Vector2((float)Math.Floor(x), (float)Math.Floor(y));
+                points[1] = new Vector2((float)Math.Floor(x + w), (float)Math.Floor(y));
+                points[2] = new Vector2((float)Math.Floor(x), (float)Math.Floor(y + h));
+                points[3] = new Vector2((float)Math.Floor(x + w), (float)Math.Floor(y + h));
+                if (Common.IsOnScreen(points[0]) && Common.IsOnScreen(points[1]))
+                    Drawing.DrawLine(points[0], points[1], 1, color);
+                if (Common.IsOnScreen(points[0]) && Common.IsOnScreen(points[2]))
+                    Drawing.DrawLine(points[0], points[2], 1, color);
+                if (Common.IsOnScreen(points[1]) && Common.IsOnScreen(points[3]))
+                    Drawing.DrawLine(points[1], points[3], 1, color);
+                if (Common.IsOnScreen(points[2]) && Common.IsOnScreen(points[3]))
+                    Drawing.DrawLine(points[2], points[3], 1, color);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("MinionBars_DrawRectangleAL: " + ex);
+                Log.LogString("MinionBars_DrawRectangleAL: " + ex);
+                throw;
+            }             
         }
 
         private void OutLineBar(double x, double y, System.Drawing.Color color)
         {
-            DrawRectangleAL(x, y - 3, 64, 1, color);
-	        DrawRectangleAL(x, y + 2, 64, 1, color);
-	
-	        DrawRectangleAL(x, y, 1, 5, color);
-	        DrawRectangleAL(x + 63, y, 1, 5, color);
+            try
+            {
+                DrawRectangleAL(x, y - 3, 64, 1, color);
+                DrawRectangleAL(x, y + 2, 64, 1, color);
+
+                DrawRectangleAL(x, y, 1, 5, color);
+                DrawRectangleAL(x + 63, y, 1, 5, color);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("MinionBars_OutLineBar: " + ex);
+                Log.LogString("MinionBars_OutLineBar: " + ex);
+                throw;
+            } 
         }
     }
 
@@ -477,35 +544,44 @@ namespace SAwareness
 
         private void Drawing_OnEndScene(EventArgs args)
         {
-            if (!IsActive())
-                return;
-
-            float timer = (Game.ClockTime%60 > 30 ? Game.ClockTime - 30 : Game.ClockTime);
-            float first = 325*(timer%60) + 4000;
-            float last = 325 * ((timer - 6) % 60) + 4000;
-            if (ObjectManager.Player.Team == GameObjectTeam.Order)
+            try
             {
-                Utility.DrawCircle(new Vector3(917, 1720 + first, 124), 300, System.Drawing.Color.White, 2, 30, true);
-                if (1720 + last < 14527 + 4000)
+                if (!IsActive())
+                    return;
+
+                float timer = (Game.ClockTime % 60 > 30 ? Game.ClockTime - 30 : Game.ClockTime);
+                float first = 325 * (timer % 60) + 4000;
+                float last = 325 * ((timer - 6) % 60) + 4000;
+                if (ObjectManager.Player.Team == GameObjectTeam.Order)
                 {
-                    Utility.DrawCircle(new Vector3(917, 1720 + last, 124), 300, System.Drawing.Color.White, 2, 30, true);
-                    Drawing.DrawLine(Drawing.WorldToMinimap(new Vector3(917, 1720 + first, 100)), Drawing.WorldToMinimap(new Vector3(917, 1720 + last, 100)), 2, System.Drawing.Color.White);
+                    Utility.DrawCircle(new Vector3(917, 1720 + first, 124), 300, System.Drawing.Color.White, 2, 30, true);
+                    if (1720 + last < 14527 + 4000)
+                    {
+                        Utility.DrawCircle(new Vector3(917, 1720 + last, 124), 300, System.Drawing.Color.White, 2, 30, true);
+                        Drawing.DrawLine(Drawing.WorldToMinimap(new Vector3(917, 1720 + first, 100)), Drawing.WorldToMinimap(new Vector3(917, 1720 + last, 100)), 2, System.Drawing.Color.White);
+                    }
+                    Utility.DrawCircle(new Vector3(1446 + (22 / 30) * first, 1664 + (22 / 30) * first, 118), 300,
+                        System.Drawing.Color.White, 5, 30, true);
+                    Utility.DrawCircle(new Vector3(1446 + (22 / 30) * last, 1664 + (22 / 30) * last, 118), 300,
+                        System.Drawing.Color.White, 5, 30, true);
+                    if (1446 + (22 / 30) * last < (14279 / 2) && 1664 + (22 / 30) * last < (14527 / 2))
+                    {
+                        Drawing.DrawLine(Drawing.WorldToMinimap(new Vector3(1446 + (22 / 30) * first, 1664 + (22 / 30) * first, 100)),
+                            Drawing.WorldToMinimap(new Vector3(1446 + (22 / 30) * last, 1664 + (22 / 30) * last, 100)), 2, System.Drawing.Color.White);
+                    }
+                    Utility.DrawCircle(new Vector3(1546 + first, 1314, 124), 300, System.Drawing.Color.White, 2, 30, true);
+                    if (1546 + last < 14527 + 4000)
+                    {
+                        Utility.DrawCircle(new Vector3(1546 + last, 1314, 124), 300, System.Drawing.Color.White, 2, 30, true);
+                        Drawing.DrawLine(Drawing.WorldToMinimap(new Vector3(1546 + first, 1314, 100)), Drawing.WorldToMinimap(new Vector3(1546 + last, 1314, 100)), 2, System.Drawing.Color.White);
+                    }
                 }
-                Utility.DrawCircle(new Vector3(1446 + (22/30)*first, 1664 + (22/30)*first, 118), 300,
-                    System.Drawing.Color.White, 5, 30, true);
-                Utility.DrawCircle(new Vector3(1446 + (22/30)*last, 1664 + (22/30)*last, 118), 300,
-                    System.Drawing.Color.White, 5, 30, true);
-                if (1446 + (22/30)*last < (14279/2) && 1664 + (22/30)*last < (14527/2))
-                {
-                    Drawing.DrawLine(Drawing.WorldToMinimap(new Vector3(1446 + (22/30)*first, 1664 + (22/30)*first, 100)), 
-                        Drawing.WorldToMinimap(new Vector3(1446 + (22/30)*last, 1664 + (22/30)*last, 100)), 2, System.Drawing.Color.White);
-                }
-                Utility.DrawCircle(new Vector3(1546 + first, 1314, 124), 300, System.Drawing.Color.White, 2, 30, true);
-                if (1546 + last < 14527 + 4000)
-                {
-                    Utility.DrawCircle(new Vector3(1546 + last, 1314, 124), 300, System.Drawing.Color.White, 2, 30, true);
-                    Drawing.DrawLine(Drawing.WorldToMinimap(new Vector3(1546 + first, 1314, 100)), Drawing.WorldToMinimap(new Vector3(1546 + last, 1314, 100)), 2, System.Drawing.Color.White);
-                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("MinionLocation_OnEndScene: " + ex);
+                Log.LogString("MinionLocation_OnEndScene: " + ex);
+                throw;
             }
         }
     }
@@ -529,21 +605,30 @@ namespace SAwareness
 
         private void Drawing_OnEndScene(EventArgs args)
         {
-            if (!IsActive())
-                return;
+            try
+            {
+                if (!IsActive())
+                    return;
 
-            Utility.DrawCircle(new Vector3(7440f, 2980f, 60f), 50, System.Drawing.Color.Fuchsia);
-            Utility.DrawCircle(new Vector3(7230f, 4670f, 60f), 50, System.Drawing.Color.Fuchsia);
-            Utility.DrawCircle(new Vector3(7230f, 4670f, 60f), 50, System.Drawing.Color.Fuchsia);
-            Utility.DrawCircle(new Vector3(3400f, 8430f, 60f), 50, System.Drawing.Color.Fuchsia);
-            Utility.DrawCircle(new Vector3(6860f, 11500f, 60f), 50, System.Drawing.Color.Fuchsia);
-            Utility.DrawCircle(new Vector3(7010f, 10020f, 60f), 50, System.Drawing.Color.Fuchsia);
-            Utility.DrawCircle(new Vector3(9850f, 8780f, 60f), 50, System.Drawing.Color.Fuchsia);
-            Utility.DrawCircle(new Vector3(11130f, 6230f, 60f), 50, System.Drawing.Color.Fuchsia);
-            Utility.DrawCircle(new Vector3(10270f, 4970f, 60f), 50, System.Drawing.Color.Fuchsia);
-            Utility.DrawCircle(new Vector3(7210f, 2100f, 60f), 50, System.Drawing.Color.Fuchsia);
-            Utility.DrawCircle(new Vector3(4140f, 5700f, 60f), 50, System.Drawing.Color.Fuchsia);
-            Utility.DrawCircle(new Vector3(6900f, 12400f, 60f), 50, System.Drawing.Color.Fuchsia);
+                Utility.DrawCircle(new Vector3(7440f, 2980f, 60f), 50, System.Drawing.Color.Fuchsia);
+                Utility.DrawCircle(new Vector3(7230f, 4670f, 60f), 50, System.Drawing.Color.Fuchsia);
+                Utility.DrawCircle(new Vector3(7230f, 4670f, 60f), 50, System.Drawing.Color.Fuchsia);
+                Utility.DrawCircle(new Vector3(3400f, 8430f, 60f), 50, System.Drawing.Color.Fuchsia);
+                Utility.DrawCircle(new Vector3(6860f, 11500f, 60f), 50, System.Drawing.Color.Fuchsia);
+                Utility.DrawCircle(new Vector3(7010f, 10020f, 60f), 50, System.Drawing.Color.Fuchsia);
+                Utility.DrawCircle(new Vector3(9850f, 8780f, 60f), 50, System.Drawing.Color.Fuchsia);
+                Utility.DrawCircle(new Vector3(11130f, 6230f, 60f), 50, System.Drawing.Color.Fuchsia);
+                Utility.DrawCircle(new Vector3(10270f, 4970f, 60f), 50, System.Drawing.Color.Fuchsia);
+                Utility.DrawCircle(new Vector3(7210f, 2100f, 60f), 50, System.Drawing.Color.Fuchsia);
+                Utility.DrawCircle(new Vector3(4140f, 5700f, 60f), 50, System.Drawing.Color.Fuchsia);
+                Utility.DrawCircle(new Vector3(6900f, 12400f, 60f), 50, System.Drawing.Color.Fuchsia);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("EasyRangedJungle_OnEndScene: " + ex);
+                Log.LogString("EasyRangedJungle_OnEndScene: " + ex);
+                throw;
+            }
         }
     }
 
@@ -575,17 +660,26 @@ namespace SAwareness
 
         public FowWardPlacement()
         {
-            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+            try
             {
-                if (hero.IsEnemy)
+                foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
                 {
-                    List<ExpandedWardItem> wards = GetWardItemsUsed(hero);
-                    enemiesUsed.Add(hero, wards);
-                    wards = GetWardItemsRefilled(hero);
-                    enemiesRefilled.Add(hero, wards);
+                    if (hero.IsEnemy)
+                    {
+                        List<ExpandedWardItem> wards = GetWardItemsUsed(hero);
+                        enemiesUsed.Add(hero, wards);
+                        wards = GetWardItemsRefilled(hero);
+                        enemiesRefilled.Add(hero, wards);
+                    }
                 }
+                Game.OnGameUpdate += Game_OnGameUpdate;
             }
-            Game.OnGameUpdate += Game_OnGameUpdate;
+            catch (Exception ex)
+            {
+                Console.WriteLine("FowWardPlacement_FowWardPlacement: " + ex);
+                Log.LogString("FowWardPlacement_FowWardPlacement: " + ex);
+                throw;
+            }
         }
 
         ~FowWardPlacement()
@@ -600,100 +694,127 @@ namespace SAwareness
 
         private void Game_OnGameUpdate(EventArgs args)
         {
-            if (!IsActive())
-                return;
-
-            foreach (var enemy in enemiesUsed.ToArray())
+            try
             {
-                Obj_AI_Hero hero = enemy.Key;
-                List<ExpandedWardItem> wards = new List<ExpandedWardItem>(enemy.Value.ToArray());
-                foreach (var item in hero.InventoryItems)
+                if (!IsActive())
+                    return;
+
+                foreach (var enemy in enemiesUsed.ToArray())
                 {
-                    foreach (var wardItem in enemy.Value.ToArray())
+                    Obj_AI_Hero hero = enemy.Key;
+                    List<ExpandedWardItem> wards = new List<ExpandedWardItem>(enemy.Value.ToArray());
+                    foreach (var item in hero.InventoryItems)
                     {
-                        if ((int)item.Id == wardItem.Id && wardItem.Type != Wards.WardType.Temp && hero.Spellbook.CanUseSpell(item.SpellSlot) == SpellState.Ready)
+                        foreach (var wardItem in enemy.Value.ToArray())
                         {
-                            if (item.Charges < wardItem.Charges || item.Stacks < wardItem.Stacks)
-                                Console.Write("");
-                            if (item.Charges > 0 ? item.Charges >= wardItem.Charges : false || item.Stacks >= wardItem.Stacks) //Check for StackItems etc fail
+                            if ((int)item.Id == wardItem.Id && wardItem.Type != Wards.WardType.Temp && hero.Spellbook.CanUseSpell(item.SpellSlot) == SpellState.Ready)
                             {
-                                enemy.Value.Remove(wardItem);
+                                if (item.Charges < wardItem.Charges || item.Stacks < wardItem.Stacks)
+                                    Console.Write("");
+                                if (item.Charges > 0 ? item.Charges >= wardItem.Charges : false || item.Stacks >= wardItem.Stacks) //Check for StackItems etc fail
+                                {
+                                    enemy.Value.Remove(wardItem);
+                                }
                             }
                         }
                     }
+                    foreach (var wardItem in enemy.Value)
+                    {
+                        Game.PrintChat("{0} has used {1}", enemy.Key.ChampionName, wardItem.Name);
+                    }
+                    enemiesUsed[enemy.Key] = GetWardItemsUsed(hero);
                 }
-                foreach (var wardItem in enemy.Value)
+
+                foreach (var enemy in enemiesRefilled.ToArray())
                 {
-                    Game.PrintChat("{0} has used {1}", enemy.Key.ChampionName, wardItem.Name);
+                    Obj_AI_Hero hero = enemy.Key;
+
+                    //Refill
+                    List<ExpandedWardItem> wards = new List<ExpandedWardItem>();
+                    foreach (var item in hero.InventoryItems)
+                    {
+                        List<int> checkedWards = new List<int>();
+                        foreach (var wardItem in enemy.Value.ToArray())
+                        {
+                            if ((int)item.Id == wardItem.Id && (item.Charges > wardItem.Charges || item.Stacks > wardItem.Stacks) &&
+                                wardItem.Type != Wards.WardType.Temp && hero.Spellbook.CanUseSpell(item.SpellSlot) == SpellState.Ready)
+                            {
+                                wards.Add(wardItem);
+                            }
+                            checkedWards.Add(wardItem.Id);
+                        }
+                        foreach (var ward in Wards.WardItems)
+                        {
+                            if ((int)item.Id == ward.Id && ward.Type != Wards.WardType.Temp && hero.Spellbook.CanUseSpell(item.SpellSlot) == SpellState.Ready &&
+                                (enemy.Value.Find(wardItem => wardItem.Id == ward.Id) == null))
+                            {
+                                wards.Add(new ExpandedWardItem(ward, item.Stacks, item.Charges));
+                            }
+                        }
+                    }
+                    foreach (var wardItem in wards)
+                    {
+                        Game.PrintChat("{0} got {1}", enemy.Key.ChampionName, wardItem.Name);
+                    }
+                    enemiesRefilled[enemy.Key] = GetWardItemsRefilled(hero);
                 }
-                enemiesUsed[enemy.Key] = GetWardItemsUsed(hero);
             }
-
-            foreach (var enemy in enemiesRefilled.ToArray())
+            catch (Exception ex)
             {
-                Obj_AI_Hero hero = enemy.Key;
-
-                //Refill
-                List<ExpandedWardItem> wards = new List<ExpandedWardItem>();
-                foreach (var item in hero.InventoryItems)
-                {
-                    List<int> checkedWards = new List<int>();
-                    foreach (var wardItem in enemy.Value.ToArray())
-                    {
-                        if ((int)item.Id == wardItem.Id && (item.Charges > wardItem.Charges || item.Stacks > wardItem.Stacks) &&
-                            wardItem.Type != Wards.WardType.Temp && hero.Spellbook.CanUseSpell(item.SpellSlot) == SpellState.Ready)
-                        {
-                            wards.Add(wardItem);
-                        }
-                        checkedWards.Add(wardItem.Id);
-                    }
-                    foreach (var ward in Wards.WardItems)
-                    {
-                        if ((int)item.Id == ward.Id && ward.Type != Wards.WardType.Temp && hero.Spellbook.CanUseSpell(item.SpellSlot) == SpellState.Ready &&
-                            (enemy.Value.Find(wardItem => wardItem.Id == ward.Id) == null))
-                        {
-                            wards.Add(new ExpandedWardItem(ward, item.Stacks, item.Charges));
-                        }
-                    }
-                }
-                foreach (var wardItem in wards)
-                {
-                    Game.PrintChat("{0} got {1}", enemy.Key.ChampionName, wardItem.Name);
-                }
-                enemiesRefilled[enemy.Key] = GetWardItemsRefilled(hero);
+                Console.WriteLine("FowWardPlacement_OnGameUpdate: " + ex);
+                Log.LogString("FowWardPlacement_OnGameUpdate: " + ex);
+                throw;
             }
         }
 
         private List<ExpandedWardItem> GetWardItemsRefilled(Obj_AI_Hero hero)
         {
-            List<ExpandedWardItem> wards = new List<ExpandedWardItem>();
-            foreach (var item in hero.InventoryItems)
+            try
             {
-                foreach (var wardItem in Wards.WardItems)
+                List<ExpandedWardItem> wards = new List<ExpandedWardItem>();
+                foreach (var item in hero.InventoryItems)
                 {
-                    if ((int)item.Id == wardItem.Id && wardItem.Type != Wards.WardType.Temp)
+                    foreach (var wardItem in Wards.WardItems)
                     {
-                        wards.Add(new ExpandedWardItem(wardItem, item.Stacks, item.Charges));
+                        if ((int)item.Id == wardItem.Id && wardItem.Type != Wards.WardType.Temp)
+                        {
+                            wards.Add(new ExpandedWardItem(wardItem, item.Stacks, item.Charges));
+                        }
                     }
                 }
+                return wards;
             }
-            return wards;
+            catch (Exception ex)
+            {
+                Console.WriteLine("FowWardPlacement_GetWardItemsRefilled: " + ex);
+                Log.LogString("FowWardPlacement_GetWardItemsRefilled: " + ex);
+                throw;
+            }
         }
 
         private List<ExpandedWardItem> GetWardItemsUsed(Obj_AI_Hero hero)
         {
-            List<ExpandedWardItem> wards = new List<ExpandedWardItem>();
-            foreach (var item in hero.InventoryItems)
+            try
             {
-                foreach (var wardItem in Wards.WardItems)
+                List<ExpandedWardItem> wards = new List<ExpandedWardItem>();
+                foreach (var item in hero.InventoryItems)
                 {
-                    if ((int)item.Id == wardItem.Id && wardItem.Type != Wards.WardType.Temp && hero.Spellbook.CanUseSpell(item.SpellSlot) == SpellState.Ready)
+                    foreach (var wardItem in Wards.WardItems)
                     {
-                        wards.Add(new ExpandedWardItem(wardItem, item.Stacks, item.Charges));
+                        if ((int)item.Id == wardItem.Id && wardItem.Type != Wards.WardType.Temp && hero.Spellbook.CanUseSpell(item.SpellSlot) == SpellState.Ready)
+                        {
+                            wards.Add(new ExpandedWardItem(wardItem, item.Stacks, item.Charges));
+                        }
                     }
                 }
+                return wards;
             }
-            return wards;
+            catch (Exception ex)
+            {
+                Console.WriteLine("FowWardPlacement_GetWardItemsUsed: " + ex);
+                Log.LogString("FowWardPlacement_GetWardItemsUsed: " + ex);
+                throw;
+            }
         }
     }
 }

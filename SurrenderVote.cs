@@ -26,11 +26,10 @@ namespace SAwareness
 
         private void Game_OnGameProcessPacket(GamePacketEventArgs args)
         {
-            if (!IsActive())
-                return;
-
             try
             {
+                if (!IsActive())
+                    return;
                 var reader = new BinaryReader(new MemoryStream(args.PacketData));
                 byte packetId = reader.ReadByte(); //PacketId
                 if (packetId != 201)
@@ -92,8 +91,10 @@ namespace SAwareness
             }
             catch (Exception ex)
             {
-                Console.WriteLine("SurrenderProcess: " + ex);
-            }
+                Console.WriteLine("SurrenderVote_OnGameProcessPacket: " + ex);
+                Log.LogString("SurrenderVote_OnGameProcessPacket: " + ex);
+                throw;
+            } 
         }
     }
 }
