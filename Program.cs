@@ -1137,7 +1137,7 @@ namespace SAwareness
                         new MenuItem("SAwarenessActivatorAutoQssConfigSnare", "Snare").SetValue(false)));
                 Menu.ActivatorAutoQssConfig.MenuItems.Add(
                     Menu.ActivatorAutoQssConfig.Menu.AddItem(
-                        new MenuItem("SAwarenessActivatorAutoQssConfigPoison", "Posion").SetValue(false)));  
+                        new MenuItem("SAwarenessActivatorAutoQssConfigPoison", "Posion").SetValue(false)));
 
                 ////Not crashing
                 Menu.Misc.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Misc", "SAwarenessMisc"));
@@ -1297,6 +1297,8 @@ namespace SAwareness
                 //Game.OnGameUpdate += GameOnOnGameUpdate;
                 new Thread(GameOnOnGameUpdate).Start();
                 AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+                AppDomain.CurrentDomain.DomainUnload += delegate { threadActive = false; };
+                AppDomain.CurrentDomain.ProcessExit += delegate { threadActive = false; };
             }
             catch (Exception ex)
             {
@@ -1306,11 +1308,13 @@ namespace SAwareness
             }
         }
 
+        private static bool threadActive = true;
+
         private static void GameOnOnGameUpdate(/*EventArgs args*/)
         {
             try
             {
-                while (true)
+                while (threadActive)
                 {
                     Thread.Sleep(10);
                     Type classType = typeof(Menu);

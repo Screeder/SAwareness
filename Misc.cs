@@ -707,7 +707,7 @@ namespace SAwareness
                     {
                         foreach (var wardItem in enemy.Value.ToArray())
                         {
-                            if ((int)item.Id == wardItem.Id && wardItem.Type != Wards.WardType.Temp && hero.Spellbook.CanUseSpell(item.SpellSlot) == SpellState.Ready)
+                            if ((int)item.Id == wardItem.Id && wardItem.Type != Wards.WardType.Temp && wardItem.Type != Wards.WardType.TempVision  && hero.Spellbook.CanUseSpell(item.SpellSlot) == SpellState.Ready)
                             {
                                 if (item.Charges < wardItem.Charges || item.Stacks < wardItem.Stacks)
                                     Console.Write("");
@@ -737,7 +737,7 @@ namespace SAwareness
                         foreach (var wardItem in enemy.Value.ToArray())
                         {
                             if ((int)item.Id == wardItem.Id && (item.Charges > wardItem.Charges || item.Stacks > wardItem.Stacks) &&
-                                wardItem.Type != Wards.WardType.Temp && hero.Spellbook.CanUseSpell(item.SpellSlot) == SpellState.Ready)
+                                wardItem.Type != Wards.WardType.Temp && wardItem.Type != Wards.WardType.TempVision && hero.Spellbook.CanUseSpell(item.SpellSlot) == SpellState.Ready)
                             {
                                 wards.Add(wardItem);
                             }
@@ -745,7 +745,7 @@ namespace SAwareness
                         }
                         foreach (var ward in Wards.WardItems)
                         {
-                            if ((int)item.Id == ward.Id && ward.Type != Wards.WardType.Temp && hero.Spellbook.CanUseSpell(item.SpellSlot) == SpellState.Ready &&
+                            if ((int)item.Id == ward.Id && ward.Type != Wards.WardType.Temp && ward.Type != Wards.WardType.TempVision && hero.Spellbook.CanUseSpell(item.SpellSlot) == SpellState.Ready &&
                                 (enemy.Value.Find(wardItem => wardItem.Id == ward.Id) == null))
                             {
                                 wards.Add(new ExpandedWardItem(ward, item.Stacks, item.Charges));
@@ -776,7 +776,7 @@ namespace SAwareness
                 {
                     foreach (var wardItem in Wards.WardItems)
                     {
-                        if ((int)item.Id == wardItem.Id && wardItem.Type != Wards.WardType.Temp)
+                        if ((int)item.Id == wardItem.Id && wardItem.Type != Wards.WardType.Temp && wardItem.Type != Wards.WardType.TempVision)
                         {
                             wards.Add(new ExpandedWardItem(wardItem, item.Stacks, item.Charges));
                         }
@@ -801,7 +801,7 @@ namespace SAwareness
                 {
                     foreach (var wardItem in Wards.WardItems)
                     {
-                        if ((int)item.Id == wardItem.Id && wardItem.Type != Wards.WardType.Temp && hero.Spellbook.CanUseSpell(item.SpellSlot) == SpellState.Ready)
+                        if ((int)item.Id == wardItem.Id && wardItem.Type != Wards.WardType.Temp && wardItem.Type != Wards.WardType.TempVision && hero.Spellbook.CanUseSpell(item.SpellSlot) == SpellState.Ready)
                         {
                             wards.Add(new ExpandedWardItem(wardItem, item.Stacks, item.Charges));
                         }

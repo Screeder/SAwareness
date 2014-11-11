@@ -1981,7 +1981,7 @@ namespace SAwareness
             }
         }
 
-        private static Dictionary<Obj_AI_Hero, List<IncomingDamage>> BuffDamage(Obj_AI_Hero hero,
+        private static Dictionary<Obj_AI_Hero, List<IncomingDamage>> BuffDamage(Obj_AI_Hero hero, //TODO Add ignite
             Dictionary<Obj_AI_Hero, List<IncomingDamage>> tempDamages)
         {
             try
