@@ -35,7 +35,7 @@ namespace SAwareness
                 return;
 
             var stringList = Menu.AutoLevler.GetMenuItem("SAwarenessAutoLevlerSMode").GetValue<StringList>();
-            if (stringList.SelectedIndex == 1)
+            if (stringList.SelectedIndex == 0)
             {
                 _useMode = 0;
                 _priority = new[]
@@ -50,7 +50,7 @@ namespace SAwareness
                         .GetMenuItem("SAwarenessAutoLevlerPrioritySliderR").GetValue<Slider>().Value
                 };
             }
-            else if (stringList.SelectedIndex == 2)
+            else if (stringList.SelectedIndex == 1)
             {
                 _useMode = 1;
             }

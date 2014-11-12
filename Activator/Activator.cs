@@ -1586,7 +1586,7 @@ namespace SAwareness
         }
 
         private static Dictionary<Obj_AI_Hero, List<IncomingDamage>> BuffDamage(Obj_AI_Hero hero,
-            Dictionary<Obj_AI_Hero, List<IncomingDamage>> tempDamages)
+            Dictionary<Obj_AI_Hero, List<IncomingDamage>> tempDamages) //TODO: Add Ignite
         {
             foreach (BuffInstance buff in hero.Buffs)
             {

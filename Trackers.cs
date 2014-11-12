@@ -42,7 +42,7 @@ namespace SAwareness
                 if (hero.IsEnemy && !hero.IsDead && hero.IsVisible)
                 {
                     if (hero.ChampionName.Contains("Shaco") ||
-                        hero.ChampionName.Contains("LeBlanc") ||
+                        hero.ChampionName.Contains("Leblanc") ||
                         hero.ChampionName.Contains("MonkeyKing") ||
                         hero.ChampionName.Contains("Yorick"))
                     {

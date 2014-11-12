@@ -1295,6 +1295,8 @@ namespace SAwareness
                 //Game.OnGameUpdate += GameOnOnGameUpdate;
                 new Thread(GameOnOnGameUpdate).Start();
                 AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+                AppDomain.CurrentDomain.DomainUnload += delegate { threadActive = false; };
+                AppDomain.CurrentDomain.ProcessExit += delegate { threadActive = false; };
             }
             catch (Exception e)
             {
@@ -1302,9 +1304,11 @@ namespace SAwareness
             }
         }
 
+        private static bool threadActive = true;
+
         private static void GameOnOnGameUpdate(/*EventArgs args*/)
         {
-            while (true)
+            while (threadActive)
             {
                 Thread.Sleep(10);
                 Type classType = typeof (Menu);

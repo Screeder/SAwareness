@@ -15,7 +15,8 @@ namespace SAwareness
         {
             Stealth,
             Vision,
-            Temp
+            Temp,
+            TempVision
         }
 
         public static readonly List<WardItem> WardItems = new List<WardItem>();
@@ -42,8 +43,9 @@ namespace SAwareness
             WardItems.Add(new WardItem(3207, "Spirit of the Ancient Golem", "", 600, 180, WardType.Stealth));
             WardItems.Add(new WardItem(3342, "Scrying Orb", "", 2500, 2, WardType.Temp));
             WardItems.Add(new WardItem(3363, "Farsight Orb", "", 4000, 2, WardType.Temp));
-            WardItems.Add(new WardItem(3187, "Hextech Sweeper", "", 800, 5, WardType.Temp));
+            WardItems.Add(new WardItem(3187, "Hextech Sweeper", "", 800, 5, WardType.TempVision));
             WardItems.Add(new WardItem(3159, "Grez's Spectral Lantern", "", 800, 5, WardType.Temp));
+            WardItems.Add(new WardItem(3364, "Oracle's Lens", "", 600, 10, WardType.TempVision));
         }
 
         public static WardItem GetWardItem()
@@ -142,7 +144,7 @@ namespace SAwareness
                             Wards.WardItem wardItem =
                                 Wards.WardItems.First(
                                     x =>
-                                        Items.HasItem(x.Id) && Items.CanUseItem(x.Id) && x.Type == Wards.WardType.Vision);
+                                        Items.HasItem(x.Id) && Items.CanUseItem(x.Id) && (x.Type == Wards.WardType.Vision || x.Type == Wards.WardType.TempVision));
                             if (wardItem == null)
                                 return;
                             if (sender.ServerPosition.Distance(ObjectManager.Player.ServerPosition) > wardItem.Range)
@@ -588,6 +590,7 @@ namespace SAwareness
                         {
                             if ((int) inventoryItem.Id == wardItem.Id &&
                                 wardItem.Type != Wards.WardType.Temp &&
+                                wardItem.Type != Wards.WardType.TempVision &&
                                 ObjectManager.Player.Spellbook.CanUseSpell(_latestSpellSlot) == SpellState.Ready ||
                                 ObjectManager.Player.Spellbook.CanUseSpell(_latestSpellSlot) == (SpellState)1)
                             {
