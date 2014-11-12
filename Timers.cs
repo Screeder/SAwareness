@@ -66,7 +66,7 @@ namespace SAwareness
                     return;
                 foreach (Ability ability in Abilities)
                 {
-                    if ((ability.TimeCasted + ability.Delay) < Game.ClockTime)
+                    if ((ability.TimeCasted + ability.Delay) < Game.Time)
                     {
                         ability.Casted = false;
                         ability.TimeCasted = 0;
@@ -97,7 +97,7 @@ namespace SAwareness
                             hpPos = ability.Target.HPBarPosition;
                         else if (ability.Owner != null && ability.Owner.IsValid)
                             hpPos = ability.Owner.HPBarPosition;
-                        float endTime = ability.TimeCasted - (int)Game.ClockTime + ability.Delay;
+                        float endTime = ability.TimeCasted - (int)Game.Time + ability.Delay;
                         var m = (float)Math.Floor(endTime / 60);
                         var s = (float)Math.Ceiling(endTime % 60);
                         String ms = (s < 10 ? m + ":0" + s : m + ":" + s);
@@ -136,7 +136,7 @@ namespace SAwareness
                             {
                                 ability.Owner = hero;
                                 ability.Casted = true;
-                                ability.TimeCasted = (int)Game.ClockTime;
+                                ability.TimeCasted = (int)Game.Time;
                                 if (Vector3.Distance(sender.Position, hero.ServerPosition) <= 100)
                                     ability.Target = hero;
                             }
@@ -340,11 +340,11 @@ namespace SAwareness
                         if (jungleCamp.NextRespawnTime <= 0 || jungleCamp.MapType != GMap._MapType)
                             continue;
                         Vector2 sPos = Drawing.WorldToMinimap(jungleCamp.MinimapPosition);
-                        DirectXDrawer.DrawText(_font, (jungleCamp.NextRespawnTime - (int)Game.ClockTime).ToString(),
+                        DirectXDrawer.DrawText(_font, (jungleCamp.NextRespawnTime - (int)Game.Time).ToString(),
                             (int)sPos[0], (int)sPos[1], SharpDX.Color.White);
                         int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
-                        if (!jungleCamp.Called && jungleCamp.NextRespawnTime - (int)Game.ClockTime <= time &&
-                            jungleCamp.NextRespawnTime - (int)Game.ClockTime >= time - 1)
+                        if (!jungleCamp.Called && jungleCamp.NextRespawnTime - (int)Game.Time <= time &&
+                            jungleCamp.NextRespawnTime - (int)Game.Time >= time - 1)
                         {
                             jungleCamp.Called = true;
                             PingAndCall(jungleCamp.Name + " respawns in " + time + " seconds!", jungleCamp.MinimapPosition);
@@ -361,11 +361,11 @@ namespace SAwareness
                             if (altar.NextRespawnTime <= 0 || altar.MapType != GMap._MapType)
                                 continue;
                             Vector2 sPos = Drawing.WorldToMinimap(altar.Obj.ServerPosition);
-                            DirectXDrawer.DrawText(_font, (altar.NextRespawnTime - (int)Game.ClockTime).ToString(), (int)sPos[0],
+                            DirectXDrawer.DrawText(_font, (altar.NextRespawnTime - (int)Game.Time).ToString(), (int)sPos[0],
                                 (int)sPos[1], SharpDX.Color.White);
                             int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
-                            if (!altar.Called && altar.NextRespawnTime - (int)Game.ClockTime <= time &&
-                                altar.NextRespawnTime - (int)Game.ClockTime >= time - 1)
+                            if (!altar.Called && altar.NextRespawnTime - (int)Game.Time <= time &&
+                                altar.NextRespawnTime - (int)Game.Time >= time - 1)
                             {
                                 altar.Called = true;
                                 PingAndCall(altar.Name + " unlocks in " + time + " seconds!", altar.Obj.ServerPosition);
@@ -383,11 +383,11 @@ namespace SAwareness
                             if (relic.NextRespawnTime <= 0 || relic.MapType != GMap._MapType)
                                 continue;
                             Vector2 sPos = Drawing.WorldToMinimap(relic.MinimapPosition);
-                            DirectXDrawer.DrawText(_font, (relic.NextRespawnTime - (int)Game.ClockTime).ToString(), (int)sPos[0],
+                            DirectXDrawer.DrawText(_font, (relic.NextRespawnTime - (int)Game.Time).ToString(), (int)sPos[0],
                                 (int)sPos[1], SharpDX.Color.White);
                             int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
-                            if (!relic.Called && relic.NextRespawnTime - (int)Game.ClockTime <= time &&
-                                relic.NextRespawnTime - (int)Game.ClockTime >= time - 1)
+                            if (!relic.Called && relic.NextRespawnTime - (int)Game.Time <= time &&
+                                relic.NextRespawnTime - (int)Game.Time >= time - 1)
                             {
                                 relic.Called = true;
                                 PingAndCall(relic.Name + " respawns in " + time + " seconds!", relic.MinimapPosition);
@@ -407,11 +407,11 @@ namespace SAwareness
                             if (inhibitor.NextRespawnTime <= 0)
                                 continue;
                             Vector2 sPos = Drawing.WorldToMinimap(inhibitor.Obj.Position);
-                            DirectXDrawer.DrawText(_font, (inhibitor.NextRespawnTime - (int)Game.ClockTime).ToString(),
+                            DirectXDrawer.DrawText(_font, (inhibitor.NextRespawnTime - (int)Game.Time).ToString(),
                                 (int)sPos[0], (int)sPos[1], SharpDX.Color.White);
                             int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
-                            if (!inhibitor.Called && inhibitor.NextRespawnTime - (int)Game.ClockTime <= time &&
-                                inhibitor.NextRespawnTime - (int)Game.ClockTime >= time - 1)
+                            if (!inhibitor.Called && inhibitor.NextRespawnTime - (int)Game.Time <= time &&
+                                inhibitor.NextRespawnTime - (int)Game.Time >= time - 1)
                             {
                                 inhibitor.Called = true;
                                 PingAndCall("Inhibitor respawns in " + time + " seconds!", inhibitor.Obj.Position);
@@ -426,14 +426,14 @@ namespace SAwareness
                     {
                         if (health.Locked)
                         {
-                            if (health.NextRespawnTime - (int)Game.ClockTime <= 0 || health.MapId != GMap._MapType)
+                            if (health.NextRespawnTime - (int)Game.Time <= 0 || health.MapId != GMap._MapType)
                                 continue;
                             Vector2 sPos = Drawing.WorldToMinimap(health.Position);
-                            DirectXDrawer.DrawText(_font, (health.NextRespawnTime - (int)Game.ClockTime).ToString(),
+                            DirectXDrawer.DrawText(_font, (health.NextRespawnTime - (int)Game.Time).ToString(),
                                 (int)sPos[0], (int)sPos[1], SharpDX.Color.White);
                             int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
-                            if (!health.Called && health.NextRespawnTime - (int)Game.ClockTime <= time &&
-                                health.NextRespawnTime - (int)Game.ClockTime >= time - 1)
+                            if (!health.Called && health.NextRespawnTime - (int)Game.Time <= time &&
+                                health.NextRespawnTime - (int)Game.Time >= time - 1)
                             {
                                 health.Called = true;
                                 PingAndCall("Heal respawns in " + time + " seconds!", health.Position);
@@ -452,12 +452,12 @@ namespace SAwareness
                             SpellDataInst spellData = enemy.SummonerSpellbook.Spells[i];
                             if (hero.Value.Called[i])
                             {
-                                if (Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value < spellData.CooldownExpires - Game.ClockTime)
+                                if (Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value < spellData.CooldownExpires - Game.Time)
                                 {
                                     hero.Value.Called[i] = false;
                                 }
                             }
-                            if (!hero.Value.Called[i] && Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value > spellData.CooldownExpires - Game.ClockTime)
+                            if (!hero.Value.Called[i] && Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value > spellData.CooldownExpires - Game.Time)
                             {
                                 hero.Value.Called[i] = true;
                                 String text = enemy.ChampionName + " ";
@@ -518,6 +518,21 @@ namespace SAwareness
                                 text = text + " " + Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value + " sec";
                                 PingAndCall(text, new Vector3(), true, false);
                             }
+                        }
+                    }
+                    foreach (JungleCamp jungleCamp in JungleCamps)
+                    {
+                        if (jungleCamp.NextRespawnTime <= 0 || jungleCamp.MapType != GMap._MapType)
+                            continue;
+                        Vector2 sPos = Drawing.WorldToMinimap(jungleCamp.MinimapPosition);
+                        DirectXDrawer.DrawText(_font, (jungleCamp.NextRespawnTime - (int)Game.Time).ToString(),
+                            (int)sPos[0], (int)sPos[1], SharpDX.Color.White);
+                        int time = Menu.Timers.GetMenuItem("SAwarenessTimersRemindTime").GetValue<Slider>().Value;
+                        if (!jungleCamp.Called && jungleCamp.NextRespawnTime - (int)Game.Time <= time &&
+                            jungleCamp.NextRespawnTime - (int)Game.Time >= time - 1)
+                        {
+                            jungleCamp.Called = true;
+                            PingAndCall(jungleCamp.Name + " respawns in " + time + " seconds!", jungleCamp.MinimapPosition);
                         }
                     }
                 }
@@ -868,9 +883,9 @@ namespace SAwareness
                     }
                 }
 
-                foreach (JungleCamp jungleCamp in JungleCamps) //Game.ClockTime BUGGED
+                foreach (JungleCamp jungleCamp in JungleCamps) //GAME.TIME BUGGED
                 {
-                    if (Game.ClockTime > 30) //TODO: Reduce when Game.ClockTime got fixed
+                    if (Game.ClockTime > 30) //TODO: Reduce when game.time got fixed
                     {
                         jungleCamp.NextRespawnTime = 0;
                     }
@@ -899,7 +914,7 @@ namespace SAwareness
                 {
                     foreach (JungleCamp jungleCamp in JungleCamps)
                     {
-                        if ((jungleCamp.NextRespawnTime - (int)Game.ClockTime) < 0)
+                        if ((jungleCamp.NextRespawnTime - (int)Game.Time) < 0)
                         {
                             jungleCamp.NextRespawnTime = 0;
                             jungleCamp.Called = false;
@@ -932,12 +947,12 @@ namespace SAwareness
                             else if (hasBuff && altar.Locked == false)
                             {
                                 altar.Locked = true;
-                                altar.NextRespawnTime = altar.RespawnTime + (int)Game.ClockTime;
+                                altar.NextRespawnTime = altar.RespawnTime + (int)Game.Time;
                             }
                         }
                         else
                         {
-                            if (altar.NextRespawnTime < (int)Game.ClockTime)
+                            if (altar.NextRespawnTime < (int)Game.Time)
                             {
                                 altarDestroyed = altar;
                             }
@@ -970,17 +985,17 @@ namespace SAwareness
                     {
                         if (!relic.Locked && (relic.Obj != null && (!relic.Obj.IsValid || relic.Obj.IsDead)))
                         {
-                            if (Game.ClockTime < relic.SpawnTime)
+                            if (Game.Time < relic.SpawnTime)
                             {
-                                relic.NextRespawnTime = relic.SpawnTime - (int)Game.ClockTime;
+                                relic.NextRespawnTime = relic.SpawnTime - (int)Game.Time;
                             }
                             else
                             {
-                                relic.NextRespawnTime = relic.RespawnTime + (int)Game.ClockTime;
+                                relic.NextRespawnTime = relic.RespawnTime + (int)Game.Time;
                             }
                             relic.Locked = true;
                         }
-                        if ((relic.NextRespawnTime - (int)Game.ClockTime) < 0)
+                        if ((relic.NextRespawnTime - (int)Game.Time) < 0)
                         {
                             relic.NextRespawnTime = 0;
                             relic.Called = false;
@@ -996,7 +1011,7 @@ namespace SAwareness
                 //    {
                 //        if (inhibitor.Locked)
                 //        {
-                //            if (inhibitor.NextRespawnTime < Game.ClockTime)
+                //            if (inhibitor.NextRespawnTime < Game.Time)
                 //            {
                 //                inhibitor.Locked = false;
                 //            }
@@ -1019,11 +1034,11 @@ namespace SAwareness
                             else if (health.Obj.Health < 1 && health.Locked == false)
                             {
                                 health.Locked = true;
-                                health.NextRespawnTime = health.RespawnTime + (int)Game.ClockTime;
+                                health.NextRespawnTime = health.RespawnTime + (int)Game.Time;
                             }
                             else
                             {
-                                if (health.NextRespawnTime < (int)Game.ClockTime)
+                                if (health.NextRespawnTime < (int)Game.Time)
                                 {
                                     healthDestroyed = health;
                                 }
@@ -1062,7 +1077,7 @@ namespace SAwareness
                         else if (inhibitor.Obj.Health < 1 && inhibitor.Locked == false)
                         {
                             inhibitor.Locked = true;
-                            inhibitor.NextRespawnTime = inhibitor.RespawnTime + (int)Game.ClockTime;
+                            inhibitor.NextRespawnTime = inhibitor.RespawnTime + (int)Game.Time;
                         }
                     }
                 }
@@ -1084,7 +1099,7 @@ namespace SAwareness
                     JungleCamp jungleCamp = GetJungleCampByID(campId, GMap._MapType);
                     if (jungleCamp != null)
                     {
-                        jungleCamp.NextRespawnTime = (int)Game.ClockTime + jungleCamp.RespawnTime;
+                        jungleCamp.NextRespawnTime = (int)Game.Time + jungleCamp.RespawnTime;
                     }
                 }
             }
@@ -1210,7 +1225,7 @@ namespace SAwareness
                     Position = obj.Position;
                 else
                     Position = new Vector3();
-                SpawnTime = (int) Game.ClockTime;
+                SpawnTime = (int) Game.Time;
                 RespawnTime = 40;
                 NextRespawnTime = 0;
                 Locked = false;
@@ -1237,7 +1252,7 @@ namespace SAwareness
             public Inhibitor(Obj_BarracksDampener obj)
             {
                 Obj = obj;
-                SpawnTime = (int) Game.ClockTime;
+                SpawnTime = (int) Game.Time;
                 RespawnTime = 240;
                 NextRespawnTime = 0;
                 Locked = false;
