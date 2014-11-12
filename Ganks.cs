@@ -163,26 +163,17 @@ namespace SAwareness
 
         public GankDetector()
         {
-            try
+            foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>())
             {
-                foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>())
+                if (hero.IsEnemy)
                 {
-                    if (hero.IsEnemy)
-                    {
-                        Enemies.Add(hero, new Time());
-                    }
+                    Enemies.Add(hero, new Time());
                 }
-                Game.OnGameUpdate += Game_OnGameUpdate;
-                Drawing.OnEndScene += Drawing_OnEndScene;
-                Drawing.OnPreReset += Drawing_OnPreReset;
-                Drawing.OnPostReset += Drawing_OnPostReset;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("GankDetector_GankDetector: " + ex);
-                Log.LogString("GankDetector_GankDetector: " + ex);
-                throw;
-            }           
+            Game.OnGameUpdate += Game_OnGameUpdate;
+            Drawing.OnEndScene += Drawing_OnEndScene;
+            Drawing.OnPreReset += Drawing_OnPreReset;
+            Drawing.OnPostReset += Drawing_OnPostReset;
         }
 
         ~GankDetector()
@@ -200,21 +191,12 @@ namespace SAwareness
 
         private void Game_OnGameUpdate(EventArgs args)
         {
-            try
+            if (!IsActive())
+                return;
+            foreach (var enemy in Enemies)
             {
-                if (!IsActive())
-                    return;
-                foreach (var enemy in Enemies)
-                {
-                    UpdateTime(enemy);
-                }
+                UpdateTime(enemy);
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("GankDetector_OnGameUpdate: " + ex);
-                Log.LogString("GankDetector_OnGameUpdate: " + ex);
-                throw;
-            }             
         }
 
         private void Drawing_OnPostReset(EventArgs args)
@@ -231,165 +213,129 @@ namespace SAwareness
 
         private void Drawing_OnEndScene(EventArgs args)
         {
-            try
-            {
-                if (!IsActive() || !_drawActive || !Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorShowJungler").GetValue<bool>())
-                    return;
+            if (!IsActive() || !_drawActive || !Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorShowJungler").GetValue<bool>())
+                return;
 
-                foreach (var enemy in Enemies)
+            foreach (var enemy in Enemies)
+            {
+                Obj_AI_Hero hero = enemy.Key;
+                if(!hero.IsValid)
+                    continue;
+                bool hasSmite = false;
+                foreach (SpellDataInst spell in hero.SummonerSpellbook.Spells)
                 {
-                    Obj_AI_Hero hero = enemy.Key;
-                    if (!hero.IsValid)
-                        continue;
-                    bool hasSmite = false;
-                    foreach (SpellDataInst spell in hero.SummonerSpellbook.Spells)
+                    if (spell.Name.ToLower().Contains("smite"))
                     {
-                        if (spell.Name.ToLower().Contains("smite"))
-                        {
-                            hasSmite = true;
-                            break;
-                        }
-                    }
-                    if (enemy.Key.IsVisible && !enemy.Key.IsDead &&
-                        Vector3.Distance(ObjectManager.Player.ServerPosition, hero.ServerPosition) <
-                        Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorTrackRange").GetValue<Slider>().Value &&
-                        hasSmite)
-                    {
-                        String killText = "Enemy jungler approaching";
-                        _textF.Centered = true;
-                        _textF.text = killText;
-                        _textF.X = (int)Drawing.WorldToScreen(ObjectManager.Player.ServerPosition).X;
-                        _textF.Y = (int)Drawing.WorldToScreen(ObjectManager.Player.ServerPosition).Y;
-                        _textF.OutLined = true;
-                        _textF.OnEndScene();
+                        hasSmite = true;
+                        break;
                     }
                 }
+                if (enemy.Key.IsVisible && !enemy.Key.IsDead &&
+                    Vector3.Distance(ObjectManager.Player.ServerPosition, hero.ServerPosition) <
+                    Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorTrackRange").GetValue<Slider>().Value &&
+                    hasSmite)
+                {
+                    String killText = "Enemy jungler approaching";
+                    _textF.Centered = true;
+                    _textF.text = killText;
+                    _textF.X = (int)Drawing.WorldToScreen(ObjectManager.Player.ServerPosition).X;
+                    _textF.Y = (int)Drawing.WorldToScreen(ObjectManager.Player.ServerPosition).Y;
+                    _textF.OutLined = true;
+                    _textF.OnEndScene();
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("GankDetector_OnEndScene: " + ex);
-                Log.LogString("GankDetector_OnEndScene: " + ex);
-                throw;
-            }  
         }
 
         private void ChatAndPing(KeyValuePair<Obj_AI_Hero, Time> enemy)
         {
-            try
+            Obj_AI_Hero hero = enemy.Key;
+            var pingType = Packet.PingType.Normal;
+            var t = Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorPingType").GetValue<StringList>();
+            pingType = (Packet.PingType) t.SelectedIndex + 1;
+            Vector3 pos = hero.ServerPosition;
+            GamePacket gPacketT;
+            for (int i = 0;
+                i < Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorPingTimes").GetValue<Slider>().Value;
+                i++)
             {
-                Obj_AI_Hero hero = enemy.Key;
-                var pingType = Packet.PingType.Normal;
-                var t = Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorPingType").GetValue<StringList>();
-                pingType = (Packet.PingType)t.SelectedIndex + 1;
-                Vector3 pos = hero.ServerPosition;
-                GamePacket gPacketT;
-                for (int i = 0;
-                    i < Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorPingTimes").GetValue<Slider>().Value;
-                    i++)
+                if (Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorLocalPing").GetValue<bool>())
                 {
-                    if (Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorLocalPing").GetValue<bool>())
-                    {
-                        gPacketT = Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0, pingType));
-                        gPacketT.Process();
-                    }
-                    else if (!Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorLocalPing").GetValue<bool>() &&
-                             Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive")
-                                 .GetValue<bool>())
-                    {
-                        gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos[0], pos[1], 0, pingType));
-                        gPacketT.Send();
-                    }
+                    gPacketT = Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(pos[0], pos[1], 0, 0, pingType));
+                    gPacketT.Process();
                 }
-
-                if (
-                    Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorChatChoice").GetValue<StringList>().SelectedIndex ==
-                    1)
+                else if (!Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorLocalPing").GetValue<bool>() &&
+                         Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive")
+                             .GetValue<bool>())
                 {
-                    Game.PrintChat("Gank: {0}", hero.ChampionName);
+                    gPacketT = Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(pos[0], pos[1], 0, pingType));
+                    gPacketT.Send();
                 }
-                else if (
-                    Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorChatChoice")
-                        .GetValue<StringList>()
-                        .SelectedIndex == 2 &&
-                    Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
-                {
-                    Game.Say("Gank: {0}", hero.ChampionName);
-                }
-
-                //TODO: Check for Teleport etc.  
             }
-            catch (Exception ex)
+
+            if (
+                Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorChatChoice").GetValue<StringList>().SelectedIndex ==
+                1)
             {
-                Console.WriteLine("GankDetector_ChatAndPing: " + ex);
-                Log.LogString("GankDetector_ChatAndPing: " + ex);
-                throw;
+                Game.PrintChat("Gank: {0}", hero.ChampionName);
             }
+            else if (
+                Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorChatChoice")
+                    .GetValue<StringList>()
+                    .SelectedIndex == 2 &&
+                Menu.GlobalSettings.GetMenuItem("SAwarenessGlobalSettingsServerChatPingActive").GetValue<bool>())
+            {
+                Game.Say("Gank: {0}", hero.ChampionName);
+            }
+
+            //TODO: Check for Teleport etc.                    
         }
 
         private void HandleGank(KeyValuePair<Obj_AI_Hero, Time> enemy)
         {
-            try
+            Obj_AI_Hero hero = enemy.Key;
+            if (enemy.Value.InvisibleTime > 5)
             {
-                Obj_AI_Hero hero = enemy.Key;
-                if (enemy.Value.InvisibleTime > 5)
-                {
-                    if (!enemy.Value.CalledInvisible && hero.IsValid && !hero.IsDead && hero.IsVisible &&
-                        Vector3.Distance(ObjectManager.Player.ServerPosition, hero.ServerPosition) <
-                        Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorTrackRange").GetValue<Slider>().Value)
-                    {
-                        ChatAndPing(enemy);
-                        enemy.Value.CalledInvisible = true;
-                    }
-                }
-                if (!enemy.Value.CalledVisible && hero.IsValid && !hero.IsDead &&
-                    enemy.Key.GetWaypoints().Last().Distance(ObjectManager.Player.ServerPosition) <
+                if (!enemy.Value.CalledInvisible && hero.IsValid && !hero.IsDead && hero.IsVisible &&
+                    Vector3.Distance(ObjectManager.Player.ServerPosition, hero.ServerPosition) <
                     Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorTrackRange").GetValue<Slider>().Value)
                 {
                     ChatAndPing(enemy);
-                    enemy.Value.CalledVisible = true;
+                    enemy.Value.CalledInvisible = true;
                 }
             }
-            catch (Exception ex)
+            if (!enemy.Value.CalledVisible && hero.IsValid && !hero.IsDead &&
+                enemy.Key.GetWaypoints().Last().Distance(ObjectManager.Player.ServerPosition) <
+                Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorTrackRange").GetValue<Slider>().Value)
             {
-                Console.WriteLine("GankDetector_HandleGank: " + ex);
-                Log.LogString("GankDetector_HandleGank: " + ex);
-                throw;
-            }            
+                ChatAndPing(enemy);
+                enemy.Value.CalledVisible = true;
+            }
         }
 
         private void UpdateTime(KeyValuePair<Obj_AI_Hero, Time> enemy)
         {
-            try
+            Obj_AI_Hero hero = enemy.Key;
+            if (!hero.IsValid)
+                return;
+            if (hero.IsVisible)
             {
-                Obj_AI_Hero hero = enemy.Key;
-                if (!hero.IsValid)
-                    return;
-                if (hero.IsVisible)
+                HandleGank(enemy);
+                Enemies[hero].InvisibleTime = 0;
+                Enemies[hero].VisibleTime = (int) Game.Time;
+                enemy.Value.CalledInvisible = false;
+            }
+            else
+            {
+                if (Enemies[hero].VisibleTime != 0)
                 {
-                    HandleGank(enemy);
-                    Enemies[hero].InvisibleTime = 0;
-                    Enemies[hero].VisibleTime = (int)Game.Time;
-                    enemy.Value.CalledInvisible = false;
+                    Enemies[hero].InvisibleTime = (int) (Game.Time - Enemies[hero].VisibleTime);
                 }
                 else
                 {
-                    if (Enemies[hero].VisibleTime != 0)
-                    {
-                        Enemies[hero].InvisibleTime = (int)(Game.Time - Enemies[hero].VisibleTime);
-                    }
-                    else
-                    {
-                        Enemies[hero].InvisibleTime = 0;
-                    }
-                    enemy.Value.CalledVisible = false;
+                    Enemies[hero].InvisibleTime = 0;
                 }
+                enemy.Value.CalledVisible = false;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("GankDetector_UpdateTime: " + ex);
-                Log.LogString("GankDetector_UpdateTime: " + ex);
-                throw;
-            }             
         }
 
         public class Time

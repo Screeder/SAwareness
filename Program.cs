@@ -1280,12 +1280,10 @@ namespace SAwareness
                 menu.AddItem(new MenuItem("By Screeder", "By Screeder V0.85"));
                 menu.AddToMainMenu();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine("Program_CreateMenu: " + ex);
-                Log.LogString("Program_CreateMenu: " + ex);
                 throw;
-            } 
+            }
         }
 
         private static void Game_OnGameLoad(EventArgs args)
@@ -1298,53 +1296,42 @@ namespace SAwareness
                 new Thread(GameOnOnGameUpdate).Start();
                 AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Console.WriteLine("Program_OnGameLoad: " + ex);
-                Log.LogString("Program_OnGameLoad: " + ex);
-                throw;
+                Console.WriteLine("SAwareness: " + e);
             }
         }
 
         private static void GameOnOnGameUpdate(/*EventArgs args*/)
         {
-            try
+            while (true)
             {
-                while (true)
+                Thread.Sleep(10);
+                Type classType = typeof (Menu);
+                BindingFlags flags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
+                FieldInfo[] fields = classType.GetFields(flags);
+                foreach (FieldInfo p in fields)
                 {
-                    Thread.Sleep(10);
-                    Type classType = typeof(Menu);
-                    BindingFlags flags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
-                    FieldInfo[] fields = classType.GetFields(flags);
-                    foreach (FieldInfo p in fields)
+                    var item = (Menu.MenuItemSettings) p.GetValue(null);
+                    if (item.GetActive() == false && item.Item != null)
                     {
-                        var item = (Menu.MenuItemSettings)p.GetValue(null);
-                        if (item.GetActive() == false && item.Item != null)
+                        //item.Item = null;
+                    }
+                    else if (item.GetActive() && item.Item == null && !item.ForceDisable && item.Type != null)
+                    {
+                        try
                         {
-                            //item.Item = null;
+                            item.Item = System.Activator.CreateInstance(item.Type);
                         }
-                        else if (item.GetActive() && item.Item == null && !item.ForceDisable && item.Type != null)
+                        catch (Exception e)
                         {
-                            try
-                            {
-                                item.Item = System.Activator.CreateInstance(item.Type);
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine(e);
-                                throw;
-                            }
+                            Console.WriteLine(e);
+                            throw;
                         }
                     }
                 }
-                //CreateDebugInfos();
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Program_OnGameUpdate: " + ex);
-                Log.LogString("Program_OnGameUpdate: " + ex);
-                throw;
-            }
+            //CreateDebugInfos();
         }
 
         public static PropertyInfo[] GetPublicProperties(Type type)
@@ -1392,23 +1379,14 @@ namespace SAwareness
 
         public static Assembly Load()
         {
-            try
+            byte[] ba = null;
+            string resource = "SAwareness.Resources.DLL.Evade.dll";
+            Assembly curAsm = Assembly.GetExecutingAssembly();
+            using (Stream stm = curAsm.GetManifestResourceStream(resource))
             {
-                byte[] ba = null;
-                string resource = "SAwareness.Resources.DLL.Evade.dll";
-                Assembly curAsm = Assembly.GetExecutingAssembly();
-                using (Stream stm = curAsm.GetManifestResourceStream(resource))
-                {
-                    ba = new byte[(int)stm.Length];
-                    stm.Read(ba, 0, (int)stm.Length);
-                    return Assembly.Load(ba);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Program_Load: " + ex);
-                Log.LogString("Program_Load: " + ex);
-                throw;
+                ba = new byte[(int) stm.Length];
+                stm.Read(ba, 0, (int) stm.Length);
+                return Assembly.Load(ba);
             }
         }
 

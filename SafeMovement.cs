@@ -26,10 +26,11 @@ namespace SAwareness
 
         private void Game_OnGameSendPacket(GamePacketEventArgs args)
         {
+            if (!IsActive())
+                return;
+
             try
             {
-                if (!IsActive())
-                    return;
                 decimal milli = DateTime.Now.Ticks/(decimal) TimeSpan.TicksPerMillisecond;
                 var reader = new BinaryReader(new MemoryStream(args.PacketData));
                 byte packetId = reader.ReadByte();
@@ -60,10 +61,8 @@ namespace SAwareness
             }
             catch (Exception ex)
             {
-                Console.WriteLine("SafeMovement_OnGameSendPacket: " + ex);
-                Log.LogString("SafeMovement_OnGameSendPacket: " + ex);
-                throw;
-            } 
+                Console.WriteLine("MovementProcess: " + ex);
+            }
         }
     }
 }

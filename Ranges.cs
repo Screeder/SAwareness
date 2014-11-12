@@ -24,10 +24,10 @@ namespace SAwareness
 
         private void Drawing_OnDraw(EventArgs args)
         {
+            if (!IsActive())
+                return;
             try
             {
-                if (!IsActive())
-                    return;
                 DrawExperienceRanges();
                 DrawAttackRanges();
                 DrawTurretRanges();
@@ -38,329 +38,265 @@ namespace SAwareness
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Ranges_Ranges: " + ex);
-                Log.LogString("Ranges_Ranges: " + ex);
+                Console.WriteLine("SAwareness: " + ex);
                 throw;
-            } 
+            }
         }
 
         public void DrawExperienceRanges()
         {
-            try
+            if (!Menu.ExperienceRange.GetActive())
+                return;
+            var mode = Menu.ExperienceRange.GetMenuItem("SAwarenessExperienceRangeMode").GetValue<StringList>();
+            switch (mode.SelectedIndex)
             {
-                if (!Menu.ExperienceRange.GetActive())
-                    return;
-                var mode = Menu.ExperienceRange.GetMenuItem("SAwarenessExperienceRangeMode").GetValue<StringList>();
-                switch (mode.SelectedIndex)
-                {
-                    case 0:
-                        Utility.DrawCircle(ObjectManager.Player.Position, 1400, Color.LawnGreen);
-                        break;
-                    case 1:
-                        foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                case 0:
+                    Utility.DrawCircle(ObjectManager.Player.Position, 1400, Color.LawnGreen);
+                    break;
+                case 1:
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
                         {
-                            if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
-                            {
-                                Utility.DrawCircle(enemy.Position, 1400, Color.IndianRed);
-                            }
+                            Utility.DrawCircle(enemy.Position, 1400, Color.IndianRed);
                         }
-                        break;
-                    case 2:
-                        Utility.DrawCircle(ObjectManager.Player.Position, 1400, Color.LawnGreen);
-                        foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    }
+                    break;
+                case 2:
+                    Utility.DrawCircle(ObjectManager.Player.Position, 1400, Color.LawnGreen);
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
                         {
-                            if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
-                            {
-                                Utility.DrawCircle(enemy.Position, 1400, Color.IndianRed);
-                            }
+                            Utility.DrawCircle(enemy.Position, 1400, Color.IndianRed);
                         }
-                        break;
-                }
+                    }
+                    break;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Ranges_DrawExperienceRanges: " + ex);
-                Log.LogString("Ranges_DrawExperienceRanges: " + ex);
-                throw;
-            } 
         }
 
         public void DrawAttackRanges()
         {
-            try
+            if (!Menu.AttackRange.GetActive())
+                return;
+            var mode = Menu.AttackRange.GetMenuItem("SAwarenessAttackRangeMode").GetValue<StringList>();
+            switch (mode.SelectedIndex)
             {
-                if (!Menu.AttackRange.GetActive())
-                    return;
-                var mode = Menu.AttackRange.GetMenuItem("SAwarenessAttackRangeMode").GetValue<StringList>();
-                switch (mode.SelectedIndex)
-                {
-                    case 0:
-                        Utility.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.AttackRange, Color.LawnGreen);
-                        break;
-                    case 1:
-                        foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                case 0:
+                    Utility.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.AttackRange, Color.LawnGreen);
+                    break;
+                case 1:
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
                         {
-                            if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
-                            {
-                                Utility.DrawCircle(enemy.Position, enemy.AttackRange, Color.IndianRed);
-                            }
+                            Utility.DrawCircle(enemy.Position, enemy.AttackRange, Color.IndianRed);
                         }
-                        break;
-                    case 2:
-                        Utility.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.AttackRange, Color.LawnGreen);
-                        foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    }
+                    break;
+                case 2:
+                    Utility.DrawCircle(ObjectManager.Player.Position, ObjectManager.Player.AttackRange, Color.LawnGreen);
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
                         {
-                            if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
-                            {
-                                Utility.DrawCircle(enemy.Position, enemy.AttackRange, Color.IndianRed);
-                            }
+                            Utility.DrawCircle(enemy.Position, enemy.AttackRange, Color.IndianRed);
                         }
-                        break;
-                }
+                    }
+                    break;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Ranges_DrawAttackRanges: " + ex);
-                Log.LogString("Ranges_DrawAttackRanges: " + ex);
-                throw;
-            } 
         }
 
         public void DrawTurretRanges()
         {
-            try
+            if (!Menu.TowerRange.GetActive())
+                return;
+            var mode = Menu.TowerRange.GetMenuItem("SAwarenessTowerRangeMode").GetValue<StringList>();
+            switch (mode.SelectedIndex)
             {
-                if (!Menu.TowerRange.GetActive())
-                    return;
-                var mode = Menu.TowerRange.GetMenuItem("SAwarenessTowerRangeMode").GetValue<StringList>();
-                switch (mode.SelectedIndex)
-                {
-                    case 0:
-                        foreach (Obj_AI_Turret turret in ObjectManager.Get<Obj_AI_Turret>())
+                case 0:
+                    foreach (Obj_AI_Turret turret in ObjectManager.Get<Obj_AI_Turret>())
+                    {
+                        if (turret.IsVisible && !turret.IsDead && !turret.IsEnemy && turret.IsValid &&
+                            ObjectManager.Player.ServerPosition.Distance(turret.ServerPosition) < Menu.TowerRange.GetMenuItem("SAwarenessTowerRangeRange").GetValue<Slider>().Value)
                         {
-                            if (turret.IsVisible && !turret.IsDead && !turret.IsEnemy && turret.IsValid &&
-                                ObjectManager.Player.ServerPosition.Distance(turret.ServerPosition) < Menu.TowerRange.GetMenuItem("SAwarenessTowerRangeRange").GetValue<Slider>().Value)
-                            {
-                                Utility.DrawCircle(turret.Position, 900f, Color.LawnGreen);
-                            }
+                            Utility.DrawCircle(turret.Position, 900f, Color.LawnGreen);
                         }
-                        break;
-                    case 1:
-                        foreach (Obj_AI_Turret turret in ObjectManager.Get<Obj_AI_Turret>())
+                    }
+                    break;
+                case 1:
+                    foreach (Obj_AI_Turret turret in ObjectManager.Get<Obj_AI_Turret>())
+                    {
+                        if (turret.IsVisible && !turret.IsDead && turret.IsEnemy && turret.IsValid &&
+                            ObjectManager.Player.ServerPosition.Distance(turret.ServerPosition) < Menu.TowerRange.GetMenuItem("SAwarenessTowerRangeRange").GetValue<Slider>().Value)
                         {
-                            if (turret.IsVisible && !turret.IsDead && turret.IsEnemy && turret.IsValid &&
-                                ObjectManager.Player.ServerPosition.Distance(turret.ServerPosition) < Menu.TowerRange.GetMenuItem("SAwarenessTowerRangeRange").GetValue<Slider>().Value)
-                            {
-                                Utility.DrawCircle(turret.Position, 900f, Color.DarkRed);
-                            }
+                            Utility.DrawCircle(turret.Position, 900f, Color.DarkRed);
                         }
-                        break;
-                    case 2:
-                        foreach (Obj_AI_Turret turret in ObjectManager.Get<Obj_AI_Turret>())
+                    }
+                    break;
+                case 2:
+                    foreach (Obj_AI_Turret turret in ObjectManager.Get<Obj_AI_Turret>())
+                    {
+                        if (turret.IsVisible && !turret.IsDead && !turret.IsEnemy && turret.IsValid &&
+                            ObjectManager.Player.ServerPosition.Distance(turret.ServerPosition) < Menu.TowerRange.GetMenuItem("SAwarenessTowerRangeRange").GetValue<Slider>().Value)
                         {
-                            if (turret.IsVisible && !turret.IsDead && !turret.IsEnemy && turret.IsValid &&
-                                ObjectManager.Player.ServerPosition.Distance(turret.ServerPosition) < Menu.TowerRange.GetMenuItem("SAwarenessTowerRangeRange").GetValue<Slider>().Value)
-                            {
-                                Utility.DrawCircle(turret.Position, 900f, Color.LawnGreen);
-                            }
+                            Utility.DrawCircle(turret.Position, 900f, Color.LawnGreen);
                         }
-                        foreach (Obj_AI_Turret turret in ObjectManager.Get<Obj_AI_Turret>())
+                    }
+                    foreach (Obj_AI_Turret turret in ObjectManager.Get<Obj_AI_Turret>())
+                    {
+                        if (turret.IsVisible && !turret.IsDead && turret.IsEnemy && turret.IsValid &&
+                            ObjectManager.Player.ServerPosition.Distance(turret.ServerPosition) < Menu.TowerRange.GetMenuItem("SAwarenessTowerRangeRange").GetValue<Slider>().Value)
                         {
-                            if (turret.IsVisible && !turret.IsDead && turret.IsEnemy && turret.IsValid &&
-                                ObjectManager.Player.ServerPosition.Distance(turret.ServerPosition) < Menu.TowerRange.GetMenuItem("SAwarenessTowerRangeRange").GetValue<Slider>().Value)
-                            {
-                                Utility.DrawCircle(turret.Position, 900f, Color.DarkRed);
-                            }
+                            Utility.DrawCircle(turret.Position, 900f, Color.DarkRed);
                         }
-                        break;
-                }
+                    }
+                    break;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Ranges_DrawTurretRanges: " + ex);
-                Log.LogString("Ranges_DrawTurretRanges: " + ex);
-                throw;
-            } 
         }
 
         public void DrawQ()
         {
-            try
+            if (!Menu.SpellQRange.GetActive())
+                return;
+            var mode = Menu.SpellQRange.GetMenuItem("SAwarenessSpellQRangeMode").GetValue<StringList>();
+            switch (mode.SelectedIndex)
             {
-                if (!Menu.SpellQRange.GetActive())
-                    return;
-                var mode = Menu.SpellQRange.GetMenuItem("SAwarenessSpellQRangeMode").GetValue<StringList>();
-                switch (mode.SelectedIndex)
-                {
-                    case 0:
-                        Utility.DrawCircle(ObjectManager.Player.Position,
-                            ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).SData.CastRange[0], Color.LawnGreen);
-                        break;
-                    case 1:
-                        foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                case 0:
+                    Utility.DrawCircle(ObjectManager.Player.Position,
+                        ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).SData.CastRange[0], Color.LawnGreen);
+                    break;
+                case 1:
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
                         {
-                            if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
-                            {
-                                Utility.DrawCircle(enemy.Position,
-                                    ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).SData.CastRange[0], Color.IndianRed);
-                            }
+                            Utility.DrawCircle(enemy.Position,
+                                ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).SData.CastRange[0], Color.IndianRed);
                         }
-                        break;
-                    case 2:
-                        Utility.DrawCircle(ObjectManager.Player.Position,
-                            ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).SData.CastRange[0], Color.LawnGreen);
-                        foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    }
+                    break;
+                case 2:
+                    Utility.DrawCircle(ObjectManager.Player.Position,
+                        ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).SData.CastRange[0], Color.LawnGreen);
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
                         {
-                            if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
-                            {
-                                Utility.DrawCircle(enemy.Position,
-                                    ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).SData.CastRange[0], Color.IndianRed);
-                            }
+                            Utility.DrawCircle(enemy.Position,
+                                ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).SData.CastRange[0], Color.IndianRed);
                         }
-                        break;
-                }
+                    }
+                    break;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Ranges_DrawQ: " + ex);
-                Log.LogString("Ranges_DrawQ: " + ex);
-                throw;
-            } 
         }
 
         public void DrawW()
         {
-            try
+            if (!Menu.SpellWRange.GetActive())
+                return;
+            var mode = Menu.SpellWRange.GetMenuItem("SAwarenessSpellWRangeMode").GetValue<StringList>();
+            switch (mode.SelectedIndex)
             {
-                if (!Menu.SpellWRange.GetActive())
-                    return;
-                var mode = Menu.SpellWRange.GetMenuItem("SAwarenessSpellWRangeMode").GetValue<StringList>();
-                switch (mode.SelectedIndex)
-                {
-                    case 0:
-                        Utility.DrawCircle(ObjectManager.Player.Position,
-                            ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).SData.CastRange[0], Color.LawnGreen);
-                        break;
-                    case 1:
-                        foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                case 0:
+                    Utility.DrawCircle(ObjectManager.Player.Position,
+                        ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).SData.CastRange[0], Color.LawnGreen);
+                    break;
+                case 1:
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
                         {
-                            if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
-                            {
-                                Utility.DrawCircle(enemy.Position,
-                                    ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).SData.CastRange[0], Color.IndianRed);
-                            }
+                            Utility.DrawCircle(enemy.Position,
+                                ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).SData.CastRange[0], Color.IndianRed);
                         }
-                        break;
-                    case 2:
-                        Utility.DrawCircle(ObjectManager.Player.Position,
-                            ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).SData.CastRange[0], Color.LawnGreen);
-                        foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    }
+                    break;
+                case 2:
+                    Utility.DrawCircle(ObjectManager.Player.Position,
+                        ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).SData.CastRange[0], Color.LawnGreen);
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
                         {
-                            if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
-                            {
-                                Utility.DrawCircle(enemy.Position,
-                                    ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).SData.CastRange[0], Color.IndianRed);
-                            }
+                            Utility.DrawCircle(enemy.Position,
+                                ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).SData.CastRange[0], Color.IndianRed);
                         }
-                        break;
-                }
+                    }
+                    break;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Ranges_DrawW: " + ex);
-                Log.LogString("Ranges_DrawW: " + ex);
-                throw;
-            } 
         }
 
         public void DrawE()
         {
-            try
+            if (!Menu.SpellERange.GetActive())
+                return;
+            var mode = Menu.SpellERange.GetMenuItem("SAwarenessSpellERangeMode").GetValue<StringList>();
+            switch (mode.SelectedIndex)
             {
-                if (!Menu.SpellERange.GetActive())
-                    return;
-                var mode = Menu.SpellERange.GetMenuItem("SAwarenessSpellERangeMode").GetValue<StringList>();
-                switch (mode.SelectedIndex)
-                {
-                    case 0:
-                        Utility.DrawCircle(ObjectManager.Player.Position,
-                            ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).SData.CastRange[0], Color.LawnGreen);
-                        break;
-                    case 1:
-                        foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                case 0:
+                    Utility.DrawCircle(ObjectManager.Player.Position,
+                        ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).SData.CastRange[0], Color.LawnGreen);
+                    break;
+                case 1:
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
                         {
-                            if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
-                            {
-                                Utility.DrawCircle(enemy.Position,
-                                    ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).SData.CastRange[0], Color.IndianRed);
-                            }
+                            Utility.DrawCircle(enemy.Position,
+                                ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).SData.CastRange[0], Color.IndianRed);
                         }
-                        break;
-                    case 2:
-                        Utility.DrawCircle(ObjectManager.Player.Position,
-                            ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).SData.CastRange[0], Color.LawnGreen);
-                        foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    }
+                    break;
+                case 2:
+                    Utility.DrawCircle(ObjectManager.Player.Position,
+                        ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).SData.CastRange[0], Color.LawnGreen);
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
                         {
-                            if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
-                            {
-                                Utility.DrawCircle(enemy.Position,
-                                    ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).SData.CastRange[0], Color.IndianRed);
-                            }
+                            Utility.DrawCircle(enemy.Position,
+                                ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).SData.CastRange[0], Color.IndianRed);
                         }
-                        break;
-                }
+                    }
+                    break;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Ranges_DrawE: " + ex);
-                Log.LogString("Ranges_DrawE: " + ex);
-                throw;
-            } 
         }
 
         public void DrawR()
         {
-            try
+            if (!Menu.SpellRRange.GetActive())
+                return;
+            var mode = Menu.SpellRRange.GetMenuItem("SAwarenessSpellRRangeMode").GetValue<StringList>();
+            switch (mode.SelectedIndex)
             {
-                if (!Menu.SpellRRange.GetActive())
-                    return;
-                var mode = Menu.SpellRRange.GetMenuItem("SAwarenessSpellRRangeMode").GetValue<StringList>();
-                switch (mode.SelectedIndex)
-                {
-                    case 0:
-                        Utility.DrawCircle(ObjectManager.Player.Position,
-                            ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).SData.CastRange[0], Color.LawnGreen);
-                        break;
-                    case 1:
-                        foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                case 0:
+                    Utility.DrawCircle(ObjectManager.Player.Position,
+                        ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).SData.CastRange[0], Color.LawnGreen);
+                    break;
+                case 1:
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
                         {
-                            if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
-                            {
-                                Utility.DrawCircle(enemy.Position,
-                                    ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).SData.CastRange[0], Color.IndianRed);
-                            }
+                            Utility.DrawCircle(enemy.Position,
+                                ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).SData.CastRange[0], Color.IndianRed);
                         }
-                        break;
-                    case 2:
-                        Utility.DrawCircle(ObjectManager.Player.Position,
-                            ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).SData.CastRange[0], Color.LawnGreen);
-                        foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    }
+                    break;
+                case 2:
+                    Utility.DrawCircle(ObjectManager.Player.Position,
+                        ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).SData.CastRange[0], Color.LawnGreen);
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
                         {
-                            if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
-                            {
-                                Utility.DrawCircle(enemy.Position,
-                                    ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).SData.CastRange[0], Color.IndianRed);
-                            }
+                            Utility.DrawCircle(enemy.Position,
+                                ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).SData.CastRange[0], Color.IndianRed);
                         }
-                        break;
-                }
+                    }
+                    break;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Ranges_DrawR: " + ex);
-                Log.LogString("Ranges_DrawR: " + ex);
-                throw;
-            } 
         }
     }
 }

@@ -33,100 +33,82 @@ namespace SAwareness
 
         private static void Init()
         {
-            try
+            switch (ObjectManager.Player.ChampionName)
             {
-                switch (ObjectManager.Player.ChampionName)
-                {
-                    case "Kayle":
-                        _ult = new Ult(UltType.Invincible, SpellSlot.E, 900);
-                        break;
+                case "Kayle":
+                    _ult = new Ult(UltType.Invincible, SpellSlot.E, 900);
+                    break;
 
-                    case "Lissandra":
-                        _ult = new Ult(UltType.Invincible, SpellSlot.R, 0);
-                        break;
+                case "Lissandra":
+                    _ult = new Ult(UltType.Invincible, SpellSlot.R, 0);
+                    break;
 
-                    case "Lulu":
-                        _ult = new Ult(UltType.Invincible, SpellSlot.R, 900);
-                        break;
+                case "Lulu":
+                    _ult = new Ult(UltType.Invincible, SpellSlot.R, 900);
+                    break;
 
-                    case "Shen":
-                        _ult = new Ult(UltType.Global, SpellSlot.R, 90000);
-                        break;
+                case "Shen":
+                    _ult = new Ult(UltType.Global, SpellSlot.R, 90000);
+                    break;
 
-                    case "Soraka":
-                        _ult = new Ult(UltType.Global, SpellSlot.R, 90000);
-                        break;
+                case "Soraka":
+                    _ult = new Ult(UltType.Global, SpellSlot.R, 90000);
+                    break;
 
-                    case "Tryndamere":
-                        _ult = new Ult(UltType.Invincible, SpellSlot.R, 0, false);
-                        break;
+                case "Tryndamere":
+                    _ult = new Ult(UltType.Invincible, SpellSlot.R, 0, false);
+                    break;
 
-                    case "Yorick":
-                        _ult = new Ult(UltType.Invincible, SpellSlot.R, 900);
-                        break;
+                case "Yorick":
+                    _ult = new Ult(UltType.Invincible, SpellSlot.R, 900);
+                    break;
 
-                    case "Zilean":
-                        _ult = new Ult(UltType.Invincible, SpellSlot.R, 900);
-                        break;
+                case "Zilean":
+                    _ult = new Ult(UltType.Invincible, SpellSlot.R, 900);
+                    break;
 
-                    default:
-                        return;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("AutoUlt_Init: " + ex);
-                Log.LogString("AutoUlt_Init: " + ex);
-                throw;
+                default:
+                    return;
             }
         }
 
         private void Game_OnGameUpdate(EventArgs args)
         {
-            try
+            if (!IsActive() || _ult == null || ObjectManager.Player.Spellbook.GetSpell(_ult.SpellSlot).State != SpellState.Ready)
+                return;
+
+            var tempDamages =
+                new Dictionary<Obj_AI_Hero, List<Activator.IncomingDamage>>(Activator.Damages);
+            foreach (var damage in Activator.Damages)
             {
-                if (!IsActive() || _ult == null || ObjectManager.Player.Spellbook.GetSpell(_ult.SpellSlot).State != SpellState.Ready)
-                    return;
+                Obj_AI_Hero hero = damage.Key;
 
-                var tempDamages =
-                    new Dictionary<Obj_AI_Hero, List<Activator.IncomingDamage>>(Activator.Damages);
-                foreach (var damage in Activator.Damages)
+                if (!Menu.AutoShield.GetMenuItem("SAwarenessAutoShieldAlly").GetValue<bool>())
+                    if (hero.NetworkId != ObjectManager.Player.NetworkId)
+                        continue;
+            }
+
+            foreach (var damage in tempDamages)
+            {
+                if (Activator.CalcMaxDamage(damage.Key) > damage.Key.Health &&
+                    (damage.Key.Distance(ObjectManager.Player.ServerPosition) < _ult.Range))
                 {
-                    Obj_AI_Hero hero = damage.Key;
-
-                    if (!Menu.AutoShield.GetMenuItem("SAwarenessAutoShieldAlly").GetValue<bool>())
-                        if (hero.NetworkId != ObjectManager.Player.NetworkId)
-                            continue;
-                }
-
-                foreach (var damage in tempDamages)
-                {
-                    if (Activator.CalcMaxDamage(damage.Key) > damage.Key.Health &&
-                        (damage.Key.Distance(ObjectManager.Player.ServerPosition) < _ult.Range))
+                    if (!Menu.ActivatorAutoUlt.GetMenuItem("SAwarenessActivatorAutoUltAlly").GetValue<bool>() &&
+                        damage.Key.NetworkId != ObjectManager.Player.NetworkId)
                     {
-                        if (!Menu.ActivatorAutoUlt.GetMenuItem("SAwarenessActivatorAutoUltAlly").GetValue<bool>() &&
-                            damage.Key.NetworkId != ObjectManager.Player.NetworkId)
-                        {
-                            continue;
-                        }
-                        if (_ult.Target)
-                        {
-                            Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(damage.Key.NetworkId, _ult.SpellSlot)).Send();
-                            return;
-                        }
-                        if (damage.Key.NetworkId == ObjectManager.Player.NetworkId)
-                        {
-                            Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(damage.Key.NetworkId, _ult.SpellSlot)).Send();
-                            return;
-                        }
+                        continue;
+                    }
+                    if (_ult.Target)
+                    {
+                        Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(damage.Key.NetworkId, _ult.SpellSlot)).Send();
+                        return;
+                    }
+                    if (damage.Key.NetworkId == ObjectManager.Player.NetworkId)
+                    {
+                        Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(damage.Key.NetworkId, _ult.SpellSlot)).Send();
+                        return;
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("AutoUlt_OnGameUpdate: " + ex);
-                Log.LogString("AutoUlt_OnGameUpdate: " + ex);
-                throw;
             }
         }
 

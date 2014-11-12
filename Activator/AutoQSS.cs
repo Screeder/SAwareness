@@ -34,126 +34,99 @@ namespace SAwareness
 
         private static void Init()
         {
-            try
+            switch (ObjectManager.Player.ChampionName)
             {
-                switch (ObjectManager.Player.ChampionName)
-                {
-                    case "Alistar":
-                        _qss = new Qss(SpellSlot.R);
-                        break;
+                case "Alistar":
+                    _qss = new Qss(SpellSlot.R);
+                    break;
 
-                    case "Gankplank":
-                        _qss = new Qss(SpellSlot.W);
-                        break;
+                case "Gankplank":
+                    _qss = new Qss(SpellSlot.W);
+                    break;
 
-                    case "Olaf":
-                        _qss = new Qss(SpellSlot.R);
-                        break;
+                case "Olaf":
+                    _qss = new Qss(SpellSlot.R);
+                    break;
 
-                    default:
-                        return;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("AutoQSS_Init: " + ex);
-                Log.LogString("AutoQSS_Init: " + ex);
-                throw;
+                default:
+                    return;
             }
         }
 
         private void Game_OnGameUpdate(EventArgs args)
         {
-            try
+            if (!IsActive() || _qss == null || ObjectManager.Player.Spellbook.GetSpell(_qss.SpellSlot).State != SpellState.Ready)
+                return;
+
+            CreateBuffList();
+
+            List<BuffInstance> buffList = Activator.GetActiveCcBuffs(_buffs);
+
+            if (buffList.Count() >=
+                Menu.ActivatorAutoQss.GetMenuItem("SAwarenessActivatorAutoQssMinSpells")
+                    .GetValue<Slider>()
+                    .Value)
             {
-                if (!IsActive() || _qss == null || ObjectManager.Player.Spellbook.GetSpell(_qss.SpellSlot).State != SpellState.Ready)
-                    return;
-
-                CreateBuffList();
-
-                List<BuffInstance> buffList = Activator.GetActiveCcBuffs(_buffs);
-
-                if (buffList.Count() >=
-                    Menu.ActivatorAutoQss.GetMenuItem("SAwarenessActivatorAutoQssMinSpells")
-                        .GetValue<Slider>()
-                        .Value)
-                {
-                    Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(ObjectManager.Player.NetworkId, _qss.SpellSlot)).Send();
-                }
-
-                if (ObjectManager.Player.HasBuffOfType(BuffType.Slow))
-                {
-                    Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(ObjectManager.Player.NetworkId, _qss.SpellSlot)).Send();
-                }
+                Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(ObjectManager.Player.NetworkId, _qss.SpellSlot)).Send();
             }
-            catch (Exception ex)
+
+            if (ObjectManager.Player.HasBuffOfType(BuffType.Slow))
             {
-                Console.WriteLine("AutoQSS_OnGameUpdate: " + ex);
-                Log.LogString("AutoQSS_OnGameUpdate: " + ex);
-                throw;
+                Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(ObjectManager.Player.NetworkId, _qss.SpellSlot)).Send();              
             }
         }
 
         private void CreateBuffList()
         {
-            try
-            {
-                _buffs.Clear();
-                if (
-                    Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigStun")
-                        .GetValue<bool>())
-                    _buffs.Add(BuffType.Stun);
-                if (
-                    Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigSilence")
-                        .GetValue<bool>())
-                    _buffs.Add(BuffType.Silence);
-                if (
-                    Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigTaunt")
-                        .GetValue<bool>())
-                    _buffs.Add(BuffType.Taunt);
-                if (
-                    Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigFear")
-                        .GetValue<bool>())
-                    _buffs.Add(BuffType.Fear);
-                if (
-                    Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigCharm")
-                        .GetValue<bool>())
-                    _buffs.Add(BuffType.Charm);
-                if (
-                    Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigBlind")
-                        .GetValue<bool>())
-                    _buffs.Add(BuffType.Blind);
-                if (
-                    Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigDisarm")
-                        .GetValue<bool>())
-                    _buffs.Add(BuffType.Disarm);
-                if (
-                    Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigSuppress")
-                        .GetValue<bool>())
-                    _buffs.Add(BuffType.Suppression);
-                if (
-                    Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigSlow")
-                        .GetValue<bool>())
-                    _buffs.Add(BuffType.Slow);
-                if (
-                    Menu.ActivatorAutoQssConfig.GetMenuItem(
-                        "SAwarenessActivatorAutoQssConfigCombatDehancer").GetValue<bool>())
-                    _buffs.Add(BuffType.CombatDehancer);
-                if (
-                    Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigSnare")
-                        .GetValue<bool>())
-                    _buffs.Add(BuffType.Snare);
-                if (
-                    Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigPoison")
-                        .GetValue<bool>())
-                    _buffs.Add(BuffType.Poison);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("AutoQSS_CreateBuffList: " + ex);
-                Log.LogString("AutoQSS_CreateBuffList: " + ex);
-                throw;
-            }
+            _buffs.Clear();
+            if (
+                Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigStun")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Stun);
+            if (
+                Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigSilence")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Silence);
+            if (
+                Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigTaunt")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Taunt);
+            if (
+                Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigFear")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Fear);
+            if (
+                Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigCharm")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Charm);
+            if (
+                Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigBlind")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Blind);
+            if (
+                Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigDisarm")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Disarm);
+            if (
+                Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigSuppress")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Suppression);
+            if (
+                Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigSlow")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Slow);
+            if (
+                Menu.ActivatorAutoQssConfig.GetMenuItem(
+                    "SAwarenessActivatorAutoQssConfigCombatDehancer").GetValue<bool>())
+                _buffs.Add(BuffType.CombatDehancer);
+            if (
+                Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigSnare")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Snare);
+            if (
+                Menu.ActivatorAutoQssConfig.GetMenuItem("SAwarenessActivatorAutoQssConfigPoison")
+                    .GetValue<bool>())
+                _buffs.Add(BuffType.Poison);
         }
 
         private class Qss

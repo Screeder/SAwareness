@@ -23,19 +23,10 @@ namespace SAwareness
 
         private void Game_OnGameUpdate(EventArgs args)
         {
-            try
-            {
-                if (!IsActive() || !Menu.MoveToMouse.GetMenuItem("SAwarenessMoveToMouseKey").GetValue<KeyBind>().Active)
-                    return;
+            if (!IsActive() || !Menu.MoveToMouse.GetMenuItem("SAwarenessMoveToMouseKey").GetValue<KeyBind>().Active)
+                return;
 
-                ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("MoveToMouse_OnGameUpdate: " + ex);
-                Log.LogString("MoveToMouse_OnGameUpdate: " + ex);
-                throw;
-            } 
+            ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
         }
     }
 }

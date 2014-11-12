@@ -21,7 +21,7 @@ namespace SAwareness
     internal static class Log
     {
         public static String File = "C:\\SAwareness.log";
-        public static String Prefix = "";
+        public static String Prefix = "Packet";
 
         public static void LogString(String text, String file = null, String prefix = null)
         {
@@ -53,9 +53,7 @@ namespace SAwareness
 
         public static void LogPacket(byte[] data, String file = null, String prefix = null)
         {
-            Prefix = "Packet";
             LogWrite(BitConverter.ToString(data), file, prefix);
-            Prefix = "";
         }
 
         private static void LogWrite(String text, String file = null, String prefix = null)
@@ -204,20 +202,11 @@ namespace SAwareness
 
         static SpriteHelper()
         {
-            try
+            ResourceSet resourceSet = Resources.ResourceManager.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
+            foreach (DictionaryEntry entry in resourceSet)
             {
-                ResourceSet resourceSet = Resources.ResourceManager.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
-                foreach (DictionaryEntry entry in resourceSet)
-                {
-                    MyResources.Add(entry.Key.ToString().ToLower(), (byte[])entry.Value);
-                }
+                MyResources.Add(entry.Key.ToString().ToLower(), (byte[]) entry.Value);
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("SpriteHelper_SpriteHelper: " + ex);
-                Log.LogString("SpriteHelper_SpriteHelper: " + ex);
-                throw;
-            } 
         }
 
         //struct SpriteRef
@@ -275,53 +264,44 @@ namespace SAwareness
 
         public static void LoadTexture(String name, ref Texture texture, TextureType type)
         {
-            try
+            if ((type == TextureType.Default || type == TextureType.Summoner) && MyResources.ContainsKey(name.ToLower()))
             {
-                if ((type == TextureType.Default || type == TextureType.Summoner) && MyResources.ContainsKey(name.ToLower()))
+                try
                 {
-                    try
-                    {
-                        texture = Texture.FromMemory(Drawing.Direct3DDevice, MyResources[name.ToLower()]);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("SAwarness: Couldn't load texture: " + name + "\n Ex: " + ex);
-                    }
+                    texture = Texture.FromMemory(Drawing.Direct3DDevice, MyResources[name.ToLower()]);
                 }
-                else if (type == TextureType.Summoner && MyResources.ContainsKey(name.ToLower().Remove(name.Length - 1)))
+                catch (Exception ex)
                 {
-                    try
-                    {
-                        texture = Texture.FromMemory(Drawing.Direct3DDevice,
-                            MyResources[name.ToLower().Remove(name.Length - 1)]);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("SAwarness: Couldn't load texture: " + name + "\n Ex: " + ex);
-                    }
-                }
-                else if (type == TextureType.Item && MyResources.ContainsKey(name.ToLower().Insert(0, "_")))
-                {
-                    try
-                    {
-                        texture = Texture.FromMemory(Drawing.Direct3DDevice, MyResources[name.ToLower().Insert(0, "_")]);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("SAwarness: Couldn't load texture: " + name + "\n Ex: " + ex);
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("SAwarness: " + name + " is missing. Please inform Screeder!");
+                    Console.WriteLine("SAwarness: Couldn't load texture: " + name + "\n Ex: " + ex);
                 }
             }
-            catch (Exception ex)
+            else if (type == TextureType.Summoner && MyResources.ContainsKey(name.ToLower().Remove(name.Length - 1)))
             {
-                Console.WriteLine("SpriteHelper_LoadTexture: " + ex);
-                Log.LogString("SpriteHelper_LoadTexture: " + ex);
-                throw;
-            } 
+                try
+                {
+                    texture = Texture.FromMemory(Drawing.Direct3DDevice,
+                        MyResources[name.ToLower().Remove(name.Length - 1)]);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("SAwarness: Couldn't load texture: " + name + "\n Ex: " + ex);
+                }
+            }
+            else if (type == TextureType.Item && MyResources.ContainsKey(name.ToLower().Insert(0, "_")))
+            {
+                try
+                {
+                    texture = Texture.FromMemory(Drawing.Direct3DDevice, MyResources[name.ToLower().Insert(0, "_")]);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("SAwarness: Couldn't load texture: " + name + "\n Ex: " + ex);
+                }
+            }
+            else
+            {
+                Console.WriteLine("SAwarness: " + name + " is missing. Please inform Screeder!");
+            }
         }
 
         //static void Downloader_DownloadFileFinished(object sender, Downloader.DlEventArgs args)
@@ -405,27 +385,18 @@ namespace SAwareness
         //TODO: Too many drawtext for shadowtext, need another method fps issues
         public static void DrawText(Font font, String text, int posX, int posY, SharpDX.Color color)
         {
-            try
+            if (font == null || font.IsDisposed)
             {
-                if (font == null || font.IsDisposed)
-                {
-                    throw new SharpDXException("");
-                }
-                Rectangle rec = font.MeasureText(null, text, FontDrawFlags.Center);
-                //font.DrawText(null, text, posX + 1 + rec.X, posY, Color.Black);
-                font.DrawText(null, text, posX + 1 + rec.X, posY + 1, SharpDX.Color.Black);
-                font.DrawText(null, text, posX + rec.X, posY + 1, SharpDX.Color.Black);
-                //font.DrawText(null, text, posX - 1 + rec.X, posY, Color.Black);
-                font.DrawText(null, text, posX - 1 + rec.X, posY - 1, SharpDX.Color.Black);
-                font.DrawText(null, text, posX + rec.X, posY - 1, SharpDX.Color.Black);
-                font.DrawText(null, text, posX + rec.X, posY, color);
+                throw new SharpDXException("");
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("DirectXDrawer_DrawText: " + ex);
-                Log.LogString("DirectXDrawer_DrawText: " + ex);
-                throw;
-            }
+            Rectangle rec = font.MeasureText(null, text, FontDrawFlags.Center);
+            //font.DrawText(null, text, posX + 1 + rec.X, posY, Color.Black);
+            font.DrawText(null, text, posX + 1 + rec.X, posY + 1, SharpDX.Color.Black);
+            font.DrawText(null, text, posX + rec.X, posY + 1, SharpDX.Color.Black);
+            //font.DrawText(null, text, posX - 1 + rec.X, posY, Color.Black);
+            font.DrawText(null, text, posX - 1 + rec.X, posY - 1, SharpDX.Color.Black);
+            font.DrawText(null, text, posX + rec.X, posY - 1, SharpDX.Color.Black);
+            font.DrawText(null, text, posX + rec.X, posY, color);
         }
 
         public static void DrawSprite(Sprite sprite, Texture texture, Size size, float[] scale = null,
@@ -438,27 +409,18 @@ namespace SAwareness
             float[] scale = null,
             float rotation = 0.0f)
         {
-            try
+            if (sprite != null && !sprite.IsDisposed && texture != null && !texture.IsDisposed)
             {
-                if (sprite != null && !sprite.IsDisposed && texture != null && !texture.IsDisposed)
-                {
-                    Matrix matrix = sprite.Transform;
-                    Matrix nMatrix = (scale != null ? Matrix.Scaling(scale[0], scale[1], 0) : Matrix.Scaling(1)) *
-                                     Matrix.RotationZ(rotation) * Matrix.Translation(size.Width, size.Height, 0);
-                    sprite.Transform = nMatrix;
-                    Matrix mT = Drawing.Direct3DDevice.GetTransform(TransformState.World);
+                Matrix matrix = sprite.Transform;
+                Matrix nMatrix = (scale != null ? Matrix.Scaling(scale[0], scale[1], 0) : Matrix.Scaling(1))*
+                                 Matrix.RotationZ(rotation)*Matrix.Translation(size.Width, size.Height, 0);
+                sprite.Transform = nMatrix;
+                Matrix mT = Drawing.Direct3DDevice.GetTransform(TransformState.World);
 
-                    //InternalRender(mT.TranslationVector);
-                    if (Common.IsOnScreen(new Vector2(size.Width, size.Height)))
-                        sprite.Draw(texture, color);
-                    sprite.Transform = matrix;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("DirectXDrawer_DrawSprite: " + ex);
-                Log.LogString("DirectXDrawer_DrawSprite: " + ex);
-                throw;
+                //InternalRender(mT.TranslationVector);
+                if (Common.IsOnScreen(new Vector2(size.Width, size.Height)))
+                    sprite.Draw(texture, color);
+                sprite.Transform = matrix;
             }
         }
 

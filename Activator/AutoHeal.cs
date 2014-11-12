@@ -33,156 +33,129 @@ namespace SAwareness
 
         private static void Init()
         {
-            try
+            switch (ObjectManager.Player.ChampionName)
             {
-                switch (ObjectManager.Player.ChampionName)
-                {
-                    case "Alistar":
-                        _heal = new Heal(SpellSlot.E, 575, false);
-                        break;
+                case "Alistar":
+                    _heal = new Heal(SpellSlot.E, 575, false);
+                    break;
 
-                    case "Gangplank":
-                        _heal = new Heal(SpellSlot.W, 0, false, true);
-                        break;
+                case "Gangplank":
+                    _heal = new Heal(SpellSlot.W, 0, false, true);
+                    break;
 
-                    case "Kayle":
-                        _heal = new Heal(SpellSlot.W, 900);
-                        break;
+                case "Kayle":
+                    _heal = new Heal(SpellSlot.W, 900);
+                    break;
 
-                    case "Nami":
-                        _heal = new Heal(SpellSlot.W, 725);
-                        break;
+                case "Nami":
+                    _heal = new Heal(SpellSlot.W, 725);
+                    break;
 
-                    case "Nidalee":
-                        _heal = new Heal(SpellSlot.E, 600);
-                        break;
+                case "Nidalee":
+                    _heal = new Heal(SpellSlot.E, 600);
+                    break;
 
-                    case "Sona":
-                        _heal = new Heal(SpellSlot.W, 1000, false);
-                        break;
+                case "Sona":
+                    _heal = new Heal(SpellSlot.W, 1000, false);
+                    break;
 
-                    case "Soraka":
-                        _heal = new Heal(SpellSlot.W, 450, true, false, false);
-                        break;
+                case "Soraka":
+                    _heal = new Heal(SpellSlot.W, 450, true, false, false);
+                    break;
 
-                    case "Taric":
-                        _heal = new Heal(SpellSlot.Q, 750);
-                        break;
+                case "Taric":
+                    _heal = new Heal(SpellSlot.Q, 750);
+                    break;
 
-                    default:
-                        return;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("AutoHeal_Init: " + ex);
-                Log.LogString("AutoHeal_Init: " + ex);
-                throw;
+                default:
+                    return;
             }
         }
 
         private void Game_OnGameUpdate(EventArgs args)
         {
-            try
-            {
-                if (!IsActive() || _heal == null || ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).State != SpellState.Ready)
-                    return;
+            if (!IsActive() || _heal == null || ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).State != SpellState.Ready)
+                return;
 
-                foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+            {
+                if (hero.IsMe || hero.IsAlly)
                 {
-                    if (hero.IsMe || hero.IsAlly)
+                    if ((hero.Health/hero.MaxHealth)*100 < Menu.ActivatorAutoHeal.GetMenuItem(
+                        "SAwarenessActivatorAutoHealPercent").GetValue<Slider>().Value)
                     {
-                        if ((hero.Health / hero.MaxHealth) * 100 < Menu.ActivatorAutoHeal.GetMenuItem(
-                            "SAwarenessActivatorAutoHealPercent").GetValue<Slider>().Value)
+                        if (hero.IsMe && !_heal.SelfCast)
                         {
-                            if (hero.IsMe && !_heal.SelfCast)
-                            {
-                                continue;
-                            }
-                            CalcHeal(hero);
-                            if (_heal.HealValue > hero.MaxHealth - hero.Health)
-                            {
-                                continue;
-                            }
-                            if (!_heal.Target && _heal.OnlySelf && hero.IsMe)
-                            {
-                                Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(hero.NetworkId, _heal.SpellSlot)).Send();
-                                return;
-                            }
-                            if (ObjectManager.Player.ServerPosition.Distance(hero.ServerPosition) < _heal.Range)
-                            {
-                                if (!_heal.Target)
-                                {
-                                    Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(hero.NetworkId, _heal.SpellSlot)).Send();
-                                    return;
-                                }
-                                Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(hero.NetworkId, _heal.SpellSlot)).Send();
-                                return;
-                            }
+                            continue;
                         }
+                        CalcHeal(hero);
+                        if (_heal.HealValue > hero.MaxHealth - hero.Health)
+                        {
+                            continue;
+                        }
+                        if (!_heal.Target && _heal.OnlySelf && hero.IsMe)
+                        {
+                            Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(hero.NetworkId, _heal.SpellSlot)).Send();
+                            return;
+                        }
+                        if (ObjectManager.Player.ServerPosition.Distance(hero.ServerPosition) < _heal.Range)
+                        {
+                            if (!_heal.Target)
+                            {
+                                Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(hero.NetworkId, _heal.SpellSlot)).Send();
+                                return;
+                            }
+                            Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(hero.NetworkId, _heal.SpellSlot)).Send();
+                            return;
+                        }                        
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("AutoHeal_OnGameUpdate: " + ex);
-                Log.LogString("AutoHeal_OnGameUpdate: " + ex);
-                throw;
             }
         }
 
         private static void CalcHeal(Obj_AI_Hero hero)
         {
-            try
+            bool selfHeal = ObjectManager.Player.NetworkId == hero.NetworkId;
+            switch (ObjectManager.Player.ChampionName)
             {
-                bool selfHeal = ObjectManager.Player.NetworkId == hero.NetworkId;
-                switch (ObjectManager.Player.ChampionName)
-                {
-                    case "Alistar":
-                        _heal.HealValue = (!selfHeal ?
-                            30 + (15 * ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).Level) + 0.10 * ObjectManager.Player.FlatMagicDamageMod :
-                            60 + (30 * ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).Level) + 0.20 * ObjectManager.Player.FlatMagicDamageMod);
-                        break;
+                case "Alistar":
+                    _heal.HealValue = (!selfHeal ?
+                        30 + (15 * ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).Level) + 0.10 * ObjectManager.Player.FlatMagicDamageMod :
+                        60 + (30 * ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).Level) + 0.20 * ObjectManager.Player.FlatMagicDamageMod);
+                    break;
 
-                    case "Gangplank":
-                        _heal.HealValue = 80 + (70 * ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).Level) + 1.00 * ObjectManager.Player.FlatMagicDamageMod;
-                        break;
+                case "Gangplank":
+                    _heal.HealValue =  80 + (70 * ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).Level) + 1.00 * ObjectManager.Player.FlatMagicDamageMod;
+                    break;
 
-                    case "Kayle":
-                        _heal.HealValue = 60 + (45 * ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).Level) + 0.45 * ObjectManager.Player.FlatMagicDamageMod;
-                        break;
+                case "Kayle":
+                    _heal.HealValue =  60 + (45 * ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).Level) + 0.45 * ObjectManager.Player.FlatMagicDamageMod;
+                    break;
 
-                    case "Nami":
-                        _heal.HealValue = 65 + (30 * ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).Level) + 0.30 * ObjectManager.Player.FlatMagicDamageMod;
-                        break;
+                case "Nami":
+                    _heal.HealValue =  65 + (30 * ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).Level) + 0.30 * ObjectManager.Player.FlatMagicDamageMod;
+                    break;
 
-                    case "Nidalee":
-                        _heal.HealValue = 45 + (40 * ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).Level) + 0.50 * ObjectManager.Player.FlatMagicDamageMod;
-                        break;
+                case "Nidalee":
+                    _heal.HealValue = 45 + (40 * ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).Level) + 0.50 * ObjectManager.Player.FlatMagicDamageMod;
+                    break;
 
-                    case "Sona":
-                        _heal.HealValue = 25 + (20 * ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).Level) + 0.20 * ObjectManager.Player.FlatMagicDamageMod; //TODO: Fix for max Health
-                        break;
+                case "Sona":
+                    _heal.HealValue = 25 + (20 * ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).Level) + 0.20 * ObjectManager.Player.FlatMagicDamageMod; //TODO: Fix for max Health
+                    break;
 
-                    case "Soraka":
-                        _heal.HealValue = 120 + (30 * ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).Level) + 0.60 * ObjectManager.Player.FlatMagicDamageMod;
-                        break;
+                case "Soraka":
+                    _heal.HealValue = 120 + (30 * ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).Level) + 0.60 * ObjectManager.Player.FlatMagicDamageMod;
+                    break;
 
-                    case "Taric":
-                        _heal.HealValue = (!selfHeal ?
-                            60 + (40 * ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).Level) + 0.30 * ObjectManager.Player.FlatMagicDamageMod + 0.05 * ObjectManager.Player.FlatHPPoolMod :
-                            84 + (56 * ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).Level) + 0.42 * ObjectManager.Player.FlatMagicDamageMod + 0.07 * ObjectManager.Player.FlatHPPoolMod);
-                        break;
+                case "Taric":
+                    _heal.HealValue = (!selfHeal ? 
+                        60 + (40 * ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).Level) + 0.30 * ObjectManager.Player.FlatMagicDamageMod + 0.05 * ObjectManager.Player.FlatHPPoolMod : 
+                        84 + (56 * ObjectManager.Player.Spellbook.GetSpell(_heal.SpellSlot).Level) + 0.42 * ObjectManager.Player.FlatMagicDamageMod + 0.07 * ObjectManager.Player.FlatHPPoolMod );
+                    break;
 
-                    default:
-                        return;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("AutoHeal_CalcHeal: " + ex);
-                Log.LogString("AutoHeal_CalcHeal: " + ex);
-                throw;
+                default:
+                    return;
             }
         }
 

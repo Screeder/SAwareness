@@ -18,20 +18,18 @@ namespace SAwareness
             try
             {
                 _font = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Times New Roman", 8));
-                Drawing.OnPreReset += Drawing_OnPreReset;
-                Drawing.OnPostReset += Drawing_OnPostReset;
-                Drawing.OnEndScene += Drawing_OnEndScene;
-                AppDomain.CurrentDomain.DomainUnload += delegate { Drawing_OnPreReset(new EventArgs()); };
-                AppDomain.CurrentDomain.ProcessExit += delegate { Drawing_OnPreReset(new EventArgs()); };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine("Health_Health: " + ex);
-                Log.LogString("Health_Health: " + ex);
                 Menu.Health.ForceDisable = true;
                 Console.WriteLine("Health: Cannot create Font");
-                throw;
-            } 
+                return;
+            }
+            Drawing.OnPreReset += Drawing_OnPreReset;
+            Drawing.OnPostReset += Drawing_OnPostReset;
+            Drawing.OnEndScene += Drawing_OnEndScene;
+            AppDomain.CurrentDomain.DomainUnload += delegate { Drawing_OnPreReset(new EventArgs()); };
+            AppDomain.CurrentDomain.ProcessExit += delegate { Drawing_OnPreReset(new EventArgs()); };
         }
 
         private void Drawing_OnPostReset(EventArgs args)
@@ -68,136 +66,118 @@ namespace SAwareness
 
         private void DrawInhibitorHealth()
         {
-            try
+            if (!IsActive() || !_drawActive)
+                return;
+            if (!Menu.InhibitorHealth.GetActive())
+                return;
+            var baseB = new List<Obj_Barracks>();
+            List<Obj_BarracksDampener> baseBd = ObjectManager.Get<Obj_BarracksDampener>().ToList();
+
+            foreach (Obj_Barracks inhibitor in baseB)
             {
-                if (!IsActive() || !_drawActive)
-                    return;
-                if (!Menu.InhibitorHealth.GetActive())
-                    return;
-                var baseB = new List<Obj_Barracks>();
-                List<Obj_BarracksDampener> baseBd = ObjectManager.Get<Obj_BarracksDampener>().ToList();
-
-                foreach (Obj_Barracks inhibitor in baseB)
+                if (!inhibitor.IsDead && inhibitor.IsValid && inhibitor.Health > 0.1f &&
+                    ((inhibitor.Health/inhibitor.MaxHealth)*100) != 100)
                 {
-                    if (!inhibitor.IsDead && inhibitor.IsValid && inhibitor.Health > 0.1f &&
-                        ((inhibitor.Health / inhibitor.MaxHealth) * 100) != 100)
+                    Vector2 pos = Drawing.WorldToMinimap(inhibitor.Position);
+                    int health = 0;
+                    var mode =
+                        Menu.Health.GetMenuItem("SAwarenessHealthMode")
+                            .GetValue<StringList>();
+                    switch (mode.SelectedIndex)
                     {
-                        Vector2 pos = Drawing.WorldToMinimap(inhibitor.Position);
-                        int health = 0;
-                        var mode =
-                            Menu.Health.GetMenuItem("SAwarenessHealthMode")
-                                .GetValue<StringList>();
-                        switch (mode.SelectedIndex)
-                        {
-                            case 0:
-                                health = (int)((inhibitor.Health / inhibitor.MaxHealth) * 100);
-                                break;
+                        case 0:
+                            health = (int) ((inhibitor.Health/inhibitor.MaxHealth)*100);
+                            break;
 
-                            case 1:
-                                health = (int)inhibitor.Health;
-                                break;
-                        }
-                        if (((inhibitor.Health / inhibitor.MaxHealth) * 100) > 75)
-                            DirectXDrawer.DrawText(_font, health.ToString(), (int)pos[0], (int)pos[1], Color.LightGreen);
-                        else if (((inhibitor.Health / inhibitor.MaxHealth) * 100) <= 75)
-                            DirectXDrawer.DrawText(_font, health.ToString(), (int)pos[0], (int)pos[1], Color.LightYellow);
-                        else if (((inhibitor.Health / inhibitor.MaxHealth) * 100) <= 50)
-                            DirectXDrawer.DrawText(_font, health.ToString(), (int)pos[0], (int)pos[1], Color.Orange);
-                        else if (((inhibitor.Health / inhibitor.MaxHealth) * 100) <= 25)
-                            DirectXDrawer.DrawText(_font, health.ToString(), (int)pos[0], (int)pos[1], Color.IndianRed);
-                        //Drawing.DrawText(pos[0], pos[1], System.Drawing.Color.Green, ((int)turret.Health).ToString());
-                        //Drawing.DrawText(turret.HealthBarPosition.X, turret.HealthBarPosition.Y + 20, System.Drawing.Color.Green, ((int)turret.Health).ToString());
+                        case 1:
+                            health = (int) inhibitor.Health;
+                            break;
                     }
-                }
-
-                foreach (Obj_BarracksDampener inhibitor in baseBd)
-                {
-                    if (!inhibitor.IsDead && inhibitor.IsValid && inhibitor.Health > 0.1f &&
-                        ((inhibitor.Health / inhibitor.MaxHealth) * 100) != 100)
-                    {
-                        Vector2 pos = Drawing.WorldToMinimap(inhibitor.Position);
-                        int health = 0;
-                        var mode =
-                            Menu.Health.GetMenuItem("SAwarenessHealthMode")
-                                .GetValue<StringList>();
-                        switch (mode.SelectedIndex)
-                        {
-                            case 0:
-                                health = (int)((inhibitor.Health / inhibitor.MaxHealth) * 100);
-                                break;
-
-                            case 1:
-                                health = (int)inhibitor.Health;
-                                break;
-                        }
-                        if (((inhibitor.Health / inhibitor.MaxHealth) * 100) > 75)
-                            DirectXDrawer.DrawText(_font, health.ToString(), (int)pos[0], (int)pos[1], Color.LightGreen);
-                        else if (((inhibitor.Health / inhibitor.MaxHealth) * 100) <= 75)
-                            DirectXDrawer.DrawText(_font, health.ToString(), (int)pos[0], (int)pos[1], Color.LightYellow);
-                        else if (((inhibitor.Health / inhibitor.MaxHealth) * 100) <= 50)
-                            DirectXDrawer.DrawText(_font, health.ToString(), (int)pos[0], (int)pos[1], Color.Orange);
-                        else if (((inhibitor.Health / inhibitor.MaxHealth) * 100) <= 25)
-                            DirectXDrawer.DrawText(_font, health.ToString(), (int)pos[0], (int)pos[1], Color.IndianRed);
-                        //Drawing.DrawText(pos[0], pos[1], System.Drawing.Color.Green, ((int)turret.Health).ToString());
-                        //Drawing.DrawText(turret.HealthBarPosition.X, turret.HealthBarPosition.Y + 20, System.Drawing.Color.Green, ((int)turret.Health).ToString());
-                    }
+                    if (((inhibitor.Health/inhibitor.MaxHealth)*100) > 75)
+                        DirectXDrawer.DrawText(_font, health.ToString(), (int) pos[0], (int) pos[1], Color.LightGreen);
+                    else if (((inhibitor.Health/inhibitor.MaxHealth)*100) <= 75)
+                        DirectXDrawer.DrawText(_font, health.ToString(), (int) pos[0], (int) pos[1], Color.LightYellow);
+                    else if (((inhibitor.Health/inhibitor.MaxHealth)*100) <= 50)
+                        DirectXDrawer.DrawText(_font, health.ToString(), (int) pos[0], (int) pos[1], Color.Orange);
+                    else if (((inhibitor.Health/inhibitor.MaxHealth)*100) <= 25)
+                        DirectXDrawer.DrawText(_font, health.ToString(), (int) pos[0], (int) pos[1], Color.IndianRed);
+                    //Drawing.DrawText(pos[0], pos[1], System.Drawing.Color.Green, ((int)turret.Health).ToString());
+                    //Drawing.DrawText(turret.HealthBarPosition.X, turret.HealthBarPosition.Y + 20, System.Drawing.Color.Green, ((int)turret.Health).ToString());
                 }
             }
-            catch (Exception ex)
+
+            foreach (Obj_BarracksDampener inhibitor in baseBd)
             {
-                Console.WriteLine("Health_DrawInhibitorHealth: " + ex);
-                Log.LogString("Health_DrawInhibitorHealth: " + ex);
-                throw;
-            }             
+                if (!inhibitor.IsDead && inhibitor.IsValid && inhibitor.Health > 0.1f &&
+                    ((inhibitor.Health/inhibitor.MaxHealth)*100) != 100)
+                {
+                    Vector2 pos = Drawing.WorldToMinimap(inhibitor.Position);
+                    int health = 0;
+                    var mode =
+                        Menu.Health.GetMenuItem("SAwarenessHealthMode")
+                            .GetValue<StringList>();
+                    switch (mode.SelectedIndex)
+                    {
+                        case 0:
+                            health = (int) ((inhibitor.Health/inhibitor.MaxHealth)*100);
+                            break;
+
+                        case 1:
+                            health = (int) inhibitor.Health;
+                            break;
+                    }
+                    if (((inhibitor.Health/inhibitor.MaxHealth)*100) > 75)
+                        DirectXDrawer.DrawText(_font, health.ToString(), (int) pos[0], (int) pos[1], Color.LightGreen);
+                    else if (((inhibitor.Health/inhibitor.MaxHealth)*100) <= 75)
+                        DirectXDrawer.DrawText(_font, health.ToString(), (int) pos[0], (int) pos[1], Color.LightYellow);
+                    else if (((inhibitor.Health/inhibitor.MaxHealth)*100) <= 50)
+                        DirectXDrawer.DrawText(_font, health.ToString(), (int) pos[0], (int) pos[1], Color.Orange);
+                    else if (((inhibitor.Health/inhibitor.MaxHealth)*100) <= 25)
+                        DirectXDrawer.DrawText(_font, health.ToString(), (int) pos[0], (int) pos[1], Color.IndianRed);
+                    //Drawing.DrawText(pos[0], pos[1], System.Drawing.Color.Green, ((int)turret.Health).ToString());
+                    //Drawing.DrawText(turret.HealthBarPosition.X, turret.HealthBarPosition.Y + 20, System.Drawing.Color.Green, ((int)turret.Health).ToString());
+                }
+            }
         }
 
         private void DrawTurrentHealth() //TODO: Draw HP above BarPos
         {
-            try
+            if (!IsActive() || !_drawActive)
+                return;
+            if (!Menu.TowerHealth.GetActive())
+                return;
+            foreach (Obj_AI_Turret turret in ObjectManager.Get<Obj_AI_Turret>())
             {
-                if (!IsActive() || !_drawActive)
-                    return;
-                if (!Menu.TowerHealth.GetActive())
-                    return;
-                foreach (Obj_AI_Turret turret in ObjectManager.Get<Obj_AI_Turret>())
+                if (!turret.IsDead && turret.IsValid && turret.Health != 9999 &&
+                    ((turret.Health/turret.MaxHealth)*100) != 100)
                 {
-                    if (!turret.IsDead && turret.IsValid && turret.Health != 9999 &&
-                        ((turret.Health / turret.MaxHealth) * 100) != 100)
+                    Vector2 pos = Drawing.WorldToMinimap(turret.Position);
+                    int health = 0;
+                    var mode =
+                        Menu.Health.GetMenuItem("SAwarenessHealthMode")
+                            .GetValue<StringList>();
+                    switch (mode.SelectedIndex)
                     {
-                        Vector2 pos = Drawing.WorldToMinimap(turret.Position);
-                        int health = 0;
-                        var mode =
-                            Menu.Health.GetMenuItem("SAwarenessHealthMode")
-                                .GetValue<StringList>();
-                        switch (mode.SelectedIndex)
-                        {
-                            case 0:
-                                health = (int)((turret.Health / turret.MaxHealth) * 100);
-                                break;
+                        case 0:
+                            health = (int) ((turret.Health/turret.MaxHealth)*100);
+                            break;
 
-                            case 1:
-                                health = (int)turret.Health;
-                                break;
-                        }
-                        if (((turret.Health / turret.MaxHealth) * 100) > 75)
-                            DirectXDrawer.DrawText(_font, health.ToString(), (int)pos[0], (int)pos[1], Color.LightGreen);
-                        else if (((turret.Health / turret.MaxHealth) * 100) <= 75)
-                            DirectXDrawer.DrawText(_font, health.ToString(), (int)pos[0], (int)pos[1], Color.LightYellow);
-                        else if (((turret.Health / turret.MaxHealth) * 100) <= 50)
-                            DirectXDrawer.DrawText(_font, health.ToString(), (int)pos[0], (int)pos[1], Color.Orange);
-                        else if (((turret.Health / turret.MaxHealth) * 100) <= 25)
-                            DirectXDrawer.DrawText(_font, health.ToString(), (int)pos[0], (int)pos[1], Color.IndianRed);
-                        //Drawing.DrawText(pos[0], pos[1], System.Drawing.Color.Green, ((int)turret.Health).ToString());
-                        //Drawing.DrawText(turret.HealthBarPosition.X, turret.HealthBarPosition.Y + 20, System.Drawing.Color.Green, ((int)turret.Health).ToString());
+                        case 1:
+                            health = (int) turret.Health;
+                            break;
                     }
+                    if (((turret.Health/turret.MaxHealth)*100) > 75)
+                        DirectXDrawer.DrawText(_font, health.ToString(), (int) pos[0], (int) pos[1], Color.LightGreen);
+                    else if (((turret.Health/turret.MaxHealth)*100) <= 75)
+                        DirectXDrawer.DrawText(_font, health.ToString(), (int) pos[0], (int) pos[1], Color.LightYellow);
+                    else if (((turret.Health/turret.MaxHealth)*100) <= 50)
+                        DirectXDrawer.DrawText(_font, health.ToString(), (int) pos[0], (int) pos[1], Color.Orange);
+                    else if (((turret.Health/turret.MaxHealth)*100) <= 25)
+                        DirectXDrawer.DrawText(_font, health.ToString(), (int) pos[0], (int) pos[1], Color.IndianRed);
+                    //Drawing.DrawText(pos[0], pos[1], System.Drawing.Color.Green, ((int)turret.Health).ToString());
+                    //Drawing.DrawText(turret.HealthBarPosition.X, turret.HealthBarPosition.Y + 20, System.Drawing.Color.Green, ((int)turret.Health).ToString());
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Health_DrawTurrentHealth: " + ex);
-                Log.LogString("Health_DrawTurrentHealth: " + ex);
-                throw;
-            } 
         }
     }
 }

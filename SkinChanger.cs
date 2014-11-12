@@ -12,16 +12,14 @@ namespace SAwareness
 
         static SkinChanger()
         {
-            try
-            {
-                Skins.Add("Aatrox", new[]
+            Skins.Add("Aatrox", new[]
             {
                 "Classic",
                 "Justicar",
                 "Mecha"
             });
 
-                Skins.Add("Ahri", new[]
+            Skins.Add("Ahri", new[]
             {
                 "Classic",
                 "Dynasty",
@@ -30,7 +28,7 @@ namespace SAwareness
                 "Popstar"
             });
 
-                Skins.Add("Akali", new[]
+            Skins.Add("Akali", new[]
             {
                 "Classic",
                 "Stinger",
@@ -41,7 +39,7 @@ namespace SAwareness
                 "Silverfang"
             });
 
-                Skins.Add("Alistar", new[]
+            Skins.Add("Alistar", new[]
             {
                 "Classic",
                 "Black",
@@ -53,7 +51,7 @@ namespace SAwareness
                 "Sweeper"
             });
 
-                Skins.Add("Amumu", new[]
+            Skins.Add("Amumu", new[]
             {
                 "Classic",
                 "Pharaoh",
@@ -65,7 +63,7 @@ namespace SAwareness
                 "Sad Robot"
             });
 
-                Skins.Add("Anivia", new[]
+            Skins.Add("Anivia", new[]
             {
                 "Classic",
                 "Team Spirit",
@@ -75,7 +73,7 @@ namespace SAwareness
                 "Blackfrost"
             });
 
-                Skins.Add("Annie", new[]
+            Skins.Add("Annie", new[]
             {
                 "Classic",
                 "Goth",
@@ -88,7 +86,7 @@ namespace SAwareness
                 "Panda"
             });
 
-                Skins.Add("Ashe", new[]
+            Skins.Add("Ashe", new[]
             {
                 "Classic",
                 "Freljord",
@@ -99,13 +97,13 @@ namespace SAwareness
                 "Heartseeker"
             });
 
-                Skins.Add("Azir", new[]
+            Skins.Add("Azir", new[]
             {
                 "Classic",
                 "Galactic"
             });
 
-                Skins.Add("Blitzcrank", new[]
+            Skins.Add("Blitzcrank", new[]
             {
                 "Classic",
                 "Rusty",
@@ -117,7 +115,7 @@ namespace SAwareness
                 "Riot"
             });
 
-                Skins.Add("Brand", new[]
+            Skins.Add("Brand", new[]
             {
                 "Classic",
                 "Apocalyptic",
@@ -126,13 +124,13 @@ namespace SAwareness
                 "Zombie"
             });
 
-                Skins.Add("Braum", new[]
+            Skins.Add("Braum", new[]
             {
                 "Classic",
                 "Dragonslayer"
             });
 
-                Skins.Add("Caitlyn", new[]
+            Skins.Add("Caitlyn", new[]
             {
                 "Classic",
                 "Resistance",
@@ -143,7 +141,7 @@ namespace SAwareness
                 "Headhunter"
             });
 
-                Skins.Add("Cassiopeia", new[]
+            Skins.Add("Cassiopeia", new[]
             {
                 "Classic",
                 "Desperada",
@@ -152,7 +150,7 @@ namespace SAwareness
                 "Jade Fang"
             });
 
-                Skins.Add("Chogath", new[]
+            Skins.Add("Chogath", new[]
             {
                 "Classic",
                 "Nightmare",
@@ -162,7 +160,7 @@ namespace SAwareness
                 "Battlecast"
             });
 
-                Skins.Add("Corki", new[]
+            Skins.Add("Corki", new[]
             {
                 "Classic",
                 "UFO",
@@ -173,7 +171,7 @@ namespace SAwareness
                 "Dragonwing"
             });
 
-                Skins.Add("Darius", new[]
+            Skins.Add("Darius", new[]
             {
                 "Classic",
                 "Lord",
@@ -181,14 +179,14 @@ namespace SAwareness
                 "Woad King"
             });
 
-                Skins.Add("Diana", new[]
+            Skins.Add("Diana", new[]
             {
                 "Classic",
                 "Dark Valkyrie",
                 "Lunar Goddess"
             });
 
-                Skins.Add("Drmundo", new[]
+            Skins.Add("Drmundo", new[]
             {
                 "Classic",
                 "Toxic",
@@ -200,7 +198,7 @@ namespace SAwareness
                 "TPA"
             });
 
-                Skins.Add("Draven", new[]
+            Skins.Add("Draven", new[]
             {
                 "Classic",
                 "Soul Reaver",
@@ -208,14 +206,14 @@ namespace SAwareness
                 "Primetime"
             });
 
-                Skins.Add("Elise", new[]
+            Skins.Add("Elise", new[]
             {
                 "Classic",
                 "Death Blossom",
                 "Victorious"
             });
 
-                Skins.Add("Evelynn", new[]
+            Skins.Add("Evelynn", new[]
             {
                 "Classic",
                 "Shadow",
@@ -223,7 +221,7 @@ namespace SAwareness
                 "Tango"
             });
 
-                Skins.Add("Ezreal", new[]
+            Skins.Add("Ezreal", new[]
             {
                 "Classic",
                 "Nottingham",
@@ -234,7 +232,7 @@ namespace SAwareness
                 "TPA"
             });
 
-                Skins.Add("Fiddlesticks", new[]
+            Skins.Add("Fiddlesticks", new[]
             {
                 "Classic",
                 "Spectral",
@@ -246,7 +244,7 @@ namespace SAwareness
                 "Dark Candy"
             });
 
-                Skins.Add("Fiora", new[]
+            Skins.Add("Fiora", new[]
             {
                 "Classic",
                 "Royal Guard",
@@ -254,7 +252,7 @@ namespace SAwareness
                 "Headmistress"
             });
 
-                Skins.Add("Fizz", new[]
+            Skins.Add("Fizz", new[]
             {
                 "Classic",
                 "Atlantean",
@@ -263,7 +261,7 @@ namespace SAwareness
                 "Void"
             });
 
-                Skins.Add("Galio", new[]
+            Skins.Add("Galio", new[]
             {
                 "Classic",
                 "Enchanted",
@@ -272,7 +270,7 @@ namespace SAwareness
                 "Gatekeeper"
             });
 
-                Skins.Add("Gangplank", new[]
+            Skins.Add("Gangplank", new[]
             {
                 "Classic",
                 "Spooky",
@@ -283,7 +281,7 @@ namespace SAwareness
                 "Sultan"
             });
 
-                Skins.Add("Garen", new[]
+            Skins.Add("Garen", new[]
             {
                 "Classic",
                 "Sanguine",
@@ -294,13 +292,13 @@ namespace SAwareness
                 "Steel Legion"
             });
 
-                Skins.Add("Gnar", new[]
+            Skins.Add("Gnar", new[]
             {
                 "Classic",
                 "Dino"
             });
 
-                Skins.Add("Gragas", new[]
+            Skins.Add("Gragas", new[]
             {
                 "Classic",
                 "Scuba",
@@ -312,7 +310,7 @@ namespace SAwareness
                 "Superfan"
             });
 
-                Skins.Add("Graves", new[]
+            Skins.Add("Graves", new[]
             {
                 "Classic",
                 "Hired Gun",
@@ -322,7 +320,7 @@ namespace SAwareness
                 "Pool Party"
             });
 
-                Skins.Add("Hecarim", new[]
+            Skins.Add("Hecarim", new[]
             {
                 "Classic",
                 "Blood Knight",
@@ -331,7 +329,7 @@ namespace SAwareness
                 "Arcade"
             });
 
-                Skins.Add("Heimerdinger", new[]
+            Skins.Add("Heimerdinger", new[]
             {
                 "Classic",
                 "Alien Invader",
@@ -341,7 +339,7 @@ namespace SAwareness
                 "Hazmat"
             });
 
-                Skins.Add("Irelia", new[]
+            Skins.Add("Irelia", new[]
             {
                 "Classic",
                 "Nightblade",
@@ -350,7 +348,7 @@ namespace SAwareness
                 "Frostblade"
             });
 
-                Skins.Add("Janna", new[]
+            Skins.Add("Janna", new[]
             {
                 "Classic",
                 "Tempest",
@@ -360,7 +358,7 @@ namespace SAwareness
                 "Forecast"
             });
 
-                Skins.Add("JarvanIV", new[]
+            Skins.Add("JarvanIV", new[]
             {
                 "Classic",
                 "Commando",
@@ -370,7 +368,7 @@ namespace SAwareness
                 "Warring Kingdoms"
             });
 
-                Skins.Add("Jax", new[]
+            Skins.Add("Jax", new[]
             {
                 "Classic",
                 "The Mighty",
@@ -383,20 +381,20 @@ namespace SAwareness
                 "SKT T1"
             });
 
-                Skins.Add("Jayce", new[]
+            Skins.Add("Jayce", new[]
             {
                 "Classic",
                 "Full Metal",
                 "Debonair"
             });
 
-                Skins.Add("Jinx", new[]
+            Skins.Add("Jinx", new[]
             {
                 "Classic",
                 "Mafia"
             });
 
-                Skins.Add("Karma", new[]
+            Skins.Add("Karma", new[]
             {
                 "Classic",
                 "Sun Goddess",
@@ -404,7 +402,7 @@ namespace SAwareness
                 "Traditional"
             });
 
-                Skins.Add("Karthus", new[]
+            Skins.Add("Karthus", new[]
             {
                 "Classic",
                 "Phantom",
@@ -413,7 +411,7 @@ namespace SAwareness
                 "Pentakill"
             });
 
-                Skins.Add("Kassadin", new[]
+            Skins.Add("Kassadin", new[]
             {
                 "Classic",
                 "Festival",
@@ -422,7 +420,7 @@ namespace SAwareness
                 "Harbinger"
             });
 
-                Skins.Add("Katarina", new[]
+            Skins.Add("Katarina", new[]
             {
                 "Classic",
                 "Mercenary",
@@ -434,7 +432,7 @@ namespace SAwareness
                 "Slay Belle"
             });
 
-                Skins.Add("Kayle", new[]
+            Skins.Add("Kayle", new[]
             {
                 "Classic",
                 "Silver",
@@ -446,7 +444,7 @@ namespace SAwareness
                 "Riot"
             });
 
-                Skins.Add("Kennen", new[]
+            Skins.Add("Kennen", new[]
             {
                 "Classic",
                 "Deadly",
@@ -456,14 +454,14 @@ namespace SAwareness
                 "Arctic Ops"
             });
 
-                Skins.Add("Khazix", new[]
+            Skins.Add("Khazix", new[]
             {
                 "Classic",
                 "Mecha",
                 "Guardian of the Sands"
             });
 
-                Skins.Add("Kogmaw", new[]
+            Skins.Add("Kogmaw", new[]
             {
                 "Classic",
                 "Caterpillar",
@@ -475,7 +473,7 @@ namespace SAwareness
                 "Jurassic"
             });
 
-                Skins.Add("Leblanc", new[]
+            Skins.Add("Leblanc", new[]
             {
                 "Classic",
                 "Wicked",
@@ -483,7 +481,7 @@ namespace SAwareness
                 "Mistletoe"
             });
 
-                Skins.Add("Leesin", new[]
+            Skins.Add("Leesin", new[]
             {
                 "Classic",
                 "Traditional",
@@ -494,7 +492,7 @@ namespace SAwareness
                 "SKT T1"
             });
 
-                Skins.Add("Leona", new[]
+            Skins.Add("Leona", new[]
             {
                 "Classic",
                 "Valkyrie",
@@ -503,21 +501,21 @@ namespace SAwareness
                 "Pool Party"
             });
 
-                Skins.Add("Lissandra", new[]
+            Skins.Add("Lissandra", new[]
             {
                 "Classic",
                 "Bloodstone",
                 "Blade Queen"
             });
 
-                Skins.Add("Lucian", new[]
+            Skins.Add("Lucian", new[]
             {
                 "Classic",
                 "Hired Gun",
                 "Striker"
             });
 
-                Skins.Add("Lulu", new[]
+            Skins.Add("Lulu", new[]
             {
                 "Classic",
                 "Bittersweet",
@@ -526,7 +524,7 @@ namespace SAwareness
                 "Winter Wonder"
             });
 
-                Skins.Add("Lux", new[]
+            Skins.Add("Lux", new[]
             {
                 "Classic",
                 "Sorceress",
@@ -536,7 +534,7 @@ namespace SAwareness
                 "Steel Legion"
             });
 
-                Skins.Add("Malphite", new[]
+            Skins.Add("Malphite", new[]
             {
                 "Classic",
                 "Shamrock",
@@ -547,7 +545,7 @@ namespace SAwareness
                 "Mecha"
             });
 
-                Skins.Add("Malzahar", new[]
+            Skins.Add("Malzahar", new[]
             {
                 "Classic",
                 "Vizier",
@@ -556,7 +554,7 @@ namespace SAwareness
                 "Overlord"
             });
 
-                Skins.Add("Maokai", new[]
+            Skins.Add("Maokai", new[]
             {
                 "Classic",
                 "Charred",
@@ -566,7 +564,7 @@ namespace SAwareness
                 "Goalkeeper"
             });
 
-                Skins.Add("MasterYi", new[]
+            Skins.Add("MasterYi", new[]
             {
                 "Classic",
                 "Assassin",
@@ -576,7 +574,7 @@ namespace SAwareness
                 "Headhunter"
             });
 
-                Skins.Add("MissFortune", new[]
+            Skins.Add("MissFortune", new[]
             {
                 "Classic",
                 "Cowgirl",
@@ -588,7 +586,7 @@ namespace SAwareness
                 "Arcade"
             });
 
-                Skins.Add("Mordekaiser", new[]
+            Skins.Add("Mordekaiser", new[]
             {
                 "Classic",
                 "Dragon Knight",
@@ -597,7 +595,7 @@ namespace SAwareness
                 "Lord"
             });
 
-                Skins.Add("Morgana", new[]
+            Skins.Add("Morgana", new[]
             {
                 "Classic",
                 "Exiled",
@@ -607,14 +605,14 @@ namespace SAwareness
                 "Ghost Bride"
             });
 
-                Skins.Add("Nami", new[]
+            Skins.Add("Nami", new[]
             {
                 "Classic",
                 "Koi",
                 "River Spirit"
             });
 
-                Skins.Add("Nasus", new[]
+            Skins.Add("Nasus", new[]
             {
                 "Classic",
                 "Galactic",
@@ -624,7 +622,7 @@ namespace SAwareness
                 "Infernal"
             });
 
-                Skins.Add("Nautilus", new[]
+            Skins.Add("Nautilus", new[]
             {
                 "Classic",
                 "Abyssal",
@@ -632,7 +630,7 @@ namespace SAwareness
                 "AstroNautilus"
             });
 
-                Skins.Add("Nidalee", new[]
+            Skins.Add("Nidalee", new[]
             {
                 "Classic",
                 "Snow Bunny",
@@ -643,7 +641,7 @@ namespace SAwareness
                 "Headhunter"
             });
 
-                Skins.Add("Nocturne", new[]
+            Skins.Add("Nocturne", new[]
             {
                 "Classic",
                 "Frozen Terror",
@@ -653,7 +651,7 @@ namespace SAwareness
                 "Eternum"
             });
 
-                Skins.Add("Nunu", new[]
+            Skins.Add("Nunu", new[]
             {
                 "Classic",
                 "Sasquatch",
@@ -664,7 +662,7 @@ namespace SAwareness
                 "TPA"
             });
 
-                Skins.Add("Olaf", new[]
+            Skins.Add("Olaf", new[]
             {
                 "Classic",
                 "Forsaken",
@@ -673,7 +671,7 @@ namespace SAwareness
                 "Pentakill"
             });
 
-                Skins.Add("Orianna", new[]
+            Skins.Add("Orianna", new[]
             {
                 "Classic",
                 "Gothic",
@@ -682,7 +680,7 @@ namespace SAwareness
                 "TPA"
             });
 
-                Skins.Add("Pantheon", new[]
+            Skins.Add("Pantheon", new[]
             {
                 "Classic",
                 "Myrmidon",
@@ -693,7 +691,7 @@ namespace SAwareness
                 "Dragonslayer"
             });
 
-                Skins.Add("Poppy", new[]
+            Skins.Add("Poppy", new[]
             {
                 "Classic",
                 "Noxus",
@@ -704,14 +702,14 @@ namespace SAwareness
                 "Scarlet Hammer"
             });
 
-                Skins.Add("Quinn", new[]
+            Skins.Add("Quinn", new[]
             {
                 "Classic",
                 "Phoenix",
                 "Woad Scout"
             });
 
-                Skins.Add("Rammus", new[]
+            Skins.Add("Rammus", new[]
             {
                 "Classic",
                 "King",
@@ -722,7 +720,7 @@ namespace SAwareness
                 "Full Metal"
             });
 
-                Skins.Add("Renekton", new[]
+            Skins.Add("Renekton", new[]
             {
                 "Classic",
                 "Galactic",
@@ -733,14 +731,14 @@ namespace SAwareness
                 "Scorched Earth"
             });
 
-                Skins.Add("Rengar", new[]
+            Skins.Add("Rengar", new[]
             {
                 "Classic",
                 "Headhunter",
                 "Night Hunter"
             });
 
-                Skins.Add("Riven", new[]
+            Skins.Add("Riven", new[]
             {
                 "Classic",
                 "Redeemed",
@@ -750,7 +748,7 @@ namespace SAwareness
                 "Dragonblade"
             });
 
-                Skins.Add("Rumble", new[]
+            Skins.Add("Rumble", new[]
             {
                 "Classic",
                 "Rumble in the Jungle",
@@ -758,7 +756,7 @@ namespace SAwareness
                 "Supergalactic"
             });
 
-                Skins.Add("Ryze", new[]
+            Skins.Add("Ryze", new[]
             {
                 "Classic",
                 "Human",
@@ -771,7 +769,7 @@ namespace SAwareness
                 "Pirate"
             });
 
-                Skins.Add("Sejuani", new[]
+            Skins.Add("Sejuani", new[]
             {
                 "Classic",
                 "Sabretusk",
@@ -780,7 +778,7 @@ namespace SAwareness
                 "Bear Cavalry"
             });
 
-                Skins.Add("Shaco", new[]
+            Skins.Add("Shaco", new[]
             {
                 "Classic",
                 "Mad Hatter",
@@ -791,7 +789,7 @@ namespace SAwareness
                 "Masked"
             });
 
-                Skins.Add("Shen", new[]
+            Skins.Add("Shen", new[]
             {
                 "Classic",
                 "Frozen",
@@ -802,7 +800,7 @@ namespace SAwareness
                 "TPA"
             });
 
-                Skins.Add("Shyvana", new[]
+            Skins.Add("Shyvana", new[]
             {
                 "Classic",
                 "Ironscale",
@@ -811,7 +809,7 @@ namespace SAwareness
                 "Ice Drake"
             });
 
-                Skins.Add("Singed", new[]
+            Skins.Add("Singed", new[]
             {
                 "Classic",
                 "Riot Squad",
@@ -822,7 +820,7 @@ namespace SAwareness
                 "Snow Day"
             });
 
-                Skins.Add("Sion", new[]
+            Skins.Add("Sion", new[]
             {
                 "Classic",
                 "Hextech",
@@ -831,7 +829,7 @@ namespace SAwareness
                 "Warmonger"
             });
 
-                Skins.Add("Sivir", new[]
+            Skins.Add("Sivir", new[]
             {
                 "Classic",
                 "Warrior Princess",
@@ -842,14 +840,14 @@ namespace SAwareness
                 "Snowstorm"
             });
 
-                Skins.Add("Skarner", new[]
+            Skins.Add("Skarner", new[]
             {
                 "Classic",
                 "Sandscourge",
                 "Earthrune"
             });
 
-                Skins.Add("Sona", new[]
+            Skins.Add("Sona", new[]
             {
                 "Classic",
                 "Muse",
@@ -859,7 +857,7 @@ namespace SAwareness
                 "Arcade"
             });
 
-                Skins.Add("Soraka", new[]
+            Skins.Add("Soraka", new[]
             {
                 "Classic",
                 "Dryad",
@@ -867,7 +865,7 @@ namespace SAwareness
                 "Celestine"
             });
 
-                Skins.Add("Swain", new[]
+            Skins.Add("Swain", new[]
             {
                 "Classic",
                 "Northern Front",
@@ -875,14 +873,14 @@ namespace SAwareness
                 "Tyrant"
             });
 
-                Skins.Add("Syndra", new[]
+            Skins.Add("Syndra", new[]
             {
                 "Classic",
                 "Justicar",
                 "Atlantean"
             });
 
-                Skins.Add("Talon", new[]
+            Skins.Add("Talon", new[]
             {
                 "Classic",
                 "Renegade",
@@ -890,7 +888,7 @@ namespace SAwareness
                 "Dragonblade"
             });
 
-                Skins.Add("Taric", new[]
+            Skins.Add("Taric", new[]
             {
                 "Classic",
                 "Emerald",
@@ -898,7 +896,7 @@ namespace SAwareness
                 "Bloodstone"
             });
 
-                Skins.Add("Teemo", new[]
+            Skins.Add("Teemo", new[]
             {
                 "Classic",
                 "Happy Elf",
@@ -910,14 +908,14 @@ namespace SAwareness
                 "Panda"
             });
 
-                Skins.Add("Thresh", new[]
+            Skins.Add("Thresh", new[]
             {
                 "Classic",
                 "Deep Terror",
                 "Championship"
             });
 
-                Skins.Add("Tristana", new[]
+            Skins.Add("Tristana", new[]
             {
                 "Classic",
                 "Riot Girl",
@@ -928,7 +926,7 @@ namespace SAwareness
                 "Rocketeer"
             });
 
-                Skins.Add("Trundle", new[]
+            Skins.Add("Trundle", new[]
             {
                 "Classic",
                 "Lil' Slugger",
@@ -936,7 +934,7 @@ namespace SAwareness
                 "Traditional"
             });
 
-                Skins.Add("Tryndamere", new[]
+            Skins.Add("Tryndamere", new[]
             {
                 "Classic",
                 "Highland",
@@ -947,7 +945,7 @@ namespace SAwareness
                 "Warring Kingdoms"
             });
 
-                Skins.Add("TwistedFate", new[]
+            Skins.Add("TwistedFate", new[]
             {
                 "Classic",
                 "PAX",
@@ -960,7 +958,7 @@ namespace SAwareness
                 "Red Card"
             });
 
-                Skins.Add("Twitch", new[]
+            Skins.Add("Twitch", new[]
             {
                 "Classic",
                 "Kingpin",
@@ -970,7 +968,7 @@ namespace SAwareness
                 "Vandal"
             });
 
-                Skins.Add("Udyr", new[]
+            Skins.Add("Udyr", new[]
             {
                 "Classic",
                 "Black Belt",
@@ -978,7 +976,7 @@ namespace SAwareness
                 "Spirit Guard"
             });
 
-                Skins.Add("Urgot", new[]
+            Skins.Add("Urgot", new[]
             {
                 "Classic",
                 "Giant Enemy Crabgot",
@@ -986,7 +984,7 @@ namespace SAwareness
                 "Battlecast"
             });
 
-                Skins.Add("Varus", new[]
+            Skins.Add("Varus", new[]
             {
                 "Classic",
                 "Blight Crystal",
@@ -994,7 +992,7 @@ namespace SAwareness
                 "Arctic Ops"
             });
 
-                Skins.Add("Vayne", new[]
+            Skins.Add("Vayne", new[]
             {
                 "Classic",
                 "Vindicator",
@@ -1004,7 +1002,7 @@ namespace SAwareness
                 "SKT T1"
             });
 
-                Skins.Add("Veigar", new[]
+            Skins.Add("Veigar", new[]
             {
                 "Classic",
                 "White Mage",
@@ -1017,13 +1015,13 @@ namespace SAwareness
                 "Final Boss"
             });
 
-                Skins.Add("Velkoz", new[]
+            Skins.Add("Velkoz", new[]
             {
                 "Classic",
                 "Battlecast"
             });
 
-                Skins.Add("Vi", new[]
+            Skins.Add("Vi", new[]
             {
                 "Classic",
                 "Neon Strike",
@@ -1031,7 +1029,7 @@ namespace SAwareness
                 "Debonair"
             });
 
-                Skins.Add("Viktor", new[]
+            Skins.Add("Viktor", new[]
             {
                 "Classic",
                 "Full Machine",
@@ -1039,7 +1037,7 @@ namespace SAwareness
                 "Creator"
             });
 
-                Skins.Add("Vladimir", new[]
+            Skins.Add("Vladimir", new[]
             {
                 "Classic",
                 "Count",
@@ -1050,7 +1048,7 @@ namespace SAwareness
                 "Soulstealer"
             });
 
-                Skins.Add("Volibear", new[]
+            Skins.Add("Volibear", new[]
             {
                 "Classic",
                 "Thunder Lord",
@@ -1058,7 +1056,7 @@ namespace SAwareness
                 "Runeguard"
             });
 
-                Skins.Add("Warwick", new[]
+            Skins.Add("Warwick", new[]
             {
                 "Classic",
                 "Grey",
@@ -1070,7 +1068,7 @@ namespace SAwareness
                 "Hyena"
             });
 
-                Skins.Add("Monkeyking", new[]
+            Skins.Add("Monkeyking", new[]
             {
                 "Classic",
                 "Volcanic",
@@ -1078,7 +1076,7 @@ namespace SAwareness
                 "Jade Dragon"
             });
 
-                Skins.Add("Xerath", new[]
+            Skins.Add("Xerath", new[]
             {
                 "Classic",
                 "Runeborn",
@@ -1086,7 +1084,7 @@ namespace SAwareness
                 "Scorched Earth"
             });
 
-                Skins.Add("Xinzhao", new[]
+            Skins.Add("Xinzhao", new[]
             {
                 "Classic",
                 "Commando",
@@ -1096,34 +1094,34 @@ namespace SAwareness
                 "Warring Kingdoms"
             });
 
-                Skins.Add("Yasuo", new[]
+            Skins.Add("Yasuo", new[]
             {
                 "Classic",
                 "High Noon",
                 "PROJECT: Yasuo"
             });
 
-                Skins.Add("Yorick", new[]
+            Skins.Add("Yorick", new[]
             {
                 "Classic",
                 "Undertaker",
                 "Pentakill"
             });
 
-                Skins.Add("Zac", new[]
+            Skins.Add("Zac", new[]
             {
                 "Classic",
                 "Special Weapon"
             });
 
-                Skins.Add("Zed", new[]
+            Skins.Add("Zed", new[]
             {
                 "Classic",
                 "Bladestorm",
                 "SKT T1"
             });
 
-                Skins.Add("Ziggs", new[]
+            Skins.Add("Ziggs", new[]
             {
                 "Classic",
                 "Mad Scientist",
@@ -1132,7 +1130,7 @@ namespace SAwareness
                 "Snow Day"
             });
 
-                Skins.Add("Zilean", new[]
+            Skins.Add("Zilean", new[]
             {
                 "Classic",
                 "Old Saint",
@@ -1141,20 +1139,13 @@ namespace SAwareness
                 "Time Machine"
             });
 
-                Skins.Add("Zyra", new[]
+            Skins.Add("Zyra", new[]
             {
                 "Classic",
                 "Wildfire",
                 "Haunted",
                 "SKT T1"
             });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("SkinChanger_SkinChanger: " + ex);
-                Log.LogString("SkinChanger_SkinChanger: " + ex);
-                throw;
-            } 
         }
 
         public SkinChanger()
@@ -1164,25 +1155,16 @@ namespace SAwareness
 
         private void Game_OnGameUpdate(EventArgs args)
         {
-            try
+            if (!IsActive())
+                return;
+            var mode =
+                Menu.SkinChanger.GetMenuItem("SAwarenessSkinChangerSkinName")
+                    .GetValue<StringList>();
+            if (mode.SelectedIndex != _lastSkinId)
             {
-                if (!IsActive())
-                    return;
-                var mode =
-                    Menu.SkinChanger.GetMenuItem("SAwarenessSkinChangerSkinName")
-                        .GetValue<StringList>();
-                if (mode.SelectedIndex != _lastSkinId)
-                {
-                    _lastSkinId = mode.SelectedIndex;
-                    GenAndSendModelPacket(ObjectManager.Player.ChampionName, mode.SelectedIndex);
-                }
+                _lastSkinId = mode.SelectedIndex;
+                GenAndSendModelPacket(ObjectManager.Player.ChampionName, mode.SelectedIndex);
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("SkinChanger_OnGameUpdate: " + ex);
-                Log.LogString("SkinChanger_OnGameUpdate: " + ex);
-                throw;
-            } 
         }
 
         ~SkinChanger()
@@ -1197,35 +1179,17 @@ namespace SAwareness
 
         public static String[] GetSkinList(String championName)
         {
-            try
+            if (Skins.ContainsKey(championName))
             {
-                if (Skins.ContainsKey(championName))
-                {
-                    return Skins[championName];
-                }
-                return null;
+                return Skins[championName];
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("SkinChanger_GetSkinList: " + ex);
-                Log.LogString("SkinChanger_GetSkinList: " + ex);
-                throw;
-            } 
+            return null;
         }
 
         public static void GenAndSendModelPacket(String champName, int skinId)
         {
-            try
-            {
-                GamePacket gPacket = Skin.Encoded(new Skin.Struct(champName, 0, skinId));
-                gPacket.Process();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("SkinChanger_GenAndSendModelPacket: " + ex);
-                Log.LogString("SkinChanger_GenAndSendModelPacket: " + ex);
-                throw;
-            } 
+            GamePacket gPacket = Skin.Encoded(new Skin.Struct(champName, 0, skinId));
+            gPacket.Process();
         }
 
         public class Skin
