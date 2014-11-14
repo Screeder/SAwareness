@@ -28,6 +28,8 @@ namespace SAwareness
                 return;
             try
             {
+                DrawShopRanges();
+                DrawVisionRanges();
                 DrawExperienceRanges();
                 DrawAttackRanges();
                 DrawTurretRanges();
@@ -40,6 +42,104 @@ namespace SAwareness
             {
                 Console.WriteLine("SAwareness: " + ex);
                 throw;
+            }
+        }
+
+        public void DrawShopRanges()
+        {
+            if (!Menu.ShopRange.GetActive())
+                return;
+            var mode = Menu.ShopRange.GetMenuItem("SAwarenessShopRangeMode").GetValue<StringList>();
+            switch (mode.SelectedIndex)
+            {
+                case 0:
+                    foreach (Obj_Shop shop in ObjectManager.Get<Obj_Shop>())
+                    {
+                        if (shop.IsValid && shop.IsValid && ObjectManager.Player.Team == shop.Team)
+                        {
+                            Utility.DrawCircle(shop.Position, 1250, Color.MidnightBlue);
+                        }
+                    }
+                    break;
+                case 1:
+                    foreach (Obj_Shop shop in ObjectManager.Get<Obj_Shop>())
+                    {
+                        if (shop.IsValid && shop.IsValid && ObjectManager.Player.Team != shop.Team)
+                        {
+                            Utility.DrawCircle(shop.Position, 1250, Color.MidnightBlue);
+                        }
+                    }
+                    break;
+                case 2:
+                    foreach (Obj_Shop shop in ObjectManager.Get<Obj_Shop>())
+                    {
+                        if (shop.IsValid && shop.IsValid)
+                        {
+                            Utility.DrawCircle(shop.Position, 1250, Color.MidnightBlue);
+                            
+                        }
+                    }
+                    break;
+            }
+        }
+
+        public void DrawVisionRanges()
+        {
+            if (!Menu.VisionRange.GetActive())
+                return;
+            var mode = Menu.VisionRange.GetMenuItem("SAwarenessVisionRangeMode").GetValue<StringList>();
+            switch (mode.SelectedIndex)
+            {
+                case 0:
+                    Utility.DrawCircle(ObjectManager.Player.Position, 1200, Color.Indigo);
+                    break;
+                case 1:
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
+                        {
+                            Utility.DrawCircle(enemy.Position, 1200, Color.Indigo);
+                        }
+                    }
+                    foreach (Obj_AI_Turret turret in ObjectManager.Get<Obj_AI_Turret>())
+                    {
+                        if (turret.IsVisible && !turret.IsDead && turret.IsEnemy && turret.IsValid)
+                        {
+                            Utility.DrawCircle(turret.Position, 1200, Color.Indigo);
+                        }
+                    }
+                    foreach (Obj_AI_Minion minion in ObjectManager.Get<Obj_AI_Minion>())
+                    {
+                        if (minion.IsEnemy && minion.IsVisible && minion.IsValid && !minion.IsDead)
+                        {
+                            Utility.DrawCircle(minion.Position, 1200, Color.Indigo);
+                        }
+                    }
+                    break;
+                case 2:
+                    Utility.DrawCircle(ObjectManager.Player.Position, 1200, Color.Indigo);
+                    foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
+                    {
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
+                        {
+                            Utility.DrawCircle(enemy.Position, 1200, Color.Indigo);
+                        }
+                    }
+                    foreach (Obj_AI_Turret turret in ObjectManager.Get<Obj_AI_Turret>())
+                    {
+                        if (turret.IsVisible && !turret.IsDead && turret.IsEnemy && turret.IsValid)
+                        {
+                            Utility.DrawCircle(turret.Position, 1200, Color.Indigo);
+                        }
+                    }
+                    foreach (Obj_AI_Minion minion in ObjectManager.Get<Obj_AI_Minion>())
+                    {
+                        if (minion.IsEnemy && minion.IsVisible && minion.IsValid && !minion.IsDead)
+                        {
+                            Utility.DrawCircle(minion.Position, 1200, Color.Indigo);
+                        }
+                    }
+                    break;
             }
         }
 

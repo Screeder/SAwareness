@@ -11,13 +11,13 @@ namespace SAwareness
 
         public AutoPot()
         {
-            _pots.Add(new Pot(2037, "PotionOfGiantStrengt", Pot.PotType.Health)); //elixirOfFortitude
-            _pots.Add(new Pot(2039, "PotionOfBrilliance", Pot.PotType.Mana)); //elixirOfBrilliance            
-            _pots.Add(new Pot(2041, "ItemCrystalFlask", Pot.PotType.Both)); //crystalFlask
-            _pots.Add(new Pot(2009, "ItemMiniRegenPotion", Pot.PotType.Both)); //biscuit
-            _pots.Add(new Pot(2010, "ItemMiniRegenPotion", Pot.PotType.Both)); //biscuit
-            _pots.Add(new Pot(2003, "RegenerationPotion", Pot.PotType.Health)); //healthPotion
-            _pots.Add(new Pot(2004, "FlaskOfCrystalWater", Pot.PotType.Mana)); //manaPotion
+            _pots.Add(new Pot(2037, "PotionOfGiantStrengt", Pot.PotType.Health, 120, 0)); //elixirOfFortitude
+            _pots.Add(new Pot(2039, "PotionOfBrilliance", Pot.PotType.Mana, 0, 0)); //elixirOfBrilliance            
+            _pots.Add(new Pot(2041, "ItemCrystalFlask", Pot.PotType.Both, 120, 60)); //crystalFlask
+            _pots.Add(new Pot(2009, "ItemMiniRegenPotion", Pot.PotType.Both, 80, 50)); //biscuit
+            _pots.Add(new Pot(2010, "ItemMiniRegenPotion", Pot.PotType.Both, 170, 10)); //biscuit
+            _pots.Add(new Pot(2003, "RegenerationPotion", Pot.PotType.Health, 150, 0)); //healthPotion
+            _pots.Add(new Pot(2004, "FlaskOfCrystalWater", Pot.PotType.Mana, 0, 100)); //manaPotion
             Game.OnGameUpdate += Game_OnGameUpdate;
         }
 
@@ -34,7 +34,9 @@ namespace SAwareness
         private void Game_OnGameUpdate(EventArgs args)
         {
             if (!IsActive() || ObjectManager.Player.IsDead || Utility.InFountain() ||
-                ObjectManager.Player.HasBuff("Recall") || Utility.CountEnemysInRange(1500) > 0)
+                ObjectManager.Player.HasBuff("Recall") || ObjectManager.Player.HasBuff("SummonerTeleport") ||
+                ObjectManager.Player.HasBuff("RecallImproved") ||
+                Utility.CountEnemysInRange(1500) > 0)
                 return;
             Pot myPot = null;
             if (
@@ -51,6 +53,9 @@ namespace SAwareness
                                 .GetMenuItem("SAwarenessAutoPotHealthPotPercent")
                                 .GetValue<Slider>().Value)
                         {
+                            if (Menu.AutoPot.GetMenuItem("SAwarenessAutoPotOverusage").GetValue<bool>() &&
+                                ObjectManager.Player.Health + pot.Health >= ObjectManager.Player.MaxHealth)
+                                continue;
                             if (!Items.HasItem(pot.Id))
                                 continue;
                             if (!Items.CanUseItem(pot.Id))
@@ -77,6 +82,9 @@ namespace SAwareness
                                 .GetMenuItem("SAwarenessAutoPotManaPotPercent")
                                 .GetValue<Slider>().Value)
                         {
+                            if (Menu.AutoPot.GetMenuItem("SAwarenessAutoPotOverusage").GetValue<bool>() &&
+                                ObjectManager.Player.Mana + pot.Mana >= ObjectManager.Player.MaxMana)
+                                continue;
                             if (!Items.HasItem(pot.Id))
                                 continue;
                             if (!Items.CanUseItem(pot.Id))
@@ -125,16 +133,20 @@ namespace SAwareness
             public int Id;
             public float LastTime;
             public PotType Type;
+            public int Health;
+            public int Mana;
 
             public Pot()
             {
             }
 
-            public Pot(int id, String buff, PotType type)
+            public Pot(int id, String buff, PotType type, int health, int mana)
             {
                 Id = id;
                 Buff = buff;
                 Type = type;
+                Health = health;
+                Mana = mana;
             }
         }
     }

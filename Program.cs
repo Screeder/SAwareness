@@ -48,6 +48,8 @@ namespace SAwareness
             //Many ranges are bugged. Waiting for SpellLib
 
         public static MenuItemSettings TowerRange = new MenuItemSettings();
+        public static MenuItemSettings ShopRange = new MenuItemSettings();
+        public static MenuItemSettings VisionRange = new MenuItemSettings();
         public static MenuItemSettings ExperienceRange = new MenuItemSettings();
         public static MenuItemSettings AttackRange = new MenuItemSettings();
         public static MenuItemSettings SpellQRange = new MenuItemSettings();
@@ -297,6 +299,26 @@ namespace SAwareness
 
                 //Not crashing
                 Menu.Range.Menu = menu.AddSubMenu(new LeagueSharp.Common.Menu("Ranges", "SAwarenessRanges"));
+                Menu.ShopRange.Menu =
+                    Menu.Range.Menu.AddSubMenu(new LeagueSharp.Common.Menu("ShopRange",
+                        "SAwarenessShopRange"));
+                Menu.ShopRange.MenuItems.Add(
+                    Menu.ShopRange.Menu.AddItem(
+                        new MenuItem("SAwarenessShopRangeMode", "Mode").SetValue(
+                            new StringList(new[] { "Me", "Enemy", "Both" }))));
+                Menu.ShopRange.MenuItems.Add(
+                    Menu.ShopRange.Menu.AddItem(
+                        new MenuItem("SAwarenessShopRangeActive", "Active").SetValue(false)));
+                Menu.VisionRange.Menu =
+                    Menu.Range.Menu.AddSubMenu(new LeagueSharp.Common.Menu("VisionRange",
+                        "SAwarenessVisionRange"));
+                Menu.VisionRange.MenuItems.Add(
+                    Menu.VisionRange.Menu.AddItem(
+                        new MenuItem("SAwarenessVisionRangeMode", "Mode").SetValue(
+                            new StringList(new[] { "Me", "Enemy", "Both" }))));
+                Menu.VisionRange.MenuItems.Add(
+                    Menu.VisionRange.Menu.AddItem(
+                        new MenuItem("SAwarenessVisionRangeActive", "Active").SetValue(false)));
                 Menu.ExperienceRange.Menu =
                     Menu.Range.Menu.AddSubMenu(new LeagueSharp.Common.Menu("ExperienceRange",
                         "SAwarenessExperienceRange"));
@@ -1070,6 +1092,8 @@ namespace SAwareness
                 tempSettings.MenuItems.Add(
                     tempSettings.Menu.AddItem(new MenuItem("SAwarenessAutoPotManaPotActive", "Active").SetValue(false)));
                 Menu.AutoPot.MenuItems.Add(
+                    Menu.AutoPot.Menu.AddItem(new MenuItem("SAwarenessAutoPotOverusage", "Prevent Overusage").SetValue(false)));
+                Menu.AutoPot.MenuItems.Add(
                     Menu.AutoPot.Menu.AddItem(new MenuItem("SAwarenessAutoPotActive", "Active").SetValue(false)));
                 Menu.ActivatorAutoHeal.Menu =
                     Menu.Activator.Menu.AddSubMenu(new LeagueSharp.Common.Menu("AutoHeal | Beta",
@@ -1308,33 +1332,42 @@ namespace SAwareness
 
         private static void GameOnOnGameUpdate(/*EventArgs args*/)
         {
-            while (threadActive)
+            try
             {
-                Thread.Sleep(10);
-                Type classType = typeof (Menu);
-                BindingFlags flags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
-                FieldInfo[] fields = classType.GetFields(flags);
-                foreach (FieldInfo p in fields)
+                while (threadActive)
                 {
-                    var item = (Menu.MenuItemSettings) p.GetValue(null);
-                    if (item.GetActive() == false && item.Item != null)
+                    Thread.Sleep(1);
+                    Type classType = typeof(Menu);
+                    BindingFlags flags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
+                    FieldInfo[] fields = classType.GetFields(flags);
+                    foreach (FieldInfo p in fields)
                     {
-                        //item.Item = null;
-                    }
-                    else if (item.GetActive() && item.Item == null && !item.ForceDisable && item.Type != null)
-                    {
-                        try
+                        var item = (Menu.MenuItemSettings)p.GetValue(null);
+                        if (item.GetActive() == false && item.Item != null)
                         {
-                            item.Item = System.Activator.CreateInstance(item.Type);
+                            //item.Item = null;
                         }
-                        catch (Exception e)
+                        else if (item.GetActive() && item.Item == null && !item.ForceDisable && item.Type != null)
                         {
-                            Console.WriteLine(e);
-                            throw;
+                            try
+                            {
+                                item.Item = System.Activator.CreateInstance(item.Type);
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e);
+                                throw;
+                            }
                         }
                     }
                 }
             }
+            catch (Exception e)
+            {
+                Console.WriteLine("SAwareness: " + e);
+                throw;
+            }
+            
             //CreateDebugInfos();
         }
 
