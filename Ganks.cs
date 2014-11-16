@@ -231,8 +231,10 @@ namespace SAwareness
                     }
                 }
                 if (enemy.Key.IsVisible && !enemy.Key.IsDead &&
+                    Vector3.Distance(ObjectManager.Player.ServerPosition, hero.ServerPosition) >
+                    Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorTrackRangeMin").GetValue<Slider>().Value &&
                     Vector3.Distance(ObjectManager.Player.ServerPosition, hero.ServerPosition) <
-                    Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorTrackRange").GetValue<Slider>().Value &&
+                    Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorTrackRangeMax").GetValue<Slider>().Value &&
                     hasSmite)
                 {
                     String killText = "Enemy jungler approaching";
@@ -296,16 +298,20 @@ namespace SAwareness
             if (enemy.Value.InvisibleTime > 5)
             {
                 if (!enemy.Value.CalledInvisible && hero.IsValid && !hero.IsDead && hero.IsVisible &&
+                    Vector3.Distance(ObjectManager.Player.ServerPosition, hero.ServerPosition) >
+                    Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorTrackRangeMin").GetValue<Slider>().Value &&
                     Vector3.Distance(ObjectManager.Player.ServerPosition, hero.ServerPosition) <
-                    Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorTrackRange").GetValue<Slider>().Value)
+                    Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorTrackRangeMax").GetValue<Slider>().Value)
                 {
                     ChatAndPing(enemy);
                     enemy.Value.CalledInvisible = true;
                 }
             }
             if (!enemy.Value.CalledVisible && hero.IsValid && !hero.IsDead &&
+                enemy.Key.GetWaypoints().Last().Distance(ObjectManager.Player.ServerPosition) >
+                Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorTrackRangeMin").GetValue<Slider>().Value &&
                 enemy.Key.GetWaypoints().Last().Distance(ObjectManager.Player.ServerPosition) <
-                Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorTrackRange").GetValue<Slider>().Value)
+                Menu.GankDetector.GetMenuItem("SAwarenessGankDetectorTrackRangeMax").GetValue<Slider>().Value)
             {
                 ChatAndPing(enemy);
                 enemy.Value.CalledVisible = true;

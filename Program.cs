@@ -571,7 +571,10 @@ namespace SAwareness
                             new StringList(new[] { "None", "Local", "Server" }))));
                 Menu.GankDetector.MenuItems.Add(
                     Menu.GankDetector.Menu.AddItem(
-                        new MenuItem("SAwarenessGankDetectorTrackRange", "Track Range").SetValue(new Slider(1, 10000, 1))));
+                        new MenuItem("SAwarenessGankDetectorTrackRangeMin", "Track Range Min").SetValue(new Slider(1, 10000, 1))));
+                Menu.GankDetector.MenuItems.Add(
+                    Menu.GankDetector.Menu.AddItem(
+                        new MenuItem("SAwarenessGankDetectorTrackRangeMax", "Track Range Max").SetValue(new Slider(1, 10000, 1))));
                 Menu.GankDetector.MenuItems.Add(
                     Menu.GankDetector.Menu.AddItem(new MenuItem("SAwarenessGankDetectorShowJungler", "Show Jungler").SetValue(false)));
                 Menu.GankDetector.MenuItems.Add(

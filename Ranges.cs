@@ -96,21 +96,24 @@ namespace SAwareness
                 case 1:
                     foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
                     {
-                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead &&
+                            ObjectManager.Player.ServerPosition.Distance(enemy.ServerPosition) < 1800)
                         {
                             Utility.DrawCircle(enemy.Position, 1200, Color.Indigo);
                         }
                     }
                     foreach (Obj_AI_Turret turret in ObjectManager.Get<Obj_AI_Turret>())
                     {
-                        if (turret.IsVisible && !turret.IsDead && turret.IsEnemy && turret.IsValid)
+                        if (turret.IsVisible && !turret.IsDead && turret.IsEnemy && turret.IsValid &&
+                            ObjectManager.Player.ServerPosition.Distance(turret.ServerPosition) < 1800)
                         {
                             Utility.DrawCircle(turret.Position, 1200, Color.Indigo);
                         }
                     }
                     foreach (Obj_AI_Minion minion in ObjectManager.Get<Obj_AI_Minion>())
                     {
-                        if (minion.IsEnemy && minion.IsVisible && minion.IsValid && !minion.IsDead)
+                        if (minion.IsEnemy && minion.Team != GameObjectTeam.Neutral && minion.IsVisible && minion.IsValid && !minion.IsDead &&
+                            ObjectManager.Player.ServerPosition.Distance(minion.ServerPosition) < 1800)
                         {
                             Utility.DrawCircle(minion.Position, 1200, Color.Indigo);
                         }
@@ -120,21 +123,24 @@ namespace SAwareness
                     Utility.DrawCircle(ObjectManager.Player.Position, 1200, Color.Indigo);
                     foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>())
                     {
-                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead)
+                        if (enemy.IsEnemy && enemy.IsVisible && enemy.IsValid && !enemy.IsDead &&
+                            ObjectManager.Player.ServerPosition.Distance(enemy.ServerPosition) < 1800)
                         {
                             Utility.DrawCircle(enemy.Position, 1200, Color.Indigo);
                         }
                     }
                     foreach (Obj_AI_Turret turret in ObjectManager.Get<Obj_AI_Turret>())
                     {
-                        if (turret.IsVisible && !turret.IsDead && turret.IsEnemy && turret.IsValid)
+                        if (turret.IsVisible && !turret.IsDead && turret.IsEnemy && turret.IsValid &&
+                            ObjectManager.Player.ServerPosition.Distance(turret.ServerPosition) < 1800)
                         {
                             Utility.DrawCircle(turret.Position, 1200, Color.Indigo);
                         }
                     }
                     foreach (Obj_AI_Minion minion in ObjectManager.Get<Obj_AI_Minion>())
                     {
-                        if (minion.IsEnemy && minion.IsVisible && minion.IsValid && !minion.IsDead)
+                        if (minion.IsEnemy && minion.Team != GameObjectTeam.Neutral && minion.IsVisible && minion.IsValid && !minion.IsDead &&
+                            ObjectManager.Player.ServerPosition.Distance(minion.ServerPosition) < 1800)
                         {
                             Utility.DrawCircle(minion.Position, 1200, Color.Indigo);
                         }
