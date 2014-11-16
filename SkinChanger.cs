@@ -481,7 +481,7 @@ namespace SAwareness
                 "Mistletoe"
             });
 
-            Skins.Add("Leesin", new[]
+            Skins.Add("LeeSin", new[]
             {
                 "Classic",
                 "Traditional",
