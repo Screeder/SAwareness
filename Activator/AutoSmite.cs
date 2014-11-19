@@ -21,10 +21,11 @@ namespace SAwareness
         private readonly String[] _monsters =
         {
             "GreatWraith", "Wraith", "AncientGolem", "GiantWolf", "LizardElder",
-            "Golem", "Worm", "Dragon", "Wight", "TT_Spiderboss", "TTNGolem", "TTNWolf", "TTNWraith"
+            "Golem", "Worm", "Dragon", "Wight", "TT_Spiderboss", "TTNGolem", "TTNWolf", "TTNWraith",
+            "SRU_Baron", "SRU_Dragon", "SRU_Blue", "SRU_Red", "SRU_Gromp", "SRU_Krug", "SRU_Murkwolf", "SRU_Razorbeak" //Need to check
         };
 
-        private readonly String[] _usefulMonsters = {"AncientGolem", "LizardElder", "Worm", "Dragon", "TT_Spiderboss"};
+        private readonly String[] _usefulMonsters = { "AncientGolem", "LizardElder", "Worm", "Dragon", "TT_Spiderboss", "SRU_Baron", "SRU_Dragon", "SRU_Blue", "SRU_Red" };
 
         public AutoSmite()
         {
@@ -150,6 +151,7 @@ namespace SAwareness
                     GamePacket gPacketT =
                         Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(minion.NetworkId, smiteSlot));
                     gPacketT.Send();
+                    ObjectManager.Player.SummonerSpellbook.CastSpell(smiteSlot, minion);
                 }
                 else
                 {
@@ -161,6 +163,7 @@ namespace SAwareness
                                 Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(minion.NetworkId,
                                     extraDamageInfo.Slot));
                             gPacketT.Send();
+                            ObjectManager.Player.SummonerSpellbook.CastSpell(smiteSlot, minion);
                             break;
 
                         case SpellType.Skillshot:
@@ -168,12 +171,14 @@ namespace SAwareness
                                 Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, extraDamageInfo.Slot, -1, 0, 0,
                                     minion.ServerPosition.X, minion.ServerPosition.Y));
                             gPacketT.Send();
+                            ObjectManager.Player.SummonerSpellbook.CastSpell(smiteSlot, minion);
                             break;
 
                         case SpellType.Target:
                             gPacketT =
                                 Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(minion.NetworkId,
                                     extraDamageInfo.Slot));
+                            ObjectManager.Player.SummonerSpellbook.CastSpell(smiteSlot, minion);
                             gPacketT.Send();
                             break;
                     }
@@ -183,6 +188,7 @@ namespace SAwareness
                         () =>
                             Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(minion.NetworkId, smiteSlot))
                                 .Send());
+                    ObjectManager.Player.SummonerSpellbook.CastSpell(smiteSlot, minion);
                     //gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(minion.NetworkId, (SpellSlot)slot));
                     //gPacketT.Send();
                 }

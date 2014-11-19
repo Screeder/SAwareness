@@ -549,19 +549,34 @@ namespace SAwareness
             //_inhibitors = new Inhibitor("Inhibitor", new[] { "Order_Inhibit_Gem.troy", "Chaos_Inhibit_Gem.troy" }, new[] { "Order_Inhibit_Crystal_Shatter.troy", "Chaos_Inhibit_Crystal_Shatter.troy" });
 
             //Summoner's Rift
-            JungleMobs.Add(new JungleMob("GreatWraith", null, true, false, false, Utility.Map.MapType.SummonersRift));
-            JungleMobs.Add(new JungleMob("AncientGolem", null, true, true, false, Utility.Map.MapType.SummonersRift));
-            JungleMobs.Add(new JungleMob("GiantWolf", null, true, false, false, Utility.Map.MapType.SummonersRift));
-            JungleMobs.Add(new JungleMob("Wraith", null, true, false, false, Utility.Map.MapType.SummonersRift));
-            JungleMobs.Add(new JungleMob("LizardElder", null, true, true, false, Utility.Map.MapType.SummonersRift));
-            JungleMobs.Add(new JungleMob("Golem", null, true, false, false, Utility.Map.MapType.SummonersRift));
-            JungleMobs.Add(new JungleMob("Worm", null, true, true, true, Utility.Map.MapType.SummonersRift));
-            JungleMobs.Add(new JungleMob("Dragon", null, true, false, true, Utility.Map.MapType.SummonersRift));
-            JungleMobs.Add(new JungleMob("Wight", null, true, false, false, Utility.Map.MapType.SummonersRift));
-            JungleMobs.Add(new JungleMob("YoungLizard", null, false, false, false, Utility.Map.MapType.SummonersRift));
-            JungleMobs.Add(new JungleMob("Wolf", null, false, false, false, Utility.Map.MapType.SummonersRift));
-            JungleMobs.Add(new JungleMob("LesserWraith", null, false, false, false, Utility.Map.MapType.SummonersRift));
-            JungleMobs.Add(new JungleMob("SmallGolem", null, false, false, false, Utility.Map.MapType.SummonersRift));
+            //JungleMobs.Add(new JungleMob("GreatWraith", null, true, false, false, Utility.Map.MapType.SummonersRift));
+            //JungleMobs.Add(new JungleMob("AncientGolem", null, true, true, false, Utility.Map.MapType.SummonersRift));
+            //JungleMobs.Add(new JungleMob("GiantWolf", null, true, false, false, Utility.Map.MapType.SummonersRift));
+            //JungleMobs.Add(new JungleMob("Wraith", null, true, false, false, Utility.Map.MapType.SummonersRift));
+            //JungleMobs.Add(new JungleMob("LizardElder", null, true, true, false, Utility.Map.MapType.SummonersRift));
+            //JungleMobs.Add(new JungleMob("Golem", null, true, false, false, Utility.Map.MapType.SummonersRift));
+            //JungleMobs.Add(new JungleMob("Worm", null, true, true, true, Utility.Map.MapType.SummonersRift));
+            //JungleMobs.Add(new JungleMob("Dragon", null, true, false, true, Utility.Map.MapType.SummonersRift));
+            //JungleMobs.Add(new JungleMob("Wight", null, true, false, false, Utility.Map.MapType.SummonersRift));
+            //JungleMobs.Add(new JungleMob("YoungLizard", null, false, false, false, Utility.Map.MapType.SummonersRift));
+            //JungleMobs.Add(new JungleMob("Wolf", null, false, false, false, Utility.Map.MapType.SummonersRift));
+            //JungleMobs.Add(new JungleMob("LesserWraith", null, false, false, false, Utility.Map.MapType.SummonersRift));
+            //JungleMobs.Add(new JungleMob("SmallGolem", null, false, false, false, Utility.Map.MapType.SummonersRift));
+
+            JungleMobs.Add(new JungleMob("SRU_Blue", null, true, true, false, Utility.Map.MapType.SummonersRift));
+            JungleMobs.Add(new JungleMob("SRU_Murkwolf", null, true, false, false, Utility.Map.MapType.SummonersRift));
+            JungleMobs.Add(new JungleMob("SRU_Razorbeak", null, true, false, false, Utility.Map.MapType.SummonersRift));
+            JungleMobs.Add(new JungleMob("SRU_Red", null, true, true, false, Utility.Map.MapType.SummonersRift));
+            JungleMobs.Add(new JungleMob("SRU_Krug", null, true, false, false, Utility.Map.MapType.SummonersRift));
+            JungleMobs.Add(new JungleMob("SRU_Baron", null, true, true, true, Utility.Map.MapType.SummonersRift));
+            JungleMobs.Add(new JungleMob("SRU_Dragon", null, true, false, true, Utility.Map.MapType.SummonersRift));
+            JungleMobs.Add(new JungleMob("SRU_Gromp", null, true, false, false, Utility.Map.MapType.SummonersRift));
+            JungleMobs.Add(new JungleMob("SRU_RedMini", null, false, false, false, Utility.Map.MapType.SummonersRift));
+            JungleMobs.Add(new JungleMob("SRU_MurkwolfMini", null, false, false, false, Utility.Map.MapType.SummonersRift));
+            JungleMobs.Add(new JungleMob("SRU_RazorbeakMini", null, false, false, false, Utility.Map.MapType.SummonersRift));
+            JungleMobs.Add(new JungleMob("SRU_KrugMini", null, false, false, false, Utility.Map.MapType.SummonersRift));
+            JungleMobs.Add(new JungleMob("SRU_BlueMini", null, false, false, false, Utility.Map.MapType.SummonersRift));
+            JungleMobs.Add(new JungleMob("SRU_BlueMini2", null, false, false, false, Utility.Map.MapType.SummonersRift));
 
             //Twisted Treeline
             JungleMobs.Add(new JungleMob("TT_NWraith", null, false, false, false, Utility.Map.MapType.TwistedTreeline));
@@ -588,88 +603,88 @@ namespace SAwareness
                 new Vector3(3570, 7670, 54), new Vector3(3670, 7520, 54),
                 new[]
                 {
-                    GetJungleMobByName("AncientGolem", Utility.Map.MapType.SummonersRift),
-                    GetJungleMobByName("YoungLizard", Utility.Map.MapType.SummonersRift),
-                    GetJungleMobByName("YoungLizard", Utility.Map.MapType.SummonersRift)
+                    GetJungleMobByName("SRU_Blue", Utility.Map.MapType.SummonersRift),
+                    GetJungleMobByName("SRU_BlueMini", Utility.Map.MapType.SummonersRift),
+                    GetJungleMobByName("SRU_BlueMini2", Utility.Map.MapType.SummonersRift)
                 }));
             JungleCamps.Add(new JungleCamp("wolves", GameObjectTeam.Order, 2, 125, 50, Utility.Map.MapType.SummonersRift,
                 new Vector3(3430, 6300, 56), new Vector3(3360, 6310, 56),
                 new[]
                 {
-                    GetJungleMobByName("GiantWolf", Utility.Map.MapType.SummonersRift),
-                    GetJungleMobByName("Wolf", Utility.Map.MapType.SummonersRift),
-                    GetJungleMobByName("Wolf", Utility.Map.MapType.SummonersRift)
+                    GetJungleMobByName("SRU_Murkwolf", Utility.Map.MapType.SummonersRift),
+                    GetJungleMobByName("SRU_MurkwolfMini", Utility.Map.MapType.SummonersRift),
+                    GetJungleMobByName("SRU_MurkwolfMini", Utility.Map.MapType.SummonersRift)
                 }));
             JungleCamps.Add(new JungleCamp("wraiths", GameObjectTeam.Order, 3, 125, 50,
                 Utility.Map.MapType.SummonersRift, new Vector3(6540, 5230, 56), new Vector3(6620, 5350, 56),
                 new[]
                 {
-                    GetJungleMobByName("Wraith", Utility.Map.MapType.SummonersRift),
-                    GetJungleMobByName("LesserWraith", Utility.Map.MapType.SummonersRift),
-                    GetJungleMobByName("LesserWraith", Utility.Map.MapType.SummonersRift),
-                    GetJungleMobByName("LesserWraith", Utility.Map.MapType.SummonersRift)
+                    GetJungleMobByName("SRU_Razorbeak", Utility.Map.MapType.SummonersRift),
+                    GetJungleMobByName("SRU_RazorbeakMini", Utility.Map.MapType.SummonersRift),
+                    GetJungleMobByName("SRU_RazorbeakMini", Utility.Map.MapType.SummonersRift),
+                    GetJungleMobByName("SRU_RazorbeakMini", Utility.Map.MapType.SummonersRift)
                 }));
             JungleCamps.Add(new JungleCamp("red", GameObjectTeam.Order, 4, 115, 300, Utility.Map.MapType.SummonersRift,
                 new Vector3(7370, 3830, 58), new Vector3(7560, 3800, 58),
                 new[]
                 {
-                    GetJungleMobByName("LizardElder", Utility.Map.MapType.SummonersRift),
-                    GetJungleMobByName("YoungLizard", Utility.Map.MapType.SummonersRift),
-                    GetJungleMobByName("YoungLizard", Utility.Map.MapType.SummonersRift)
+                    GetJungleMobByName("SRU_Red", Utility.Map.MapType.SummonersRift),
+                    GetJungleMobByName("SRU_RedMini", Utility.Map.MapType.SummonersRift),
+                    GetJungleMobByName("SRU_RedMini", Utility.Map.MapType.SummonersRift)
                 }));
             JungleCamps.Add(new JungleCamp("golems", GameObjectTeam.Order, 5, 125, 50, Utility.Map.MapType.SummonersRift,
                 new Vector3(7990, 2550, 54), new Vector3(8050, 2460, 54),
                 new[]
                 {
-                    GetJungleMobByName("Golem", Utility.Map.MapType.SummonersRift),
-                    GetJungleMobByName("SmallGolem", Utility.Map.MapType.SummonersRift)
+                    GetJungleMobByName("SRU_Krug", Utility.Map.MapType.SummonersRift),
+                    GetJungleMobByName("SRU_KrugMini", Utility.Map.MapType.SummonersRift)
                 }));
             JungleCamps.Add(new JungleCamp("wight", GameObjectTeam.Order, 13, 125, 50, Utility.Map.MapType.SummonersRift,
                 new Vector3(1688, 8248, 54), new Vector3(1820, 8100, 54),
-                new[] {GetJungleMobByName("Wight", Utility.Map.MapType.SummonersRift)}));
+                new[] { GetJungleMobByName("SRU_Gromp", Utility.Map.MapType.SummonersRift) }));
             JungleCamps.Add(new JungleCamp("blue", GameObjectTeam.Chaos, 7, 115, 300, Utility.Map.MapType.SummonersRift,
                 new Vector3(10455, 6800, 55), new Vector3(10570, 6780, 54),
                 new[]
                 {
-                    GetJungleMobByName("AncientGolem", Utility.Map.MapType.SummonersRift),
-                    GetJungleMobByName("YoungLizard", Utility.Map.MapType.SummonersRift),
-                    GetJungleMobByName("YoungLizard", Utility.Map.MapType.SummonersRift)
+                    GetJungleMobByName("SRU_Blue", Utility.Map.MapType.SummonersRift),
+                    GetJungleMobByName("SRU_BlueMini", Utility.Map.MapType.SummonersRift),
+                    GetJungleMobByName("SRU_BlueMini2", Utility.Map.MapType.SummonersRift)
                 }));
             JungleCamps.Add(new JungleCamp("wolves", GameObjectTeam.Chaos, 8, 125, 50, Utility.Map.MapType.SummonersRift,
                 new Vector3(10570, 8150, 63), new Vector3(10644, 8070, 63),
                 new[]
                 {
-                    GetJungleMobByName("GiantWolf", Utility.Map.MapType.SummonersRift),
-                    GetJungleMobByName("Wolf", Utility.Map.MapType.SummonersRift),
-                    GetJungleMobByName("Wolf", Utility.Map.MapType.SummonersRift)
+                    GetJungleMobByName("SRU_Murkwolf", Utility.Map.MapType.SummonersRift),
+                    GetJungleMobByName("SRU_MurkwolfMini", Utility.Map.MapType.SummonersRift),
+                    GetJungleMobByName("SRU_MurkwolfMini", Utility.Map.MapType.SummonersRift)
                 }));
             JungleCamps.Add(new JungleCamp("wraiths", GameObjectTeam.Chaos, 9, 125, 50,
                 Utility.Map.MapType.SummonersRift, new Vector3(7465, 9220, 56), new Vector3(7480, 9238, 56),
                 new[]
                 {
-                    GetJungleMobByName("Wraith", Utility.Map.MapType.SummonersRift),
-                    GetJungleMobByName("LesserWraith", Utility.Map.MapType.SummonersRift),
-                    GetJungleMobByName("LesserWraith", Utility.Map.MapType.SummonersRift),
-                    GetJungleMobByName("LesserWraith", Utility.Map.MapType.SummonersRift)
+                    GetJungleMobByName("SRU_Razorbeak", Utility.Map.MapType.SummonersRift),
+                    GetJungleMobByName("SRU_RazorbeakMini", Utility.Map.MapType.SummonersRift),
+                    GetJungleMobByName("SRU_RazorbeakMini", Utility.Map.MapType.SummonersRift),
+                    GetJungleMobByName("SRU_RazorbeakMini", Utility.Map.MapType.SummonersRift)
                 }));
             JungleCamps.Add(new JungleCamp("red", GameObjectTeam.Chaos, 10, 115, 300, Utility.Map.MapType.SummonersRift,
                 new Vector3(6620, 10637, 55), new Vector3(6648, 10570, 54),
                 new[]
                 {
-                    GetJungleMobByName("LizardElder", Utility.Map.MapType.SummonersRift),
-                    GetJungleMobByName("YoungLizard", Utility.Map.MapType.SummonersRift),
-                    GetJungleMobByName("YoungLizard", Utility.Map.MapType.SummonersRift)
+                    GetJungleMobByName("SRU_Red", Utility.Map.MapType.SummonersRift),
+                    GetJungleMobByName("SRU_RedMini", Utility.Map.MapType.SummonersRift),
+                    GetJungleMobByName("SRU_RedMini", Utility.Map.MapType.SummonersRift)
                 }));
             JungleCamps.Add(new JungleCamp("golems", GameObjectTeam.Chaos, 11, 125, 50,
                 Utility.Map.MapType.SummonersRift, new Vector3(6010, 11920, 40), new Vector3(5920, 11900, 40),
                 new[]
                 {
-                    GetJungleMobByName("Golem", Utility.Map.MapType.SummonersRift),
-                    GetJungleMobByName("SmallGolem", Utility.Map.MapType.SummonersRift)
+                    GetJungleMobByName("SRU_Krug", Utility.Map.MapType.SummonersRift),
+                    GetJungleMobByName("SRU_KrugMini", Utility.Map.MapType.SummonersRift)
                 }));
             JungleCamps.Add(new JungleCamp("wight", GameObjectTeam.Chaos, 14, 125, 50, Utility.Map.MapType.SummonersRift,
                 new Vector3(12266, 6215, 54), new Vector3(12385, 6081, 58),
-                new[] {GetJungleMobByName("Wight", Utility.Map.MapType.SummonersRift)}));
+                new[] { GetJungleMobByName("SRU_Gromp", Utility.Map.MapType.SummonersRift) }));
             JungleCamps.Add(new JungleCamp("dragon", GameObjectTeam.Neutral, 6, 2*60 + 30, 360,
                 Utility.Map.MapType.SummonersRift, new Vector3(9400, 4130, -61), new Vector3(9600, 4120, -61),
                 new[] {GetJungleMobByName("Dragon", Utility.Map.MapType.SummonersRift)}));

@@ -333,7 +333,7 @@ namespace SAwareness
 
         public WardCorrector() //TODO: Add SpellNames for WardItems
         {
-            WardSpots.Add(new WardSpot("BlueGolem", new Vector3(2823.37f, 7617.03f, 55.03f)));
+            WardSpots.Add(new WardSpot("BlueGolem", new Vector3(3274f, 7772f, 52f)));
             WardSpots.Add(new WardSpot("BlueLizard", new Vector3(7422f, 3282f, 46.53f)));
             WardSpots.Add(new WardSpot("BlueTriBush", new Vector3(10148f, 2839f, 44.41f)));
             WardSpots.Add(new WardSpot("BluePassBush", new Vector3(6269f, 4445f, 42.51f)));
