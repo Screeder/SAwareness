@@ -2284,8 +2284,8 @@ namespace SAwareness
                 if (hero.Value.SGui.SpellQ.Value > 0.0f || hero.Key.Spellbook.GetSpell(SpellSlot.Q).Level < 1)
                 {
                     DirectXDrawer.DrawSprite(_s, _overlaySpellItem,
-                        hero.Value.SGui.SpellQ.SizeSideBar,
-                        new ColorBGRA(Color3.White, 0.55f), new[] { 1.0f * percentScale, 1.0f * percentScale });
+                        hero.Value.SGui.SpellQ.SizeSideBar, new SharpDX.Color(255, 255, 255, 200),
+                        /*new ColorBGRA(Color3.White, 0.55f),*/ new[] { 1.0f * percentScale, 1.0f * percentScale });
                 }
                 if (hero.Value.SGui.SpellW.Value > 0.0f || hero.Key.Spellbook.GetSpell(SpellSlot.W).Level < 1)
                 {

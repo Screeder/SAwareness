@@ -34,39 +34,39 @@ namespace SAwareness
             switch (ObjectManager.Player.ChampionName)
             {
                 case "Galio":
-                    _shield = new Shield(new Spell(SpellSlot.W, 800, 0, 0, 0));
+                    _shield = new Shield(new Spell(SpellSlot.W, 700, 0, 0, 0));
                     break; 
 
                 case "Janna":
-                    _shield = new Shield(new Spell(SpellSlot.E, 900, 0, 0, 0));
+                    _shield = new Shield(new Spell(SpellSlot.E, 800, 0, 0, 0));
                     break; 
 
                 case "Karma":
-                    _shield = new Shield(new Spell(SpellSlot.E, 900, 0, 0, 0));
+                    _shield = new Shield(new Spell(SpellSlot.E, 800, 0, 0, 0));
                     break;
 
                 case "LeeSin":
-                    _shield = new Shield(new Spell(SpellSlot.W, 800, 0, 0, 1500), false);
+                    _shield = new Shield(new Spell(SpellSlot.W, 700, 0, 0, 1500), false);
                     break;
 
                 case "Lulu":
-                    _shield = new Shield(new Spell(SpellSlot.E, 750, 0, 0, 0));
+                    _shield = new Shield(new Spell(SpellSlot.E, 650, 0, 0, 0));
                     break;
 
                 case "Lux":
-                    _shield = new Shield(new Spell(SpellSlot.W, 1175, 0.5f, 150, 1200), false, true);
+                    _shield = new Shield(new Spell(SpellSlot.W, 1075, 0.5f, 150, 1200), false, true);
                     break;
 
                 case "Morgana":
-                    _shield = new Shield(new Spell(SpellSlot.E, 850, 0, 0, 0), true, false, true);
+                    _shield = new Shield(new Spell(SpellSlot.E, 750, 0, 0, 0), true, false, true);
                     break;
 
                 case "Orianna":
-                    _shield = new Shield(new Spell(SpellSlot.E, 1295, 0.5f, 0, 1200), false);
+                    _shield = new Shield(new Spell(SpellSlot.E, 1195, 0.5f, 0, 1200), false);
                     break;
 
                 case "Thresh":
-                    _shield = new Shield(new Spell(SpellSlot.W, 1050, 0, 0, 0));
+                    _shield = new Shield(new Spell(SpellSlot.W, 950, 0, 0, 0));
                     break;
 
                 //Self
@@ -229,6 +229,8 @@ namespace SAwareness
                                     .GetValue<Slider>().Value &&
                     (_shield.OnlySelf || damage.Key.Distance(ObjectManager.Player.ServerPosition) < _shield.Spell.Range))
                 {
+                    if (!_shield.Spell.IsReady())
+                        break;
                     if (_shield.Skillshot)
                     {
                         PredictionOutput predOutput = _shield.Spell.GetPrediction(damage.Key);
