@@ -252,7 +252,7 @@ namespace SAwareness
                     double th = angle*i;
                     var pos = new Vector3((float) (lastPos.X + radius*Math.Cos(th)),
                         (float) (lastPos.Y + radius*Math.Sin(th)), 0); //wardPos.Z
-                    wardLocations[i] = new WardLocation(pos, NavMesh.IsWallOfGrass(pos));
+                    wardLocations[i] = new WardLocation(pos, NavMesh.IsWallOfGrass(pos, 10));
                 }
 
                 var grassLocations = new List<GrassLocation>();

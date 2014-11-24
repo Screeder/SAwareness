@@ -3711,6 +3711,153 @@
   <ItemGroup>
     <None Include="Resources\SPELLS\luxlightstriketoggle.dds" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CHAMP\Kalista.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\2053.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\2137.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\2138.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\2139.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\2140.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3599.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3706.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3707.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3708.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3709.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3710.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3711.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3713.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3714.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3715.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3716.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3717.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3718.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3719.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3720.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3721.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3722.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3723.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3724.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3725.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3726.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3800.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ITEMS\3801.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PASSIVE\Kalista_Passive.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PASSIVE\Maokai_Passive.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PASSIVE\Singed_Passive.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PASSIVE\Sion_Passive1.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\EliseRSpider.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\EliseSpiderEInitial.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\EliseSpiderQCast.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\EliseSpiderW.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\JayceAccelerationGate.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\JayceHyperCharge.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\JayceShockBlast.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\JayceStanceGtH.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\KalistaExpungeWrapper.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\KalistaMysticShot.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\KalistaRx.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\KalistaW.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\SionE.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\SionQ.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\SionR.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SPELLS\SionW.dds" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy /y "$(TargetPath)" "C:\Users\Screeder93\AppData\Roaming\LeagueSharp\Assemblies\C14BF944SAwareness.exe"</PostBuildEvent>

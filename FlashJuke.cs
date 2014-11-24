@@ -131,7 +131,7 @@ namespace SAwareness
                 ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, nearestPosStart);
             }
 
-            if (nearestPosStart.X != 0 && ObjectManager.Player.Distance(nearestPosStart) < 50 && !NavMesh.IsWallOfGrass(ObjectManager.Player.ServerPosition) && Game.Time > flashedTime + 5 &&
+            if (nearestPosStart.X != 0 && ObjectManager.Player.Distance(nearestPosStart) < 50 && !NavMesh.IsWallOfGrass(ObjectManager.Player.ServerPosition, 10) && Game.Time > flashedTime + 5 &&
                 !AnyEnemyInBush())
             {
                 Vector3 nearestPosEnd = GetNearestPos(spotsEnd);
@@ -157,7 +157,7 @@ namespace SAwareness
             {
                 if (hero.IsValid && hero.IsEnemy && hero.IsVisible && !hero.IsDead)
                 {
-                    if (NavMesh.IsWallOfGrass(hero.ServerPosition) &&
+                    if (NavMesh.IsWallOfGrass(hero.ServerPosition,10) &&
                         ObjectManager.Player.ServerPosition.Distance(hero.ServerPosition) < 650)
                     {
                         return true;

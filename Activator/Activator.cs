@@ -811,6 +811,8 @@ namespace SAwareness
             if (!Menu.ActivatorAutoSummonerSpellCleanse.GetActive())
                 return;
             SpellSlot sumCleanse = GetCleanseSlot();
+            if (ObjectManager.Player.SummonerSpellbook.CanUseSpell(sumCleanse) != SpellState.Ready)
+                return;
             _buffs.Clear();
             if (
                 Menu.ActivatorAutoSummonerSpellCleanse.GetMenuItem("SAwarenessActivatorAutoSummonerSpellCleanseStun")
@@ -869,6 +871,7 @@ namespace SAwareness
                 {
                     GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                     gPacketT.Send();
+                    ObjectManager.Player.SummonerSpellbook.CastSpell(sumCleanse);
                     _lastItemCleanseUse = Game.Time;
                 }
             }
@@ -879,6 +882,8 @@ namespace SAwareness
             if (!Menu.ActivatorAutoSummonerSpellIgnite.GetActive())
                 return;
             SpellSlot sumIgnite = GetIgniteSlot();
+            if (ObjectManager.Player.SummonerSpellbook.CanUseSpell(sumIgnite) != SpellState.Ready)
+                return;
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
             {
                 if (hero != null && hero.IsEnemy && hero.ServerPosition.Distance(ObjectManager.Player.ServerPosition) < 700)
@@ -896,6 +901,7 @@ namespace SAwareness
                                 GamePacket gPacketT =
                                     Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(hero.NetworkId, spellSlot));
                                 gPacketT.Send();
+                                ObjectManager.Player.SummonerSpellbook.CastSpell(sumIgnite, hero);
                             }
                         }
                     }
@@ -909,6 +915,10 @@ namespace SAwareness
                 return;
 
             SpellSlot sumHeal = GetHealSlot();
+
+            if (ObjectManager.Player.SummonerSpellbook.CanUseSpell(sumHeal) != SpellState.Ready)
+                return;
+
             if (
                 Menu.ActivatorAutoSummonerSpellHeal.GetMenuItem("SAwarenessActivatorAutoSummonerSpellHealAllyActive")
                     .GetValue<bool>())
@@ -927,12 +937,13 @@ namespace SAwareness
                             {
                                 GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                                 gPacketT.Send();
+                                ObjectManager.Player.SummonerSpellbook.CastSpell(sumHeal);
                             }
                         }
                         foreach (var damage in Damages)
                         {
                             if (damage.Key.NetworkId != ObjectManager.Player.NetworkId)
-                                return;
+                                continue;
 
                             if (CalcMaxDamage(damage.Key) >= damage.Key.Health)
                             {
@@ -941,6 +952,7 @@ namespace SAwareness
                                 {
                                     GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                                     gPacketT.Send();
+                                    ObjectManager.Player.SummonerSpellbook.CastSpell(sumHeal);
                                 }
                             }
                         }
@@ -957,12 +969,13 @@ namespace SAwareness
                 {
                     GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                     gPacketT.Send();
+                    ObjectManager.Player.SummonerSpellbook.CastSpell(sumHeal);
                 }
             }
             foreach (var damage in Damages)
             {
                 if (damage.Key.NetworkId != ObjectManager.Player.NetworkId)
-                    return;
+                    continue;
 
                 if (CalcMaxDamage(damage.Key) >= damage.Key.Health)
                 {
@@ -971,6 +984,7 @@ namespace SAwareness
                     {
                         GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                         gPacketT.Send();
+                        ObjectManager.Player.SummonerSpellbook.CastSpell(sumHeal);
                     }
                 }
             }
@@ -982,6 +996,10 @@ namespace SAwareness
                 return;
 
             SpellSlot sumBarrier = GetBarrierSlot();
+
+            if (ObjectManager.Player.SummonerSpellbook.CanUseSpell(sumBarrier) != SpellState.Ready)
+                return;
+
             if (((ObjectManager.Player.Health/ObjectManager.Player.MaxHealth)*100) <
                 Menu.ActivatorAutoSummonerSpellBarrier.GetMenuItem("SAwarenessActivatorAutoSummonerSpellBarrierPercent")
                     .GetValue<Slider>()
@@ -992,12 +1010,13 @@ namespace SAwareness
                 {
                     GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                     gPacketT.Send();
+                    ObjectManager.Player.SummonerSpellbook.CastSpell(sumBarrier);
                 }
             }
             foreach (var damage in Damages)
             {
                 if (damage.Key.NetworkId != ObjectManager.Player.NetworkId)
-                    return;
+                    continue;
 
                 if (CalcMaxDamage(damage.Key) >= damage.Key.Health)
                 {
@@ -1006,6 +1025,7 @@ namespace SAwareness
                     {
                         GamePacket gPacketT = Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, spellSlot));
                         gPacketT.Send();
+                        ObjectManager.Player.SummonerSpellbook.CastSpell(sumBarrier);
                     }
                 }
             }
@@ -1017,6 +1037,8 @@ namespace SAwareness
                 return;
 
             SpellSlot sumExhaust = GetExhaustSlot();
+            if (ObjectManager.Player.SummonerSpellbook.CanUseSpell(sumExhaust) != SpellState.Ready)
+                return;
             Obj_AI_Hero enemy = GetHighestAdEnemy();
             if (enemy == null || !enemy.IsValid)
                 return;
@@ -1048,6 +1070,7 @@ namespace SAwareness
                             IsFleeing(enemy) && !ImFleeing(enemy) && countA > 0)
                         {
                             gPacketT.Send();
+                            ObjectManager.Player.SummonerSpellbook.CastSpell(sumExhaust, enemy);
                         }
                         else if (
                             Menu.ActivatorAutoSummonerSpellExhaust.GetMenuItem(
@@ -1055,6 +1078,7 @@ namespace SAwareness
                             !IsFleeing(enemy) && healthA < 25)
                         {
                             gPacketT.Send();
+                            ObjectManager.Player.SummonerSpellbook.CastSpell(sumExhaust, enemy);
                         }
                         else if (!IsFleeing(enemy) &&
                                  healthA <=
@@ -1064,6 +1088,7 @@ namespace SAwareness
                                      .Value)
                         {
                             gPacketT.Send();
+                            ObjectManager.Player.SummonerSpellbook.CastSpell(sumExhaust, enemy);
                         }
                         else if (!ImFleeing(enemy) && countA > 0 && IsFleeing(enemy) && healthE >= 10 &&
                                  healthE <=
@@ -1073,6 +1098,7 @@ namespace SAwareness
                                      .Value)
                         {
                             gPacketT.Send();
+                            ObjectManager.Player.SummonerSpellbook.CastSpell(sumExhaust, enemy);
                         }
                     }
                 }
@@ -1088,8 +1114,10 @@ namespace SAwareness
 
             if (sender.IsEnemy)
             {
-                SpellSlot spellSlot = GetExhaustSlot();
-                if (spellSlot != SpellSlot.Unknown)
+                SpellSlot sumExhaust = GetExhaustSlot();
+                if (ObjectManager.Player.SummonerSpellbook.CanUseSpell(sumExhaust) != SpellState.Ready)
+                    return;
+                if (sumExhaust != SpellSlot.Unknown)
                 {
                     if (args.SData.Name.Contains("InfernalGuardian") || //Annie
                         args.SData.Name.Contains("BrandWildfire") || //Brand
@@ -1125,7 +1153,8 @@ namespace SAwareness
                     {
                         if (sender.ServerPosition.Distance(ObjectManager.Player.ServerPosition) <= 750)
                         {
-                            Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(sender.NetworkId, spellSlot)).Send();
+                            Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(sender.NetworkId, sumExhaust)).Send();
+                            ObjectManager.Player.SummonerSpellbook.CastSpell(sumExhaust, sender);
                         }
                     }
 
@@ -1136,7 +1165,10 @@ namespace SAwareness
                         Utility.DelayAction.Add(2500, () =>
                         {
                             if (sender.ServerPosition.Distance(ObjectManager.Player.ServerPosition) <= 750)
-                                Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(sender.NetworkId, spellSlot)).Send();
+                            {
+                                Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(sender.NetworkId, sumExhaust)).Send();
+                                ObjectManager.Player.SummonerSpellbook.CastSpell(sumExhaust, sender);
+                            }
                         });
                     }
 
@@ -1146,7 +1178,10 @@ namespace SAwareness
                         Utility.DelayAction.Add(500, () =>
                         {
                             if (sender.ServerPosition.Distance(ObjectManager.Player.ServerPosition) <= 750)
-                                Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(sender.NetworkId, spellSlot)).Send();
+                            {
+                                Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(sender.NetworkId, sumExhaust)).Send();
+                                ObjectManager.Player.SummonerSpellbook.CastSpell(sumExhaust, sender);
+                            }
                         });
                     }
                 }
@@ -1219,7 +1254,7 @@ namespace SAwareness
             foreach (var damage in Damages)
             {
                 if(damage.Key.NetworkId != ObjectManager.Player.NetworkId)
-                    return;
+                    continue;
 
                 if (CalcMaxDamage(damage.Key) > damage.Key.Health)
                 {
