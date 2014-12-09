@@ -10,7 +10,7 @@ namespace SAwareness
 {
     internal class RecallDetector
     {
-        public readonly List<RecallInfo> Recalls = new List<RecallInfo>();
+        public List<RecallInfo> Recalls = new List<RecallInfo>();
 
         public RecallDetector()
         {
@@ -27,6 +27,7 @@ namespace SAwareness
         ~RecallDetector()
         {
             Game.OnGameProcessPacket -= Game_OnGameProcessPacket;
+            Recalls = null;
         }
 
         public bool IsActive()
@@ -42,10 +43,10 @@ namespace SAwareness
             {
                 var reader = new BinaryReader(new MemoryStream(args.PacketData));
                 byte packetId = reader.ReadByte(); //PacketId
-                if (packetId != Packet.S2C.Recall.Header) //OLD 215
+                if (packetId != Recall.Header) //OLD 215
                     return;
                 //Log.LogPacket(args.PacketData);
-                Packet.S2C.Recall.Struct recall = RecallDecode(args.PacketData);//Packet.S2C.Recall.Decoded(args.PacketData);
+                Recall.Struct recall = RecallDecode(args.PacketData);//Packet.S2C.Recall.Decoded(args.PacketData);
                 HandleRecall(recall);
             }
             catch (Exception ex)
@@ -54,7 +55,7 @@ namespace SAwareness
             }
         }
 
-        private void HandleRecall(Packet.S2C.Recall.Struct recallEx)
+        private void HandleRecall(Recall.Struct recallEx)
         {
             int time = Environment.TickCount - Game.Ping;
 
@@ -62,7 +63,7 @@ namespace SAwareness
             {
                 if (recall == null) continue;
 
-                if (recallEx.Type == Packet.S2C.Recall.ObjectType.Player)
+                if (recallEx.Type == Recall.ObjectType.Player)
                 {
                     var obj = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(recall.NetworkId);
                     var objEx = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(recallEx.UnitNetworkId);
@@ -71,7 +72,7 @@ namespace SAwareness
                     if (obj.NetworkId == objEx.NetworkId) //already existing
                     {
                         recall.Recall = recallEx;
-                        recall.Recall2 = new Packet.S2C.Recall.Struct();
+                        recall.Recall2 = new Recall.Struct();
                         var t = Menu.RecallDetector.GetMenuItem("SAwarenessRecallDetectorMode").GetValue<StringList>();
                         if (t.SelectedIndex == 0 || t.SelectedIndex == 2)
                         {
@@ -80,10 +81,10 @@ namespace SAwareness
                             String color = (percentHealth > 50
                                 ? "<font color='#00FF00'>"
                                 : (percentHealth > 30 ? "<font color='#FFFF00'>" : "<font color='#FF0000'>"));
-                            if (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportStart ||
-                                recallEx.Status == Packet.S2C.Recall.RecallStatus.RecallStarted)
+                            if (recallEx.Status == Recall.RecallStatus.TeleportStart ||
+                                recallEx.Status == Recall.RecallStatus.RecallStarted)
                             {
-                                String text = (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportStart
+                                String text = (recallEx.Status == Recall.RecallStatus.TeleportStart
                                     ? "porting"
                                     : "recalling");
                                 recall.StartTime = (int) Game.Time;
@@ -106,10 +107,10 @@ namespace SAwareness
                                         color, percentHealth);
                                 }
                             }
-                            else if (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd ||
-                                     recallEx.Status == Packet.S2C.Recall.RecallStatus.RecallFinished)
+                            else if (recallEx.Status == Recall.RecallStatus.TeleportEnd ||
+                                     recallEx.Status == Recall.RecallStatus.RecallFinished)
                             {
-                                String text = (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportStart
+                                String text = (recallEx.Status == Recall.RecallStatus.TeleportStart
                                     ? "ported"
                                     : "recalled");
                                 if (
@@ -154,10 +155,10 @@ namespace SAwareness
                         return;
                     }
                 }
-                else if (recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportStart ||
-                         recallEx.Status == Packet.S2C.Recall.RecallStatus.TeleportEnd)
+                else if (recallEx.Status == Recall.RecallStatus.TeleportStart ||
+                         recallEx.Status == Recall.RecallStatus.TeleportEnd)
                 {
-                    if (recall.Recall.Status == Packet.S2C.Recall.RecallStatus.TeleportStart)
+                    if (recall.Recall.Status == Recall.RecallStatus.TeleportStart)
                         recall.Recall2 = recallEx;
 
                     var obj = ObjectManager.GetUnitByNetworkId<GameObject>(recallEx.UnitNetworkId);
@@ -192,17 +193,17 @@ namespace SAwareness
         //By Lexxes
         public static Dictionary<int, int> RecallT = new Dictionary<int, int>();
 
-        public static Packet.S2C.Recall.Struct RecallDecode(byte[] data)
+        public static Recall.Struct RecallDecode(byte[] data)
         {
             var reader = new BinaryReader(new MemoryStream(data));
-            var recall = new Packet.S2C.Recall.Struct();
+            var recall = new Recall.Struct();
 
             reader.ReadByte(); //PacketId
             reader.ReadInt32();
             recall.UnitNetworkId = reader.ReadInt32();
             reader.ReadBytes(66);
 
-            recall.Status = Packet.S2C.Recall.RecallStatus.Unknown;
+            recall.Status = Recall.RecallStatus.Unknown;
 
             var teleport = false;
 
@@ -210,11 +211,11 @@ namespace SAwareness
             {
                 if (BitConverter.ToString(reader.ReadBytes(3)) != "00-00-00")
                 {
-                    recall.Status = Packet.S2C.Recall.RecallStatus.TeleportStart;
+                    recall.Status = Recall.RecallStatus.TeleportStart;
                     teleport = true;
                 }
                 else
-                    recall.Status = Packet.S2C.Recall.RecallStatus.RecallStarted;
+                    recall.Status = Recall.RecallStatus.RecallStarted;
             }
 
             reader.Close();
@@ -248,12 +249,12 @@ namespace SAwareness
                 {
                     if (time - RecallT[recall.UnitNetworkId] > recall.Duration - 175)
                         recall.Status = teleport
-                            ? Packet.S2C.Recall.RecallStatus.TeleportEnd
-                            : Packet.S2C.Recall.RecallStatus.RecallFinished;
+                            ? Recall.RecallStatus.TeleportEnd
+                            : Recall.RecallStatus.RecallFinished;
                     else
                         recall.Status = teleport
-                            ? Packet.S2C.Recall.RecallStatus.TeleportAbort
-                            : Packet.S2C.Recall.RecallStatus.RecallAborted;
+                            ? Recall.RecallStatus.TeleportAbort
+                            : Recall.RecallStatus.RecallAborted;
 
                     RecallT[recall.UnitNetworkId] = 0; //recall aborted or finished, reset status
                 }
@@ -265,14 +266,208 @@ namespace SAwareness
         public class RecallInfo
         {
             public int NetworkId;
-            public Packet.S2C.Recall.Struct Recall;
-            public Packet.S2C.Recall.Struct Recall2;
+            public Recall.Struct Recall;
+            public Recall.Struct Recall2;
             public int StartTime;
 
             public RecallInfo(int networkId)
             {
                 NetworkId = networkId;
             }
+        }
+    }
+
+    public static class Recall
+    {
+        public enum ObjectType
+        {
+            Player,
+            Turret,
+            Minion,
+            Ward,
+            Object
+        }
+
+        public enum RecallStatus
+        {
+            RecallStarted,
+            RecallAborted,
+            RecallFinished,
+            Unknown,
+            TeleportStart,
+            TeleportAbort,
+            TeleportEnd,
+        }
+
+        private const int ErrorGap = 100; //in ticks
+
+        public static byte Header = 0xD8;
+
+        private static readonly IDictionary<string, Type> TypeByString = new Dictionary<string, Type>
+                {
+                    { "Recall", Type.Recall },
+                    { "Teleport", Type.Teleport }
+                };
+
+        private static readonly Dictionary<int, RecallData> RecallDataByNetworkId =
+            new Dictionary<int, RecallData>();
+
+        public static GamePacket Encoded(Struct packetStruct)
+        {
+            //TODO when the packet is fully decoded.
+            return new GamePacket(Header);
+        }
+
+        public static Struct Decoded(byte[] data)
+        {
+            var packet = new GamePacket(data);
+            var result = new Struct();
+
+            result.UnitNetworkId = packet.ReadInteger(5);
+            result.Status = RecallStatus.Unknown;
+
+            var typeAsString = packet.ReadString(75);
+            var gObject = ObjectManager.GetUnitByNetworkId<GameObject>(result.UnitNetworkId);
+
+            if (gObject == null || !gObject.IsValid)
+            {
+                return result;
+            }
+
+            if (gObject is Obj_AI_Hero)
+            {
+                var unit = (Obj_AI_Hero)gObject;
+
+                if (!unit.IsValid || unit.Spellbook.GetSpell(SpellSlot.Recall) == null)
+                {
+                    return result;
+                }
+
+                result.Type = ObjectType.Player;
+
+                if (!RecallDataByNetworkId.ContainsKey(result.UnitNetworkId))
+                {
+                    RecallDataByNetworkId[result.UnitNetworkId] = new RecallData { Type = Type.Unknown };
+                }
+
+                if (string.IsNullOrEmpty(typeAsString))
+                {
+                    switch (RecallDataByNetworkId[result.UnitNetworkId].Type)
+                    {
+                        case Type.Recall:
+                            if (Environment.TickCount - RecallDataByNetworkId[result.UnitNetworkId].Start <
+                                RecallDataByNetworkId[result.UnitNetworkId].Duration - ErrorGap)
+                            {
+                                result.Status = RecallStatus.RecallAborted;
+                            }
+                            else
+                            {
+                                result.Status = RecallStatus.RecallFinished;
+                            }
+                            break;
+                        case Type.Teleport:
+                            if (Environment.TickCount - RecallDataByNetworkId[result.UnitNetworkId].Start <
+                                RecallDataByNetworkId[result.UnitNetworkId].Duration - ErrorGap)
+                            {
+                                result.Status = RecallStatus.TeleportAbort;
+                            }
+                            else
+                            {
+                                result.Status = RecallStatus.TeleportEnd;
+                            }
+                            break;
+                    }
+                }
+                else
+                {
+                    if (TypeByString.ContainsKey(typeAsString))
+                    {
+                        switch (TypeByString[typeAsString])
+                        {
+                            case Type.Recall:
+                                result.Status = RecallStatus.RecallStarted;
+                                result.Duration = Utility.GetRecallTime(packet.ReadString(139));
+                                RecallDataByNetworkId[result.UnitNetworkId] = new RecallData
+                                {
+                                    Type = Type.Recall,
+                                    Duration = result.Duration,
+                                    Start = Environment.TickCount
+                                };
+                                break;
+                            case Type.Teleport:
+                                result.Status = RecallStatus.TeleportStart;
+                                result.Duration = 3500;
+                                RecallDataByNetworkId[result.UnitNetworkId] = new RecallData
+                                {
+                                    Type = Type.Teleport,
+                                    Duration = result.Duration,
+                                    Start = Environment.TickCount
+                                };
+                                break;
+                        }
+                    }
+                }
+            }
+            else if (gObject is Obj_AI_Turret)
+            {
+                result.Type = ObjectType.Turret;
+                result.Status = string.IsNullOrEmpty(typeAsString)
+                    ? RecallStatus.TeleportEnd
+                    : RecallStatus.TeleportStart;
+            }
+            else if (gObject is Obj_AI_Minion)
+            {
+                result.Type = ObjectType.Object;
+
+                if (gObject.Name.Contains("Minion"))
+                {
+                    result.Type = ObjectType.Minion;
+                }
+                if (gObject.Name.Contains("Ward"))
+                {
+                    result.Type = ObjectType.Ward;
+                }
+
+                result.Status = string.IsNullOrEmpty(typeAsString)
+                    ? RecallStatus.TeleportEnd
+                    : RecallStatus.TeleportStart;
+            }
+            else
+            {
+                result.Type = ObjectType.Object;
+            }
+
+            return result;
+        }
+
+        internal struct RecallData
+        {
+            public Type Type { get; set; }
+            public int Start { get; set; }
+            public int Duration { get; set; }
+        }
+
+        public struct Struct
+        {
+            public int Duration;
+            public RecallStatus Status;
+            public ObjectType Type;
+            public int UnitNetworkId;
+
+            public Struct(int unitNetworkId, RecallStatus status, ObjectType type, int duration)
+            {
+                UnitNetworkId = unitNetworkId;
+                Status = status;
+                Type = type;
+                Duration = duration;
+            }
+        }
+
+        internal enum Type
+        {
+            Recall,
+            Teleport,
+            Unknown
         }
     }
 }
