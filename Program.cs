@@ -1468,7 +1468,7 @@ namespace SAwareness
                     }
                     writer.WriteLine("Character: " + hero.ChampionName);
                     writer.Write("Summoners: ");
-                    foreach (var spell in hero.SummonerSpellbook.Spells)
+                    foreach (var spell in hero.Spellbook.Spells)
                     {
                         writer.Write(spell.SData.Name + ", ");
                     }
