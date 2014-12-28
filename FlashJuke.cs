@@ -100,7 +100,7 @@ namespace SAwareness
                 return;
 
             SpellSlot spell = Activator.GetFlashSlot();
-            if (ObjectManager.Player.SummonerSpellbook.CanUseSpell(spell) != SpellState.Ready)
+            if (ObjectManager.Player.Spellbook.CanUseSpell(spell) != SpellState.Ready)
                 return;
 
             for (int i = 0; i < spotsStart.Count; i++)
@@ -120,7 +120,7 @@ namespace SAwareness
                 return;
 
             SpellSlot spell = Activator.GetFlashSlot();
-            if(ObjectManager.Player.SummonerSpellbook.CanUseSpell(spell) != SpellState.Ready)
+            if(ObjectManager.Player.Spellbook.CanUseSpell(spell) != SpellState.Ready)
                 return;
 
             spell = Activator.GetPacketSlot(spell);
