@@ -224,7 +224,7 @@ namespace SAssemblies
     {
         private static float lastDebugTime = 0;
         private MainMenu mainMenu;
-        private static readonly Program instance = new Program();
+        private static readonly Program ProSeriesInstance = new Program();
 
         public static void Main(string[] args)
         {
@@ -236,7 +236,7 @@ namespace SAssemblies
             //_rafList = new RAFMasterFileList(@"D:\Spiele\League of Legends\RADS\projects\lol_game_client\filearchives");
             //_rafList.SearchFileEntries("aatrox_e.dds")[0].GetContent();
             //Render.Sprite s = new Render.Sprite(_rafList.SearchFileEntries("aatrox_e.dds")[0].GetContent(), new Vector2(0, 0));
-            Instance().Load();
+            Program.Instance().Load();
         }
 
         public void Load()
@@ -247,7 +247,7 @@ namespace SAssemblies
 
         public static Program Instance()
         {
-            return instance;
+            return ProSeriesInstance;
         }
 
         private void CreateMenu()
